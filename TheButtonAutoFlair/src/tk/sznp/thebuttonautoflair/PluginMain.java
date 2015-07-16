@@ -105,7 +105,7 @@ public class PluginMain extends JavaPlugin
     	{
     		File file=new File("flairsignored.txt");
 			try {
-				BufferedWriter bw=new BufferedWriter(new FileWriter(file, true));
+				BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
 				bw.write(player+"\n");
 				bw.close();
 			} catch (IOException e) {
