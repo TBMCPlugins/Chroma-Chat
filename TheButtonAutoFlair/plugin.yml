@@ -1,0 +1,7 @@
+name: TheButtonAutoFlair
+main: tk.sznp.thebuttonautoflair.PluginMain
+version: 1.0
+commands:
+    u:
+        description: Auto-flair system. Accept or ignore flair.
+        usage: "&cUsage: /u accept|ignore&r"
