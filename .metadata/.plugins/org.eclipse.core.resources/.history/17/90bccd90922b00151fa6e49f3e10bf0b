@@ -1,0 +1,16 @@
+package tk.sznp.thebuttonautoflair;
+
+import java.util.function.Predicate;
+
+public class MyPredicate<T> implements Predicate<T>
+{
+	public MyPredicate(T first)
+	{
+		
+	}
+	@Override
+	public boolean test(T second) {
+		return false;
+	}
+
+}
