@@ -156,7 +156,8 @@ public class PluginMain extends JavaPlugin
 	                else
 	                    flair = "non-presser";
 					String flairclass;
-					if(flairdata.length>1)
+					//System.out.println("flairdata.length:"+flairdata.length);
+					if(flairdata.length>2)
 						flairclass = flairdata[2];
 					else
 						flairclass="unknown";

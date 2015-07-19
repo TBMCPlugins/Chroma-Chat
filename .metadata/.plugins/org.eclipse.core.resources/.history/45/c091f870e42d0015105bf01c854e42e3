@@ -2,6 +2,7 @@ package tk.sznp.thebuttonautoflair;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -42,22 +43,28 @@ public class PluginMain extends JavaPlugin
 		this.getCommand("u").setExecutor(new Commands());
 		this.getCommand("u").setUsage(this.getCommand("u").getUsage().replace('&', '§'));
 		try {
-			BufferedReader br=new BufferedReader(new FileReader("flairsaccepted.txt"));
-			String line;
-			while ((line = br.readLine()) != null)
-			{
-				AcceptedPlayers.add(line.replace("\n", ""));
+    		File file=new File("flairsaccepted.txt");
+    		if(file.exists())
+    		{
+				BufferedReader br=new BufferedReader(new FileReader("flairsaccepted.txt"));
+				String line;
+				while ((line = br.readLine()) != null)
+				{
+					AcceptedPlayers.add(line.replace("\n", ""));
+				}
+				br.close();
 			}
-			br.close();
-			BufferedReader br=new BufferedReader(new FileReader("flairsignored.txt"));
-			while ((line = br.readLine()) != null)
-			{
-				IgnoredPlayers.add(line.replace("\n", ""));
-			}
-			br.close();
-			FileWriter fw;
-			fw = new FileWriter("flairsaccepted.txt");
-			fw.close();
+    		file=new File("flairsignored.txt");
+    		if(file.exists())
+    		{
+				BufferedReader br=new BufferedReader(new FileReader("flairsignored.txt"));
+				String line;
+				while ((line = br.readLine()) != null)
+				{
+					IgnoredPlayers.add(line.replace("\n", ""));
+				}
+				br.close();
+    		}
 		} catch (IOException e) {
 			System.out.println("Error!\n"+e);
 		}
@@ -71,6 +78,40 @@ public class PluginMain extends JavaPlugin
     @Override
     public void onDisable()
     {
+    	try
+    	{
+			FileWriter fw;
+			fw = new FileWriter("flairsaccepted.txt");
+			fw.close();
+			fw = new FileWriter("flairsignored.txt");
+			fw.close();
+    	}
+    	catch(Exception e)
+    	{
+			System.out.println("Error!\n"+e);
+    	}
+    	for(String player : AcceptedPlayers)
+    	{
+    		File file=new File("flairsaccepted.txt");
+			try {
+				BufferedWriter bw=new BufferedWriter(new FileWriter(file, true));
+				bw.write(player+"\n");
+				bw.close();
+			} catch (IOException e) {
+				System.out.println("Error!\n"+e);
+			}
+    	}
+    	for(String player : IgnoredPlayers)
+    	{
+    		File file=new File("flairsignored.txt");
+			try {
+				BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+				bw.write(player+"\n");
+				bw.close();
+			} catch (IOException e) {
+				System.out.println("Error!\n"+e);
+			}
+    	}
 		stop=true;
     }
     
@@ -98,7 +139,7 @@ public class PluginMain extends JavaPlugin
 	                ign = ign.trim();
 	                if(HasIGFlair(ign))
 	                	continue;
-					//System.out.println("Author: "+author);
+					System.out.println("Author: "+author);
 					try {
 					    Thread.sleep(10);
 					} catch(InterruptedException ex) {
@@ -236,26 +277,8 @@ public class PluginMain extends JavaPlugin
     {
     	if(IgnoredPlayers.contains(player.getName()))
     		return;
-    	{
-    		try {
-				BufferedWriter bw=new BufferedWriter(new FileWriter("flairsaccepted.txt", true));
-				bw.write(player.getName()+"\n");
-				bw.close();
-			} catch (IOException e) {
-				System.out.println("Error!\n"+e);
-			}
-    	}
     	if(AcceptedPlayers.contains(player.getName()))
-    	{
     		player.setDisplayName(player.getDisplayName()+flair);
-    		try {
-				BufferedWriter bw=new BufferedWriter(new FileWriter("flairsaccepted.txt", true));
-				bw.write(player.getName()+"\n");
-				bw.close();
-			} catch (IOException e) {
-				System.out.println("Error!\n"+e);
-			}
-    	}
     	else
     		player.sendMessage("§9Are you Reddit user "+username+"?§r §6Type /u accept or /u ignore§r");
     	
