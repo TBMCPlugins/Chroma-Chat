@@ -20,6 +20,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.palmergames.bukkit.towny.object.Town;
+import com.palmergames.bukkit.towny.object.WorldCoord;
+
 public class PluginMain extends JavaPlugin
 { //Translated to Java: 2015.07.15.
 	//A user, which flair isn't obtainable:
@@ -62,6 +65,18 @@ public class PluginMain extends JavaPlugin
 				while ((line = br.readLine()) != null)
 				{
 					IgnoredPlayers.add(line.replace("\n", ""));
+				}
+				br.close();
+    		}
+    		file=new File("autoflairconfig.txt");
+    		if(file.exists())
+    		{
+				BufferedReader br=new BufferedReader(new FileReader(file));
+				String line;
+				while((line=br.readLine())!=null)
+				{
+					String[] s=line.split(" ");
+					TownColors.put(s[0], s[1]);
 				}
 				br.close();
     		}
@@ -117,6 +132,12 @@ public class PluginMain extends JavaPlugin
     
     public void ThreadMethod() //<-- 2015.07.16.
     {
+    	/*System.out.println("Sleeping for 5 seconds..."); //2015.07.20.
+    	try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		} //2015.07.20.*/
     	while(!stop)
     	{
 			try
@@ -192,6 +213,8 @@ public class PluginMain extends JavaPlugin
     public static ArrayList<Player> Players=new ArrayList<Player>();
     public static ArrayList<String> AcceptedPlayers=new ArrayList<String>(); //2015.07.16.
     public static ArrayList<String> IgnoredPlayers=new ArrayList<String>(); //2015.07.16.
+    //public static Map<String, String> PlayerTowns=new HashMap<String, String>(); //2015.07.20.
+    public static Map<String, String> TownColors=new HashMap<String, String>(); //2015.07.20.
     public Boolean HasIGFlair(String playername)
     {
     	/*Player player=null;
@@ -241,6 +264,8 @@ public class PluginMain extends JavaPlugin
 			finalflair="";
 			break;
     	}
+    	if(finalflair.length()==0) //<-- 2015.07.20.
+    		return;
     	PlayerFlairs.put(playername, finalflair);
     	PlayerUserNames.put(playername, username);
     	/*for(Player player : Players)
@@ -279,9 +304,94 @@ public class PluginMain extends JavaPlugin
     	if(IgnoredPlayers.contains(player.getName()))
     		return;
     	if(AcceptedPlayers.contains(player.getName()))
-    		player.setDisplayName(player.getDisplayName()+flair);
+    		//player.setDisplayName(player.getDisplayName()+flair);
+    		AppendPlayerDisplayFlairFinal(player, flair); //2015.07.20.
     	else
     		player.sendMessage("§9Are you Reddit user "+username+"?§r §6Type /u accept or /u ignore§r");
-    	
+    }
+    
+    public static void AppendPlayerDisplayFlairFinal(Player player, String flair)
+    { //2015.07.20.
+    	//System.out.println("A");
+    	String color = GetColorForTown(GetPlayerTown(player)); //TO!DO: Multiple colors put on first capital letters
+    	String[] colors = color.substring(1).split("§");
+    	String displayname=player.getDisplayName();
+    	ArrayList<Integer> Positions=new ArrayList<>();
+    	//System.out.println("B");
+    	for(int i=0; i<displayname.length(); i++) {
+            if(Character.isUpperCase(displayname.charAt(i))) {
+                Positions.add(i);
+            }
+    	}
+    	//System.out.println("C: Positions.size(): "+Positions.size());
+    	String finalname="";
+    	if(Positions.size()>=colors.length)
+    	{
+        	//System.out.println("D");
+    		int x=0;
+    		for(int i=0; i<Positions.size(); i++)
+    		{
+    			int pos=Positions.get(i);
+    			int nextpos;
+    			if(i!=Positions.size()-1)
+        			nextpos=Positions.get(i+1);
+    			else
+    				nextpos=displayname.length();
+    			//System.out.println("pos: "+pos+" nextpos: "+nextpos);
+    			//System.out.println("nextpos-pos: "+(nextpos-pos));
+    			//String substr="§"+colors[x++]+displayname.substring(pos, nextpos-pos)+"§r";
+    			String substr="§"+colors[x++]+displayname.substring(pos, nextpos)+"§r";
+    			finalname+=substr;
+    		}
+        	//System.out.println("F");
+    	}
+    	else
+    	{
+        	//System.out.println("E");
+    		Positions.clear();
+    		int unit=displayname.length()/colors.length;
+    		int x=0;
+    		for(int i=0; i<displayname.length()-unit; i+=unit)
+    		{
+    			int pos=i;
+    			int nextpos;
+    			if(i<displayname.length()-unit-unit)
+    				nextpos=i+unit;
+    			else
+    				nextpos=displayname.length();
+    			//System.out.println("pos: "+pos+" nextpos: "+nextpos);
+    			//System.out.println("nextpos-pos: "+(nextpos-pos));
+    			String substr="§"+colors[x++]+displayname.substring(pos, nextpos)+"§r";
+    			finalname+=substr;
+    		}
+        	//System.out.println("G");
+    	}
+		//player.setDisplayName(color+displayname+"§r"+flair);
+    	player.setDisplayName(finalname+flair);
+    }
+    
+    public static String GetColorForTown(String townname)
+    { //2015.07.20.
+    	if(TownColors.containsKey(townname))
+    		return TownColors.get(townname);
+    	return "";
+    }
+    
+    public static String GetPlayerTown(Player player)
+    { //2015.07.20.
+    	//List<Town> towns = TownyUniverse.getDataSource().getTowns();
+    	try {
+			Town town = WorldCoord.parseWorldCoord(player).getTownBlock().getTown();
+			return town.getName();
+		} catch (Exception e) {
+			return "";
+		}
+    }
+    
+    public static void RemovePlayerDisplayFlairFinal(Player player, String flair)
+    { //2015.07.20.
+    	String color = GetColorForTown(GetPlayerTown(player));
+    	String dname=player.getDisplayName();
+		player.setDisplayName(dname.substring(dname.indexOf(color)+3, dname.indexOf(flair)));
     }
 }
