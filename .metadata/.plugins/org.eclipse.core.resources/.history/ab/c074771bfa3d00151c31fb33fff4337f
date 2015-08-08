@@ -1,0 +1,11 @@
+package tk.sznp.thebuttonautoflair;
+
+public class MaybeOfflinePlayer {
+	String PlayerName;
+	String UserName;
+	String Flair;
+	boolean AcceptedFlair;
+	boolean IgnoredFlair;
+	String TownColors;
+	String DisplayName;
+}
