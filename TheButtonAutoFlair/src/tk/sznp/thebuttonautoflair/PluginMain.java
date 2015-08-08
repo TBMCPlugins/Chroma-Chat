@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,12 +22,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.palmergames.bukkit.towny.object.Town;
+import com.palmergames.bukkit.towny.object.TownyUniverse;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 
 public class PluginMain extends JavaPlugin
 { //Translated to Java: 2015.07.15.
 	//A user, which flair isn't obtainable:
 	//https://www.reddit.com/r/thebutton/comments/31c32v/i_pressed_the_button_without_really_thinking/
+	private static PluginMain Instance;
     // Fired when plugin is first enabled
     @Override
     public void onEnable()
@@ -45,6 +48,7 @@ public class PluginMain extends JavaPlugin
 		//System.out.println("Registering commands...");
 		this.getCommand("u").setExecutor(new Commands());
 		this.getCommand("u").setUsage(this.getCommand("u").getUsage().replace('&', '§'));
+		Instance=this; //2015.08.08.
 		try {
     		File file=new File("flairsaccepted.txt");
     		if(file.exists())
@@ -53,7 +57,10 @@ public class PluginMain extends JavaPlugin
 				String line;
 				while ((line = br.readLine()) != null)
 				{
-					AcceptedPlayers.add(line.replace("\n", ""));
+					//AcceptedPlayers.add(line.replace("\n", ""));
+					String name=line.replace("\n", "");
+					System.out.println("Name: " + name);
+					MaybeOfflinePlayer.AddPlayerIfNeeded(name).AcceptedFlair=true; //2015.08.08.
 				}
 				br.close();
 			}
@@ -64,7 +71,9 @@ public class PluginMain extends JavaPlugin
 				String line;
 				while ((line = br.readLine()) != null)
 				{
-					IgnoredPlayers.add(line.replace("\n", ""));
+					//IgnoredPlayers.add(line.replace("\n", ""));
+					String name=line.replace("\n", "");
+					MaybeOfflinePlayer.AddPlayerIfNeeded(name).IgnoredFlair=true; //2015.08.08.
 				}
 				br.close();
     		}
@@ -105,23 +114,28 @@ public class PluginMain extends JavaPlugin
     	{
 			System.out.println("Error!\n"+e);
     	}
-    	for(String player : AcceptedPlayers)
+    	//for(String player : AcceptedPlayers)
+    	for(MaybeOfflinePlayer player : MaybeOfflinePlayer.AllPlayers.values()) //<-- 2015.08.08.
     	{
+    		if(!player.AcceptedFlair)
+    			continue; //2015.08.08.
     		File file=new File("flairsaccepted.txt");
 			try {
 				BufferedWriter bw=new BufferedWriter(new FileWriter(file, true));
-				bw.write(player+"\n");
+				bw.write(player.PlayerName+"\n");
 				bw.close();
 			} catch (IOException e) {
 				System.out.println("Error!\n"+e);
 			}
     	}
-    	for(String player : IgnoredPlayers)
+    	for(MaybeOfflinePlayer player : MaybeOfflinePlayer.AllPlayers.values()) //<-- 2015.08.08.
     	{
+    		if(!player.IgnoredFlair)
+    			continue; //2015.08.08.
     		File file=new File("flairsignored.txt");
 			try {
 				BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
-				bw.write(player+"\n");
+				bw.write(player.PlayerName+"\n");
 				bw.close();
 			} catch (IOException e) {
 				System.out.println("Error!\n"+e);
@@ -207,13 +221,13 @@ public class PluginMain extends JavaPlugin
     }
 
     //It has to store offline player flairs too, therefore it can't use Player object
-    public static Map<String, String> PlayerFlairs=new HashMap<String, String>();
+    /*public static Map<String, String> PlayerFlairs=new HashMap<String, String>();
     public static Map<String, String> PlayerUserNames=new HashMap<String, String>();
     //public Map<Player, String> PlayerFlairs=new HashMap<Player, String>();
     public static ArrayList<Player> Players=new ArrayList<Player>();
     public static ArrayList<String> AcceptedPlayers=new ArrayList<String>(); //2015.07.16.
     public static ArrayList<String> IgnoredPlayers=new ArrayList<String>(); //2015.07.16.
-    //public static Map<String, String> PlayerTowns=new HashMap<String, String>(); //2015.07.20.
+    //public static Map<String, String> PlayerTowns=new HashMap<String, String>(); //2015.07.20.*/
     public static Map<String, String> TownColors=new HashMap<String, String>(); //2015.07.20.
     public Boolean HasIGFlair(String playername)
     {
@@ -228,7 +242,10 @@ public class PluginMain extends JavaPlugin
     	}
     	if(player==null)
     		return false;*/
-    	return PlayerFlairs.containsKey(playername);
+    	//return PlayerFlairs.containsKey(playername);
+    	//return MaybeOfflinePlayer.AllPlayers.containsKey(playername);
+    	MaybeOfflinePlayer p=MaybeOfflinePlayer.AddPlayerIfNeeded(playername); //2015.08.08.
+    	return p.Flair!=null; //2015.08.08.
     }
     
     public void SetFlair(String playername, String text, String flairclass, String username)
@@ -260,14 +277,20 @@ public class PluginMain extends JavaPlugin
     	case "cheater":
     		finalflair="§5("+text+")§r";
     		break;
+    	case "cant-press": //2015.08.08.
+    		finalflair="§r(can't press)§r";
+    		break;
 		default:
 			finalflair="";
 			break;
     	}
     	if(finalflair.length()==0) //<-- 2015.07.20.
     		return;
-    	PlayerFlairs.put(playername, finalflair);
-    	PlayerUserNames.put(playername, username);
+    	//PlayerFlairs.put(playername, finalflair);
+    	//PlayerUserNames.put(playername, username);
+    	MaybeOfflinePlayer p=MaybeOfflinePlayer.AddPlayerIfNeeded(playername); //2015.08.08.
+    	p.Flair=finalflair; //2015.08.08.
+    	p.UserName=username; //2015.08.08.
     	/*for(Player player : Players)
     	{
     		if(player.getName()==playername)
@@ -278,7 +301,8 @@ public class PluginMain extends JavaPlugin
     	}*/
     	//System.out.println("SetFlair - playername: "+playername+" text: "+text+" flairclass: "+flairclass);
     	System.out.println("Added new flair to "+playername+": "+finalflair);
-    	for(Player player : Players)
+    	//for(Player player : Players)
+    	for(Player player : getServer().getOnlinePlayers()) //<-- 2015.08.08.
     	{
     		//System.out.println("Online player: "+player.getName());
     		//System.out.println("player.getName ("+player.getName()+") == playername ("+playername+"): "+(player.getName()==playername));
@@ -295,15 +319,18 @@ public class PluginMain extends JavaPlugin
     
     public static String GetFlair(Player player)
     { //2015.07.16.
-    	String flair=PlayerFlairs.get(player.getName());
+    	//String flair=PlayerFlairs.get(player.getName());
+    	String flair=MaybeOfflinePlayer.AllPlayers.get(player.getName()).Flair; //2015.08.08.
     	return flair==null ? "" : flair;
     }
     
     public static void AppendPlayerDisplayFlair(Player player, String username, String flair)
     {
-    	if(IgnoredPlayers.contains(player.getName()))
+    	//if(IgnoredPlayers.contains(player.getName()))
+    	if(MaybeOfflinePlayer.AllPlayers.get(player.getName()).IgnoredFlair)
     		return;
-    	if(AcceptedPlayers.contains(player.getName()))
+    	//if(AcceptedPlayers.contains(player.getName()))
+    	if(MaybeOfflinePlayer.AllPlayers.get(player.getName()).AcceptedFlair)
     		//player.setDisplayName(player.getDisplayName()+flair);
     		AppendPlayerDisplayFlairFinal(player, flair); //2015.07.20.
     	else
@@ -315,7 +342,8 @@ public class PluginMain extends JavaPlugin
     	//System.out.println("A");
     	String color = GetColorForTown(GetPlayerTown(player)); //TO!DO: Multiple colors put on first capital letters
     	String[] colors = color.substring(1).split("§");
-    	String displayname=player.getDisplayName();
+    	//String displayname=player.getDisplayName();
+    	String displayname=player.getName(); //2015.08.08.
     	ArrayList<Integer> Positions=new ArrayList<>();
     	//System.out.println("B");
     	for(int i=0; i<displayname.length(); i++) {
@@ -367,7 +395,9 @@ public class PluginMain extends JavaPlugin
         	//System.out.println("G");
     	}
 		//player.setDisplayName(color+displayname+"§r"+flair);
-    	player.setDisplayName(finalname+flair);
+    	//player.setDisplayName(finalname+flair);
+    	//MaybeOfflinePlayer.AllPlayers.get(player.getName()).DisplayName=finalname+flair; //2015.08.08.
+    	MaybeOfflinePlayer.AllPlayers.get(player.getName()).Flair=flair; //2015.08.08.
     }
     
     public static String GetColorForTown(String townname)
@@ -381,7 +411,7 @@ public class PluginMain extends JavaPlugin
     { //2015.07.20.
     	//List<Town> towns = TownyUniverse.getDataSource().getTowns();
     	try {
-			Town town = WorldCoord.parseWorldCoord(player).getTownBlock().getTown();
+			Town town = WorldCoord.parseWorldCoord(player).getTownBlock().getTown(); //TODO
 			return town.getName();
 		} catch (Exception e) {
 			return "";
@@ -390,8 +420,15 @@ public class PluginMain extends JavaPlugin
     
     public static void RemovePlayerDisplayFlairFinal(Player player, String flair)
     { //2015.07.20.
-    	String color = GetColorForTown(GetPlayerTown(player));
-    	String dname=player.getDisplayName();
-		player.setDisplayName(dname.substring(dname.indexOf(color)+3, dname.indexOf(flair)));
+    	//String color = GetColorForTown(GetPlayerTown(player));
+    	//String dname=player.getDisplayName();
+		//player.setDisplayName(dname.substring(dname.indexOf(color)+3, dname.indexOf(flair)));
+    	//MaybeOfflinePlayer.AllPlayers.get(player.getName()).DisplayName=null; //2015.08.08.
+    	MaybeOfflinePlayer.AllPlayers.get(player.getName()).Flair=null; //2015.08.08.
+    }
+    
+    public static Collection<? extends Player> GetPlayers()
+    {
+    	return Instance.getServer().getOnlinePlayers();
     }
 }

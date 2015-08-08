@@ -1,0 +1,15 @@
+package tk.sznp.thebuttonautoflair;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public class MaybeOfflinePlayer {
+	public String PlayerName;
+	public String UserName;
+	public String Flair;
+	public boolean AcceptedFlair;
+	public boolean IgnoredFlair;
+	public String TownColors;
+	public String DisplayName;
+    public static HashMap<MaybeOfflinePlayer> AllPlayers=new HashMap<>(); //2015.08.08.
+}
