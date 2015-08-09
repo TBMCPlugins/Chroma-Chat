@@ -38,49 +38,7 @@ public class PluginMain extends JavaPlugin
 		this.getCommand("u").setExecutor(new Commands());
 		this.getCommand("u").setUsage(this.getCommand("u").getUsage().replace('&', '§'));
 		Instance=this; //2015.08.08.
-		try {
-    		File file=new File("flairsaccepted.txt");
-    		if(file.exists())
-    		{
-				BufferedReader br=new BufferedReader(new FileReader("flairsaccepted.txt"));
-				String line;
-				while ((line = br.readLine()) != null)
-				{
-					String name=line.replace("\n", "");
-					//System.out.println("Name: " + name);
-					MaybeOfflinePlayer.AddPlayerIfNeeded(name).AcceptedFlair=true; //2015.08.08.
-				}
-				br.close();
-			}
-    		file=new File("flairsignored.txt");
-    		if(file.exists())
-    		{
-				BufferedReader br=new BufferedReader(new FileReader("flairsignored.txt"));
-				String line;
-				while ((line = br.readLine()) != null)
-				{
-					String name=line.replace("\n", "");
-					MaybeOfflinePlayer.AddPlayerIfNeeded(name).IgnoredFlair=true; //2015.08.08.
-				}
-				br.close();
-    		}
-    		file=new File("autoflairconfig.txt");
-    		if(file.exists())
-    		{
-				BufferedReader br=new BufferedReader(new FileReader(file));
-				String line;
-				while((line=br.readLine())!=null)
-				{
-					String[] s=line.split(" ");
-					TownColors.put(s[0], s[1]);
-				}
-				br.close();
-    		}
-    		//throw new IOException("Test"); //2015.08.09.
-		} catch (IOException e) {
-			System.out.println("Error!\n"+e);
-			LastException=e; //2015.08.09.
-		}
+		LoadFiles(false); //2015.08.09.
 		Runnable r=new Runnable(){public void run(){ThreadMethod();}};
 		Thread t=new Thread(r);
 		t.start();
@@ -90,42 +48,7 @@ public class PluginMain extends JavaPlugin
     @Override
     public void onDisable()
     {
-    	try
-    	{
-			FileWriter fw;
-			fw = new FileWriter("flairsaccepted.txt");
-			fw.close();
-			fw = new FileWriter("flairsignored.txt");
-			fw.close();
-    	}
-    	catch(Exception e)
-    	{
-			System.out.println("Error!\n"+e);
-			LastException=e; //2015.08.09.
-    	}
-		try {
-			File file=new File("flairsaccepted.txt");
-			BufferedWriter bw=new BufferedWriter(new FileWriter(file, true));
-	    	for(MaybeOfflinePlayer player : MaybeOfflinePlayer.AllPlayers.values()) //<-- 2015.08.08.
-	    	{
-	    		if(!player.AcceptedFlair)
-	    			continue; //2015.08.08.
-				bw.write(player.PlayerName+"\n");
-	    	}
-			bw.close();
-    		file=new File("flairsignored.txt");
-			bw = new BufferedWriter(new FileWriter(file, true));
-	    	for(MaybeOfflinePlayer player : MaybeOfflinePlayer.AllPlayers.values()) //<-- 2015.08.08.
-	    	{
-	    		if(!player.IgnoredFlair)
-	    			continue; //2015.08.08.
-				bw.write(player.PlayerName+"\n");
-	    	}
-			bw.close();
-		} catch (IOException e) {
-			System.out.println("Error!\n"+e);
-			LastException=e; //2015.08.09.
-		}
+    	SaveFiles(); //2015.08.09.
 		stop=true;
     }
     
@@ -143,6 +66,8 @@ public class PluginMain extends JavaPlugin
 					String author=item.getJSONObject("data").getString("author");
 					String ign=item.getJSONObject("data").getString("body");
 	                int start = ign.indexOf("IGN:") + "IGN:".length();
+	                if(start==-1)
+	                	continue; //2015.08.09.
 	                int end = ign.indexOf(' ', start);
 	                if (end == -1 || end == start)
 	                	end=ign.indexOf('\n', start); //2015.07.15.
@@ -209,7 +134,9 @@ public class PluginMain extends JavaPlugin
     
     public void SetFlair(String playername, String text, String flairclass, String username)
     {
+    	MaybeOfflinePlayer p=MaybeOfflinePlayer.AddPlayerIfNeeded(playername); //2015.08.08.
     	String finalflair;
+    	p.FlairDecided=true;
     	switch(flairclass)
     	{
     	case "press-1":
@@ -239,13 +166,16 @@ public class PluginMain extends JavaPlugin
     	case "cant-press": //2015.08.08.
     		finalflair="§r(can't press)§r";
     		break;
+    	case "undecided": //2015.08.09.
+    		p.FlairDecided=false;
+    		finalflair="";
+    		break;
 		default:
 			finalflair="";
 			break;
     	}
     	if(finalflair.length()==0) //<-- 2015.07.20.
     		return;
-    	MaybeOfflinePlayer p=MaybeOfflinePlayer.AddPlayerIfNeeded(playername); //2015.08.08.
     	p.Flair=finalflair; //2015.08.08.
     	p.UserName=username; //2015.08.08.
     	System.out.println("Added new flair to "+playername+": "+finalflair);
@@ -253,7 +183,8 @@ public class PluginMain extends JavaPlugin
     	{
     		if(player.getName().equals(playername))
     		{
-    			AppendPlayerDisplayFlair(player, username, finalflair);
+    			//AppendPlayerDisplayFlair(player, username, finalflair);
+    			AppendPlayerDisplayFlair(p, player);
     			break;
     		}
     	}
@@ -264,18 +195,24 @@ public class PluginMain extends JavaPlugin
     	String flair=MaybeOfflinePlayer.AllPlayers.get(player.getName()).Flair; //2015.08.08.
     	return flair==null ? "" : flair;
     }
-    
-    public static void AppendPlayerDisplayFlair(Player player, String username, String flair)
+
+    //public static void AppendPlayerDisplayFlair(Player player, String username, String flair)
+    public static void AppendPlayerDisplayFlair(MaybeOfflinePlayer player, Player p) //<-- 2015.08.09.
     {
-    	if(MaybeOfflinePlayer.AllPlayers.get(player.getName()).IgnoredFlair)
+    	
+    	if(MaybeOfflinePlayer.AllPlayers.get(p.getName()).IgnoredFlair)
     		return;
-    	if(MaybeOfflinePlayer.AllPlayers.get(player.getName()).AcceptedFlair)
-    		AppendPlayerDisplayFlairFinal(player, flair); //2015.07.20.
+    	if(MaybeOfflinePlayer.AllPlayers.get(p.getName()).AcceptedFlair)
+    	{
+    		AppendPlayerDisplayFlairFinal(p, player.Flair); //2015.07.20.
+    		if(!player.FlairDecided)
+    			p.sendMessage("§9Your flair type is unknown. Are you a non-presser or a can't press? (/u nonpresser or /u cantpress)§r"); //2015.08.09.
+    	}
     	else
-    		player.sendMessage("§9Are you Reddit user "+username+"?§r §6Type /u accept or /u ignore§r");
+    		p.sendMessage("§9Are you Reddit user "+player.UserName+"?§r §6Type /u accept or /u ignore§r");
     }
     
-    public static void AppendPlayerDisplayFlairFinal(Player player, String flair)
+    private static void AppendPlayerDisplayFlairFinal(Player player, String flair)
     { //2015.07.20.
     	String color = GetColorForTown(GetPlayerTown(player)); //TO!DO: Multiple colors put on first capital letters
     	String[] colors = color.substring(1).split("§");
@@ -339,13 +276,150 @@ public class PluginMain extends JavaPlugin
 		}
     }
     
-    public static void RemovePlayerDisplayFlairFinal(Player player, String flair)
+    /*public static void RemovePlayerDisplayFlairFinal(Player player, String flair)
     { //2015.07.20.
     	MaybeOfflinePlayer.AllPlayers.get(player.getName()).Flair=null; //2015.08.08.
-    }
+    }*/
     
     public static Collection<? extends Player> GetPlayers()
     {
     	return Instance.getServer().getOnlinePlayers();
+    }
+    
+    public static void LoadFiles(boolean reload) //<-- 2015.08.09.
+    {
+    	if(reload)
+    	{ //2015.08.09.
+    		System.out.println("Auto-flair plugin cleanup for reloading...");
+    		MaybeOfflinePlayer.AllPlayers.clear();
+    		TownColors.clear();
+    	}
+    	System.out.println("Loading files for auto-flair plugin..."); //2015.08.09.
+		try {
+			File file=new File("flairsaccepted.txt");
+			if(file.exists())
+			{
+				BufferedReader br=new BufferedReader(new FileReader("flairsaccepted.txt"));
+				String line;
+				while ((line = br.readLine()) != null)
+				{
+					String name=line.replace("\n", "");
+					//System.out.println("Name: " + name);
+					MaybeOfflinePlayer.AddPlayerIfNeeded(name).AcceptedFlair=true; //2015.08.08.
+				}
+				br.close();
+			}
+			file=new File("flairsignored.txt");
+			if(file.exists())
+			{
+				BufferedReader br=new BufferedReader(new FileReader("flairsignored.txt"));
+				String line;
+				while ((line = br.readLine()) != null)
+				{
+					String name=line.replace("\n", "");
+					MaybeOfflinePlayer.AddPlayerIfNeeded(name).IgnoredFlair=true; //2015.08.08.
+				}
+				br.close();
+			}
+			file=new File("autoflairconfig.txt");
+			if(file.exists())
+			{
+				BufferedReader br=new BufferedReader(new FileReader(file));
+				String line;
+				while((line=br.readLine())!=null)
+				{
+					String[] s=line.split(" ");
+					TownColors.put(s[0], s[1]);
+				}
+				br.close();
+			}
+			file=new File("customflairs.txt"); //2015.08.09.
+			if(file.exists())
+			{
+				BufferedReader br=new BufferedReader(new FileReader(file));
+				String line;
+				while((line=br.readLine())!=null)
+				{
+					String[] s=line.split(" ");
+					MaybeOfflinePlayer.AddPlayerIfNeeded(s[0]).Flair=s[1]; //2015.08.09.
+				}
+				br.close();
+			}
+			//throw new IOException("Test"); //2015.08.09.
+			System.out.println("Auto-flair plugin loaded files!");
+		} catch (IOException e) {
+			System.out.println("Error!\n"+e);
+			LastException=e; //2015.08.09.
+		}
+    }
+    public static void SaveFiles() //<-- 2015.08.09.
+    {
+    	try
+    	{
+			FileWriter fw;
+			fw = new FileWriter("flairsaccepted.txt");
+			fw.close();
+			fw = new FileWriter("flairsignored.txt");
+			fw.close();
+    	}
+    	catch(Exception e)
+    	{
+			System.out.println("Error!\n"+e);
+			LastException=e; //2015.08.09.
+    	}
+		try {
+			File file=new File("flairsaccepted.txt");
+			BufferedWriter bw=new BufferedWriter(new FileWriter(file, true));
+	    	for(MaybeOfflinePlayer player : MaybeOfflinePlayer.AllPlayers.values()) //<-- 2015.08.08.
+	    	{
+	    		if(!player.AcceptedFlair)
+	    			continue; //2015.08.08.
+				bw.write(player.PlayerName+"\n");
+	    	}
+			bw.close();
+    		file=new File("flairsignored.txt");
+			bw = new BufferedWriter(new FileWriter(file, true));
+	    	for(MaybeOfflinePlayer player : MaybeOfflinePlayer.AllPlayers.values()) //<-- 2015.08.08.
+	    	{
+	    		if(!player.IgnoredFlair)
+	    			continue; //2015.08.08.
+				bw.write(player.PlayerName+"\n");
+	    	}
+			bw.close();
+		} catch (IOException e) {
+			System.out.println("Error!\n"+e);
+			LastException=e; //2015.08.09.
+		}
+    }
+    public static boolean RemoveLineFromFile(String file, String line)
+    { //2015.08.09.
+    	File inputFile = new File(file);
+	    File tempFile = new File("_temp.txt");
+	    
+	    if(!inputFile.exists())
+	    	return true; //2015.08.10.
+	    
+		try {
+		    BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+		    BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+		
+		    String lineToRemove = line;
+		    String currentLine;
+		
+		    while((currentLine = reader.readLine()) != null) {
+		        // trim newline when comparing with lineToRemove
+		        String trimmedLine = currentLine.trim();
+		        //if(trimmedLine.equals(lineToRemove)) continue;
+		        if(trimmedLine.contains(lineToRemove)) continue; //2015.08.09.
+		        writer.write(currentLine + System.getProperty("line.separator"));
+		    }
+		    writer.close(); 
+		    reader.close(); 
+		    return tempFile.renameTo(inputFile);
+		} catch (IOException e) {
+			System.out.println("Error!\n"+e);
+			LastException=e; //2015.08.09.
+		}
+		return false;
     }
 }

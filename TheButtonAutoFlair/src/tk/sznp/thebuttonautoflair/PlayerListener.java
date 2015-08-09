@@ -18,7 +18,7 @@ public class PlayerListener implements Listener
 		MaybeOfflinePlayer.AddPlayerIfNeeded(p.getName()); //2015.08.08.
 		MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(p.getName()); //2015.08.08.
 		if(mp.Flair!=null)
-			PluginMain.AppendPlayerDisplayFlair(p, mp.UserName, mp.Flair);
+			PluginMain.AppendPlayerDisplayFlair(mp, p); //2015.08.09.
 		else
 		{ //2015.07.20.
 			String json="[\"\",{\"text\":\"§6Hi! If you'd like your flair displayed ingame, write your Minecraft name to \"},{\"text\":\"[this thread.]\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread§r\"}]}}}]";

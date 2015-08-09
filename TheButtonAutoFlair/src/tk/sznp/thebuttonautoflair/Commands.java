@@ -1,8 +1,9 @@
 package tk.sznp.thebuttonautoflair;
 
-import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -33,7 +34,8 @@ public class Commands implements CommandExecutor {
 	        	if(!p.AcceptedFlair)
 	        	{
 	        		String flair=p.Flair; //2015.08.08.
-		        	PluginMain.AppendPlayerDisplayFlairFinal(player, flair); //2015.07.20.
+		        	//PluginMain.AppendPlayerDisplayFlairFinal(player, flair); //2015.07.20.
+	        		PluginMain.AppendPlayerDisplayFlair(p, player);
 		        	p.AcceptedFlair=true; //2015.08.08.
 	        		player.sendMessage("§6Your flair has been set:§r "+flair);
 	        	}
@@ -48,8 +50,8 @@ public class Commands implements CommandExecutor {
         		if(!p.IgnoredFlair)
         		{
     	    		p.IgnoredFlair=true;
-		        	String flair=p.Flair; //2015.08.08.
-		        	PluginMain.RemovePlayerDisplayFlairFinal(player, flair); //2015.07.20.
+		        	//String flair=p.Flair; //2015.08.08.
+		        	//PluginMain.RemovePlayerDisplayFlairFinal(player, flair); //2015.07.20.
 		    		player.sendMessage("§6You have ignored this request. You can still use /u accept though.§r");
         		}
         		else
@@ -61,6 +63,32 @@ public class Commands implements CommandExecutor {
 	        	break;*/
 	        case "admin": //2015.08.09.
 	        	DoAdmin(player, args);
+	        	break;
+	        case "nonpresser": //2015.08.09.
+	        	if(!p.AcceptedFlair)
+	        	{
+	        		player.sendMessage("§cYou need to accept the flair first.§r");
+	        		break;
+	        	}
+	        	if(p.FlairDecided)
+	        	{
+	        		player.sendMessage("§cYou have already set the flair type.§r");
+	        		break;
+	        	}
+	        	p.Flair="§7(non-pr.)§r";
+	        	break;
+	        case "cantpress": //2015.08.09.
+	        	if(!p.AcceptedFlair)
+	        	{
+	        		player.sendMessage("§cYou need to accept the flair first.§r");
+	        		break;
+	        	}
+	        	if(p.FlairDecided)
+	        	{
+	        		player.sendMessage("§cYou have already set the flair type.§r");
+	        		break;
+	        	}
+	        	p.Flair="§r(can't press)§r";
 	        	break;
         	default:
         		return false;
@@ -80,45 +108,41 @@ public class Commands implements CommandExecutor {
 	{ //2015.07.20.
     	//if(player==null || player.isOp() || player.getName()=="NorbiPeti")
     	//{
-    		try
+		try
+		{
+    		File file=new File("autoflairconfig.txt");
+    		if(file.exists())
     		{
-        		File file=new File("autoflairconfig.txt");
-        		if(file.exists())
-        		{
-        			PluginMain.TownColors.clear();
-    				BufferedReader br=new BufferedReader(new FileReader(file));
-    				String line;
-    				while((line=br.readLine())!=null)
-    				{
-    					String[] s=line.split(" ");
-    					PluginMain.TownColors.put(s[0], s[1]);
-    				}
-    				br.close();
-    				for(Player p : PluginMain.GetPlayers())
-    				{
-    					MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(p.getName());
-    					if(mp.Flair!=null)
-    					{
-    						String flair=mp.Flair;
-    						PluginMain.RemovePlayerDisplayFlairFinal(p, flair);
-    						PluginMain.AppendPlayerDisplayFlairFinal(p, flair);
-    					}	
-    				}
-    				String msg="§6Reloaded config file.§r";
-    				SendMessage(player, msg); //2015.08.09.
-        		}
+    			PluginMain.LoadFiles(true); //2015.08.09.
+				for(Player p : PluginMain.GetPlayers())
+				{
+					MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p.getName());
+					if(mp.Flair!=null)
+					{
+						//String flair=mp.Flair;
+						//PluginMain.RemovePlayerDisplayFlairFinal(p, flair);
+						//PluginMain.AppendPlayerDisplayFlairFinal(p, flair);
+						PluginMain.AppendPlayerDisplayFlair(mp, p); //2015.08.09.
+					}
+    				String msg="§6Note: The auto-flair plugin has been reloaded. You might need to wait 10s to have your flair.§r"; //2015.08.09.
+    				p.sendMessage(msg); //2015.08.09.
+				}
+				//String msg="§6Reloaded config file.§r";
+				//SendMessage(player, msg); //2015.08.09.
     		}
-    		catch(Exception e)
-    		{
-    			System.out.println("Error!\n"+e);
-    			if(player!=null)
-    				player.sendMessage("§cAn error occured. See console for details.§r");
-    			PluginMain.LastException=e; //2015.08.09.
-    		}
+		}
+		catch(Exception e)
+		{
+			System.out.println("Error!\n"+e);
+			if(player!=null)
+				player.sendMessage("§cAn error occured. See console for details.§r");
+			PluginMain.LastException=e; //2015.08.09.
+		}
     	//}
     	//else
 			//player.sendMessage("§cYou need to be OP to use this command.§r");
 	}
+	private static Player ReloadPlayer; //2015.08.09.
 	private static void DoAdmin(Player player, String[] args)
 	{ //2015.08.09.
     	if(player==null || player.isOp() || player.getName()=="NorbiPeti")
@@ -126,7 +150,7 @@ public class Commands implements CommandExecutor {
     		//System.out.println("Args length: " + args.length);
     		if(args.length==1)
     		{
-    			String message="§cUsage: /u admin reload|playerinfo§r";
+				String message="§cUsage: /u admin reload|playerinfo|getlasterror|save|setflair§r";
     			SendMessage(player, message);
     			return;
     		}
@@ -134,15 +158,29 @@ public class Commands implements CommandExecutor {
     		switch(args[1].toLowerCase())
     		{
     		case "reload":
-    			DoReload(player);
+    			ReloadPlayer=player; //2015.08.09.
+    			SendMessage(player, "§6Make sure to save the current settings before you modify and reload them! Type /u admin confirm when done.§r");
     			break;
     		case "playerinfo":
     			DoPlayerInfo(player, args);
     			break;
     		case "getlasterror":
     			DoGetLastError(player, args);
+    		case "confirm":
+    			if(ReloadPlayer==player)
+    				DoReload(player); //2015.08.09.
+    			else
+    				SendMessage(player, "§cYou need to do /u admin reload first.§r");
+    			break;
+    		case "save":
+    			PluginMain.SaveFiles(); //2015.08.09.
+    			SendMessage(player, "§6Saved files. Now you can edit them and reload if you want.§r");
+    			break;
+    		case "setflair":
+    			DoSetFlair(player, args);
+    			break;
 			default:
-				String message="§cUsage: /u admin reload|playerinfo§r";
+				String message="§cUsage: /u admin reload|playerinfo|getlasterror|save|setflair§r";
 				SendMessage(player, message);
 				return;
     		}
@@ -191,4 +229,35 @@ public class Commands implements CommandExecutor {
 		else
 			SendMessage(player, "There were no exceptions.");
 	}
+    private static void SetPlayerFlair(Player player, MaybeOfflinePlayer targetplayer, String flair)
+    { //2015.08.09.
+    	flair=flair.replace('&', '§');
+    	targetplayer.Flair=flair;
+    	if(!PluginMain.RemoveLineFromFile("customflairs.txt", targetplayer.PlayerName))
+    	{
+    		SendMessage(player, "§cError removing previous custom flair!§r");
+    		return;
+    	}
+		File file=new File("customflairs.txt");
+		try {
+			BufferedWriter bw;
+			bw = new BufferedWriter(new FileWriter(file, true));
+			bw.write(targetplayer.PlayerName+"\n");
+			bw.close();
+		} catch (IOException e) {
+			System.out.println("Error!\n"+e);
+			PluginMain.LastException=e; //2015.08.09.
+		}
+		SendMessage(player, "§6The flair has been set. Player: "+targetplayer.PlayerName+" Flair: "+flair+"§r");
+    }
+    private static void DoSetFlair(Player player, String[] args)
+    {
+		//args[0] is "admin" - args[1] is "setflair"
+    	if(args.length<4)
+    	{
+    		SendMessage(player, "§cUsage: /u admin setflair <playername> <flair>");
+    		return;
+    	}
+    	SetPlayerFlair(player, MaybeOfflinePlayer.AddPlayerIfNeeded(args[2]), args[3]);
+    }
 }
