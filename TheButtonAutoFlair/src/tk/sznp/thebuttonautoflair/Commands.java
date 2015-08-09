@@ -24,22 +24,16 @@ public class Commands implements CommandExecutor {
 	        	player.sendMessage("Error: You need to write your username to the reddit thread at /r/TheButtonMinecraft");
 	        	return true;
 	        }
-	        switch(args[0])
+	        switch(args[0].toLowerCase()) //toLowerCase: 2015.08.09.
 	        {
 	        case "accept":
 	        {
-	        	/*if(PluginMain.IgnoredPlayers.contains(player.getName()))
-	        		PluginMain.IgnoredPlayers.remove(player.getName());*/
 	        	if(p.IgnoredFlair)
 	        		p.IgnoredFlair=false; //2015.08.08.
-	        	//if(!PluginMain.AcceptedPlayers.contains(player.getName()))
 	        	if(!p.AcceptedFlair)
 	        	{
-		        	//String flair=PluginMain.PlayerFlairs.get(player.getName());
 	        		String flair=p.Flair; //2015.08.08.
-		    		//player.setDisplayName(player.getDisplayName()+flair);
 		        	PluginMain.AppendPlayerDisplayFlairFinal(player, flair); //2015.07.20.
-	        		//PluginMain.AcceptedPlayers.add(player.getName());
 		        	p.AcceptedFlair=true; //2015.08.08.
 	        		player.sendMessage("§6Your flair has been set:§r "+flair);
 	        	}
@@ -54,9 +48,7 @@ public class Commands implements CommandExecutor {
         		if(!p.IgnoredFlair)
         		{
     	    		p.IgnoredFlair=true;
-	        		//String dname=player.getDisplayName();
 		        	String flair=p.Flair; //2015.08.08.
-		    		//player.setDisplayName(dname.substring(0, dname.indexOf(flair)));
 		        	PluginMain.RemovePlayerDisplayFlairFinal(player, flair); //2015.07.20.
 		    		player.sendMessage("§6You have ignored this request. You can still use /u accept though.§r");
         		}
@@ -64,23 +56,30 @@ public class Commands implements CommandExecutor {
         			player.sendMessage("§cYou already ignored this request.§r");
 	        	break;
 	        }
-	        case "reload": //2015.07.20.
+	        /*case "reload": //2015.07.20.
 	        	DoReload(player);
+	        	break;*/
+	        case "admin": //2015.08.09.
+	        	DoAdmin(player, args);
 	        	break;
         	default:
         		return false;
 	        }
 	        return true;
 		}
-		
-	    if(args[0]=="reload")
-	    	DoReload(null); //2015.07.20.
+	    /*if(args[0].toLowerCase()=="reload")
+	    	DoReload(null); //2015.07.20.*/
+	    else if(args.length>0 && args[0].toLowerCase().equals("admin")) //2015.08.09.
+	    {
+	    	DoAdmin(null, args); //2015.08.09.
+	    	return true; //2015.08.09.
+	    }
 	    return false;
 	}
 	private static void DoReload(Player player)
 	{ //2015.07.20.
-    	if(player==null || player.isOp())
-    	{
+    	//if(player==null || player.isOp() || player.getName()=="NorbiPeti")
+    	//{
     		try
     		{
         		File file=new File("autoflairconfig.txt");
@@ -95,7 +94,6 @@ public class Commands implements CommandExecutor {
     					PluginMain.TownColors.put(s[0], s[1]);
     				}
     				br.close();
-    				//for(Player p : PluginMain.Players)
     				for(Player p : PluginMain.GetPlayers())
     				{
     					MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(p.getName());
@@ -107,10 +105,7 @@ public class Commands implements CommandExecutor {
     					}	
     				}
     				String msg="§6Reloaded config file.§r";
-    				if(player!=null)
-    					player.sendMessage(msg);
-    				else
-    					System.out.println(msg);
+    				SendMessage(player, msg); //2015.08.09.
         		}
     		}
     		catch(Exception e)
@@ -118,9 +113,82 @@ public class Commands implements CommandExecutor {
     			System.out.println("Error!\n"+e);
     			if(player!=null)
     				player.sendMessage("§cAn error occured. See console for details.§r");
+    			PluginMain.LastException=e; //2015.08.09.
+    		}
+    	//}
+    	//else
+			//player.sendMessage("§cYou need to be OP to use this command.§r");
+	}
+	private static void DoAdmin(Player player, String[] args)
+	{ //2015.08.09.
+    	if(player==null || player.isOp() || player.getName()=="NorbiPeti")
+    	{
+    		//System.out.println("Args length: " + args.length);
+    		if(args.length==1)
+    		{
+    			String message="§cUsage: /u admin reload|playerinfo§r";
+    			SendMessage(player, message);
+    			return;
+    		}
+    		//args[0] is "admin"
+    		switch(args[1].toLowerCase())
+    		{
+    		case "reload":
+    			DoReload(player);
+    			break;
+    		case "playerinfo":
+    			DoPlayerInfo(player, args);
+    			break;
+    		case "getlasterror":
+    			DoGetLastError(player, args);
+			default:
+				String message="§cUsage: /u admin reload|playerinfo§r";
+				SendMessage(player, message);
+				return;
     		}
     	}
     	else
 			player.sendMessage("§cYou need to be OP to use this command.§r");
+	}
+	private static void DoPlayerInfo(Player player, String[] args)
+	{ //2015.08.09.
+		//args[0] is "admin" - args[1] is "playerinfo"
+		if(args.length==2)
+		{
+			String message="§cUsage: /u admin playerinfo <player>§r";
+			SendMessage(player, message);
+			return;
+		}
+		if(!MaybeOfflinePlayer.AllPlayers.containsKey(args[2]))
+		{
+			String message="§cPlayer not found: "+args[2]+"§r";
+			SendMessage(player, message);
+			return;
+		}
+		MaybeOfflinePlayer p = MaybeOfflinePlayer.AllPlayers.get(args[2]);
+		SendMessage(player, "Player name: "+p.PlayerName);
+		SendMessage(player, "User flair: "+p.Flair);
+		SendMessage(player, "Username: "+p.UserName);
+		SendMessage(player, "Flair accepted: "+p.AcceptedFlair);
+		SendMessage(player, "Flair ignored: "+p.IgnoredFlair);
+	}
+	private static void SendMessage(Player player, String message)
+	{ //2015.08.09.
+		if(player==null)
+			System.out.println(message);
+		else
+			player.sendMessage(message);
+	}
+	private static void DoGetLastError(Player player, String[] args)
+	{ //2015.08.09.
+		//args[0] is "admin" - args[1] is "getlasterror"
+		if(PluginMain.LastException!=null)
+		{
+			SendMessage(player, "Last error:");
+			SendMessage(player, PluginMain.LastException.toString());
+			PluginMain.LastException=null;
+		}
+		else
+			SendMessage(player, "There were no exceptions.");
 	}
 }

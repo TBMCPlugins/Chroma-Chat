@@ -1,0 +1,386 @@
+package tk.sznp.thebuttonautoflair;
+
+import java.io.File;
+import java.io.InputStream;
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginLoader;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
+
+import com.avaje.ebean.EbeanServer;
+import com.earth2me.essentials.AlternativeCommandsHandler;
+import com.earth2me.essentials.Backup;
+import com.earth2me.essentials.CommandSource;
+import com.earth2me.essentials.EssentialsTimer;
+import com.earth2me.essentials.I18n;
+import com.earth2me.essentials.IConf;
+import com.earth2me.essentials.IEssentialsModule;
+import com.earth2me.essentials.ISettings;
+import com.earth2me.essentials.IUser;
+import com.earth2me.essentials.TNTExplodeListener;
+import com.earth2me.essentials.User;
+import com.earth2me.essentials.UserMap;
+import com.earth2me.essentials.Worth;
+import com.earth2me.essentials.api.IItemDb;
+import com.earth2me.essentials.api.IJails;
+import com.earth2me.essentials.api.IWarps;
+import com.earth2me.essentials.metrics.Metrics;
+import com.earth2me.essentials.perm.PermissionsHandler;
+import com.earth2me.essentials.register.payment.Methods;
+
+import net.ess3.api.IEssentials;
+
+public class Essentials implements IEssentials {
+
+	@Override
+	public void addReloadListener(IConf arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int broadcastMessage(String arg0) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int broadcastMessage(IUser arg0, String arg1) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int broadcastMessage(String arg0, String arg1) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public AlternativeCommandsHandler getAlternativeCommandsHandler() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Backup getBackup() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public I18n getI18n() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IItemDb getItemDb() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IJails getJails() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Metrics getMetrics() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User getOfflineUser(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Methods getPaymentMethod() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PermissionsHandler getPermissionsHandler() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BukkitScheduler getScheduler() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ISettings getSettings() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TNTExplodeListener getTNTListener() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public EssentialsTimer getTimer() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	@Deprecated
+	public User getUser(Object arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User getUser(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User getUser(Player arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public UserMap getUserMap() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<String> getVanishedPlayers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IWarps getWarps() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public World getWorld(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Worth getWorth() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean onCommandEssentials(CommandSender arg0, Command arg1,
+			String arg2, String[] arg3, ClassLoader arg4, String arg5,
+			String arg6, IEssentialsModule arg7) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void reload() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public BukkitTask runTaskAsynchronously(Runnable arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BukkitTask runTaskLaterAsynchronously(Runnable arg0, long arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int scheduleSyncDelayedTask(Runnable arg0) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int scheduleSyncDelayedTask(Runnable arg0, long arg1) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int scheduleSyncRepeatingTask(Runnable arg0, long arg1, long arg2) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setMetrics(Metrics arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showError(CommandSource arg0, Throwable arg1, String arg2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public FileConfiguration getConfig() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public File getDataFolder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public EbeanServer getDatabase() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ChunkGenerator getDefaultWorldGenerator(String arg0, String arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PluginDescriptionFile getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Logger getLogger() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PluginLoader getPluginLoader() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public InputStream getResource(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Server getServer() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isNaggable() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void onDisable() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onEnable() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onLoad() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void reloadConfig() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void saveConfig() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void saveDefaultConfig() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void saveResource(String arg0, boolean arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setNaggable(boolean arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<String> onTabComplete(CommandSender arg0, Command arg1,
+			String arg2, String[] arg3) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean onCommand(CommandSender arg0, Command arg1, String arg2,
+			String[] arg3) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+}
