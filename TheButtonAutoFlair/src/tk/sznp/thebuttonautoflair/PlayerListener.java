@@ -15,48 +15,35 @@ public class PlayerListener implements Listener
 	public void onPlayerJoin(PlayerJoinEvent event)
 	{
 		Player p=event.getPlayer();
-		//PluginMain.Players.add(p);
-		//event.getPlayer().setDisplayName(p.getDisplayName()+PluginMain.GetFlair(p));
-		//if(PluginMain.PlayerUserNames.containsKey(p.getName())) //<-- 2015.07.20.
 		MaybeOfflinePlayer.AddPlayerIfNeeded(p.getName()); //2015.08.08.
 		MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(p.getName()); //2015.08.08.
 		if(mp.Flair!=null)
-			//PluginMain.AppendPlayerDisplayFlair(p, PluginMain.PlayerUserNames.get(p.getName()), PluginMain.GetFlair(p));
 			PluginMain.AppendPlayerDisplayFlair(p, mp.UserName, mp.Flair);
 		else
 		{ //2015.07.20.
 			String json="[\"\",{\"text\":\"§6Hi! If you'd like your flair displayed ingame, write your Minecraft name to \"},{\"text\":\"[this thread.]\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread§r\"}]}}}]";
 			sendRawMessage(p, json);
 		}
-		//System.out.println("Added player "+p.getName());
 	}
 	
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event)
 	{
-		//for(Player player : PluginMain.Players)
-		/*for(int i=0; i<PluginMain.Players.size();)
-		{
-			Player player=PluginMain.Players.get(i);
-			if(player.getName().equals(event.getPlayer().getName()))
-			{
-				PluginMain.Players.remove(player);
-				//System.out.println("Removed player "+event.getPlayer().getName());
-			}
-			else
-				i++; //If the player is removed, the next item will be on the same index
-		}*/
 	}
 	
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent event)
 	{
-		//event.setFormat(event.getFormat().substring(0, event.getFormat().indexOf(">"))+"(test)> "+event.getMessage()); //2015.08.08.
 		MaybeOfflinePlayer player = MaybeOfflinePlayer.AllPlayers.get(event.getPlayer().getName());
 		String flair=player.Flair; //2015.08.08.
 		if(flair==null || !player.AcceptedFlair)
 			flair=""; //2015.08.08.
-		event.setFormat(event.getFormat().substring(0, event.getFormat().indexOf(">"))+flair+"> "+event.getMessage()); //2015.08.08.
+		String message=event.getMessage(); //2015.08.08.
+		/*for(Player p : PluginMain.GetPlayers())
+		{ //2015.08.08.
+			message.replaceAll(p.getName(), )
+		}*/
+		event.setFormat(event.getFormat().substring(0, event.getFormat().indexOf(">"))+flair+"> "+message); //2015.08.08.
 	}
 
 	private static Class<?>	nmsChatSerializer		= Reflection.getNMSClass("IChatBaseComponent$ChatSerializer");
@@ -77,6 +64,7 @@ public class PlayerListener implements Listener
 			System.out.println("6");
 		} catch (Exception e) {
 			e.printStackTrace();
+			PluginMain.LastException=e; //2015.08.09.
 		}
 	}
 

@@ -1,0 +1,6 @@
+package tk.sznp.thebuttonautoflair;
+
+public class Essentials implements IUser
+{
+	
+}

@@ -22,7 +22,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.palmergames.bukkit.towny.object.Town;
-import com.palmergames.bukkit.towny.object.TownyUniverse;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 
 public class PluginMain extends JavaPlugin
@@ -35,17 +34,7 @@ public class PluginMain extends JavaPlugin
     public void onEnable()
     {
 		System.out.println("The Button Auto-flair Plugin by NorbiPeti (:P)");
-		//System.out.println("Original C# version: http://pastebin.com/tX8xCPbp");
-		//System.out.println("The Java version is... Also made by the same person.");
-		//System.out.println("With the help of StackOverflow and similar.");
-		/*catch(MalformedURLException e)
-		{
-		}
-		catch(IOException e)
-		{
-		}*/
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-		//System.out.println("Registering commands...");
 		this.getCommand("u").setExecutor(new Commands());
 		this.getCommand("u").setUsage(this.getCommand("u").getUsage().replace('&', '§'));
 		Instance=this; //2015.08.08.
@@ -57,9 +46,8 @@ public class PluginMain extends JavaPlugin
 				String line;
 				while ((line = br.readLine()) != null)
 				{
-					//AcceptedPlayers.add(line.replace("\n", ""));
 					String name=line.replace("\n", "");
-					System.out.println("Name: " + name);
+					//System.out.println("Name: " + name);
 					MaybeOfflinePlayer.AddPlayerIfNeeded(name).AcceptedFlair=true; //2015.08.08.
 				}
 				br.close();
@@ -71,7 +59,6 @@ public class PluginMain extends JavaPlugin
 				String line;
 				while ((line = br.readLine()) != null)
 				{
-					//IgnoredPlayers.add(line.replace("\n", ""));
 					String name=line.replace("\n", "");
 					MaybeOfflinePlayer.AddPlayerIfNeeded(name).IgnoredFlair=true; //2015.08.08.
 				}
@@ -89,10 +76,11 @@ public class PluginMain extends JavaPlugin
 				}
 				br.close();
     		}
+    		//throw new IOException("Test"); //2015.08.09.
 		} catch (IOException e) {
 			System.out.println("Error!\n"+e);
+			LastException=e; //2015.08.09.
 		}
-		//System.out.println("Registering done.");
 		Runnable r=new Runnable(){public void run(){ThreadMethod();}};
 		Thread t=new Thread(r);
 		t.start();
@@ -113,45 +101,36 @@ public class PluginMain extends JavaPlugin
     	catch(Exception e)
     	{
 			System.out.println("Error!\n"+e);
+			LastException=e; //2015.08.09.
     	}
-    	//for(String player : AcceptedPlayers)
-    	for(MaybeOfflinePlayer player : MaybeOfflinePlayer.AllPlayers.values()) //<-- 2015.08.08.
-    	{
-    		if(!player.AcceptedFlair)
-    			continue; //2015.08.08.
-    		File file=new File("flairsaccepted.txt");
-			try {
-				BufferedWriter bw=new BufferedWriter(new FileWriter(file, true));
+		try {
+			File file=new File("flairsaccepted.txt");
+			BufferedWriter bw=new BufferedWriter(new FileWriter(file, true));
+	    	for(MaybeOfflinePlayer player : MaybeOfflinePlayer.AllPlayers.values()) //<-- 2015.08.08.
+	    	{
+	    		if(!player.AcceptedFlair)
+	    			continue; //2015.08.08.
 				bw.write(player.PlayerName+"\n");
-				bw.close();
-			} catch (IOException e) {
-				System.out.println("Error!\n"+e);
-			}
-    	}
-    	for(MaybeOfflinePlayer player : MaybeOfflinePlayer.AllPlayers.values()) //<-- 2015.08.08.
-    	{
-    		if(!player.IgnoredFlair)
-    			continue; //2015.08.08.
-    		File file=new File("flairsignored.txt");
-			try {
-				BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+	    	}
+			bw.close();
+    		file=new File("flairsignored.txt");
+			bw = new BufferedWriter(new FileWriter(file, true));
+	    	for(MaybeOfflinePlayer player : MaybeOfflinePlayer.AllPlayers.values()) //<-- 2015.08.08.
+	    	{
+	    		if(!player.IgnoredFlair)
+	    			continue; //2015.08.08.
 				bw.write(player.PlayerName+"\n");
-				bw.close();
-			} catch (IOException e) {
-				System.out.println("Error!\n"+e);
-			}
-    	}
+	    	}
+			bw.close();
+		} catch (IOException e) {
+			System.out.println("Error!\n"+e);
+			LastException=e; //2015.08.09.
+		}
 		stop=true;
     }
     
     public void ThreadMethod() //<-- 2015.07.16.
     {
-    	/*System.out.println("Sleeping for 5 seconds..."); //2015.07.20.
-    	try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		} //2015.07.20.*/
     	while(!stop)
     	{
 			try
@@ -174,7 +153,6 @@ public class PluginMain extends JavaPlugin
 	                ign = ign.trim();
 	                if(HasIGFlair(ign))
 	                	continue;
-					//System.out.println("Author: "+author);
 					try {
 					    Thread.sleep(10);
 					} catch(InterruptedException ex) {
@@ -191,7 +169,6 @@ public class PluginMain extends JavaPlugin
 	                else
 	                    flair = "non-presser";
 					String flairclass;
-					//System.out.println("flairdata.length:"+flairdata.length);
 					if(flairdata.length>2)
 						flairclass = flairdata[2];
 					else
@@ -203,9 +180,12 @@ public class PluginMain extends JavaPlugin
 			catch(Exception e)
 			{
 				System.out.println("Error!\n"+e);
+				LastException=e; //2015.08.09.
 			}
     	}
     }
+    
+    public static Exception LastException; //2015.08.09.
     
     public String DownloadString(String urlstr) throws MalformedURLException, IOException
     {
@@ -220,30 +200,9 @@ public class PluginMain extends JavaPlugin
 		return body;
     }
 
-    //It has to store offline player flairs too, therefore it can't use Player object
-    /*public static Map<String, String> PlayerFlairs=new HashMap<String, String>();
-    public static Map<String, String> PlayerUserNames=new HashMap<String, String>();
-    //public Map<Player, String> PlayerFlairs=new HashMap<Player, String>();
-    public static ArrayList<Player> Players=new ArrayList<Player>();
-    public static ArrayList<String> AcceptedPlayers=new ArrayList<String>(); //2015.07.16.
-    public static ArrayList<String> IgnoredPlayers=new ArrayList<String>(); //2015.07.16.
-    //public static Map<String, String> PlayerTowns=new HashMap<String, String>(); //2015.07.20.*/
     public static Map<String, String> TownColors=new HashMap<String, String>(); //2015.07.20.
     public Boolean HasIGFlair(String playername)
     {
-    	/*Player player=null;
-    	for(Player p : Players)
-    	{
-    		if(p.getName()==playername)
-    		{
-				player=p;
-				break;
-    		}
-    	}
-    	if(player==null)
-    		return false;*/
-    	//return PlayerFlairs.containsKey(playername);
-    	//return MaybeOfflinePlayer.AllPlayers.containsKey(playername);
     	MaybeOfflinePlayer p=MaybeOfflinePlayer.AddPlayerIfNeeded(playername); //2015.08.08.
     	return p.Flair!=null; //2015.08.08.
     }
@@ -286,32 +245,15 @@ public class PluginMain extends JavaPlugin
     	}
     	if(finalflair.length()==0) //<-- 2015.07.20.
     		return;
-    	//PlayerFlairs.put(playername, finalflair);
-    	//PlayerUserNames.put(playername, username);
     	MaybeOfflinePlayer p=MaybeOfflinePlayer.AddPlayerIfNeeded(playername); //2015.08.08.
     	p.Flair=finalflair; //2015.08.08.
     	p.UserName=username; //2015.08.08.
-    	/*for(Player player : Players)
-    	{
-    		if(player.getName()==playername)
-    		{
-    			PlayerFlairs.put(player, finalflair);
-    			break;
-    		}
-    	}*/
-    	//System.out.println("SetFlair - playername: "+playername+" text: "+text+" flairclass: "+flairclass);
     	System.out.println("Added new flair to "+playername+": "+finalflair);
-    	//for(Player player : Players)
     	for(Player player : getServer().getOnlinePlayers()) //<-- 2015.08.08.
     	{
-    		//System.out.println("Online player: "+player.getName());
-    		//System.out.println("player.getName ("+player.getName()+") == playername ("+playername+"): "+(player.getName()==playername));
     		if(player.getName().equals(playername))
     		{
-        		//System.out.println("DisplayName: "+player.getDisplayName());
-    			//player.setDisplayName(player.getDisplayName()+finalflair);
     			AppendPlayerDisplayFlair(player, username, finalflair);
-        		//System.out.println("DisplayName: "+player.getDisplayName());
     			break;
     		}
     	}
@@ -319,19 +261,15 @@ public class PluginMain extends JavaPlugin
     
     public static String GetFlair(Player player)
     { //2015.07.16.
-    	//String flair=PlayerFlairs.get(player.getName());
     	String flair=MaybeOfflinePlayer.AllPlayers.get(player.getName()).Flair; //2015.08.08.
     	return flair==null ? "" : flair;
     }
     
     public static void AppendPlayerDisplayFlair(Player player, String username, String flair)
     {
-    	//if(IgnoredPlayers.contains(player.getName()))
     	if(MaybeOfflinePlayer.AllPlayers.get(player.getName()).IgnoredFlair)
     		return;
-    	//if(AcceptedPlayers.contains(player.getName()))
     	if(MaybeOfflinePlayer.AllPlayers.get(player.getName()).AcceptedFlair)
-    		//player.setDisplayName(player.getDisplayName()+flair);
     		AppendPlayerDisplayFlairFinal(player, flair); //2015.07.20.
     	else
     		player.sendMessage("§9Are you Reddit user "+username+"?§r §6Type /u accept or /u ignore§r");
@@ -339,23 +277,18 @@ public class PluginMain extends JavaPlugin
     
     public static void AppendPlayerDisplayFlairFinal(Player player, String flair)
     { //2015.07.20.
-    	//System.out.println("A");
     	String color = GetColorForTown(GetPlayerTown(player)); //TO!DO: Multiple colors put on first capital letters
     	String[] colors = color.substring(1).split("§");
-    	//String displayname=player.getDisplayName();
     	String displayname=player.getName(); //2015.08.08.
     	ArrayList<Integer> Positions=new ArrayList<>();
-    	//System.out.println("B");
     	for(int i=0; i<displayname.length(); i++) {
             if(Character.isUpperCase(displayname.charAt(i))) {
                 Positions.add(i);
             }
     	}
-    	//System.out.println("C: Positions.size(): "+Positions.size());
-    	String finalname="";
+    	String finalname=""; //TODO
     	if(Positions.size()>=colors.length)
     	{
-        	//System.out.println("D");
     		int x=0;
     		for(int i=0; i<Positions.size(); i++)
     		{
@@ -365,17 +298,12 @@ public class PluginMain extends JavaPlugin
         			nextpos=Positions.get(i+1);
     			else
     				nextpos=displayname.length();
-    			//System.out.println("pos: "+pos+" nextpos: "+nextpos);
-    			//System.out.println("nextpos-pos: "+(nextpos-pos));
-    			//String substr="§"+colors[x++]+displayname.substring(pos, nextpos-pos)+"§r";
     			String substr="§"+colors[x++]+displayname.substring(pos, nextpos)+"§r";
     			finalname+=substr;
     		}
-        	//System.out.println("F");
     	}
     	else
     	{
-        	//System.out.println("E");
     		Positions.clear();
     		int unit=displayname.length()/colors.length;
     		int x=0;
@@ -387,16 +315,10 @@ public class PluginMain extends JavaPlugin
     				nextpos=i+unit;
     			else
     				nextpos=displayname.length();
-    			//System.out.println("pos: "+pos+" nextpos: "+nextpos);
-    			//System.out.println("nextpos-pos: "+(nextpos-pos));
     			String substr="§"+colors[x++]+displayname.substring(pos, nextpos)+"§r";
     			finalname+=substr;
     		}
-        	//System.out.println("G");
     	}
-		//player.setDisplayName(color+displayname+"§r"+flair);
-    	//player.setDisplayName(finalname+flair);
-    	//MaybeOfflinePlayer.AllPlayers.get(player.getName()).DisplayName=finalname+flair; //2015.08.08.
     	MaybeOfflinePlayer.AllPlayers.get(player.getName()).Flair=flair; //2015.08.08.
     }
     
@@ -409,7 +331,6 @@ public class PluginMain extends JavaPlugin
     
     public static String GetPlayerTown(Player player)
     { //2015.07.20.
-    	//List<Town> towns = TownyUniverse.getDataSource().getTowns();
     	try {
 			Town town = WorldCoord.parseWorldCoord(player).getTownBlock().getTown(); //TODO
 			return town.getName();
@@ -420,10 +341,6 @@ public class PluginMain extends JavaPlugin
     
     public static void RemovePlayerDisplayFlairFinal(Player player, String flair)
     { //2015.07.20.
-    	//String color = GetColorForTown(GetPlayerTown(player));
-    	//String dname=player.getDisplayName();
-		//player.setDisplayName(dname.substring(dname.indexOf(color)+3, dname.indexOf(flair)));
-    	//MaybeOfflinePlayer.AllPlayers.get(player.getName()).DisplayName=null; //2015.08.08.
     	MaybeOfflinePlayer.AllPlayers.get(player.getName()).Flair=null; //2015.08.08.
     }
     
