@@ -76,7 +76,7 @@ public class Commands implements CommandExecutor {
 	        		break;
 	        	}
 	        	//p.Flair="§7(non-pr.)§r";
-	        	SetPlayerFlair(player, p, "§7(non-pr.)§r");
+	        	
 	        	break;
 	        case "cantpress": //2015.08.09.
 	        	if(!p.AcceptedFlair)
@@ -89,8 +89,7 @@ public class Commands implements CommandExecutor {
 	        		player.sendMessage("§cYou have already set the flair type.§r");
 	        		break;
 	        	}
-	        	//p.Flair="§r(can't press)§r";
-	        	SetPlayerFlair(player, p, "§r(can't pr.)§r");
+	        	p.Flair="§r(can't press)§r";
 	        	break;
         	default:
         		return false;

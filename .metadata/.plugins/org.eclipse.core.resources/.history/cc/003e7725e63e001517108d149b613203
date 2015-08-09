@@ -89,8 +89,7 @@ public class Commands implements CommandExecutor {
 	        		player.sendMessage("§cYou have already set the flair type.§r");
 	        		break;
 	        	}
-	        	//p.Flair="§r(can't press)§r";
-	        	SetPlayerFlair(player, p, "§r(can't pr.)§r");
+	        	p.Flair="§r(can't press)§r";
 	        	break;
         	default:
         		return false;
