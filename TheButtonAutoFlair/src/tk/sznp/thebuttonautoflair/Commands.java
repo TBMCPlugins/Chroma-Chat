@@ -221,6 +221,7 @@ public class Commands implements CommandExecutor {
 		SendMessage(player, "Username: "+p.UserName);
 		SendMessage(player, "Flair accepted: "+p.AcceptedFlair);
 		SendMessage(player, "Flair ignored: "+p.IgnoredFlair);
+		SendMessage(player, "Flair decided: "+p.FlairDecided);
 	}
 	private static void SendMessage(Player player, String message)
 	{ //2015.08.09.
