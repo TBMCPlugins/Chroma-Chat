@@ -272,18 +272,13 @@ public class Commands implements CommandExecutor {
     private static void DoUpdatePlugin(Player player)
     { //2015.08.10.
     	SendMessage(player, "Updating Auto-Flair plugin...");
-    	System.out.println("Forced updating of Auto-Flair plugin.");
+    	System.out.println("Forced updating of Auto-Flair plugin...");
     	URL url;
 		try {
 			url = new URL("https://github.com/NorbiPeti/thebuttonautoflairmc/raw/master/TheButtonAutoFlair.jar");
 	    	FileUtils.copyURLToFile(url, new File("plugins/TheButtonAutoFlair.jar"));
-	    	SendMessage(player, "Updating done!");
 		}
 		catch (MalformedURLException e) {
-			System.out.println("Error!\n"+e);
-			PluginMain.LastException=e; //2015.08.09.
-		}
-		catch (IOException e) {
 			System.out.println("Error!\n"+e);
 			PluginMain.LastException=e; //2015.08.09.
 		}
