@@ -416,7 +416,7 @@ public class PluginMain extends JavaPlugin
 		        writer.write(currentLine + System.getProperty("line.separator"));
 		    }
 		    writer.close(); 
-		    reader.close();
+		    reader.close(); 
 		    return tempFile.renameTo(inputFile);
 		} catch (IOException e) {
 			System.out.println("Error!\n"+e);
