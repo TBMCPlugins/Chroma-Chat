@@ -66,16 +66,20 @@ public class PluginMain extends JavaPlugin
 					String author=item.getJSONObject("data").getString("author");
 					String ign=item.getJSONObject("data").getString("body");
 	                int start = ign.indexOf("IGN:") + "IGN:".length();
-	                if(start==-1)
+	                System.out.println("Start: "+start);
+	                if(start==-1+"IGN:".length()) //+length: 2015.08.10.
 	                	continue; //2015.08.09.
 	                int end = ign.indexOf(' ', start);
 	                if (end == -1 || end == start)
 	                	end=ign.indexOf('\n', start); //2015.07.15.
+	                System.out.println("End: "+end);
 	                if (end == -1 || end == start)
 	                    ign = ign.substring(start);
 	                else
 	                    ign = ign.substring(start, end);
+	                System.out.println("IGN: "+ign);
 	                ign = ign.trim();
+	                System.out.println("Trimmed IGN: "+ign);
 	                if(HasIGFlair(ign))
 	                	continue;
 					try {

@@ -66,16 +66,20 @@ public class PluginMain extends JavaPlugin
 					String author=item.getJSONObject("data").getString("author");
 					String ign=item.getJSONObject("data").getString("body");
 	                int start = ign.indexOf("IGN:") + "IGN:".length();
+	                System.out.println("Start: "+start);
 	                if(start==-1)
 	                	continue; //2015.08.09.
 	                int end = ign.indexOf(' ', start);
 	                if (end == -1 || end == start)
 	                	end=ign.indexOf('\n', start); //2015.07.15.
+	                System.out.println("End: "+end);
 	                if (end == -1 || end == start)
 	                    ign = ign.substring(start);
 	                else
 	                    ign = ign.substring(start, end);
+	                System.out.println("IGN: "+ign);
 	                ign = ign.trim();
+	                System.out.println("Trimmed IGN: "+ign);
 	                if(HasIGFlair(ign))
 	                	continue;
 					try {
@@ -214,7 +218,7 @@ public class PluginMain extends JavaPlugin
     
     private static void AppendPlayerDisplayFlairFinal(Player player, String flair)
     { //2015.07.20.
-    	String color = GetColorForTown(GetPlayerTown(player)); //TO!DO: Multiple colors put on first capital letters
+    	/*String color = GetColorForTown(GetPlayerTown(player)); //TO!DO: Multiple colors put on first capital letters
     	String[] colors = color.substring(1).split("§");
     	String displayname=player.getName(); //2015.08.08.
     	ArrayList<Integer> Positions=new ArrayList<>();
@@ -255,7 +259,7 @@ public class PluginMain extends JavaPlugin
     			String substr="§"+colors[x++]+displayname.substring(pos, nextpos)+"§r";
     			finalname+=substr;
     		}
-    	}
+    	}*/
     	MaybeOfflinePlayer.AllPlayers.get(player.getName()).Flair=flair; //2015.08.08.
     }
     
@@ -276,10 +280,10 @@ public class PluginMain extends JavaPlugin
 		}
     }
     
-    public static void RemovePlayerDisplayFlairFinal(Player player, String flair)
+    /*public static void RemovePlayerDisplayFlairFinal(Player player, String flair)
     { //2015.07.20.
     	MaybeOfflinePlayer.AllPlayers.get(player.getName()).Flair=null; //2015.08.08.
-    }
+    }*/
     
     public static Collection<? extends Player> GetPlayers()
     {
@@ -329,11 +333,12 @@ public class PluginMain extends JavaPlugin
 				while((line=br.readLine())!=null)
 				{
 					String[] s=line.split(" ");
-					TownColors.put(s[0], s[1]);
+					if(s.length>=2) //<-- 2015.08.10.
+						TownColors.put(s[0], s[1]);
 				}
 				br.close();
 			}
-			file=new File("autoflairdecisions.txt"); //2015.08.09.
+			file=new File("customflairs.txt"); //2015.08.09.
 			if(file.exists())
 			{
 				BufferedReader br=new BufferedReader(new FileReader(file));
@@ -341,7 +346,8 @@ public class PluginMain extends JavaPlugin
 				while((line=br.readLine())!=null)
 				{
 					String[] s=line.split(" ");
-					MaybeOfflinePlayer.AddPlayerIfNeeded(s[0]).Flair=s[1]; //2015.08.09.
+					if(s.length>=2) //2015.08.10.
+						MaybeOfflinePlayer.AddPlayerIfNeeded(s[0]).Flair=s[1]; //2015.08.09.
 				}
 				br.close();
 			}
@@ -383,7 +389,7 @@ public class PluginMain extends JavaPlugin
 	    	{
 	    		if(!player.IgnoredFlair)
 	    			continue; //2015.08.08.
-				bw.write(player.PlayerName+"\n");
+				bw.write(player.PlayerName+" "+player.Flair+"\n");
 	    	}
 			bw.close();
 		} catch (IOException e) {
@@ -391,10 +397,35 @@ public class PluginMain extends JavaPlugin
 			LastException=e; //2015.08.09.
 		}
     }
-    public static void SetPlayerFlair(Player player, String flair)
+    public static boolean RemoveLineFromFile(String file, String line)
     { //2015.08.09.
-    	flair=flair.replace('&', '§');
-    	MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).Flair=flair;
-    	
+    	File inputFile = new File(file);
+	    File tempFile = new File("_temp.txt");
+	    
+	    if(!inputFile.exists())
+	    	return true; //2015.08.10.
+	    
+		try {
+		    BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+		    BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+		
+		    String lineToRemove = line;
+		    String currentLine;
+		
+		    while((currentLine = reader.readLine()) != null) {
+		        // trim newline when comparing with lineToRemove
+		        String trimmedLine = currentLine.trim();
+		        //if(trimmedLine.equals(lineToRemove)) continue;
+		        if(trimmedLine.contains(lineToRemove)) continue; //2015.08.09.
+		        writer.write(currentLine + System.getProperty("line.separator"));
+		    }
+		    writer.close(); 
+		    reader.close();
+		    return tempFile.renameTo(inputFile);
+		} catch (IOException e) {
+			System.out.println("Error!\n"+e);
+			LastException=e; //2015.08.09.
+		}
+		return false;
     }
 }
