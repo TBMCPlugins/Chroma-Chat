@@ -72,7 +72,7 @@ public class PluginMain extends JavaPlugin
 	                int end = ign.indexOf(' ', start);
 	                if (end == -1 || end == start)
 	                	end=ign.indexOf('\n', start); //2015.07.15.
-	                //System.out.println("End: "+end);
+	                System.out.println("End: "+end);
 	                if (end == -1 || end == start)
 	                    ign = ign.substring(start);
 	                else
