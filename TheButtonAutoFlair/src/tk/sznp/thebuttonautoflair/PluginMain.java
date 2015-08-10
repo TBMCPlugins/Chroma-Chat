@@ -170,18 +170,21 @@ public class PluginMain extends JavaPlugin
     	case "cant-press": //2015.08.08.
     		finalflair="§r(can't press)§r";
     		break;
-    	case "undecided": //2015.08.09.
+    	case "unknown":
     		p.FlairDecided=false;
     		finalflair="";
     		break;
 		default:
-			finalflair="";
-			break;
+			//finalflair="";
+			//break;
+			return;
     	}
-    	if(finalflair.length()==0) //<-- 2015.07.20.
-    		return;
+    	/*if(finalflair.length()==0) //<-- 2015.07.20.
+    		return;*/
     	p.Flair=finalflair; //2015.08.08.
     	p.UserName=username; //2015.08.08.
+    	if(finalflair.length()==0) //Just for the message
+    		finalflair="undecided";
     	System.out.println("Added new flair to "+playername+": "+finalflair);
     	for(Player player : getServer().getOnlinePlayers()) //<-- 2015.08.08.
     	{
