@@ -35,8 +35,8 @@ public class Commands implements CommandExecutor {
 	        	{
 	        		String flair=p.Flair; //2015.08.08.
 		        	//PluginMain.AppendPlayerDisplayFlairFinal(player, flair); //2015.07.20.
-		        	p.AcceptedFlair=true; //2015.08.08.
 	        		PluginMain.AppendPlayerDisplayFlair(p, player);
+		        	p.AcceptedFlair=true; //2015.08.08.
 	        		player.sendMessage("§6Your flair has been set:§r "+flair);
 	        	}
 	        	else

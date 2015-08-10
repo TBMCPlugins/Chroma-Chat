@@ -385,7 +385,7 @@ public class PluginMain extends JavaPlugin
 	    	{
 	    		if(!player.IgnoredFlair)
 	    			continue; //2015.08.08.
-				bw.write(player.PlayerName+" "+player.Flair+"\n");
+				bw.write(player.PlayerName+"\n");
 	    	}
 			bw.close();
 		} catch (IOException e) {

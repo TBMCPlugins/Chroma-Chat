@@ -329,8 +329,8 @@ public class PluginMain extends JavaPlugin
 				while((line=br.readLine())!=null)
 				{
 					String[] s=line.split(" ");
-					if(s.length>=2) //<-- 2015.08.10.
-						TownColors.put(s[0], s[1]);
+					if(s.length>=2)
+					TownColors.put(s[0], s[1]);
 				}
 				br.close();
 			}
@@ -342,8 +342,7 @@ public class PluginMain extends JavaPlugin
 				while((line=br.readLine())!=null)
 				{
 					String[] s=line.split(" ");
-					if(s.length>=2) //2015.08.10.
-						MaybeOfflinePlayer.AddPlayerIfNeeded(s[0]).Flair=s[1]; //2015.08.09.
+					MaybeOfflinePlayer.AddPlayerIfNeeded(s[0]).Flair=s[1]; //2015.08.09.
 				}
 				br.close();
 			}
@@ -385,7 +384,7 @@ public class PluginMain extends JavaPlugin
 	    	{
 	    		if(!player.IgnoredFlair)
 	    			continue; //2015.08.08.
-				bw.write(player.PlayerName+" "+player.Flair+"\n");
+				bw.write(player.PlayerName+"\n");
 	    	}
 			bw.close();
 		} catch (IOException e) {
