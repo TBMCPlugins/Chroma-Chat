@@ -10,6 +10,7 @@ public class MaybeOfflinePlayer
 	public boolean AcceptedFlair;
 	public boolean IgnoredFlair;
 	public boolean FlairDecided; //2015.08.09.
+	public boolean FlairRecognised; //2015.08.10.
     public static HashMap<String, MaybeOfflinePlayer> AllPlayers=new HashMap<>(); //2015.08.08.
     public static MaybeOfflinePlayer AddPlayerIfNeeded(String playername)
     {
