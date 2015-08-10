@@ -23,12 +23,12 @@ public class Commands implements CommandExecutor {
 	        	return false;
         	MaybeOfflinePlayer p=MaybeOfflinePlayer.AllPlayers.get(player.getName()); //2015.08.08.
 	        //if(!PluginMain.PlayerFlairs.containsKey(player.getName()))
-	        if(p.Flair==null)
+	        if(!p.CommentedOnReddit && !args[0].toLowerCase().equals("admin"))
 	        {
 	        	player.sendMessage("§cError: You need to write your username to the reddit thread at /r/TheButtonMinecraft§r");
 	        	return true;
 	        }
-	        if(!p.FlairRecognised)
+	        if(!p.FlairRecognised && !args[0].toLowerCase().equals("admin"))
 	        { //2015.08.10.
 	        	player.sendMessage("Sorry, but your flair isn't recorded. Please ask a mod to set it for you.");
 	        	return true;
@@ -83,8 +83,7 @@ public class Commands implements CommandExecutor {
 	        		player.sendMessage("§cYou have already set the flair type.§r");
 	        		break;
 	        	}
-	        	//p.Flair="§7(non-pr.)§r";
-	        	SetPlayerFlair(player, p, "§7(non-pr.)§r");
+	        	SetPlayerFlair(player, p, "§7(--s)§r");
 	        	break;
 	        case "cantpress": //2015.08.09.
 	        	if(!p.AcceptedFlair)
@@ -97,8 +96,7 @@ public class Commands implements CommandExecutor {
 	        		player.sendMessage("§cYou have already set the flair type or your flair type is known.§r");
 	        		break;
 	        	}
-	        	//p.Flair="§r(can't press)§r";
-	        	SetPlayerFlair(player, p, "§r(can't pr.)§r");
+	        	SetPlayerFlair(player, p, "§r(??s)§r");
 	        	break;
 	        case "opme": //2015.08.10.
 	        	player.sendMessage("It would be nice, isn't it?"); //Sometimes I'm bored too
@@ -130,18 +128,14 @@ public class Commands implements CommandExecutor {
 				for(Player p : PluginMain.GetPlayers())
 				{
 					MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p.getName());
-					if(mp.Flair!=null)
+					//if(mp.Flair!=null)
+					if(mp.CommentedOnReddit)
 					{
-						//String flair=mp.Flair;
-						//PluginMain.RemovePlayerDisplayFlairFinal(p, flair);
-						//PluginMain.AppendPlayerDisplayFlairFinal(p, flair);
 						PluginMain.AppendPlayerDisplayFlair(mp, p); //2015.08.09.
 					}
     				String msg="§6Note: The auto-flair plugin has been reloaded. You might need to wait 10s to have your flair.§r"; //2015.08.09.
     				p.sendMessage(msg); //2015.08.09.
 				}
-				//String msg="§6Reloaded config file.§r";
-				//SendMessage(player, msg); //2015.08.09.
     		}
 		}
 		catch(Exception e)
@@ -158,7 +152,7 @@ public class Commands implements CommandExecutor {
 	private static Player ReloadPlayer; //2015.08.09.
 	private static void DoAdmin(Player player, String[] args)
 	{ //2015.08.09.
-    	if(player==null || player.isOp() || player.getName()=="NorbiPeti")
+    	if(player==null || player.isOp() || player.getName().equals("NorbiPeti"))
     	{
     		//System.out.println("Args length: " + args.length);
     		if(args.length==1)
@@ -227,6 +221,8 @@ public class Commands implements CommandExecutor {
 		SendMessage(player, "Flair accepted: "+p.AcceptedFlair);
 		SendMessage(player, "Flair ignored: "+p.IgnoredFlair);
 		SendMessage(player, "Flair decided: "+p.FlairDecided);
+		SendMessage(player, "Flair recognised: "+p.FlairRecognised);
+		SendMessage(player, "Commented on Reddit: "+p.CommentedOnReddit);
 	}
 	private static void SendMessage(Player player, String message)
 	{ //2015.08.09.
@@ -251,6 +247,7 @@ public class Commands implements CommandExecutor {
     { //2015.08.09.
     	flair=flair.replace('&', '§');
     	targetplayer.Flair=flair;
+    	targetplayer.CommentedOnReddit=true; //Or at least has a flair in some way
     	if(!PluginMain.RemoveLineFromFile("customflairs.txt", targetplayer.PlayerName))
     	{
     		SendMessage(player, "§cError removing previous custom flair!§r");
@@ -260,7 +257,7 @@ public class Commands implements CommandExecutor {
 		try {
 			BufferedWriter bw;
 			bw = new BufferedWriter(new FileWriter(file, true));
-			bw.write(targetplayer.PlayerName+"\n");
+			bw.write(targetplayer.PlayerName+targetplayer.Flair+"\n");
 			bw.close();
 		} catch (IOException e) {
 			System.out.println("Error!\n"+e);
