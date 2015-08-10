@@ -3,7 +3,6 @@
 <fullyQualifiedTypeName name="java.io.Console"/>
 <fullyQualifiedTypeName name="java.net.URLEncoder"/>
 <fullyQualifiedTypeName name="java.nio.charset.StandardCharsets"/>
-<fullyQualifiedTypeName name="java.net.URL"/>
 <fullyQualifiedTypeName name="java.io.InputStream"/>
 <fullyQualifiedTypeName name="java.net.URLConnection"/>
 <fullyQualifiedTypeName name="java.net.MalformedURLException"/>
@@ -59,4 +58,6 @@
 <fullyQualifiedTypeName name="net.ess3.api.IEssentials"/>
 <fullyQualifiedTypeName name="net.ess3.api.IUser"/>
 <fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.MaybeOfflinePlayer"/>
+<fullyQualifiedTypeName name="org.apache.commons.io.FileUtils"/>
+<fullyQualifiedTypeName name="java.net.URL"/>
 </qualifiedTypeNameHistroy>
