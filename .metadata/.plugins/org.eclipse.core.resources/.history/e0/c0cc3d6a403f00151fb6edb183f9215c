@@ -168,7 +168,6 @@ public class Commands implements CommandExecutor {
     			break;
     		case "getlasterror":
     			DoGetLastError(player, args);
-    			break; //<-- 2015.08.10.
     		case "confirm":
     			if(ReloadPlayer==player)
     				DoReload(player); //2015.08.09.
