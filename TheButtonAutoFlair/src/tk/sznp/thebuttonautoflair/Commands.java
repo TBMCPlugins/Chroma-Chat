@@ -25,7 +25,12 @@ public class Commands implements CommandExecutor {
 	        //if(!PluginMain.PlayerFlairs.containsKey(player.getName()))
 	        if(p.Flair==null)
 	        {
-	        	player.sendMessage("Error: You need to write your username to the reddit thread at /r/TheButtonMinecraft");
+	        	player.sendMessage("§cError: You need to write your username to the reddit thread at /r/TheButtonMinecraft§r");
+	        	return true;
+	        }
+	        if(!p.FlairRecognised)
+	        { //2015.08.10.
+	        	player.sendMessage("Sorry, but your flair isn't recorded. Please ask a mod to set it for you.");
 	        	return true;
 	        }
 	        switch(args[0].toLowerCase()) //toLowerCase: 2015.08.09.

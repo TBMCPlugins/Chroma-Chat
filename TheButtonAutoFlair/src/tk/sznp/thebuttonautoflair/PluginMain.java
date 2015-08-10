@@ -95,8 +95,8 @@ public class PluginMain extends JavaPlugin
 	                	flair="";
 	                if (flair != "-1")
 	                    flair = flair + "s";
-	                else
-	                    flair = "non-presser";
+	                /*else
+	                    flair = "non-presser";*/
 					String flairclass;
 					if(flairdata.length>2)
 						flairclass = flairdata[2];
@@ -141,6 +141,7 @@ public class PluginMain extends JavaPlugin
     	MaybeOfflinePlayer p=MaybeOfflinePlayer.AddPlayerIfNeeded(playername); //2015.08.08.
     	String finalflair;
     	p.FlairDecided=true;
+    	p.FlairRecognised=true;
     	switch(flairclass)
     	{
     	case "press-1":
@@ -171,7 +172,10 @@ public class PluginMain extends JavaPlugin
     		finalflair="§r(can't press)§r";
     		break;
     	case "unknown":
-    		p.FlairDecided=false;
+    		if(text.equals("-1")) //If true, only non-presser/can't press; if false, any flair
+	    		p.FlairDecided=false;
+    		else
+    			p.FlairRecognised=false;
     		finalflair="";
     		break;
 		default:
