@@ -50,14 +50,14 @@
 <fullyQualifiedTypeName name="org.bukkit.entity.Player.Spigot"/>
 <fullyQualifiedTypeName name="java.util.Collection"/>
 <fullyQualifiedTypeName name="com.palmergames.bukkit.towny.object.TownyUniverse"/>
-<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PluginMain"/>
 <fullyQualifiedTypeName name="com.earth2me.essentials.User"/>
 <fullyQualifiedTypeName name="com.earth2me.essentials.OfflinePlayer"/>
 <fullyQualifiedTypeName name="com.earth2me.essentials.PlayerList"/>
 <fullyQualifiedTypeName name="com.earth2me.essentials.IEssentials"/>
 <fullyQualifiedTypeName name="net.ess3.api.IEssentials"/>
 <fullyQualifiedTypeName name="net.ess3.api.IUser"/>
-<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.MaybeOfflinePlayer"/>
 <fullyQualifiedTypeName name="org.apache.commons.io.FileUtils"/>
 <fullyQualifiedTypeName name="java.net.URL"/>
+<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.MaybeOfflinePlayer"/>
+<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PluginMain"/>
 </qualifiedTypeNameHistroy>
