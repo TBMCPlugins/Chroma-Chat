@@ -17,7 +17,7 @@ public class PlayerListener implements Listener
 		Player p=event.getPlayer();
 		MaybeOfflinePlayer.AddPlayerIfNeeded(p.getName()); //2015.08.08.
 		MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(p.getName()); //2015.08.08.
-		if(mp.Flair!=null)
+		if(mp.CommentedOnReddit)
 			PluginMain.AppendPlayerDisplayFlair(mp, p); //2015.08.09.
 		else
 		{ //2015.07.20.
@@ -36,8 +36,8 @@ public class PlayerListener implements Listener
 	{
 		MaybeOfflinePlayer player = MaybeOfflinePlayer.AllPlayers.get(event.getPlayer().getName());
 		String flair=player.Flair; //2015.08.08.
-		if(flair==null || !player.AcceptedFlair)
-			flair=""; //2015.08.08.
+		if(player.IgnoredFlair)
+			flair="";
 		String message=event.getMessage(); //2015.08.08.
 		/*for(Player p : PluginMain.GetPlayers())
 		{ //2015.08.08.

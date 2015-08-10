@@ -133,7 +133,8 @@ public class PluginMain extends JavaPlugin
     public Boolean HasIGFlair(String playername)
     {
     	MaybeOfflinePlayer p=MaybeOfflinePlayer.AddPlayerIfNeeded(playername); //2015.08.08.
-    	return p.Flair!=null; //2015.08.08.
+    	//return p.Flair!=null; //2015.08.08.
+    	return p.CommentedOnReddit; //2015.08.10.
     }
     
     public void SetFlair(String playername, String text, String flairclass, String username)
@@ -163,13 +164,13 @@ public class PluginMain extends JavaPlugin
     		finalflair="§5("+text+")§r";
     		break;
     	case "no-press":
-    		finalflair="§7(non-pr.)§r";
+    		finalflair="§7(--s)§r";
     		break;
     	case "cheater":
     		finalflair="§5("+text+")§r";
     		break;
     	case "cant-press": //2015.08.08.
-    		finalflair="§r(can't press)§r";
+    		finalflair="§r(??s)§r";
     		break;
     	case "unknown":
     		if(text.equals("-1")) //If true, only non-presser/can't press; if false, any flair
@@ -186,6 +187,7 @@ public class PluginMain extends JavaPlugin
     	/*if(finalflair.length()==0) //<-- 2015.07.20.
     		return;*/
     	p.Flair=finalflair; //2015.08.08.
+    	p.CommentedOnReddit=true; //2015.08.10.
     	p.UserName=username; //2015.08.08.
     	if(finalflair.length()==0) //Just for the message
     		finalflair="undecided";
@@ -204,7 +206,8 @@ public class PluginMain extends JavaPlugin
     public static String GetFlair(Player player)
     { //2015.07.16.
     	String flair=MaybeOfflinePlayer.AllPlayers.get(player.getName()).Flair; //2015.08.08.
-    	return flair==null ? "" : flair;
+    	//return flair==null ? "" : flair;
+    	return flair; //2015.08.10.
     }
 
     //public static void AppendPlayerDisplayFlair(Player player, String username, String flair)
@@ -215,7 +218,7 @@ public class PluginMain extends JavaPlugin
     		return;
     	if(MaybeOfflinePlayer.AllPlayers.get(p.getName()).AcceptedFlair)
     	{
-    		AppendPlayerDisplayFlairFinal(p, player.Flair); //2015.07.20.
+    		//AppendPlayerDisplayFlairFinal(p, player.Flair); //2015.07.20.
     		if(!player.FlairDecided)
     			p.sendMessage("§9Your flair type is unknown. Are you a non-presser or a can't press? (/u nonpresser or /u cantpress)§r"); //2015.08.09.
     	}
@@ -223,9 +226,9 @@ public class PluginMain extends JavaPlugin
     		p.sendMessage("§9Are you Reddit user "+player.UserName+"?§r §6Type /u accept or /u ignore§r");
     }
     
-    private static void AppendPlayerDisplayFlairFinal(Player player, String flair)
+    /*private static void AppendPlayerDisplayFlairFinal(Player player, String flair)
     { //2015.07.20.
-    	/*String color = GetColorForTown(GetPlayerTown(player)); //TO!DO: Multiple colors put on first capital letters
+    	*String color = GetColorForTown(GetPlayerTown(player)); //TO!DO: Multiple colors put on first capital letters
     	String[] colors = color.substring(1).split("§");
     	String displayname=player.getName(); //2015.08.08.
     	ArrayList<Integer> Positions=new ArrayList<>();
@@ -266,9 +269,8 @@ public class PluginMain extends JavaPlugin
     			String substr="§"+colors[x++]+displayname.substring(pos, nextpos)+"§r";
     			finalname+=substr;
     		}
-    	}*/
-    	MaybeOfflinePlayer.AllPlayers.get(player.getName()).Flair=flair; //2015.08.08.
-    }
+    	}*
+    }*/
     
     public static String GetColorForTown(String townname)
     { //2015.07.20.
@@ -354,7 +356,11 @@ public class PluginMain extends JavaPlugin
 				{
 					String[] s=line.split(" ");
 					if(s.length>=2) //2015.08.10.
-						MaybeOfflinePlayer.AddPlayerIfNeeded(s[0]).Flair=s[1]; //2015.08.09.
+					{
+						MaybeOfflinePlayer p=MaybeOfflinePlayer.AddPlayerIfNeeded(s[0]);
+						p.Flair=s[1]; //2015.08.09.
+						p.CommentedOnReddit=true; //Kind of
+					}
 				}
 				br.close();
 			}
@@ -396,9 +402,9 @@ public class PluginMain extends JavaPlugin
 	    	{
 	    		if(!player.IgnoredFlair)
 	    			continue; //2015.08.08.
-				bw.write(player.PlayerName+" "+player.Flair+"\n");
+				bw.write(player.PlayerName+"\n");
 	    	}
-			bw.close();
+	    	bw.close();
 		} catch (IOException e) {
 			System.out.println("Error!\n"+e);
 			LastException=e; //2015.08.09.
@@ -428,7 +434,13 @@ public class PluginMain extends JavaPlugin
 		    }
 		    writer.close(); 
 		    reader.close();
-		    return tempFile.renameTo(inputFile);
+		    if(!tempFile.renameTo(inputFile))
+		    {
+		    	inputFile.delete();
+		    	return tempFile.renameTo(inputFile);
+		    }
+		    else
+		    	return true;
 		} catch (IOException e) {
 			System.out.println("Error!\n"+e);
 			LastException=e; //2015.08.09.
