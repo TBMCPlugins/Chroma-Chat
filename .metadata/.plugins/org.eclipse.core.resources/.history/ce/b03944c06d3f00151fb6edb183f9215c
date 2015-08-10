@@ -95,8 +95,7 @@ public class Commands implements CommandExecutor {
 	        	//p.Flair="§r(can't press)§r";
 	        	SetPlayerFlair(player, p, "§r(can't pr.)§r");
 	        	break;
-	        case "opme": //2015.08.10.
-	        	player.sendMessage("It would be nice, isn't it?"); //Sometimes I'm bored too
+	        case "opme":
 	        	break;
         	default:
         		return false;
