@@ -45,7 +45,7 @@ public class Commands implements CommandExecutor {
 		        	//PluginMain.AppendPlayerDisplayFlairFinal(player, flair); //2015.07.20.
 		        	p.AcceptedFlair=true; //2015.08.08.
 	        		PluginMain.AppendPlayerDisplayFlair(p, player);
-	        		player.sendMessage("§6Your flair has been set:§r "+flair);
+	        		player.sendMessage("§bYour flair has been set:§r "+flair);
 	        	}
 	        	else
 	        		player.sendMessage("§cYou already have this user's flair.§r");
@@ -60,7 +60,7 @@ public class Commands implements CommandExecutor {
     	    		p.IgnoredFlair=true;
 		        	//String flair=p.Flair; //2015.08.08.
 		        	//PluginMain.RemovePlayerDisplayFlairFinal(player, flair); //2015.07.20.
-		    		player.sendMessage("§6You have ignored this request. You can still use /u accept though.§r");
+		    		player.sendMessage("§bYou have ignored this request. You can still use /u accept though.§r");
         		}
         		else
         			player.sendMessage("§cYou already ignored this request.§r");
@@ -121,22 +121,20 @@ public class Commands implements CommandExecutor {
     	//{
 		try
 		{
-    		File file=new File("autoflairconfig.txt");
-    		if(file.exists())
-    		{
-    			PluginMain.LoadFiles(true); //2015.08.09.
-				for(Player p : PluginMain.GetPlayers())
+			PluginMain.Console.sendMessage("§6-- Reloading Auto-flair plugin...§r");
+			PluginMain.LoadFiles(true); //2015.08.09.
+			for(Player p : PluginMain.GetPlayers())
+			{
+				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p.getName());
+				//if(mp.Flair!=null)
+				if(mp.CommentedOnReddit)
 				{
-					MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p.getName());
-					//if(mp.Flair!=null)
-					if(mp.CommentedOnReddit)
-					{
-						PluginMain.AppendPlayerDisplayFlair(mp, p); //2015.08.09.
-					}
-    				String msg="§6Note: The auto-flair plugin has been reloaded. You might need to wait 10s to have your flair.§r"; //2015.08.09.
-    				p.sendMessage(msg); //2015.08.09.
+					PluginMain.AppendPlayerDisplayFlair(mp, p); //2015.08.09.
 				}
-    		}
+				String msg="§bNote: The auto-flair plugin has been reloaded. You might need to wait 10s to have your flair.§r"; //2015.08.09.
+				p.sendMessage(msg); //2015.08.09.
+			}
+			PluginMain.Console.sendMessage("§6-- Reloading done!§r");
 		}
 		catch(Exception e)
 		{
@@ -166,7 +164,7 @@ public class Commands implements CommandExecutor {
     		{
     		case "reload":
     			ReloadPlayer=player; //2015.08.09.
-    			SendMessage(player, "§6Make sure to save the current settings before you modify and reload them! Type /u admin confirm when done.§r");
+    			SendMessage(player, "§bMake sure to save the current settings before you modify and reload them! Type /u admin confirm when done.§r");
     			break;
     		case "playerinfo":
     			DoPlayerInfo(player, args);
@@ -182,7 +180,7 @@ public class Commands implements CommandExecutor {
     			break;
     		case "save":
     			PluginMain.SaveFiles(); //2015.08.09.
-    			SendMessage(player, "§6Saved files. Now you can edit them and reload if you want.§r");
+    			SendMessage(player, "§bSaved files. Now you can edit them and reload if you want.§r");
     			break;
     		case "setflair":
     			DoSetFlair(player, args);
@@ -227,7 +225,8 @@ public class Commands implements CommandExecutor {
 	private static void SendMessage(Player player, String message)
 	{ //2015.08.09.
 		if(player==null)
-			System.out.println(message);
+			//System.out.println(message);
+			PluginMain.Console.sendMessage(message); //2015.08.12.
 		else
 			player.sendMessage(message);
 	}
@@ -263,7 +262,7 @@ public class Commands implements CommandExecutor {
 			System.out.println("Error!\n"+e);
 			PluginMain.LastException=e; //2015.08.09.
 		}
-		SendMessage(player, "§6The flair has been set. Player: "+targetplayer.PlayerName+" Flair: "+flair+"§r");
+		SendMessage(player, "§bThe flair has been set. Player: "+targetplayer.PlayerName+" Flair: "+flair+"§r");
     }
     private static void DoSetFlair(Player player, String[] args)
     {

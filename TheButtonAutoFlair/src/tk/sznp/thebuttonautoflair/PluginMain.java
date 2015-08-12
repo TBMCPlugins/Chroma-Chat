@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.JSONArray;
@@ -29,6 +30,7 @@ public class PluginMain extends JavaPlugin
 	//A user, which flair isn't obtainable:
 	//https://www.reddit.com/r/thebutton/comments/31c32v/i_pressed_the_button_without_really_thinking/
 	private static PluginMain Instance;
+	public static ConsoleCommandSender Console; //2015.08.12.
     // Fired when plugin is first enabled
     @Override
     public void onEnable()
@@ -38,6 +40,7 @@ public class PluginMain extends JavaPlugin
 		this.getCommand("u").setExecutor(new Commands());
 		this.getCommand("u").setUsage(this.getCommand("u").getUsage().replace('&', '§'));
 		Instance=this; //2015.08.08.
+		Console=this.getServer().getConsoleSender(); //2015.08.12.
 		LoadFiles(false); //2015.08.09.
 		Runnable r=new Runnable(){public void run(){ThreadMethod();}};
 		Thread t=new Thread(r);
