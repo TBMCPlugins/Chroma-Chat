@@ -1,5 +1,6 @@
 package tk.sznp.thebuttonautoflair;
 
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -39,10 +40,12 @@ public class PlayerListener implements Listener
 		if(player.IgnoredFlair)
 			flair="";
 		String message=event.getMessage(); //2015.08.08.
-		/*for(Player p : PluginMain.GetPlayers())
-		{ //2015.08.08.
-			message.replaceAll(p.getName(), )
-		}*/
+		for(Player p : PluginMain.GetPlayers())
+		{ //2015.08.12.
+			if(message.contains(p.getName()))
+				p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f, 0.5f); //2015.08.12.
+			message = message.replaceAll(p.getName(), "§6"+p.getName()+"§r");
+		}
 		event.setFormat(event.getFormat().substring(0, event.getFormat().indexOf(">"))+flair+"> "+message); //2015.08.08.
 	}
 
