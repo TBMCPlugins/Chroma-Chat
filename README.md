@@ -45,7 +45,7 @@ If you want to edit a file, you need to do /u admin save, then edit the file you
 This command's sole purpose is to give me (or any admins, if they want) some information about the errors and if they even happened. It's not fully tested, so a full stack trace might be needed if the plugin breaks.
 
 #### Setting the flair by hand (/u admin setflair)
-This allowss you to set any flair you want to any player. This will override the automatic flairs, thoguh it's not recommended to do so.
+This allows you to set any flair you want to any player. This will override the automatic flairs, though it's not recommended to do so.
 
 Note that you need to specify the full flair with color codes, for example:
 
