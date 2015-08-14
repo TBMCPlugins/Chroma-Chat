@@ -18,6 +18,9 @@ If you're a non-presser or a can't press and only your time is recorded, you can
 
 If nothing is known about your flair, you need to ask an admin (currently FigyTuna, Ghostise) or me (NorbiPeti) to set the flair for you. This is done to prevent abusing the system with setting random flairs and rendering the core of the plugin useless.
 
+#### Name mentioning
+If you simply say any online player's full playername, it'll highlight it and play a sound for the target player. This works only once per message per target player.
+
 ### Admins
 Type /u admin for a list of the commands.
 #### Seeing status of flairs (/u admin playerinfo)
@@ -47,3 +50,17 @@ This allowss you to set any flair you want to any player. This will override the
 Note that you need to specify the full flair with color codes, for example:
 
 /u admin setflair Player &7(--s)&r
+
+#### Updating the plugin (/u admin updateplugin)
+I've made a simple command to allow updating the plugin easily. After running this command, the server needs to get restarted for the changes to take effect.
+
+This command will not do any other thing than downloading the JAR file from here to the plugins directory. Do not spam it, because it will then generate unnecessary network traffic on the server.
+
+#### Setting the sound played on name mentioning
+You can set the sound played by creating a file named notificationsound.txt and placing a line (*with an endline at the end*) in this format:
+
+<sound name> <pitch>
+
+Example:
+
+mob.pig.say 1.0
