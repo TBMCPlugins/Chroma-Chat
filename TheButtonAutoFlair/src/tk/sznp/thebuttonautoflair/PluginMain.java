@@ -191,9 +191,9 @@ public class PluginMain extends JavaPlugin
     	p.Flair=finalflair; //2015.08.08.
     	p.CommentedOnReddit=true; //2015.08.10.
     	p.UserName=username; //2015.08.08.
-    	if(finalflair.length()==0) //Just for the message
-    		finalflair="undecided";
-    	System.out.println("Added new flair to "+playername+": "+finalflair);
+    	/*if(finalflair.length()==0) //Just for the message
+    		finalflair="undecided";*/
+    	//System.out.println("Added new flair to "+playername+": "+finalflair);
     	for(Player player : getServer().getOnlinePlayers()) //<-- 2015.08.08.
     	{
     		if(player.getName().equals(playername))
