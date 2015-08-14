@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -367,6 +366,16 @@ public class PluginMain extends JavaPlugin
 				}
 				br.close();
 			}
+			file=new File("notificationsound.txt"); //2015.08.09.
+			if(file.exists())
+			{
+				BufferedReader br=new BufferedReader(new FileReader(file));
+				String line=br.readLine();
+				String[] split=line.split(" ");
+				PlayerListener.NotificationSound=split[0];
+				PlayerListener.NotificationPitch=Float.parseFloat(split[1]);
+				br.close();
+			}
 			//throw new IOException("Test"); //2015.08.09.
 			System.out.println("Auto-flair plugin loaded files!");
 		} catch (IOException e) {
@@ -435,7 +444,7 @@ public class PluginMain extends JavaPlugin
 		        if(trimmedLine.contains(lineToRemove)) continue; //2015.08.09.
 		        writer.write(currentLine + System.getProperty("line.separator"));
 		    }
-		    writer.close(); 
+		    writer.close();
 		    reader.close();
 		    if(!tempFile.renameTo(inputFile))
 		    {
