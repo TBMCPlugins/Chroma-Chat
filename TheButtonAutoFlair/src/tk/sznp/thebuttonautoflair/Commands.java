@@ -121,7 +121,7 @@ public class Commands implements CommandExecutor {
     	//{
 		try
 		{
-			PluginMain.Console.sendMessage("§6-- Reloading Auto-flair plugin...§r");
+			PluginMain.Console.sendMessage("§6-- Reloading The Button Minecraft plugin...§r");
 			PluginMain.LoadFiles(true); //2015.08.09.
 			for(Player p : PluginMain.GetPlayers())
 			{

@@ -34,7 +34,7 @@ public class PluginMain extends JavaPlugin
     @Override
     public void onEnable()
     {
-		System.out.println("The Button Auto-flair Plugin by NorbiPeti (:P)");
+    	System.out.println("The Button Minecraft server plugin by NorbiPeti");
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		this.getCommand("u").setExecutor(new Commands());
 		this.getCommand("u").setUsage(this.getCommand("u").getUsage().replace('&', '§'));
@@ -305,11 +305,11 @@ public class PluginMain extends JavaPlugin
     {
     	if(reload)
     	{ //2015.08.09.
-    		System.out.println("Auto-flair plugin cleanup for reloading...");
+    		System.out.println("The Button Minecraft plugin cleanup for reloading...");
     		MaybeOfflinePlayer.AllPlayers.clear();
     		TownColors.clear();
     	}
-    	System.out.println("Loading files for auto-flair plugin..."); //2015.08.09.
+    	System.out.println("Loading files for The Button Minecraft plugin..."); //2015.08.09.
 		try {
 			File file=new File("flairsaccepted.txt");
 			if(file.exists())
@@ -377,7 +377,7 @@ public class PluginMain extends JavaPlugin
 				br.close();
 			}
 			//throw new IOException("Test"); //2015.08.09.
-			System.out.println("Auto-flair plugin loaded files!");
+			System.out.println("The Button Minecraft plugin loaded files!");
 		} catch (IOException e) {
 			System.out.println("Error!\n"+e);
 			LastException=e; //2015.08.09.
