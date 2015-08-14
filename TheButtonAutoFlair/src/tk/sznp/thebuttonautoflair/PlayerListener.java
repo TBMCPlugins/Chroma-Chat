@@ -31,7 +31,9 @@ public class PlayerListener implements Listener
 	public void onPlayerLeave(PlayerQuitEvent event)
 	{
 	}
-	
+
+	public static String NotificationSound; //2015.08.14.
+	public static float NotificationPitch; //2015.08.14.
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent event)
 	{
@@ -43,7 +45,12 @@ public class PlayerListener implements Listener
 		for(Player p : PluginMain.GetPlayers())
 		{ //2015.08.12.
 			if(message.contains(p.getName()))
-				p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f, 0.5f); //2015.08.12.
+			{
+				if(NotificationSound==null)
+					p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f, 0.5f); //2015.08.12.
+				else
+					p.playSound(p.getLocation(), NotificationSound, 1.0f, NotificationPitch); //2015.08.14.
+			}
 			message = message.replaceAll(p.getName(), "§6"+p.getName()+"§r");
 		}
 		event.setFormat(event.getFormat().substring(0, event.getFormat().indexOf(">"))+flair+"> "+message); //2015.08.08.
