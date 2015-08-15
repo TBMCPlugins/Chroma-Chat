@@ -21,8 +21,6 @@ If nothing is known about your flair, you need to ask an admin (currently FigyTu
 #### Name mentioning
 If you simply say any online player's full playername, it'll highlight it and play a sound for the target player. This works only once per message per target player.
 
-**Note: The plugin is out of date on the server so the name mentioning is not available currently.**
-
 ### Admins
 Type /u admin for a list of the commands.
 #### Seeing status of flairs (/u admin playerinfo)
