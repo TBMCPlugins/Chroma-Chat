@@ -256,7 +256,7 @@ public class Commands implements CommandExecutor {
 		try {
 			BufferedWriter bw;
 			bw = new BufferedWriter(new FileWriter(file, true));
-			bw.write(targetplayer.PlayerName+targetplayer.Flair+"\n");
+			bw.write(targetplayer.PlayerName+" "+targetplayer.Flair+"\n");
 			bw.close();
 		} catch (IOException e) {
 			System.out.println("Error!\n"+e);
@@ -270,6 +270,11 @@ public class Commands implements CommandExecutor {
     	if(args.length<4)
     	{
     		SendMessage(player, "§cUsage: /u admin setflair <playername> <flair>");
+    		return;
+    	}
+    	if(args[3].charAt(0)!='&')
+    	{
+    		SendMessage(player, "§cYou need to start the flair with a color code: &6(19s)&r");
     		return;
     	}
     	SetPlayerFlair(player, MaybeOfflinePlayer.AddPlayerIfNeeded(args[2]), args[3]);

@@ -440,8 +440,7 @@ public class PluginMain extends JavaPlugin
 		    while((currentLine = reader.readLine()) != null) {
 		        // trim newline when comparing with lineToRemove
 		        String trimmedLine = currentLine.trim();
-		        //if(trimmedLine.equals(lineToRemove)) continue;
-		        if(trimmedLine.contains(lineToRemove)) continue; //2015.08.09.
+		        if(trimmedLine.split(" ")[0].equals(lineToRemove)) continue; //2015.08.17.
 		        writer.write(currentLine + System.getProperty("line.separator"));
 		    }
 		    writer.close();

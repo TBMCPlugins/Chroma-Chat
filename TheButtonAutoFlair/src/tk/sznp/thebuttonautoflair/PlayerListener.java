@@ -44,14 +44,17 @@ public class PlayerListener implements Listener
 		String message=event.getMessage(); //2015.08.08.
 		for(Player p : PluginMain.GetPlayers())
 		{ //2015.08.12.
+			String color=""; //2015.08.17.
 			if(message.contains(p.getName()))
 			{
 				if(NotificationSound==null)
 					p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f, 0.5f); //2015.08.12.
 				else
 					p.playSound(p.getLocation(), NotificationSound, 1.0f, NotificationPitch); //2015.08.14.
+				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p.getName()); //2015.08.17.
+				color=mp.Flair.substring(0, 2);
 			}
-			message = message.replaceAll(p.getName(), "§6"+p.getName()+"§r");
+			message = message.replaceAll(p.getName(), color+p.getName()+"§r");
 		}
 		event.setFormat(event.getFormat().substring(0, event.getFormat().indexOf(">"))+flair+"> "+message); //2015.08.08.
 	}
@@ -61,17 +64,11 @@ public class PlayerListener implements Listener
 	public static void sendRawMessage(Player player, String message)
 	{
 		try {
-			System.out.println("1");
 			Object handle = Reflection.getHandle(player);
-			System.out.println("2");
 			Object connection = Reflection.getField(handle.getClass(), "playerConnection").get(handle);
-			System.out.println("3");
 			Object serialized = Reflection.getMethod(nmsChatSerializer, "a", String.class).invoke(null, message);
-			System.out.println("4");
 			Object packet = nmsPacketPlayOutChat.getConstructor(Reflection.getNMSClass("IChatBaseComponent")).newInstance(serialized);
-			System.out.println("5");
 			Reflection.getMethod(connection.getClass(), "sendPacket").invoke(connection, packet);
-			System.out.println("6");
 		} catch (Exception e) {
 			e.printStackTrace();
 			PluginMain.LastException=e; //2015.08.09.
