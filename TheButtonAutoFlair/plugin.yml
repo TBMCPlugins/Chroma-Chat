@@ -1,7 +1,7 @@
-name: TheButtonAutoFlair
+name: TheButtonMCPlugin
 main: tk.sznp.thebuttonautoflair.PluginMain
-version: 1.0
+version: 2.0
 commands:
     u:
-        description: Auto-flair system. Accept or ignore flair.
+        description: Auto-flair system and others, like name mentioning
         usage: "&cUsage: /u accept|ignore|opme&r"
