@@ -14,6 +14,7 @@ import java.lang.String;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +22,7 @@ import java.util.Map;
 public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	// A user, which flair isn't obtainable:
 	// https://www.reddit.com/r/thebutton/comments/31c32v/i_pressed_the_button_without_really_thinking/
-	private static PluginMain Instance;
+	public static PluginMain Instance;
 	public static ConsoleCommandSender Console; // 2015.08.12.
 
 	// Fired when plugin is first enabled
@@ -43,9 +44,16 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		};
 		Thread t = new Thread(r);
 		t.start();
+		r = new Runnable() {
+			public void run() {
+				AnnouncerThread.Run();
+			}
+		};
+		t = new Thread(r);
+		t.start();
 	}
 
-	Boolean stop = false;
+	public Boolean stop = false;
 
 	// Fired when plugin is disabled
 	@Override
@@ -108,7 +116,11 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 						flairclass = "unknown";
 					SetFlair(ign, flair, flairclass, author);
 				}
-				Thread.sleep(10000);
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
+				}
 			} catch (Exception e) {
 				System.out.println("Error!\n" + e);
 				LastException = e; // 2015.08.09.
@@ -279,6 +291,9 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		return Instance.getServer().getOnlinePlayers();
 	}
 
+	public static ArrayList<String> AnnounceMessages = new ArrayList<>();
+	public static int AnnounceTime = 15 * 60 * 1000;
+
 	public static void LoadFiles(boolean reload) // <-- 2015.08.09.
 	{
 		if (reload) { // 2015.08.09.
@@ -286,6 +301,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					.println("The Button Minecraft plugin cleanup for reloading...");
 			MaybeOfflinePlayer.AllPlayers.clear();
 			TownColors.clear();
+			AnnounceMessages.clear();
 		}
 		System.out.println("Loading files for The Button Minecraft plugin..."); // 2015.08.09.
 		try {
@@ -350,7 +366,31 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 				PlayerListener.NotificationPitch = Float.parseFloat(split[1]);
 				br.close();
 			}
-			// throw new IOException("Test"); //2015.08.09.
+			file = new File("announcemessages.txt"); // 2015.08.09.
+			if (file.exists()) {
+				BufferedReader br = new BufferedReader(new FileReader(file));
+				String line;
+				boolean first = true;
+				while ((line = br.readLine()) != null) {
+					if (first) {
+						AnnounceTime = Integer.parseInt(line.trim());
+						first = false;
+					} else
+						AnnounceMessages.add(line.trim());
+				}
+				br.close();
+			} else {
+				// Write time
+				try {
+					BufferedWriter bw;
+					bw = new BufferedWriter(new FileWriter(file));
+					bw.write(AnnounceTime + "\n");
+					bw.close();
+				} catch (IOException e) {
+					System.out.println("Error!\n" + e);
+					PluginMain.LastException = e; // 2015.08.09.
+				}
+			}
 			System.out.println("The Button Minecraft plugin loaded files!");
 		} catch (IOException e) {
 			System.out.println("Error!\n" + e);
@@ -417,6 +457,40 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 				String trimmedLine = currentLine.trim();
 				if (trimmedLine.split(" ")[0].equals(lineToRemove))
 					continue; // 2015.08.17.
+				writer.write(currentLine + System.getProperty("line.separator"));
+			}
+			writer.close();
+			reader.close();
+			if (!tempFile.renameTo(inputFile)) {
+				inputFile.delete();
+				return tempFile.renameTo(inputFile);
+			} else
+				return true;
+		} catch (IOException e) {
+			System.out.println("Error!\n" + e);
+			LastException = e; // 2015.08.09.
+		}
+		return false;
+	}
+
+	public static boolean RemoveLineFromFile(String file, int index) {
+		File inputFile = new File(file);
+		File tempFile = new File("_temp2.txt");
+
+		if (!inputFile.exists())
+			return true; // 2015.08.10.
+
+		try {
+			BufferedReader reader = new BufferedReader(
+					new FileReader(inputFile));
+			BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+
+			String currentLine;
+			int i = 0;
+
+			while ((currentLine = reader.readLine()) != null) {
+				if (i++ == index)
+					continue;
 				writer.write(currentLine + System.getProperty("line.separator"));
 			}
 			writer.close();

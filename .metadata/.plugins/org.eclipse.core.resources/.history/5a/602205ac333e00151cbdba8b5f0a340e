@@ -1,8 +1,0 @@
-package tk.sznp.thebuttonautoflair;
-
-import net.ess3.api.IUser;
-
-public class Essentials implements IUser
-{
-	
-}

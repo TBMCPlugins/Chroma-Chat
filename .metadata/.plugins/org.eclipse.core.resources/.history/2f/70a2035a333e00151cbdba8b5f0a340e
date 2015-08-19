@@ -1,7 +1,0 @@
-package tk.sznp.thebuttonautoflair;
-
-import com.earth2me.essentials.IEssentials;
-
-public class Essentials implements IEssentials {
-
-}
