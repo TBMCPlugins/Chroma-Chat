@@ -21,6 +21,8 @@ If nothing is known about your flair, you need to ask an admin (currently FigyTu
 #### Name mentioning
 If you simply say any online player's full playername, it'll highlight it and play a sound for the target player. This works only once per message per target player.
 
+Essentials nicknames are now supported. If you say a nickname, it'll show it's original colors, if you say a username, then it will choose based on flair color if known.
+
 ### Admins
 Type /u admin for a list of the commands.
 #### Seeing status of flairs (/u admin playerinfo)
