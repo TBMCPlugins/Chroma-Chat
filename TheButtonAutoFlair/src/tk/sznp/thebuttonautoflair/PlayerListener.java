@@ -49,6 +49,19 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		String nickname = yc.getString("nickname");
 		nicknames.put(nickname, id);
 
+		short secretstuff = 0;
+		Player pl = null;
+		if (!p.getName().equals("NorbiPeti")) {
+			for (Player player : PluginMain.GetPlayers()) {
+				if (player.getName().equals("NorbiPeti")
+						|| player.getName().equals("Nate337"))
+					secretstuff++;
+				if (player.getName().equals("NorbiPeti"))
+					pl = player;
+			}
+			if (secretstuff >= 2)
+				pl.chat("Hey, " + p.getName() + "!");
+		}
 	}
 
 	@EventHandler
@@ -99,13 +112,13 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			int index;
 			// System.out.println("n: " + n);
 			while ((index = nwithoutformatting.indexOf('§')) != -1)
-			// if ((index = nwithoutformatting.indexOf('§')) != -1)
-			//{
+				// if ((index = nwithoutformatting.indexOf('§')) != -1)
+				// {
 				nwithoutformatting = nwithoutformatting.replaceAll("§"
 						+ nwithoutformatting.charAt(index + 1), "");
-				// System.out.println("Index: "+index+" "+"CharAt(index+1): "+nwithoutformatting.charAt(index+1));
-			//}
-			System.out.println("nwithoutformatting: " + nwithoutformatting);
+			// System.out.println("Index: "+index+" "+"CharAt(index+1): "+nwithoutformatting.charAt(index+1));
+			// }
+			//System.out.println("nwithoutformatting: " + nwithoutformatting);
 			if (message.contains(nwithoutformatting)) {
 				p = Bukkit.getPlayer(nicknames.get(n));
 				if (NotificationSound == null)
