@@ -66,3 +66,11 @@ You can set the sound played by creating a file named notificationsound.txt and 
 Example:
 
 mob.pig.say 1.0
+
+#### Announcements (/u announce)
+You can make announcements broadcasted every n minutes where you can set n and it defaults to 15.
+
+    /u announce add <message> - Adds a new announcement. It supports formatting codes with &.
+    /u announce remove <index> - Remove announcement by index (see below).
+    /u announce list - List announcements with indexes.
+    /u announce settime <minutes> - Set the time between announcements in minutes.
