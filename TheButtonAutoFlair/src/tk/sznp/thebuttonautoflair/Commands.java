@@ -6,8 +6,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -99,6 +101,9 @@ public class Commands implements CommandExecutor {
 																	// I'm bored
 																	// too
 				break;
+			case "announce":
+				DoAnnounce(player, args);
+				break;
 			default:
 				return false;
 			}
@@ -111,6 +116,9 @@ public class Commands implements CommandExecutor {
 		{
 			DoAdmin(null, args); // 2015.08.09.
 			return true; // 2015.08.09.
+		} else if (args.length > 0 && args[0].toLowerCase().equals("announce")) {
+			DoAnnounce(null, args);
+			return true;
 		}
 		return false;
 	}
@@ -294,6 +302,140 @@ public class Commands implements CommandExecutor {
 		} catch (IOException e) {
 			System.out.println("Error!\n" + e);
 			PluginMain.LastException = e; // 2015.08.09.
+		}
+	}
+
+	private static void DoAnnounce(Player player, String[] args) {
+		if (player == null || player.isOp()
+				|| player.getName().equals("NorbiPeti")) {
+			if (args.length == 1) {
+				String message = "§cUsage: /u announce add|remove|settime|list§r";
+				SendMessage(player, message);
+				return;
+			}
+			// args[0] is "announce"
+			switch (args[1].toLowerCase()) {
+			case "add":
+				if (args.length < 3) {
+					SendMessage(player, "§cUsage: /u announce add <message>");
+					return;
+				}
+				// PluginMain.AnnounceMessages.add(args[2]);
+				File file = new File("announcemessages.txt");
+				try {
+					BufferedWriter bw;
+					bw = new BufferedWriter(new FileWriter(file, true));
+					// bw.write(args[2] + "\n");
+					StringBuilder sb = new StringBuilder();
+					for (int i = 2; i < args.length; i++) {
+						sb.append(args[i]);
+						if (i != args.length - 1)
+							sb.append(" ");
+					}
+					String finalmessage=sb.toString().replace('&', '§');
+					PluginMain.AnnounceMessages.add(finalmessage);
+					bw.write(finalmessage);
+					bw.write(System.lineSeparator());
+					bw.close();
+					SendMessage(player, "§bAnnouncement added.§r");
+				} catch (IOException e) {
+					System.out.println("Error!\n" + e);
+					PluginMain.LastException = e; // 2015.08.09.
+				}
+				break;
+			case "remove":
+				if (args.length < 3) {
+					SendMessage(player, "§cUsage: /u announce remove <index>");
+					return;
+				}
+				try {
+					if (!PluginMain.RemoveLineFromFile("announcemessages.txt",
+							Integer.parseInt(args[2]) + 1)) {
+						SendMessage(player,
+								"§cError removing announce message!§r");
+						return;
+					} else {
+						PluginMain.AnnounceMessages.remove(Integer
+								.parseInt(args[2]));
+						SendMessage(player, "§bAnnouncement removed.§r");
+					}
+				} catch (NumberFormatException e) {
+					SendMessage(player, "§cUsage: /u announce remove <index>§r");
+					return;
+				}
+				break;
+			case "settime":
+				if (args.length < 3) {
+					SendMessage(player,
+							"§cUsage: /u announce settime <minutes>");
+					return;
+				}
+				SendMessage(player, "Setting time between messages...");
+				PluginMain.AnnounceTime = Integer.parseInt(args[2]) * 60 * 1000;
+				File inputFile = new File("announcemessages.txt");
+				File tempFile = new File("_tempAnnounce.txt");
+
+				if (!inputFile.exists())
+					break;
+
+				try {
+					BufferedReader reader = new BufferedReader(new FileReader(
+							inputFile));
+					BufferedWriter writer = new BufferedWriter(new FileWriter(
+							tempFile));
+
+					String currentLine;
+
+					boolean first = true;
+					while ((currentLine = reader.readLine()) != null) {
+						if (first) {
+							writer.write(PluginMain.AnnounceTime
+									+ System.lineSeparator());
+							first = false;
+						} else {
+							writer.write(currentLine
+									+ System.getProperty("line.separator"));
+						}
+					}
+					writer.close();
+					reader.close();
+					if (!tempFile.renameTo(inputFile)) {
+						inputFile.delete();
+						if (tempFile.renameTo(inputFile)) {
+							SendMessage(player,
+									"Setting time between messages done!");
+							break;
+						} else {
+							SendMessage(player,
+									"§cError: Failed to rename file!");
+							break;
+						}
+					} else {
+						SendMessage(player,
+								"Setting time between messages done!");
+						break;
+					}
+				} catch (IOException e) {
+					System.out.println("Error!\n" + e);
+					PluginMain.LastException = e; // 2015.08.09.
+				}
+				break;
+			case "list":
+				SendMessage(player, "§bList of announce messages:§r");
+				SendMessage(player, "§bFormat: [index] message§r");
+				int i = 0;
+				for (String message : PluginMain.AnnounceMessages)
+					SendMessage(player, "[" + i++ + "] " + message);
+				SendMessage(player,
+						"§bCurrent wait time between announcements: "
+								+ PluginMain.AnnounceTime / 60 / 1000
+								+ " minute(s)§r");
+				break;
+			default:
+				String message = "§cUsage: /u announce add|remove|settime|list§r";
+				SendMessage(player, message);
+				return;
+			}
 		}
 	}
 }
