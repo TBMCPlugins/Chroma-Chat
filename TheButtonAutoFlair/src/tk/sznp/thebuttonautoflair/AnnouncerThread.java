@@ -12,12 +12,14 @@ public class AnnouncerThread {
 			} catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
 			}
-			for (Player player : PluginMain.GetPlayers())
-				player.sendMessage(PluginMain.AnnounceMessages
-						.get(AnnounceMessageIndex));
-			AnnounceMessageIndex++;
-			if (AnnounceMessageIndex == PluginMain.AnnounceMessages.size())
-				AnnounceMessageIndex = 0;
+			if (PluginMain.AnnounceMessages.size() > AnnounceMessageIndex) {
+				for (Player player : PluginMain.GetPlayers())
+					player.sendMessage(PluginMain.AnnounceMessages
+							.get(AnnounceMessageIndex));
+				AnnounceMessageIndex++;
+				if (AnnounceMessageIndex == PluginMain.AnnounceMessages.size())
+					AnnounceMessageIndex = 0;
+			}
 		}
 	}
 }
