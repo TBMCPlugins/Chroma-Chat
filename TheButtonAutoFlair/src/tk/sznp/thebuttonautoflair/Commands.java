@@ -22,92 +22,135 @@ public class Commands implements CommandExecutor {
 			String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			if (args.length < 1)
-				return false;
-			MaybeOfflinePlayer p = MaybeOfflinePlayer.AllPlayers.get(player
-					.getName()); // 2015.08.08.
-			// if(!PluginMain.PlayerFlairs.containsKey(player.getName()))
-			if (!p.CommentedOnReddit && !args[0].toLowerCase().equals("admin")) {
-				player.sendMessage("§cError: You need to write your username to the reddit thread at /r/TheButtonMinecraft§r");
+			switch (cmd.getName()) {
+			case "u": {
+				if (args.length < 1)
+					return false;
+				MaybeOfflinePlayer p = MaybeOfflinePlayer.AllPlayers.get(player
+						.getName()); // 2015.08.08.
+				// if(!PluginMain.PlayerFlairs.containsKey(player.getName()))
+				if (!p.CommentedOnReddit
+						&& !args[0].toLowerCase().equals("admin")) {
+					player.sendMessage("§cError: You need to write your username to the reddit thread at /r/TheButtonMinecraft§r");
+					return true;
+				}
+				if (!p.FlairRecognised
+						&& !args[0].toLowerCase().equals("admin")) { // 2015.08.10.
+					player.sendMessage("Sorry, but your flair isn't recorded. Please ask a mod to set it for you.");
+					return true;
+				}
+				if (!p.FlairDecided && !args[0].toLowerCase().equals("admin")) { // 2015.08.19.
+					player.sendMessage("Please select between /u nonpresser and /u cantpress");
+					return true;
+				}
+				switch (args[0].toLowerCase()) // toLowerCase: 2015.08.09.
+				{
+				case "accept": {
+					if (p.IgnoredFlair)
+						p.IgnoredFlair = false; // 2015.08.08.
+					if (!p.AcceptedFlair) {
+						String flair = p.Flair; // 2015.08.08.
+						// PluginMain.AppendPlayerDisplayFlairFinal(player,
+						// flair);
+						// //2015.07.20.
+						p.AcceptedFlair = true; // 2015.08.08.
+						PluginMain.AppendPlayerDisplayFlair(p, player);
+						player.sendMessage("§bYour flair has been set:§r "
+								+ flair);
+					} else
+						player.sendMessage("§cYou already have this user's flair.§r");
+					break;
+				}
+				case "ignore": {
+					if (p.AcceptedFlair)
+						p.AcceptedFlair = false; // 2015.08.08.
+					if (!p.IgnoredFlair) {
+						p.IgnoredFlair = true;
+						// String flair=p.Flair; //2015.08.08.
+						// PluginMain.RemovePlayerDisplayFlairFinal(player,
+						// flair);
+						// //2015.07.20.
+						player.sendMessage("§bYou have ignored this request. You can still use /u accept though.§r");
+					} else
+						player.sendMessage("§cYou already ignored this request.§r");
+					break;
+				}
+				/*
+				 * case "reload": //2015.07.20. DoReload(player); break;
+				 */
+				case "admin": // 2015.08.09.
+					DoAdmin(player, args);
+					break;
+				case "nonpresser": // 2015.08.09.
+					if (!p.AcceptedFlair) {
+						player.sendMessage("§cYou need to accept the flair first.§r");
+						break;
+					}
+					if (p.FlairDecided) {
+						player.sendMessage("§cYou have already set the flair type.§r");
+						break;
+					}
+					SetPlayerFlair(player, p, "§7(--s)§r");
+					break;
+				case "cantpress": // 2015.08.09.
+					if (!p.AcceptedFlair) {
+						player.sendMessage("§cYou need to accept the flair first.§r");
+						break;
+					}
+					if (p.FlairDecided) {
+						player.sendMessage("§cYou have already set the flair type or your flair type is known.§r");
+						break;
+					}
+					SetPlayerFlair(player, p, "§r(??s)§r");
+					break;
+				case "opme": // 2015.08.10.
+					player.sendMessage("It would be nice, isn't it?"); // Sometimes
+																		// I'm
+																		// bored
+																		// too
+					break;
+				case "announce":
+					DoAnnounce(player, args);
+					break;
+				default:
+					return false;
+				}
 				return true;
 			}
-			if (!p.FlairRecognised && !args[0].toLowerCase().equals("admin")) { // 2015.08.10.
-				player.sendMessage("Sorry, but your flair isn't recorded. Please ask a mod to set it for you.");
+			case "rp":
+				if (args.length == 0) {
+					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = true;
+					player.sendMessage("§2RP mode on.§r");
+				} else {
+					boolean rpmode = MaybeOfflinePlayer
+							.AddPlayerIfNeeded(player.getName()).RPMode;
+					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = true;
+					String message = "";
+					for(String arg : args)
+						message+=arg+" ";
+					player.chat(message.substring(0, message.length()-1));
+					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = rpmode;
+				}
 				return true;
-			}
-			if (!p.FlairDecided && !args[0].toLowerCase().equals("admin")) { // 2015.08.19.
-				player.sendMessage("Please select between /u nonpresser and /u cantpress");
+			case "nrp":
+				if (args.length == 0) {
+					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = false;
+					player.sendMessage("§8RP mode off.§r");
+				} else {
+					boolean rpmode = MaybeOfflinePlayer
+							.AddPlayerIfNeeded(player.getName()).RPMode;
+					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = false;
+					String message = "";
+					for(String arg : args)
+						message+=arg+" ";
+					player.chat(message.substring(0, message.length()-1));
+					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = rpmode;
+				}
 				return true;
-			}
-			switch (args[0].toLowerCase()) // toLowerCase: 2015.08.09.
-			{
-			case "accept": {
-				if (p.IgnoredFlair)
-					p.IgnoredFlair = false; // 2015.08.08.
-				if (!p.AcceptedFlair) {
-					String flair = p.Flair; // 2015.08.08.
-					// PluginMain.AppendPlayerDisplayFlairFinal(player, flair);
-					// //2015.07.20.
-					p.AcceptedFlair = true; // 2015.08.08.
-					PluginMain.AppendPlayerDisplayFlair(p, player);
-					player.sendMessage("§bYour flair has been set:§r " + flair);
-				} else
-					player.sendMessage("§cYou already have this user's flair.§r");
-				break;
-			}
-			case "ignore": {
-				if (p.AcceptedFlair)
-					p.AcceptedFlair = false; // 2015.08.08.
-				if (!p.IgnoredFlair) {
-					p.IgnoredFlair = true;
-					// String flair=p.Flair; //2015.08.08.
-					// PluginMain.RemovePlayerDisplayFlairFinal(player, flair);
-					// //2015.07.20.
-					player.sendMessage("§bYou have ignored this request. You can still use /u accept though.§r");
-				} else
-					player.sendMessage("§cYou already ignored this request.§r");
-				break;
-			}
-			/*
-			 * case "reload": //2015.07.20. DoReload(player); break;
-			 */
-			case "admin": // 2015.08.09.
-				DoAdmin(player, args);
-				break;
-			case "nonpresser": // 2015.08.09.
-				if (!p.AcceptedFlair) {
-					player.sendMessage("§cYou need to accept the flair first.§r");
-					break;
-				}
-				if (p.FlairDecided) {
-					player.sendMessage("§cYou have already set the flair type.§r");
-					break;
-				}
-				SetPlayerFlair(player, p, "§7(--s)§r");
-				break;
-			case "cantpress": // 2015.08.09.
-				if (!p.AcceptedFlair) {
-					player.sendMessage("§cYou need to accept the flair first.§r");
-					break;
-				}
-				if (p.FlairDecided) {
-					player.sendMessage("§cYou have already set the flair type or your flair type is known.§r");
-					break;
-				}
-				SetPlayerFlair(player, p, "§r(??s)§r");
-				break;
-			case "opme": // 2015.08.10.
-				player.sendMessage("It would be nice, isn't it?"); // Sometimes
-																	// I'm bored
-																	// too
-				break;
-			case "announce":
-				DoAnnounce(player, args);
-				break;
 			default:
-				return false;
+				player.sendMessage("Unknown command: " + cmd.getName());
+				break;
 			}
-			return true;
 		}
 		/*
 		 * if(args[0].toLowerCase()=="reload") DoReload(null); //2015.07.20.
@@ -332,7 +375,7 @@ public class Commands implements CommandExecutor {
 						if (i != args.length - 1)
 							sb.append(" ");
 					}
-					String finalmessage=sb.toString().replace('&', '§');
+					String finalmessage = sb.toString().replace('&', '§');
 					PluginMain.AnnounceMessages.add(finalmessage);
 					bw.write(finalmessage);
 					bw.write(System.lineSeparator());

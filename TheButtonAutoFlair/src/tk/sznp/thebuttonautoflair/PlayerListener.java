@@ -62,6 +62,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			if (secretstuff >= 2)
 				pl.chat("Hey, " + p.getName() + "!");
 		}
+		
+		mp.RPMode=true; //2015.08.25.
 	}
 
 	@EventHandler
@@ -118,7 +120,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 						+ nwithoutformatting.charAt(index + 1), "");
 			// System.out.println("Index: "+index+" "+"CharAt(index+1): "+nwithoutformatting.charAt(index+1));
 			// }
-			//System.out.println("nwithoutformatting: " + nwithoutformatting);
+			// System.out.println("nwithoutformatting: " + nwithoutformatting);
 			if (message.contains(nwithoutformatting)) {
 				p = Bukkit.getPlayer(nicknames.get(n));
 				if (NotificationSound == null)
@@ -133,9 +135,12 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			}
 		}
 
-		event.setFormat(event.getFormat().substring(0,
-				event.getFormat().indexOf(">"))
-				+ flair + "> " + message); // 2015.08.08.
+		event.setFormat("<"
+				+ (player.RPMode ? "§2[RP]§r" : "§8[non-RP]§r")
+				+ event.getFormat().substring(
+						event.getFormat().indexOf("<") + 1,
+						event.getFormat().indexOf(">")) + flair + "> "
+				+ message); // 2015.08.08.
 	}
 
 	private static Class<?> nmsChatSerializer = Reflection

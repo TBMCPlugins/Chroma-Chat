@@ -28,12 +28,19 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	// Fired when plugin is first enabled
 	@Override
 	public void onEnable() {
-		System.out.println("The Button Minecraft server plugin by NorbiPeti");
+		System.out.println("The Button Minecraft server plugin");
 		getServer().getPluginManager().registerEvents(new PlayerListener(),
 				this);
-		this.getCommand("u").setExecutor(new Commands());
+		Commands comm = new Commands();
+		this.getCommand("u").setExecutor(comm);
 		this.getCommand("u").setUsage(
 				this.getCommand("u").getUsage().replace('&', '§'));
+		this.getCommand("rp").setExecutor(comm);
+		this.getCommand("rp").setUsage(
+				this.getCommand("rp").getUsage().replace('&', '§'));
+		this.getCommand("nrp").setExecutor(comm);
+		this.getCommand("nrp").setUsage(
+				this.getCommand("nrp").getUsage().replace('&', '§'));
 		Instance = this; // 2015.08.08.
 		Console = this.getServer().getConsoleSender(); // 2015.08.12.
 		LoadFiles(false); // 2015.08.09.
