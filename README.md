@@ -23,6 +23,9 @@ If you simply say any online player's full playername, it'll highlight it and pl
 
 Essentials nicknames are now supported. If you say a nickname, it'll show it's original colors, if you say a username, then it will choose based on flair color if known.
 
+#### RP mode (/rp and /nrp)
+You are in RP mode when you log in. You can disable it with /nrp, then reenable it with /rp. If you just want to say a message in a specific mode (RP or non-RP) you can just do /rp [message] or /nrp [message].
+
 ### Admins
 Type /u admin for a list of the commands.
 #### Seeing status of flairs (/u admin playerinfo)
