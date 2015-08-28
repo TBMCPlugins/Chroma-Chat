@@ -30,7 +30,8 @@ public class Commands implements CommandExecutor {
 						.getName()); // 2015.08.08.
 				// if(!PluginMain.PlayerFlairs.containsKey(player.getName()))
 				if (!p.CommentedOnReddit
-						&& !args[0].toLowerCase().equals("admin")) {
+						&& !args[0].toLowerCase().equals("admin")
+						&& !args[0].toLowerCase().equals("ignore")) {
 					player.sendMessage("§cError: You need to write your username to the reddit thread at /r/TheButtonMinecraft§r");
 					return true;
 				}
