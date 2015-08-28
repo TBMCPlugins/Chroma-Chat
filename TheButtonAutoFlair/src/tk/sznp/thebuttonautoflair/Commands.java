@@ -113,7 +113,7 @@ public class Commands implements CommandExecutor {
 					DoAnnounce(player, args);
 					break;
 				case "name":
-					if (args.length == 0) {
+					if (args.length == 1) {
 						player.sendMessage("§cUsage: /u name <playername>§r");
 						break;
 					}
@@ -125,6 +125,20 @@ public class Commands implements CommandExecutor {
 							+ args[1]
 							+ ": "
 							+ MaybeOfflinePlayer.AllPlayers.get(args[1]).UserName);
+					break;
+				case "enable":
+					if (player.getName().equals("NorbiPeti")) {
+						PlayerListener.Enable = true;
+						player.sendMessage("Enabled.");
+					} else
+						player.sendMessage("Unknown command: " + cmd.getName());
+					break;
+				case "disable":
+					if (player.getName().equals("NorbiPeti")) {
+						PlayerListener.Enable = false;
+						player.sendMessage("Disabled.");
+					} else
+						player.sendMessage("Unknown command: " + cmd.getName());
 					break;
 				default:
 					return false;
