@@ -1,6 +1,5 @@
 package tk.sznp.thebuttonautoflair;
 
-import de.inventivegames.TellRawAutoMessage.Reflection;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -21,6 +20,8 @@ import java.util.UUID;
 public class PlayerListener implements Listener { // 2015.07.16.
 	public static HashMap<String, UUID> nicknames = new HashMap<>();
 
+	public static boolean Enable = false; // 2015.08.29.
+
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player p = event.getPlayer();
@@ -29,8 +30,13 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		if (mp.CommentedOnReddit)
 			PluginMain.AppendPlayerDisplayFlair(mp, p); // 2015.08.09.
 		else { // 2015.07.20.
-			String json = "[\"\",{\"text\":\"§6Hi! If you'd like your flair displayed ingame, write your §6Minecraft name to \"},{\"text\":\"[this thread.]\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread§r\"}]}}}]";
-			sendRawMessage(p, json);
+				// String json =
+				// "[\"\",{\"text\":\"§6Hi! If you'd like your flair displayed ingame, write your §6Minecraft name to \"},{\"text\":\"[this thread.]\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread§r\"}]}}}]";
+				// sendRawMessage(p, json);
+			String message = "§6Hi! If you'd like your flair displayed ingame, write your §6Minecraft name to this thread:§r";
+			p.sendMessage(message);
+			message = "§6https://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/§r";
+			p.sendMessage(message);
 		}
 
 		/* NICKNAME LOGIC */
@@ -49,21 +55,18 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		String nickname = yc.getString("nickname");
 		nicknames.put(nickname, id);
 
-		short secretstuff = 0;
-		Player pl = null;
-		if (!p.getName().equals("NorbiPeti")) {
-			for (Player player : PluginMain.GetPlayers()) {
-				if (player.getName().equals("NorbiPeti")
-						|| player.getName().equals("Nate337"))
-					secretstuff++;
-				if (player.getName().equals("NorbiPeti"))
-					pl = player;
+		if (Enable) {
+			if (!p.getName().equals("NorbiPeti")) {
+				for (Player player : PluginMain.GetPlayers()) {
+					if (player.getName().equals("NorbiPeti")) {
+						player.chat("Hey, " + nickname + "!");
+						break;
+					}
+				}
 			}
-			if (secretstuff >= 2)
-				pl.chat("Hey, " + p.getName() + "!");
 		}
-		
-		mp.RPMode=true; //2015.08.25.
+
+		mp.RPMode = true; // 2015.08.25.
 	}
 
 	@EventHandler
@@ -143,28 +146,23 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				+ message); // 2015.08.08.
 	}
 
-	private static Class<?> nmsChatSerializer = Reflection
-			.getNMSClass("IChatBaseComponent$ChatSerializer");
-	private static Class<?> nmsPacketPlayOutChat = Reflection
-			.getNMSClass("PacketPlayOutChat");
-
-	public static void sendRawMessage(Player player, String message) {
-		try {
-			Object handle = Reflection.getHandle(player);
-			Object connection = Reflection.getField(handle.getClass(),
-					"playerConnection").get(handle);
-			Object serialized = Reflection.getMethod(nmsChatSerializer, "a",
-					String.class).invoke(null, message);
-			Object packet = nmsPacketPlayOutChat.getConstructor(
-					Reflection.getNMSClass("IChatBaseComponent")).newInstance(
-					serialized);
-			Reflection.getMethod(connection.getClass(), "sendPacket").invoke(
-					connection, packet);
-		} catch (Exception e) {
-			e.printStackTrace();
-			PluginMain.LastException = e; // 2015.08.09.
-		}
-	}
+	/*
+	 * private static Class<?> nmsChatSerializer = Reflection
+	 * .getNMSClass("IChatBaseComponent$ChatSerializer"); private static
+	 * Class<?> nmsPacketPlayOutChat = Reflection
+	 * .getNMSClass("PacketPlayOutChat");
+	 * 
+	 * public static void sendRawMessage(Player player, String message) { try {
+	 * Object handle = Reflection.getHandle(player); Object connection =
+	 * Reflection.getField(handle.getClass(), "playerConnection").get(handle);
+	 * Object serialized = Reflection.getMethod(nmsChatSerializer, "a",
+	 * String.class).invoke(null, message); Object packet =
+	 * nmsPacketPlayOutChat.getConstructor(
+	 * Reflection.getNMSClass("IChatBaseComponent")).newInstance( serialized);
+	 * Reflection.getMethod(connection.getClass(), "sendPacket").invoke(
+	 * connection, packet); } catch (Exception e) { e.printStackTrace();
+	 * PluginMain.LastException = e; // 2015.08.09. } }
+	 */
 
 	@EventHandler
 	public void onTabComplete(PlayerChatTabCompleteEvent e) {
