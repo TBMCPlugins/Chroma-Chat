@@ -112,6 +112,20 @@ public class Commands implements CommandExecutor {
 				case "announce":
 					DoAnnounce(player, args);
 					break;
+				case "name":
+					if (args.length == 0) {
+						player.sendMessage("§cUsage: /u name <playername>§r");
+						break;
+					}
+					if (!MaybeOfflinePlayer.AllPlayers.containsKey(args[1])) {
+						player.sendMessage("§cUnknown user: " + args[1]);
+						break;
+					}
+					player.sendMessage("§bUsername of "
+							+ args[1]
+							+ ": "
+							+ MaybeOfflinePlayer.AllPlayers.get(args[1]).UserName);
+					break;
 				default:
 					return false;
 				}
@@ -126,9 +140,9 @@ public class Commands implements CommandExecutor {
 							.AddPlayerIfNeeded(player.getName()).RPMode;
 					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = true;
 					String message = "";
-					for(String arg : args)
-						message+=arg+" ";
-					player.chat(message.substring(0, message.length()-1));
+					for (String arg : args)
+						message += arg + " ";
+					player.chat(message.substring(0, message.length() - 1));
 					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = rpmode;
 				}
 				return true;
@@ -141,9 +155,9 @@ public class Commands implements CommandExecutor {
 							.AddPlayerIfNeeded(player.getName()).RPMode;
 					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = false;
 					String message = "";
-					for(String arg : args)
-						message+=arg+" ";
-					player.chat(message.substring(0, message.length()-1));
+					for (String arg : args)
+						message += arg + " ";
+					player.chat(message.substring(0, message.length() - 1));
 					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = rpmode;
 				}
 				return true;
