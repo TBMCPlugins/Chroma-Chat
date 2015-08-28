@@ -20,7 +20,6 @@
 <fullyQualifiedTypeName name="org.bukkit.event.EventHandler"/>
 <fullyQualifiedTypeName name="org.bukkit.event.player.PlayerJoinEvent"/>
 <fullyQualifiedTypeName name="org.bukkit.event.player.AsyncPlayerChatEvent"/>
-<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PlayerListener"/>
 <fullyQualifiedTypeName name="java.util.function.Predicate"/>
 <fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.MyPredicate"/>
 <fullyQualifiedTypeName name="org.bukkit.command.CommandExecutor"/>
@@ -53,11 +52,12 @@
 <fullyQualifiedTypeName name="net.ess3.api.IUser"/>
 <fullyQualifiedTypeName name="org.apache.commons.io.FileUtils"/>
 <fullyQualifiedTypeName name="java.net.URL"/>
-<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.MaybeOfflinePlayer"/>
 <fullyQualifiedTypeName name="java.util.HashMap"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="java.lang.NumberFormatException"/>
 <fullyQualifiedTypeName name="org.bukkit.entity.Player"/>
 <fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.AnnouncerThread"/>
 <fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PluginMain"/>
+<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PlayerListener"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.MaybeOfflinePlayer"/>
 </qualifiedTypeNameHistroy>
