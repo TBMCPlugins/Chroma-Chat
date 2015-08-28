@@ -33,10 +33,14 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				// String json =
 				// "[\"\",{\"text\":\"§6Hi! If you'd like your flair displayed ingame, write your §6Minecraft name to \"},{\"text\":\"[this thread.]\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread§r\"}]}}}]";
 				// sendRawMessage(p, json);
-			String message = "§6Hi! If you'd like your flair displayed ingame, write your §6Minecraft name to this thread:§r";
-			p.sendMessage(message);
-			message = "§6https://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/§r";
-			p.sendMessage(message);
+			if (!mp.IgnoredFlair) {
+				String message = "§bHi! If you'd like your flair displayed ingame, write your §6Minecraft name to this thread:§r";
+				p.sendMessage(message);
+				message = "§bhttps://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/§r";
+				p.sendMessage(message);
+				message = "§bIf you don't want the flair, type /u ignore to prevent this message on login.§r";
+				p.sendMessage(message);
+			}
 		}
 
 		/* NICKNAME LOGIC */
