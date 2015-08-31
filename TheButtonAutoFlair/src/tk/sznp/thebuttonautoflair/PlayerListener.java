@@ -48,27 +48,35 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		UUID id = p.getUniqueId();
 
 		File f = new File("plugins/essentials/userdata/" + id + ".yml");
-		YamlConfiguration yc = new YamlConfiguration();
-		try {
-			yc.load(f);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InvalidConfigurationException e) {
-			e.printStackTrace();
-		}
-		String nickname = yc.getString("nickname");
-		nicknames.put(nickname, id);
+		if (f.exists()) {
+			YamlConfiguration yc = new YamlConfiguration();
+			try {
+				yc.load(f);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (InvalidConfigurationException e) {
+				e.printStackTrace();
+			}
+			String nickname = yc.getString("nickname");
+			if (nickname != null) {
+				nicknames.put(nickname, id);
 
-		if (Enable) {
-			if (!p.getName().equals("NorbiPeti")) {
-				for (Player player : PluginMain.GetPlayers()) {
-					if (player.getName().equals("NorbiPeti")) {
-						player.chat("Hey, " + nickname + "!");
-						break;
+				if (Enable) {
+					if (!p.getName().equals("NorbiPeti")) {
+						for (Player player : PluginMain.GetPlayers()) {
+							if (player.getName().equals("NorbiPeti")) {
+								player.chat("Hey, " + nickname + "!");
+								break;
+							}
+						}
 					}
 				}
 			}
 		}
+		System.out.println("Folder plugins exists: "+new File("plugins").isDirectory());
+		System.out.println("Folder plugins/essentials exists: "+new File("plugins/essentials").isDirectory());
+		System.out.println("Folder plugins/essentials/userdata exists: "+new File("plugins/essentials/userdata").isDirectory());
+		System.out.println("Folder plugins/essentials/userdata/"+id+".yml exists: "+new File("plugins/essentials/userdata/"+id+".yml").exists());
 
 		mp.RPMode = true; // 2015.08.25.
 	}
