@@ -35,12 +35,12 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		this.getCommand("u").setExecutor(comm);
 		this.getCommand("u").setUsage(
 				this.getCommand("u").getUsage().replace('&', '§'));
-		this.getCommand("rp").setExecutor(comm);
-		this.getCommand("rp").setUsage(
-				this.getCommand("rp").getUsage().replace('&', '§'));
 		this.getCommand("nrp").setExecutor(comm);
 		this.getCommand("nrp").setUsage(
 				this.getCommand("nrp").getUsage().replace('&', '§'));
+		this.getCommand("ooc").setExecutor(comm);
+		this.getCommand("ooc").setUsage(
+				this.getCommand("ooc").getUsage().replace('&', '§'));
 		Instance = this; // 2015.08.08.
 		Console = this.getServer().getConsoleSender(); // 2015.08.12.
 		LoadFiles(false); // 2015.08.09.

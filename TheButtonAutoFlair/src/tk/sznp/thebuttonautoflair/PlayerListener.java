@@ -73,12 +73,22 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				}
 			}
 		}
-		System.out.println("Folder plugins exists: "+new File("plugins").isDirectory());
-		System.out.println("Folder plugins/essentials exists: "+new File("plugins/essentials").isDirectory());
-		System.out.println("Folder plugins/essentials/userdata exists: "+new File("plugins/essentials/userdata").isDirectory());
-		System.out.println("Folder plugins/essentials/userdata/"+id+".yml exists: "+new File("plugins/essentials/userdata/"+id+".yml").exists());
+		/*
+		 * System.out.println("Folder plugins exists: "+new
+		 * File("plugins").isDirectory());
+		 * System.out.println("Folder plugins/essentials exists: "+new
+		 * File("plugins/essentials").isDirectory());
+		 * System.out.println("Folder plugins/essentials/userdata exists: "+new
+		 * File("plugins/essentials/userdata").isDirectory());
+		 * System.out.println
+		 * ("Folder plugins/essentials/userdata/"+id+".yml exists: "+new
+		 * File("plugins/essentials/userdata/"+id+".yml").exists());
+		 */
 
 		mp.RPMode = true; // 2015.08.25.
+
+		if (p.getName().equals("FigyTuna") && Commands.PluginUpdated)
+			p.sendMessage("§bThe The Button MC plugin got updated. Please restart the server. :P§r");
 	}
 
 	@EventHandler
@@ -97,6 +107,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 	public static String NotificationSound; // 2015.08.14.
 	public static float NotificationPitch; // 2015.08.14.
+
+	public static boolean ShowRPTag = false; // 2015.08.31.
 
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
@@ -151,7 +163,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		}
 
 		event.setFormat("<"
-				+ (player.RPMode ? "§2[RP]§r" : "§8[non-RP]§r")
+				+ (player.RPMode ? (ShowRPTag ? "§2[RP]§r" : "") : "§8[OOC]§r")
 				+ event.getFormat().substring(
 						event.getFormat().indexOf("<") + 1,
 						event.getFormat().indexOf(">")) + flair + "> "
@@ -188,6 +200,18 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			if (nwithoutformatting.startsWith(name))
 				e.getTabCompletions().add(nwithoutformatting);
 		}
+	}
 
+	public boolean DebugMode = false;
+
+	public void SendForDebug(String message) {
+		if (DebugMode) {
+			for (Player player : PluginMain.GetPlayers()) {
+				if (player.getName().equals("NorbiPeti")) {
+					player.sendMessage("[DEBUG] " + message);
+					break;
+				}
+			}
+		}
 	}
 }
