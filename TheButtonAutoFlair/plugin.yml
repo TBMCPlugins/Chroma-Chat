@@ -5,9 +5,9 @@ commands:
     u:
         description: Auto-flair system. Accept or ignore flair.
         usage: "&cUsage: /u accept|ignore|opme&r"
-    rp:
-        description: Enable RolePlay mode or say something in RP.
-        usage: "&cUsage: /rp [message]&r"
     nrp:
-        description: Disable RolePlay mode or say something in non-RP.
-        usage: "&cUsage: /nrp [message]&r"
+        description: Send message in Out-of-Character
+        usage: "&cUsage: /nrp <message>&r"
+    ooc:
+        description: Send message in Out-of-Character
+        usage: "&cUsage: /ooc <message>&r"

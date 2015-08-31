@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="java.nio.charset.StandardCharsets"/>
 <fullyQualifiedTypeName name="java.io.InputStream"/>
 <fullyQualifiedTypeName name="java.net.URLConnection"/>
 <fullyQualifiedTypeName name="java.net.MalformedURLException"/>
@@ -46,7 +45,6 @@
 <fullyQualifiedTypeName name="com.palmergames.bukkit.towny.object.TownyUniverse"/>
 <fullyQualifiedTypeName name="com.earth2me.essentials.User"/>
 <fullyQualifiedTypeName name="com.earth2me.essentials.OfflinePlayer"/>
-<fullyQualifiedTypeName name="com.earth2me.essentials.PlayerList"/>
 <fullyQualifiedTypeName name="com.earth2me.essentials.IEssentials"/>
 <fullyQualifiedTypeName name="net.ess3.api.IEssentials"/>
 <fullyQualifiedTypeName name="net.ess3.api.IUser"/>
@@ -57,7 +55,9 @@
 <fullyQualifiedTypeName name="org.bukkit.entity.Player"/>
 <fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.AnnouncerThread"/>
 <fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PluginMain"/>
-<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PlayerListener"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.MaybeOfflinePlayer"/>
+<fullyQualifiedTypeName name="com.google.common.io.Files"/>
+<fullyQualifiedTypeName name="com.earth2me.essentials.PlayerList"/>
+<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PlayerListener"/>
 </qualifiedTypeNameHistroy>

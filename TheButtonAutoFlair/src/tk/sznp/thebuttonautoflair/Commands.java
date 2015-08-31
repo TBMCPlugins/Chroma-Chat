@@ -16,6 +16,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class Commands implements CommandExecutor {
+
+	public static boolean PluginUpdated = false; // 2015.08.31.
+
 	// This method is called, when somebody uses our command
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
@@ -146,34 +149,37 @@ public class Commands implements CommandExecutor {
 				}
 				return true;
 			}
-			case "rp":
-				if (args.length == 0) {
-					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = true;
-					player.sendMessage("§2RP mode on.§r");
-				} else {
-					boolean rpmode = MaybeOfflinePlayer
-							.AddPlayerIfNeeded(player.getName()).RPMode;
-					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = true;
-					String message = "";
-					for (String arg : args)
-						message += arg + " ";
-					player.chat(message.substring(0, message.length() - 1));
-					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = rpmode;
-				}
-				return true;
+			/*
+			 * case "rp": if (args.length == 0) {
+			 * MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode =
+			 * true; player.sendMessage("§2RP mode on.§r"); } else { boolean
+			 * rpmode = MaybeOfflinePlayer
+			 * .AddPlayerIfNeeded(player.getName()).RPMode;
+			 * MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode =
+			 * true; String message = ""; for (String arg : args) message += arg
+			 * + " "; player.chat(message.substring(0, message.length() - 1));
+			 * MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode =
+			 * rpmode; } return true;
+			 */
 			case "nrp":
+			case "ooc":
 				if (args.length == 0) {
-					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = false;
-					player.sendMessage("§8RP mode off.§r");
+					/*
+					 * MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode
+					 * = false; player.sendMessage("§8RP mode off.§r");
+					 */
+					return false;
 				} else {
-					boolean rpmode = MaybeOfflinePlayer
-							.AddPlayerIfNeeded(player.getName()).RPMode;
+					/*
+					 * boolean rpmode = MaybeOfflinePlayer
+					 * .AddPlayerIfNeeded(player.getName()).RPMode;
+					 */
 					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = false;
 					String message = "";
 					for (String arg : args)
 						message += arg + " ";
 					player.chat(message.substring(0, message.length() - 1));
-					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = rpmode;
+					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = true;
 				}
 				return true;
 			default:
@@ -231,7 +237,7 @@ public class Commands implements CommandExecutor {
 				|| player.getName().equals("NorbiPeti")) {
 			// System.out.println("Args length: " + args.length);
 			if (args.length == 1) {
-				String message = "§cUsage: /u admin reload|playerinfo|getlasterror|save|setflair|updateplugin§r";
+				String message = "§cUsage: /u admin reload|playerinfo|getlasterror|save|setflair|updateplugin|togglerpshow§r";
 				SendMessage(player, message);
 				return;
 			}
@@ -267,8 +273,13 @@ public class Commands implements CommandExecutor {
 			case "updateplugin": // 2015.08.10.
 				DoUpdatePlugin(player);
 				break;
+			case "togglerpshow":
+				PlayerListener.ShowRPTag = !PlayerListener.ShowRPTag;
+				SendMessage(player, "RP tag showing "
+						+ (PlayerListener.ShowRPTag ? "enabled" : "disabled"));
+				break;
 			default:
-				String message = "§cUsage: /u admin reload|playerinfo|getlasterror|save|setflair|updateplugin§r";
+				String message = "§cUsage: /u admin reload|playerinfo|getlasterror|save|setflair|updateplugin|togglerpshow§r";
 				SendMessage(player, message);
 				return;
 			}
@@ -367,6 +378,7 @@ public class Commands implements CommandExecutor {
 					"https://github.com/NorbiPeti/thebuttonautoflairmc/raw/master/TheButtonAutoFlair.jar");
 			FileUtils.copyURLToFile(url, new File(
 					"plugins/TheButtonAutoFlair.jar"));
+			PluginUpdated = true; // 2015.08.31.
 			SendMessage(player, "Updating done!");
 		} catch (MalformedURLException e) {
 			System.out.println("Error!\n" + e);
