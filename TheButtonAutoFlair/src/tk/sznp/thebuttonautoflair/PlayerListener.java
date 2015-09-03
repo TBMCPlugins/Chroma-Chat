@@ -214,7 +214,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		}
 	}
 
-	public boolean DebugMode = false;
+	public static boolean DebugMode = false;
 
 	public void SendForDebug(String message) {
 		if (DebugMode) {

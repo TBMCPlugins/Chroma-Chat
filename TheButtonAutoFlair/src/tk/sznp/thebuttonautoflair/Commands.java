@@ -278,6 +278,10 @@ public class Commands implements CommandExecutor {
 				SendMessage(player, "RP tag showing "
 						+ (PlayerListener.ShowRPTag ? "enabled" : "disabled"));
 				break;
+			case "toggledebug":
+				PlayerListener.DebugMode=!PlayerListener.DebugMode;
+				SendMessage(player, "DebugMode: "+PlayerListener.DebugMode);
+				break;
 			default:
 				String message = "§cUsage: /u admin reload|playerinfo|getlasterror|save|setflair|updateplugin|togglerpshow§r";
 				SendMessage(player, message);
