@@ -85,6 +85,18 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		 * File("plugins/essentials/userdata/"+id+".yml").exists());
 		 */
 
+		SendForDebug("Folder plugins exists: "
+				+ new File("plugins").isDirectory());
+		SendForDebug("Folder plugins/essentials exists: "
+				+ new File("plugins/essentials").isDirectory());
+		SendForDebug("Folder plugins/essentials/userdata exists: "
+				+ new File("plugins/essentials/userdata").isDirectory());
+		SendForDebug("Folder plugins/essentials/userdata/"
+				+ id
+				+ ".yml exists: "
+				+ new File("plugins/essentials/userdata/" + id + ".yml")
+						.exists());
+
 		mp.RPMode = true; // 2015.08.25.
 
 		if (p.getName().equals("FigyTuna") && Commands.PluginUpdated)
