@@ -47,7 +47,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 		UUID id = p.getUniqueId();
 
-		File f = new File("plugins/essentials/userdata/" + id + ".yml");
+		File f = new File("plugins/Essentials/userdata/" + id + ".yml");
 		if (f.exists()) {
 			YamlConfiguration yc = new YamlConfiguration();
 			try {
@@ -87,14 +87,14 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 		SendForDebug("Folder plugins exists: "
 				+ new File("plugins").isDirectory());
-		SendForDebug("Folder plugins/essentials exists: "
-				+ new File("plugins/essentials").isDirectory());
-		SendForDebug("Folder plugins/essentials/userdata exists: "
-				+ new File("plugins/essentials/userdata").isDirectory());
-		SendForDebug("Folder plugins/essentials/userdata/"
+		SendForDebug("Folder plugins/Essentials exists: "
+				+ new File("plugins/Essentials").isDirectory());
+		SendForDebug("Folder plugins/Essentials/userdata exists: "
+				+ new File("plugins/Essentials/userdata").isDirectory());
+		SendForDebug("Folder plugins/Essentials/userdata/"
 				+ id
 				+ ".yml exists: "
-				+ new File("plugins/essentials/userdata/" + id + ".yml")
+				+ new File("plugins/Essentials/userdata/" + id + ".yml")
 						.exists());
 
 		mp.RPMode = true; // 2015.08.25.
