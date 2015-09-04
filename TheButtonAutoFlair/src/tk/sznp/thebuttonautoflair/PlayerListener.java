@@ -174,12 +174,18 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			}
 		}
 
-		event.setFormat("<"
-				+ (player.RPMode ? (ShowRPTag ? "§2[RP]§r" : "") : "§8[OOC]§r")
-				+ event.getFormat().substring(
-						event.getFormat().indexOf("<") + 1,
-						event.getFormat().indexOf(">")) + flair + "> "
-				+ message); // 2015.08.08.
+		/*
+		 * event.setFormat("<" + (player.RPMode ? (ShowRPTag ? "§2[RP]§r" : "")
+		 * : "§8[OOC]§r") + event.getFormat().substring(
+		 * event.getFormat().indexOf("<") + 1, event.getFormat().indexOf(">")) +
+		 * flair + "> " + message); // 2015.08.08.
+		 */
+		event.setFormat(event
+				.getFormat()
+				.replace(
+						"{rptag}",
+						(player.RPMode ? (ShowRPTag ? "§2[RP]§r" : "")
+								: "§8[OOC]§r")).replace("{buttonflair}", flair)); // 2015.09.04.
 	}
 
 	/*
