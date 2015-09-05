@@ -149,7 +149,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		}
 		for (String n : nicknames.keySet()) {
 			Player p = null;
-			String nwithoutformatting = n;
+			String nwithoutformatting = new String(n);
 			int index;
 			// System.out.println("n: " + n);
 			while ((index = nwithoutformatting.indexOf('§')) != -1)
@@ -180,6 +180,9 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		 * event.getFormat().indexOf("<") + 1, event.getFormat().indexOf(">")) +
 		 * flair + "> " + message); // 2015.08.08.
 		 */
+		
+		event.setMessage(message); //2015.09.05.
+		
 		event.setFormat(event
 				.getFormat()
 				.replace(
