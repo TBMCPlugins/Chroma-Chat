@@ -235,4 +235,12 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			}
 		}
 	}
+
+
+	@EventHandler
+	public void onPlayerMessage(AsyncPlayerChatEvent e)
+	{
+		if (e.getMessage().startsWith(">"))
+            e.setMessage("§2"+e.getMessage());
+	}
 }
