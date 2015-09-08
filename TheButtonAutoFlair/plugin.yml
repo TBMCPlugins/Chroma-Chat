@@ -12,4 +12,4 @@ commands:
         description: Send message in Out-of-Character
         usage: "&cUsage: /ooc <message>&r"
 author: NorbiPeti
-depend: [Essentials, Towny]
+depend: [Essentials, Towny, TownyChat]
