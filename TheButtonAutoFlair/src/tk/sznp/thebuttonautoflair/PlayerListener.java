@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -133,6 +134,26 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		for (Player p : PluginMain.GetPlayers()) { // 2015.08.12.
 			String color = ""; // 2015.08.17.
 			if (message.contains(p.getName())) {
+				ArrayList<Integer> NamePositions = new ArrayList<>();
+				for (String n : nicknames.keySet()) {
+					String nwithoutformatting = new String(n);
+					int index;
+					while ((index = nwithoutformatting.indexOf("§k")) != -1)
+						nwithoutformatting = nwithoutformatting.replaceAll("§k"
+								+ nwithoutformatting.charAt(index + 2), ""); // Support
+																				// for
+																				// one
+																				// random
+																				// char
+					while ((index = nwithoutformatting.indexOf('§')) != -1)
+						nwithoutformatting = nwithoutformatting.replaceAll("§"
+								+ nwithoutformatting.charAt(index + 1), "");
+					/*
+					 * if (nwithoutformatting.contains(p.getName())) { HasName =
+					 * true; break; }
+					 */
+				}
+				// if (!HasName) {
 				if (NotificationSound == null)
 					p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f, 0.5f); // 2015.08.12.
 				else
@@ -142,25 +163,32 @@ public class PlayerListener implements Listener { // 2015.07.16.
 						.getName()); // 2015.08.17.
 				if (mp.Flair.length() > 1)
 					color = mp.Flair.substring(0, 2);
+				// }
 			}
 
+			// if (!HasName)
 			message = message.replaceAll(p.getName(), color + p.getName()
 					+ "§r");
 		}
 		for (String n : nicknames.keySet()) {
 			Player p = null;
+			//event.getPlayer().sendMessage("n before: " + n); // TMP
 			String nwithoutformatting = new String(n);
 			int index;
-			// System.out.println("n: " + n);
+			while ((index = nwithoutformatting.indexOf("§k")) != -1)
+				nwithoutformatting = nwithoutformatting.replaceAll("§k"
+						+ nwithoutformatting.charAt(index + 2), ""); // Support
+																		// for
+																		// one
+																		// random
+																		// char
 			while ((index = nwithoutformatting.indexOf('§')) != -1)
-				// if ((index = nwithoutformatting.indexOf('§')) != -1)
-				// {
 				nwithoutformatting = nwithoutformatting.replaceAll("§"
 						+ nwithoutformatting.charAt(index + 1), "");
-			// System.out.println("Index: "+index+" "+"CharAt(index+1): "+nwithoutformatting.charAt(index+1));
-			// }
-			// System.out.println("nwithoutformatting: " + nwithoutformatting);
+			//event.getPlayer().sendMessage(nwithoutformatting); // TMP
 			if (message.contains(nwithoutformatting)) {
+				//event.getPlayer().sendMessage("Yep"); // TMP
+				//event.getPlayer().sendMessage(n); // TMP
 				p = Bukkit.getPlayer(nicknames.get(n));
 				if (NotificationSound == null)
 					p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f, 0.5f); // 2015.08.12.
@@ -170,19 +198,12 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				MaybeOfflinePlayer.AddPlayerIfNeeded(p.getName()); // 2015.08.17.
 			}
 			if (p != null) {
-				message = message.replaceAll(nwithoutformatting, n);
+				message = message.replaceAll(nwithoutformatting, n + "§r");
 			}
 		}
 
-		/*
-		 * event.setFormat("<" + (player.RPMode ? (ShowRPTag ? "§2[RP]§r" : "")
-		 * : "§8[OOC]§r") + event.getFormat().substring(
-		 * event.getFormat().indexOf("<") + 1, event.getFormat().indexOf(">")) +
-		 * flair + "> " + message); // 2015.08.08.
-		 */
-		
-		event.setMessage(message); //2015.09.05.
-		
+		event.setMessage(message); // 2015.09.05.
+
 		event.setFormat(event
 				.getFormat()
 				.replace(
@@ -191,30 +212,19 @@ public class PlayerListener implements Listener { // 2015.07.16.
 								: "§8[OOC]§r")).replace("{buttonflair}", flair)); // 2015.09.04.
 	}
 
-	/*
-	 * private static Class<?> nmsChatSerializer = Reflection
-	 * .getNMSClass("IChatBaseComponent$ChatSerializer"); private static
-	 * Class<?> nmsPacketPlayOutChat = Reflection
-	 * .getNMSClass("PacketPlayOutChat");
-	 * 
-	 * public static void sendRawMessage(Player player, String message) { try {
-	 * Object handle = Reflection.getHandle(player); Object connection =
-	 * Reflection.getField(handle.getClass(), "playerConnection").get(handle);
-	 * Object serialized = Reflection.getMethod(nmsChatSerializer, "a",
-	 * String.class).invoke(null, message); Object packet =
-	 * nmsPacketPlayOutChat.getConstructor(
-	 * Reflection.getNMSClass("IChatBaseComponent")).newInstance( serialized);
-	 * Reflection.getMethod(connection.getClass(), "sendPacket").invoke(
-	 * connection, packet); } catch (Exception e) { e.printStackTrace();
-	 * PluginMain.LastException = e; // 2015.08.09. } }
-	 */
-
 	@EventHandler
 	public void onTabComplete(PlayerChatTabCompleteEvent e) {
 		String name = e.getLastToken();
 		for (String nickname : nicknames.keySet()) {
 			String nwithoutformatting = nickname;
 			int index;
+			while ((index = nwithoutformatting.indexOf("§k")) != -1)
+				nwithoutformatting = nwithoutformatting.replaceAll("§k"
+						+ nwithoutformatting.charAt(index + 2), ""); // Support
+																		// for
+																		// one
+																		// random
+																		// char
 			while ((index = nwithoutformatting.indexOf('§')) != -1)
 				nwithoutformatting = nwithoutformatting.replaceAll("§"
 						+ nwithoutformatting.charAt(index + 1), "");
