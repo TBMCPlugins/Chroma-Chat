@@ -23,8 +23,11 @@ If you simply say any online player's full playername, it'll highlight it and pl
 
 Essentials nicknames are now supported. If you say a nickname, it'll show it's original colors, if you say a username, then it will choose based on flair color if known.
 
-#### RP mode (/rp and /nrp)
-You are in RP mode when you log in. You can disable it with /nrp, then reenable it with /rp. If you just want to say a message in a specific mode (RP or non-RP) you can just do /rp [message] or /nrp [message].
+#### RP/OOC mode (/nrp or /ooc)
+You can use /ooc <message> to say something Out-of-Character. Otherwise everything you speak should be treated as said in RP, except when it is obvious it's not in RP (like talking about the server).
+
+#### Greentext support (>message)
+Start your message with '>' to make it green.
 
 ### Admins
 Type /u admin for a list of the commands.
