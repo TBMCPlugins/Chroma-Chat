@@ -82,20 +82,16 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 							"author");
 					String ign = item.getJSONObject("data").getString("body");
 					int start = ign.indexOf("IGN:") + "IGN:".length();
-					// System.out.println("Start: "+start);
 					if (start == -1 + "IGN:".length()) // +length: 2015.08.10.
 						continue; // 2015.08.09.
 					int end = ign.indexOf(' ', start);
 					if (end == -1 || end == start)
 						end = ign.indexOf('\n', start); // 2015.07.15.
-					// System.out.println("End: "+end);
 					if (end == -1 || end == start)
 						ign = ign.substring(start);
 					else
 						ign = ign.substring(start, end);
-					// System.out.println("IGN: "+ign);
 					ign = ign.trim();
-					// System.out.println("Trimmed IGN: "+ign);
 					if (HasIGFlair(ign))
 						continue;
 					try {
@@ -113,9 +109,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 						flair = "";
 					if (flair != "-1")
 						flair = flair + "s";
-					/*
-					 * else flair = "non-presser";
-					 */
 					String flairclass;
 					if (flairdata.length > 2)
 						flairclass = flairdata[2];
@@ -154,7 +147,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 	public Boolean HasIGFlair(String playername) {
 		MaybeOfflinePlayer p = MaybeOfflinePlayer.AddPlayerIfNeeded(playername); // 2015.08.08.
-		// return p.Flair!=null; //2015.08.08.
 		return p.CommentedOnReddit; // 2015.08.10.
 	}
 
@@ -201,25 +193,14 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			finalflair = "";
 			break;
 		default:
-			// finalflair="";
-			// break;
 			return;
 		}
-		/*
-		 * if(finalflair.length()==0) //<-- 2015.07.20. return;
-		 */
 		p.Flair = finalflair; // 2015.08.08.
 		p.CommentedOnReddit = true; // 2015.08.10.
 		p.UserName = username; // 2015.08.08.
-		/*
-		 * if(finalflair.length()==0) //Just for the message
-		 * finalflair="undecided";
-		 */
-		// System.out.println("Added new flair to "+playername+": "+finalflair);
 		for (Player player : getServer().getOnlinePlayers()) // <-- 2015.08.08.
 		{
 			if (player.getName().equals(playername)) {
-				// AppendPlayerDisplayFlair(player, username, finalflair);
 				AppendPlayerDisplayFlair(p, player);
 				break;
 			}
@@ -232,8 +213,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		return flair; // 2015.08.10.
 	}
 
-	// public static void AppendPlayerDisplayFlair(Player player, String
-	// username, String flair)
 	public static void AppendPlayerDisplayFlair(MaybeOfflinePlayer player,
 			Player p) // <-- 2015.08.09.
 	{
@@ -241,35 +220,12 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		if (MaybeOfflinePlayer.AllPlayers.get(p.getName()).IgnoredFlair)
 			return;
 		if (MaybeOfflinePlayer.AllPlayers.get(p.getName()).AcceptedFlair) {
-			// AppendPlayerDisplayFlairFinal(p, player.Flair); //2015.07.20.
 			if (!player.FlairDecided)
 				p.sendMessage("§9Your flair type is unknown. Are you a non-presser or a can't press? (/u nonpresser or /u cantpress)§r"); // 2015.08.09.
 		} else
 			p.sendMessage("§9Are you Reddit user " + player.UserName
 					+ "?§r §6Type /u accept or /u ignore§r");
 	}
-
-	/*
-	 * private static void AppendPlayerDisplayFlairFinal(Player player, String
-	 * flair) { //2015.07.20.String color =
-	 * GetColorForTown(GetPlayerTown(player)); //TO!DO: Multiple colors put on
-	 * first capital letters String[] colors = color.substring(1).split("§");
-	 * String displayname=player.getName(); //2015.08.08. ArrayList<Integer>
-	 * Positions=new ArrayList<>(); for(int i=0; i<displayname.length(); i++) {
-	 * if(Character.isUpperCase(displayname.charAt(i))) { Positions.add(i); } }
-	 * String finalname=""; //TODO if(Positions.size()>=colors.length) { int
-	 * x=0; for(int i=0; i<Positions.size(); i++) { int pos=Positions.get(i);
-	 * int nextpos; if(i!=Positions.size()-1) nextpos=Positions.get(i+1); else
-	 * nextpos=displayname.length(); String
-	 * substr="§"+colors[x++]+displayname.substring(pos, nextpos)+"§r";
-	 * finalname+=substr; } } else { Positions.clear(); int
-	 * unit=displayname.length()/colors.length; int x=0; for(int i=0;
-	 * i<displayname.length()-unit; i+=unit) { int pos=i; int nextpos;
-	 * if(i<displayname.length()-unit-unit) nextpos=i+unit; else
-	 * nextpos=displayname.length(); String
-	 * substr="§"+colors[x++]+displayname.substring(pos, nextpos)+"§r";
-	 * finalname+=substr; } }* }
-	 */
 
 	public static String GetColorForTown(String townname) { // 2015.07.20.
 		if (TownColors.containsKey(townname))
@@ -286,13 +242,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			return "";
 		}
 	}
-
-	/*
-	 * public static void RemovePlayerDisplayFlairFinal(Player player, String
-	 * flair) { //2015.07.20.
-	 * MaybeOfflinePlayer.AllPlayers.get(player.getName()).Flair=null;
-	 * //2015.08.08. }
-	 */
 
 	public static Collection<? extends Player> GetPlayers() {
 		return Instance.getServer().getOnlinePlayers();
