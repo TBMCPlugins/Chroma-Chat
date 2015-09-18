@@ -13,6 +13,7 @@ public class MaybeOfflinePlayer { // 2015.08.08.
 	public boolean FlairRecognised; // 2015.08.10.
 	public boolean CommentedOnReddit; // 2015.08.10.
 	public boolean RPMode; // 2015.08.25.
+	public boolean PressedF; //2015.09.18.
 	public static HashMap<String, MaybeOfflinePlayer> AllPlayers = new HashMap<>(); // 2015.08.08.
 
 	public static MaybeOfflinePlayer AddPlayerIfNeeded(String playername) {
@@ -25,8 +26,4 @@ public class MaybeOfflinePlayer { // 2015.08.08.
 		}
 		return AllPlayers.get(playername);
 	}
-	/*
-	 * public enum FlairClassType { //2015.08.09. NonPresser, CantPress,
-	 * Undecided }
-	 */
 }

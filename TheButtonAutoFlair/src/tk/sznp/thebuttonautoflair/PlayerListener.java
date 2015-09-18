@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -14,8 +15,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.UUID;
 
 public class PlayerListener implements Listener { // 2015.07.16.
@@ -31,9 +32,6 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		if (mp.CommentedOnReddit)
 			PluginMain.AppendPlayerDisplayFlair(mp, p); // 2015.08.09.
 		else { // 2015.07.20.
-				// String json =
-				// "[\"\",{\"text\":\"§6Hi! If you'd like your flair displayed ingame, write your §6Minecraft name to \"},{\"text\":\"[this thread.]\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread§r\"}]}}}]";
-				// sendRawMessage(p, json);
 			if (!mp.IgnoredFlair) {
 				String message = "§bHi! If you'd like your flair displayed ingame, write your §6Minecraft name to this thread:§r";
 				p.sendMessage(message);
@@ -74,29 +72,6 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				}
 			}
 		}
-		/*
-		 * System.out.println("Folder plugins exists: "+new
-		 * File("plugins").isDirectory());
-		 * System.out.println("Folder plugins/essentials exists: "+new
-		 * File("plugins/essentials").isDirectory());
-		 * System.out.println("Folder plugins/essentials/userdata exists: "+new
-		 * File("plugins/essentials/userdata").isDirectory());
-		 * System.out.println
-		 * ("Folder plugins/essentials/userdata/"+id+".yml exists: "+new
-		 * File("plugins/essentials/userdata/"+id+".yml").exists());
-		 */
-
-		SendForDebug("Folder plugins exists: "
-				+ new File("plugins").isDirectory());
-		SendForDebug("Folder plugins/Essentials exists: "
-				+ new File("plugins/Essentials").isDirectory());
-		SendForDebug("Folder plugins/Essentials/userdata exists: "
-				+ new File("plugins/Essentials/userdata").isDirectory());
-		SendForDebug("Folder plugins/Essentials/userdata/"
-				+ id
-				+ ".yml exists: "
-				+ new File("plugins/Essentials/userdata/" + id + ".yml")
-						.exists());
 
 		mp.RPMode = true; // 2015.08.25.
 
@@ -134,7 +109,6 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		for (Player p : PluginMain.GetPlayers()) { // 2015.08.12.
 			String color = ""; // 2015.08.17.
 			if (message.contains(p.getName())) {
-				ArrayList<Integer> NamePositions = new ArrayList<>();
 				for (String n : nicknames.keySet()) {
 					String nwithoutformatting = new String(n);
 					int index;
@@ -148,12 +122,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 					while ((index = nwithoutformatting.indexOf('§')) != -1)
 						nwithoutformatting = nwithoutformatting.replaceAll("§"
 								+ nwithoutformatting.charAt(index + 1), "");
-					/*
-					 * if (nwithoutformatting.contains(p.getName())) { HasName =
-					 * true; break; }
-					 */
 				}
-				// if (!HasName) {
 				if (NotificationSound == null)
 					p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f, 0.5f); // 2015.08.12.
 				else
@@ -163,16 +132,13 @@ public class PlayerListener implements Listener { // 2015.07.16.
 						.getName()); // 2015.08.17.
 				if (mp.Flair.length() > 1)
 					color = mp.Flair.substring(0, 2);
-				// }
 			}
 
-			// if (!HasName)
 			message = message.replaceAll(p.getName(), color + p.getName()
 					+ "§r");
 		}
 		for (String n : nicknames.keySet()) {
 			Player p = null;
-			//event.getPlayer().sendMessage("n before: " + n); // TMP
 			String nwithoutformatting = new String(n);
 			int index;
 			while ((index = nwithoutformatting.indexOf("§k")) != -1)
@@ -185,10 +151,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			while ((index = nwithoutformatting.indexOf('§')) != -1)
 				nwithoutformatting = nwithoutformatting.replaceAll("§"
 						+ nwithoutformatting.charAt(index + 1), "");
-			//event.getPlayer().sendMessage(nwithoutformatting); // TMP
 			if (message.contains(nwithoutformatting)) {
-				//event.getPlayer().sendMessage("Yep"); // TMP
-				//event.getPlayer().sendMessage(n); // TMP
 				p = Bukkit.getPlayer(nicknames.get(n));
 				if (NotificationSound == null)
 					p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f, 0.5f); // 2015.08.12.
@@ -246,11 +209,49 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		}
 	}
 
+	private boolean ActiveF = false;
 
 	@EventHandler
-	public void onPlayerMessage(AsyncPlayerChatEvent e)
-	{
+	public void onPlayerMessage(AsyncPlayerChatEvent e) {
+		if (e.getMessage().equals("F")) {
+			MaybeOfflinePlayer.AllPlayers.get(e.getPlayer().getName()).PressedF = true;
+			boolean F = true;
+			if (ActiveF)
+				for (Player player : PluginMain.GetPlayers())
+					if (!MaybeOfflinePlayer.AllPlayers.get(player.getName()).PressedF)
+						F = false;
+
+			if (F && ActiveF) {
+				for (Player player : PluginMain.GetPlayers()) {
+					player.sendMessage("§6We did it!§r");
+					MaybeOfflinePlayer.AllPlayers.get(player.getName()).PressedF = false;
+				}
+			}
+			ActiveF = false;
+		}
+
 		if (e.getMessage().startsWith(">"))
-            e.setMessage("§2"+e.getMessage());
+			e.setMessage("§2" + e.getMessage());
+
+		/*
+		 * String message = e.getMessage(); int x = 0; while ((x =
+		 * message.indexOf('#', x + 1)) != -1) { String hashtag =
+		 * message.substring( x, (message.indexOf(" ", x) == -1 ?
+		 * message.length() : message .indexOf(" ", x))); message =
+		 * message.replace(hashtag, "!" + hashtag + "!"); }
+		 * e.setMessage(message);
+		 */
+	}
+
+	@EventHandler
+	public void onPlayerDeath(PlayerDeathEvent e) {
+		ActiveF = true;
+		for (Player p : PluginMain.GetPlayers()) {
+			MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(p
+					.getName());
+			mp.PressedF = false;
+			if (new Random().nextBoolean())
+				p.sendMessage("§bPress F to pay respects.§r");
+		}
 	}
 }

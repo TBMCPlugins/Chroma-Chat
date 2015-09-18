@@ -31,7 +31,6 @@ public class Commands implements CommandExecutor {
 					return false;
 				MaybeOfflinePlayer p = MaybeOfflinePlayer.AllPlayers.get(player
 						.getName()); // 2015.08.08.
-				// if(!PluginMain.PlayerFlairs.containsKey(player.getName()))
 				if (!p.CommentedOnReddit
 						&& !args[0].toLowerCase().equals("admin")
 						&& !args[0].toLowerCase().equals("ignore")) {
@@ -54,9 +53,6 @@ public class Commands implements CommandExecutor {
 						p.IgnoredFlair = false; // 2015.08.08.
 					if (!p.AcceptedFlair) {
 						String flair = p.Flair; // 2015.08.08.
-						// PluginMain.AppendPlayerDisplayFlairFinal(player,
-						// flair);
-						// //2015.07.20.
 						p.AcceptedFlair = true; // 2015.08.08.
 						PluginMain.AppendPlayerDisplayFlair(p, player);
 						player.sendMessage("§bYour flair has been set:§r "
@@ -70,18 +66,11 @@ public class Commands implements CommandExecutor {
 						p.AcceptedFlair = false; // 2015.08.08.
 					if (!p.IgnoredFlair) {
 						p.IgnoredFlair = true;
-						// String flair=p.Flair; //2015.08.08.
-						// PluginMain.RemovePlayerDisplayFlairFinal(player,
-						// flair);
-						// //2015.07.20.
 						player.sendMessage("§bYou have ignored this request. You can still use /u accept though.§r");
 					} else
 						player.sendMessage("§cYou already ignored this request.§r");
 					break;
 				}
-				/*
-				 * case "reload": //2015.07.20. DoReload(player); break;
-				 */
 				case "admin": // 2015.08.09.
 					DoAdmin(player, args);
 					break;
@@ -149,31 +138,11 @@ public class Commands implements CommandExecutor {
 				}
 				return true;
 			}
-			/*
-			 * case "rp": if (args.length == 0) {
-			 * MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode =
-			 * true; player.sendMessage("§2RP mode on.§r"); } else { boolean
-			 * rpmode = MaybeOfflinePlayer
-			 * .AddPlayerIfNeeded(player.getName()).RPMode;
-			 * MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode =
-			 * true; String message = ""; for (String arg : args) message += arg
-			 * + " "; player.chat(message.substring(0, message.length() - 1));
-			 * MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode =
-			 * rpmode; } return true;
-			 */
 			case "nrp":
 			case "ooc":
 				if (args.length == 0) {
-					/*
-					 * MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode
-					 * = false; player.sendMessage("§8RP mode off.§r");
-					 */
 					return false;
 				} else {
-					/*
-					 * boolean rpmode = MaybeOfflinePlayer
-					 * .AddPlayerIfNeeded(player.getName()).RPMode;
-					 */
 					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = false;
 					String message = "";
 					for (String arg : args)
@@ -187,9 +156,6 @@ public class Commands implements CommandExecutor {
 				break;
 			}
 		}
-		/*
-		 * if(args[0].toLowerCase()=="reload") DoReload(null); //2015.07.20.
-		 */
 		else if (args.length > 0 && args[0].toLowerCase().equals("admin")) // 2015.08.09.
 		{
 			DoAdmin(null, args); // 2015.08.09.
@@ -202,8 +168,6 @@ public class Commands implements CommandExecutor {
 	}
 
 	private static void DoReload(Player player) { // 2015.07.20.
-		// if(player==null || player.isOp() || player.getName()=="NorbiPeti")
-		// {
 		try {
 			PluginMain.Console
 					.sendMessage("§6-- Reloading The Button Minecraft plugin...§r");
@@ -225,9 +189,6 @@ public class Commands implements CommandExecutor {
 				player.sendMessage("§cAn error occured. See console for details.§r");
 			PluginMain.LastException = e; // 2015.08.09.
 		}
-		// }
-		// else
-		// player.sendMessage("§cYou need to be OP to use this command.§r");
 	}
 
 	private static Player ReloadPlayer; // 2015.08.09.
@@ -235,7 +196,6 @@ public class Commands implements CommandExecutor {
 	private static void DoAdmin(Player player, String[] args) { // 2015.08.09.
 		if (player == null || player.isOp()
 				|| player.getName().equals("NorbiPeti")) {
-			// System.out.println("Args length: " + args.length);
 			if (args.length == 1) {
 				String message = "§cUsage: /u admin reload|playerinfo|getlasterror|save|setflair|updateplugin|togglerpshow§r";
 				SendMessage(player, message);
@@ -316,7 +276,6 @@ public class Commands implements CommandExecutor {
 
 	private static void SendMessage(Player player, String message) { // 2015.08.09.
 		if (player == null)
-			// System.out.println(message);
 			PluginMain.Console.sendMessage(message); // 2015.08.12.
 		else
 			player.sendMessage(message);
@@ -401,19 +360,16 @@ public class Commands implements CommandExecutor {
 				SendMessage(player, message);
 				return;
 			}
-			// args[0] is "announce"
 			switch (args[1].toLowerCase()) {
 			case "add":
 				if (args.length < 3) {
 					SendMessage(player, "§cUsage: /u announce add <message>");
 					return;
 				}
-				// PluginMain.AnnounceMessages.add(args[2]);
 				File file = new File("announcemessages.txt");
 				try {
 					BufferedWriter bw;
 					bw = new BufferedWriter(new FileWriter(file, true));
-					// bw.write(args[2] + "\n");
 					StringBuilder sb = new StringBuilder();
 					for (int i = 2; i < args.length; i++) {
 						sb.append(args[i]);
