@@ -215,7 +215,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 	@EventHandler
 	public void onPlayerMessage(AsyncPlayerChatEvent e) {
-		if (e.getMessage().equals("F")) {
+		if (e.getMessage().equalsIgnoreCase("F")) {
 			MaybeOfflinePlayer.AllPlayers.get(e.getPlayer().getName()).PressedF = true;
 			boolean F = true;
 			if (ActiveF)
@@ -234,26 +234,18 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 		if (e.getMessage().startsWith(">"))
 			e.setMessage("§2" + e.getMessage());
-
-		/*
-		 * String message = e.getMessage(); int x = 0; while ((x =
-		 * message.indexOf('#', x + 1)) != -1) { String hashtag =
-		 * message.substring( x, (message.indexOf(" ", x) == -1 ?
-		 * message.length() : message .indexOf(" ", x))); message =
-		 * message.replace(hashtag, "!" + hashtag + "!"); }
-		 * e.setMessage(message);
-		 */
 	}
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		ActiveF = true;
-		for (Player p : PluginMain.GetPlayers()) {
-			MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(p
-					.getName());
-			mp.PressedF = false;
-			if (new Random().nextBoolean())
+		if (new Random().nextBoolean()) {
+			for (Player p : PluginMain.GetPlayers()) {
+				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(p
+						.getName());
+				mp.PressedF = false;
 				p.sendMessage("§bPress F to pay respects.§r");
+			}
 		}
 	}
 }
