@@ -191,7 +191,9 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			while ((index = nwithoutformatting.indexOf('§')) != -1)
 				nwithoutformatting = nwithoutformatting.replaceAll("§"
 						+ nwithoutformatting.charAt(index + 1), "");
-			if (nwithoutformatting.startsWith(name))
+			if (nwithoutformatting.startsWith(name)
+					&& !nwithoutformatting.equals(Bukkit.getPlayer(
+							nicknames.get(nickname)).getName()))
 				e.getTabCompletions().add(nwithoutformatting);
 		}
 	}
