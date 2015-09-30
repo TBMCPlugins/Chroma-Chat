@@ -212,24 +212,37 @@ public class PlayerListener implements Listener { // 2015.07.16.
 	}
 
 	private boolean ActiveF = false;
+	private int FCount = 0;
+	private long FTime;
 
 	@EventHandler
 	public void onPlayerMessage(AsyncPlayerChatEvent e) {
-		if (e.getMessage().equalsIgnoreCase("F")) {
-			MaybeOfflinePlayer.AllPlayers.get(e.getPlayer().getName()).PressedF = true;
-			boolean F = true;
-			if (ActiveF)
-				for (Player player : PluginMain.GetPlayers())
-					if (!MaybeOfflinePlayer.AllPlayers.get(player.getName()).PressedF)
-						F = false;
-
-			if (F && ActiveF) {
-				for (Player player : PluginMain.GetPlayers()) {
-					player.sendMessage("§6We did it!§r");
-					MaybeOfflinePlayer.AllPlayers.get(player.getName()).PressedF = false;
+		if (ActiveF) {
+			if (System.currentTimeMillis() - FTime > 5000) {
+				ActiveF = false;
+				for (Player p : PluginMain.GetPlayers()) {
+					p.sendMessage("§b" + FCount + " "
+							+ (FCount == 1 ? "person" : "people")
+							+ " paid their respects.§r");
 				}
 			}
-			ActiveF = false;
+		}
+		if (e.getMessage().equalsIgnoreCase("F")) {
+			MaybeOfflinePlayer.AllPlayers.get(e.getPlayer().getName()).PressedF = true;
+			/*
+			 * boolean F = true; if (ActiveF) for (Player player :
+			 * PluginMain.GetPlayers()) if
+			 * (!MaybeOfflinePlayer.AllPlayers.get(player.getName()).PressedF) F
+			 * = false;
+			 * 
+			 * if (F && ActiveF) { for (Player player : PluginMain.GetPlayers())
+			 * { player.sendMessage("§6We did it!§r");
+			 * MaybeOfflinePlayer.AllPlayers.get(player.getName()).PressedF =
+			 * false; } }
+			 */
+			// ActiveF = false;
+			if (ActiveF)
+				FCount++;
 		}
 
 		if (e.getMessage().startsWith(">"))
@@ -238,8 +251,10 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
-		ActiveF = true;
 		if (new Random().nextBoolean()) {
+			ActiveF = true;
+			FCount = 0;
+			FTime = System.currentTimeMillis();
 			for (Player p : PluginMain.GetPlayers()) {
 				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(p
 						.getName());
