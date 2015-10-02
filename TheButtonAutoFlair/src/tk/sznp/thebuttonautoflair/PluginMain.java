@@ -122,7 +122,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					Thread.currentThread().interrupt();
 				}
 			} catch (Exception e) {
-				System.out.println("Error!\n" + e);
+				//System.out.println("Error!\n" + e);
 				LastException = e; // 2015.08.09.
 			}
 		}

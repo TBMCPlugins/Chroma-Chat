@@ -2,6 +2,8 @@ package tk.sznp.thebuttonautoflair;
 
 import java.util.HashMap;
 
+import org.bukkit.Location;
+
 public class MaybeOfflinePlayer { // 2015.08.08.
 	public String PlayerName;
 	public String UserName;
@@ -14,6 +16,7 @@ public class MaybeOfflinePlayer { // 2015.08.08.
 	public boolean CommentedOnReddit; // 2015.08.10.
 	public boolean RPMode; // 2015.08.25.
 	public boolean PressedF; //2015.09.18.
+	public Location SavedLocation; //2015.10.02.
 	public static HashMap<String, MaybeOfflinePlayer> AllPlayers = new HashMap<>(); // 2015.08.08.
 
 	public static MaybeOfflinePlayer AddPlayerIfNeeded(String playername) {

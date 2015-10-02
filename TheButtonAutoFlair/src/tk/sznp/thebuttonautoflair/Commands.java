@@ -155,8 +155,7 @@ public class Commands implements CommandExecutor {
 				player.sendMessage("Unknown command: " + cmd.getName());
 				break;
 			}
-		}
-		else if (args.length > 0 && args[0].toLowerCase().equals("admin")) // 2015.08.09.
+		} else if (args.length > 0 && args[0].toLowerCase().equals("admin")) // 2015.08.09.
 		{
 			DoAdmin(null, args); // 2015.08.09.
 			return true; // 2015.08.09.
@@ -193,11 +192,13 @@ public class Commands implements CommandExecutor {
 
 	private static Player ReloadPlayer; // 2015.08.09.
 
+	private static String DoAdminUsage = "§cUsage: /u admin reload|playerinfo|getlasterror|save|setflair|updateplugin|togglerpshow|toggledebug|savepos|loadpos§r";
+
 	private static void DoAdmin(Player player, String[] args) { // 2015.08.09.
 		if (player == null || player.isOp()
 				|| player.getName().equals("NorbiPeti")) {
 			if (args.length == 1) {
-				String message = "§cUsage: /u admin reload|playerinfo|getlasterror|save|setflair|updateplugin|togglerpshow§r";
+				String message = DoAdminUsage;
 				SendMessage(player, message);
 				return;
 			}
@@ -239,11 +240,17 @@ public class Commands implements CommandExecutor {
 						+ (PlayerListener.ShowRPTag ? "enabled" : "disabled"));
 				break;
 			case "toggledebug":
-				PlayerListener.DebugMode=!PlayerListener.DebugMode;
-				SendMessage(player, "DebugMode: "+PlayerListener.DebugMode);
+				PlayerListener.DebugMode = !PlayerListener.DebugMode;
+				SendMessage(player, "DebugMode: " + PlayerListener.DebugMode);
+				break;
+			case "savepos":
+				DoSaveLoadPos(player, args);
+				break;
+			case "loadpos":
+				DoSaveLoadPos(player, args);
 				break;
 			default:
-				String message = "§cUsage: /u admin reload|playerinfo|getlasterror|save|setflair|updateplugin|togglerpshow§r";
+				String message = DoAdminUsage;
 				SendMessage(player, message);
 				return;
 			}
@@ -481,5 +488,45 @@ public class Commands implements CommandExecutor {
 				return;
 			}
 		}
+	}
+
+	private static void DoSaveLoadPos(Player player, String[] args) { // 2015.08.09.
+		// args[0] is "admin" - args[1] is "savepos|loadpos"
+		if (args.length == 2) {
+			String message = "§cUsage: /u admin savepos|loadpos <player>§r";
+			SendMessage(player, message);
+			return;
+		}
+		if (!MaybeOfflinePlayer.AllPlayers.containsKey(args[2])) {
+			String message = "§cPlayer not found: " + args[2] + "§r";
+			SendMessage(player, message);
+			return;
+		}
+		MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(args[2]);
+		Player p = null;
+		for (Player pl : PluginMain.GetPlayers()) {
+			if (pl.getName().equals(args[2])) {
+				p = pl;
+				break;
+			}
+		}
+		if (p == null) {
+			if (!MaybeOfflinePlayer.AllPlayers.containsKey(args[2])) {
+				String message = "§cPlayer is not online: " + args[2] + "§r";
+				SendMessage(player, message);
+				return;
+			}
+		}
+		if (args[1].equalsIgnoreCase("savepos")) {
+			mp.SavedLocation = p.getLocation();
+		} else if (args[1].equalsIgnoreCase("loadpos")) {
+			if (mp.SavedLocation != null)
+				p.teleport(mp.SavedLocation);
+		} else {
+			String message = "§cUsage: /u admin savepos|loadpos <player>§r";
+			SendMessage(player, message);
+			return;
+		}
+		//SendMessage(player, "Player " + p.getName() + " position saved/loaded.");s
 	}
 }
