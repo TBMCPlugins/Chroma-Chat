@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
@@ -109,20 +110,6 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		for (Player p : PluginMain.GetPlayers()) { // 2015.08.12.
 			String color = ""; // 2015.08.17.
 			if (message.contains(p.getName())) {
-				for (String n : nicknames.keySet()) {
-					String nwithoutformatting = new String(n);
-					int index;
-					while ((index = nwithoutformatting.indexOf("§k")) != -1)
-						nwithoutformatting = nwithoutformatting.replaceAll("§k"
-								+ nwithoutformatting.charAt(index + 2), ""); // Support
-																				// for
-																				// one
-																				// random
-																				// char
-					while ((index = nwithoutformatting.indexOf('§')) != -1)
-						nwithoutformatting = nwithoutformatting.replaceAll("§"
-								+ nwithoutformatting.charAt(index + 1), "");
-				}
 				if (NotificationSound == null)
 					p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f, 0.5f); // 2015.08.12.
 				else
@@ -135,7 +122,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			}
 
 			message = message.replaceAll(p.getName(), color + p.getName()
-					+ "§r");
+					+ (event.getMessage().startsWith("§2>") ? "§2" : "§r"));
 		}
 		for (String n : nicknames.keySet()) {
 			Player p = null;
@@ -161,7 +148,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				MaybeOfflinePlayer.AddPlayerIfNeeded(p.getName()); // 2015.08.17.
 			}
 			if (p != null) {
-				message = message.replaceAll(nwithoutformatting, n + "§r");
+				message = message.replaceAll(nwithoutformatting, n
+						+ (event.getMessage().startsWith("§2>") ? "§2" : "§r"));
 			}
 		}
 
@@ -218,7 +206,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 	@EventHandler
 	public void onPlayerMessage(AsyncPlayerChatEvent e) {
 		if (ActiveF) {
-			if (System.currentTimeMillis() - FTime > 5000) {
+			if (System.currentTimeMillis() - FTime > 10000) {
 				ActiveF = false;
 				for (Player p : PluginMain.GetPlayers()) {
 					p.sendMessage("§b" + FCount + " "
@@ -228,25 +216,47 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			}
 		}
 		if (e.getMessage().equalsIgnoreCase("F")) {
-			MaybeOfflinePlayer.AllPlayers.get(e.getPlayer().getName()).PressedF = true;
-			/*
-			 * boolean F = true; if (ActiveF) for (Player player :
-			 * PluginMain.GetPlayers()) if
-			 * (!MaybeOfflinePlayer.AllPlayers.get(player.getName()).PressedF) F
-			 * = false;
-			 * 
-			 * if (F && ActiveF) { for (Player player : PluginMain.GetPlayers())
-			 * { player.sendMessage("§6We did it!§r");
-			 * MaybeOfflinePlayer.AllPlayers.get(player.getName()).PressedF =
-			 * false; } }
-			 */
-			// ActiveF = false;
-			if (ActiveF)
-				FCount++;
+			MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(e
+					.getPlayer().getName());
+			if (!mp.PressedF) {
+				if (ActiveF)
+					FCount++;
+			}
 		}
 
 		if (e.getMessage().startsWith(">"))
 			e.setMessage("§2" + e.getMessage());
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("tellraw @p [\"\"");
+		sb.append(",{\"text\":\"Hashtags:\"}");
+		int index = -1;
+		ArrayList<String> list = new ArrayList<String>();
+		while ((index = e.getMessage().indexOf("#", index + 1)) != -1) {
+			int index2 = e.getMessage().indexOf(" ", index + 1);
+			if (index2 == -1)
+				index2 = e.getMessage().length();
+			String original = e.getMessage().substring(index, index2);
+			list.add(original);
+			sb.append(",{\"text\":\" \"}");
+			sb.append(",{\"text\":\"");
+			sb.append(original);
+			sb.append("\",\"color\":\"blue\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://twitter.com/hashtag/");
+			sb.append(original.substring(1));
+			sb.append("\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open on Twitter\",\"color\":\"blue\"}]}}}");
+		}
+		for (String original : list)
+			e.setMessage(e.getMessage().replaceAll(
+					original,
+					"§1" + original
+							+ (e.getMessage().startsWith("§2>") ? "§2" : "§r")));
+
+		sb.append("]");
+
+		if (list.size() > 0)
+			PluginMain.Instance.getServer().dispatchCommand(
+					PluginMain.Instance.getServer().getConsoleSender(),
+					sb.toString());
 	}
 
 	@EventHandler
