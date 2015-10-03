@@ -13,6 +13,8 @@ import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import au.com.mineauz.minigames.Minigames;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -261,7 +263,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
-		if (new Random().nextBoolean()) {
+		if (!Minigames.plugin.pdata.getMinigamePlayer(e.getEntity())
+				.isInMinigame() && new Random().nextBoolean()) {
 			ActiveF = true;
 			FCount = 0;
 			FTime = System.currentTimeMillis();

@@ -1,6 +1,6 @@
 name: TheButtonMCPlugin
 main: tk.sznp.thebuttonautoflair.PluginMain
-version: 2.0
+version: 3.0
 commands:
     u:
         description: Auto-flair system. Accept or ignore flair.
@@ -12,4 +12,4 @@ commands:
         description: Send message in Out-of-Character
         usage: "&cUsage: /ooc <message>&r"
 author: NorbiPeti
-depend: [Essentials, Towny, TownyChat]
+depend: [Essentials, Towny, TownyChat, Minigames]

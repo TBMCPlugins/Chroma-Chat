@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="D:/Downloads/commons-io-2.4-bin/commons-io-2.4/commons-io-2.4-javadoc.jar"/>
 	<classpathentry kind="lib" path="D:/Downloads/Essentials/Essentials.jar"/>
 	<classpathentry kind="lib" path="D:/Downloads/1404231200wpdm_Towny_Advanced/Towny.jar"/>
+	<classpathentry kind="lib" path="D:/Z - Norbi cucca/0 Projektek/TheButtonMCAutoFlairProto/Spigot server/plugins/_/Minigames-1.7.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
