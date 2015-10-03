@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="java.io.IOException"/>
 <fullyQualifiedTypeName name="java.io.StringWriter"/>
 <fullyQualifiedTypeName name="org.apache.commons.io.IOUtils"/>
 <fullyQualifiedTypeName name="org.json.simple.JSONObject"/>
@@ -53,11 +52,12 @@
 <fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.AnnouncerThread"/>
 <fullyQualifiedTypeName name="com.google.common.io.Files"/>
 <fullyQualifiedTypeName name="com.earth2me.essentials.PlayerList"/>
-<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PlayerListener"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="org.bukkit.event.entity.PlayerDeathEvent"/>
-<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.MaybeOfflinePlayer"/>
 <fullyQualifiedTypeName name="java.util.Random"/>
 <fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PluginMain"/>
 <fullyQualifiedTypeName name="org.bukkit.Location"/>
+<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.MaybeOfflinePlayer"/>
+<fullyQualifiedTypeName name="java.lang.StringBuilder"/>
+<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PlayerListener"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
 </qualifiedTypeNameHistroy>

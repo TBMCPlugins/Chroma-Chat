@@ -12,6 +12,7 @@
 		<item value="true" key="wrap"/>
 		<item value="false" key="wholeword"/>
 		<list key="findhistory">
+			<item value="s"/>
 			<item value="TMP"/>
 			<item value="nwithout"/>
 			<item value="can"/>
