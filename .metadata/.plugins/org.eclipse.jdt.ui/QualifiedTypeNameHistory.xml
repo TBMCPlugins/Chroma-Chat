@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="java.io.StringWriter"/>
-<fullyQualifiedTypeName name="org.apache.commons.io.IOUtils"/>
-<fullyQualifiedTypeName name="org.json.simple.JSONObject"/>
 <fullyQualifiedTypeName name="org.json.simple.parser.JSONParser"/>
 <fullyQualifiedTypeName name="com.google.gson.stream.JsonReader"/>
 <fullyQualifiedTypeName name="java.io.Reader"/>
@@ -58,6 +55,9 @@
 <fullyQualifiedTypeName name="org.bukkit.Location"/>
 <fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.MaybeOfflinePlayer"/>
 <fullyQualifiedTypeName name="java.lang.StringBuilder"/>
-<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PlayerListener"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PlayerListener"/>
+<fullyQualifiedTypeName name="au.com.mineauz.minigames.MinigamePlayer"/>
+<fullyQualifiedTypeName name="au.com.mineauz.minigames.PlayerData"/>
+<fullyQualifiedTypeName name="au.com.mineauz.minigames.Minigames"/>
 </qualifiedTypeNameHistroy>
