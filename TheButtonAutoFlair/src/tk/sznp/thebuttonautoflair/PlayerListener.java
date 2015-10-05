@@ -250,7 +250,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		for (String original : list)
 			e.setMessage(e.getMessage().replaceAll(
 					original,
-					"§1" + original
+					"§9" + original
 							+ (e.getMessage().startsWith("§2>") ? "§2" : "§r")));
 
 		sb.append("]");
