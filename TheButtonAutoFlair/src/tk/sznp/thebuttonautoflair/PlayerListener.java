@@ -238,6 +238,9 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			int index2 = e.getMessage().indexOf(" ", index + 1);
 			if (index2 == -1)
 				index2 = e.getMessage().length();
+			int index3 = e.getMessage().indexOf("#", index + 1);
+			if (index3 != -1 && index3 < index2) // A # occurs before a space
+				index2 = index3;
 			String original = e.getMessage().substring(index, index2);
 			list.add(original);
 			sb.append(",{\"text\":\" \"}");
@@ -248,10 +251,15 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			sb.append("\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open on Twitter\",\"color\":\"blue\"}]}}}");
 		}
 		for (String original : list)
-			e.setMessage(e.getMessage().replaceAll(
+			e.setMessage(e.getMessage().replace(
 					original,
 					"§9" + original
 							+ (e.getMessage().startsWith("§2>") ? "§2" : "§r")));
+		/*for (String original : list)
+			System.out.println(e.getMessage().replace(
+					original,
+					"§9" + original
+							+ (e.getMessage().startsWith("§2>") ? "§2" : "§r")));*/
 
 		sb.append("]");
 
