@@ -162,7 +162,12 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				.replace(
 						"{rptag}",
 						(player.RPMode ? (ShowRPTag ? "§2[RP]§r" : "")
-								: "§8[OOC]§r")).replace("{buttonflair}", flair)); // 2015.09.04.
+								: "§8[OOC]§r"))
+				.replace("{buttonflair}", flair)
+				.replace(
+						"{isitwilds}",
+						(event.getPlayer().getWorld().getName()
+								.equalsIgnoreCase("wilds") ? "[PVP]" : ""))); // 2015.09.04.
 	}
 
 	@EventHandler
@@ -255,11 +260,11 @@ public class PlayerListener implements Listener { // 2015.07.16.
 					original,
 					"§9" + original
 							+ (e.getMessage().startsWith("§2>") ? "§2" : "§r")));
-		/*for (String original : list)
-			System.out.println(e.getMessage().replace(
-					original,
-					"§9" + original
-							+ (e.getMessage().startsWith("§2>") ? "§2" : "§r")));*/
+		/*
+		 * for (String original : list)
+		 * System.out.println(e.getMessage().replace( original, "§9" + original
+		 * + (e.getMessage().startsWith("§2>") ? "§2" : "§r")));
+		 */
 
 		sb.append("]");
 
