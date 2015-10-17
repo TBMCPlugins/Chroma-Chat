@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="org.json.simple.parser.JSONParser"/>
-<fullyQualifiedTypeName name="com.google.gson.stream.JsonReader"/>
-<fullyQualifiedTypeName name="java.io.Reader"/>
-<fullyQualifiedTypeName name="java.io.InputStreamReader"/>
-<fullyQualifiedTypeName name="org.json.JSONObject"/>
 <fullyQualifiedTypeName name="org.json.JSONArray"/>
 <fullyQualifiedTypeName name="java.util.Dictionary"/>
 <fullyQualifiedTypeName name="java.util.Map"/>
@@ -46,18 +41,23 @@
 <fullyQualifiedTypeName name="java.util.HashMap"/>
 <fullyQualifiedTypeName name="java.lang.NumberFormatException"/>
 <fullyQualifiedTypeName name="org.bukkit.entity.Player"/>
-<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.AnnouncerThread"/>
 <fullyQualifiedTypeName name="com.google.common.io.Files"/>
 <fullyQualifiedTypeName name="com.earth2me.essentials.PlayerList"/>
 <fullyQualifiedTypeName name="org.bukkit.event.entity.PlayerDeathEvent"/>
 <fullyQualifiedTypeName name="java.util.Random"/>
 <fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PluginMain"/>
 <fullyQualifiedTypeName name="org.bukkit.Location"/>
-<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.MaybeOfflinePlayer"/>
 <fullyQualifiedTypeName name="java.lang.StringBuilder"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PlayerListener"/>
 <fullyQualifiedTypeName name="au.com.mineauz.minigames.MinigamePlayer"/>
 <fullyQualifiedTypeName name="au.com.mineauz.minigames.PlayerData"/>
 <fullyQualifiedTypeName name="au.com.mineauz.minigames.Minigames"/>
+<fullyQualifiedTypeName name="org.bukkit.configuration.ConfigurationSection"/>
+<fullyQualifiedTypeName name="java.util.UUID"/>
+<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.AnnouncerThread"/>
+<fullyQualifiedTypeName name="org.bukkit.configuration.InvalidConfigurationException"/>
+<fullyQualifiedTypeName name="org.bukkit.configuration.file.YamlConfiguration"/>
+<fullyQualifiedTypeName name="org.bukkit.Bukkit"/>
+<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.MaybeOfflinePlayer"/>
 </qualifiedTypeNameHistroy>

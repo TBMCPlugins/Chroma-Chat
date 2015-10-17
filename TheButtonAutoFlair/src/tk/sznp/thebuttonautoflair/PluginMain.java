@@ -1,9 +1,10 @@
 package tk.sznp.thebuttonautoflair;
 
-import com.palmergames.bukkit.towny.object.Town;
-import com.palmergames.bukkit.towny.object.WorldCoord;
 import org.apache.commons.io.IOUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.JSONArray;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	// A user, which flair isn't obtainable:
@@ -92,7 +94,10 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					else
 						ign = ign.substring(start, end);
 					ign = ign.trim();
-					if (HasIGFlair(ign))
+					MaybeOfflinePlayer mp = MaybeOfflinePlayer.GetFromName(ign);
+					if(mp==null)
+						continue;
+					if (HasIGFlair(mp.UUID))
 						continue;
 					try {
 						Thread.sleep(10);
@@ -114,7 +119,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 						flairclass = flairdata[2];
 					else
 						flairclass = "unknown";
-					SetFlair(ign, flair, flairclass, author);
+					SetFlair(mp.UUID, flair, flairclass, author);
 				}
 				try {
 					Thread.sleep(10000);
@@ -122,7 +127,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					Thread.currentThread().interrupt();
 				}
 			} catch (Exception e) {
-				//System.out.println("Error!\n" + e);
+				// System.out.println("Error!\n" + e);
 				LastException = e; // 2015.08.09.
 			}
 		}
@@ -145,14 +150,14 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 	public static Map<String, String> TownColors = new HashMap<String, String>(); // 2015.07.20.
 
-	public Boolean HasIGFlair(String playername) {
-		MaybeOfflinePlayer p = MaybeOfflinePlayer.AddPlayerIfNeeded(playername); // 2015.08.08.
+	public Boolean HasIGFlair(UUID uuid) {
+		MaybeOfflinePlayer p = MaybeOfflinePlayer.AddPlayerIfNeeded(uuid); // 2015.08.08.
 		return p.CommentedOnReddit; // 2015.08.10.
 	}
 
-	public void SetFlair(String playername, String text, String flairclass,
+	public void SetFlair(UUID uuid, String text, String flairclass,
 			String username) {
-		MaybeOfflinePlayer p = MaybeOfflinePlayer.AddPlayerIfNeeded(playername); // 2015.08.08.
+		MaybeOfflinePlayer p = MaybeOfflinePlayer.AddPlayerIfNeeded(uuid); // 2015.08.08.
 		String finalflair;
 		p.FlairDecided = true;
 		p.FlairRecognised = true;
@@ -198,18 +203,12 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		p.Flair = finalflair; // 2015.08.08.
 		p.CommentedOnReddit = true; // 2015.08.10.
 		p.UserName = username; // 2015.08.08.
-		for (Player player : getServer().getOnlinePlayers()) // <-- 2015.08.08.
-		{
-			if (player.getName().equals(playername)) {
-				AppendPlayerDisplayFlair(p, player);
-				break;
-			}
-		}
+		System.out.println("Added flair for " + p.PlayerName);
+		AppendPlayerDisplayFlair(p, Bukkit.getPlayer(uuid));
 	}
 
 	public static String GetFlair(Player player) { // 2015.07.16.
-		String flair = MaybeOfflinePlayer.AllPlayers.get(player.getName()).Flair; // 2015.08.08.
-		// return flair==null ? "" : flair;
+		String flair = MaybeOfflinePlayer.AllPlayers.get(player.getUniqueId()).Flair; // 2015.08.08.
 		return flair; // 2015.08.10.
 	}
 
@@ -217,9 +216,9 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			Player p) // <-- 2015.08.09.
 	{
 
-		if (MaybeOfflinePlayer.AllPlayers.get(p.getName()).IgnoredFlair)
+		if (MaybeOfflinePlayer.AllPlayers.get(p.getUniqueId()).IgnoredFlair)
 			return;
-		if (MaybeOfflinePlayer.AllPlayers.get(p.getName()).AcceptedFlair) {
+		if (MaybeOfflinePlayer.AllPlayers.get(p.getUniqueId()).AcceptedFlair) {
 			if (!player.FlairDecided)
 				p.sendMessage("§9Your flair type is unknown. Are you a non-presser or a can't press? (/u nonpresser or /u cantpress)§r"); // 2015.08.09.
 		} else
@@ -233,15 +232,11 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		return "";
 	}
 
-	public static String GetPlayerTown(Player player) { // 2015.07.20.
-		try {
-			Town town = WorldCoord.parseWorldCoord(player).getTownBlock()
-					.getTown(); // TODO
-			return town.getName();
-		} catch (Exception e) {
-			return "";
-		}
-	}
+	/*
+	 * public static String GetPlayerTown(Player player) { // 2015.07.20. try {
+	 * Town town = WorldCoord.parseWorldCoord(player).getTownBlock() .getTown();
+	 * return town.getName(); } catch (Exception e) { return ""; } }
+	 */
 
 	public static Collection<? extends Player> GetPlayers() {
 		return Instance.getServer().getOnlinePlayers();
@@ -261,94 +256,32 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		}
 		System.out.println("Loading files for The Button Minecraft plugin..."); // 2015.08.09.
 		try {
-			File file = new File("flairsaccepted.txt");
-			if (file.exists()) {
-				BufferedReader br = new BufferedReader(new FileReader(
-						"flairsaccepted.txt"));
-				String line;
-				while ((line = br.readLine()) != null) {
-					String name = line.replace("\n", "");
-					// System.out.println("Name: " + name);
-					MaybeOfflinePlayer.AddPlayerIfNeeded(name).AcceptedFlair = true; // 2015.08.08.
-				}
-				br.close();
-			}
+			File file = new File("announcemessages.txt");
+			if (file.exists())
+				file.delete();
+			file = new File("flairsaccepted.txt");
+			if (file.exists())
+				file.delete();
 			file = new File("flairsignored.txt");
+			if (file.exists())
+				file.delete();
+			file = new File("thebuttonmc.yml");
 			if (file.exists()) {
-				BufferedReader br = new BufferedReader(new FileReader(
-						"flairsignored.txt"));
-				String line;
-				while ((line = br.readLine()) != null) {
-					String name = line.replace("\n", "");
-					MaybeOfflinePlayer.AddPlayerIfNeeded(name).IgnoredFlair = true; // 2015.08.08.
-				}
-				br.close();
-			}
-			file = new File("autoflairconfig.txt");
-			if (file.exists()) {
-				BufferedReader br = new BufferedReader(new FileReader(file));
-				String line;
-				while ((line = br.readLine()) != null) {
-					String[] s = line.split(" ");
-					if (s.length >= 2) // <-- 2015.08.10.
-						TownColors.put(s[0], s[1]);
-				}
-				br.close();
-			}
-			file = new File("customflairs.txt"); // 2015.08.09.
-			if (file.exists()) {
-				BufferedReader br = new BufferedReader(new FileReader(file));
-				String line;
-				while ((line = br.readLine()) != null) {
-					String[] s = line.split(" ");
-					if (s.length >= 2) // 2015.08.10.
-					{
-						MaybeOfflinePlayer p = MaybeOfflinePlayer
-								.AddPlayerIfNeeded(s[0]);
-						p.Flair = s[1]; // 2015.08.09.
-						p.CommentedOnReddit = true; // Kind of
-						p.FlairDecided = true;
-						p.FlairRecognised = true;
-					}
-				}
-				br.close();
-			}
-			file = new File("notificationsound.txt"); // 2015.08.09.
-			if (file.exists()) {
-				BufferedReader br = new BufferedReader(new FileReader(file));
-				String line = br.readLine();
-				String[] split = line.split(" ");
-				PlayerListener.NotificationSound = split[0];
-				PlayerListener.NotificationPitch = Float.parseFloat(split[1]);
-				br.close();
-			}
-			file = new File("announcemessages.txt"); // 2015.08.09.
-			if (file.exists()) {
-				BufferedReader br = new BufferedReader(new FileReader(file));
-				String line;
-				boolean first = true;
-				while ((line = br.readLine()) != null) {
-					if (first) {
-						AnnounceTime = Integer.parseInt(line.trim());
-						first = false;
-					} else
-						AnnounceMessages.add(line.trim());
-				}
-				br.close();
-			} else {
-				// Write time
-				try {
-					BufferedWriter bw;
-					bw = new BufferedWriter(new FileWriter(file));
-					bw.write(AnnounceTime + "\n");
-					bw.close();
-				} catch (IOException e) {
-					System.out.println("Error!\n" + e);
-					PluginMain.LastException = e; // 2015.08.09.
-				}
+				YamlConfiguration yc = new YamlConfiguration();
+				yc.load(file);
+				MaybeOfflinePlayer.Load(yc);
+				PlayerListener.NotificationSound = yc
+						.getString("notificationsound");
+				PlayerListener.NotificationPitch = yc
+						.getDouble("notificationpitch");
+				AnnounceTime = yc.getInt("announcetime");
+				AnnounceMessages.addAll(yc.getStringList("announcements"));
 			}
 			System.out.println("The Button Minecraft plugin loaded files!");
 		} catch (IOException e) {
+			System.out.println("Error!\n" + e);
+			LastException = e; // 2015.08.09.
+		} catch (InvalidConfigurationException e) {
 			System.out.println("Error!\n" + e);
 			LastException = e; // 2015.08.09.
 		}
@@ -356,110 +289,20 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 	public static void SaveFiles() // <-- 2015.08.09.
 	{
+		System.out.println("Saving files for The Button Minecraft plugin..."); // 2015.08.09.
 		try {
-			FileWriter fw;
-			fw = new FileWriter("flairsaccepted.txt");
-			fw.close();
-			fw = new FileWriter("flairsignored.txt");
-			fw.close();
-		} catch (Exception e) {
-			System.out.println("Error!\n" + e);
-			LastException = e; // 2015.08.09.
-		}
-		try {
-			File file = new File("flairsaccepted.txt");
-			BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
-			for (MaybeOfflinePlayer player : MaybeOfflinePlayer.AllPlayers
-					.values()) // <-- 2015.08.08.
-			{
-				if (!player.AcceptedFlair)
-					continue; // 2015.08.08.
-				bw.write(player.PlayerName + "\n");
-			}
-			bw.close();
-			file = new File("flairsignored.txt");
-			bw = new BufferedWriter(new FileWriter(file, true));
-			for (MaybeOfflinePlayer player : MaybeOfflinePlayer.AllPlayers
-					.values()) // <-- 2015.08.08.
-			{
-				if (!player.IgnoredFlair)
-					continue; // 2015.08.08.
-				bw.write(player.PlayerName + "\n");
-			}
-			bw.close();
+			File file = new File("thebuttonmc.yml");
+			YamlConfiguration yc = new YamlConfiguration();
+			MaybeOfflinePlayer.Save(yc);
+			yc.set("notificationsound", PlayerListener.NotificationSound);
+			yc.set("notificationpitch", PlayerListener.NotificationPitch);
+			yc.set("announcetime", AnnounceTime);
+			yc.set("announcements", AnnounceMessages);
+			yc.save(file);
+			System.out.println("The Button Minecraft plugin saved files!");
 		} catch (IOException e) {
 			System.out.println("Error!\n" + e);
 			LastException = e; // 2015.08.09.
 		}
-	}
-
-	public static boolean RemoveLineFromFile(String file, String line) { // 2015.08.09.
-		File inputFile = new File(file);
-		File tempFile = new File("_temp.txt");
-
-		if (!inputFile.exists())
-			return true; // 2015.08.10.
-
-		try {
-			BufferedReader reader = new BufferedReader(
-					new FileReader(inputFile));
-			BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
-
-			String lineToRemove = line;
-			String currentLine;
-
-			while ((currentLine = reader.readLine()) != null) {
-				// trim newline when comparing with lineToRemove
-				String trimmedLine = currentLine.trim();
-				if (trimmedLine.split(" ")[0].equals(lineToRemove))
-					continue; // 2015.08.17.
-				writer.write(currentLine + System.getProperty("line.separator"));
-			}
-			writer.close();
-			reader.close();
-			if (!tempFile.renameTo(inputFile)) {
-				inputFile.delete();
-				return tempFile.renameTo(inputFile);
-			} else
-				return true;
-		} catch (IOException e) {
-			System.out.println("Error!\n" + e);
-			LastException = e; // 2015.08.09.
-		}
-		return false;
-	}
-
-	public static boolean RemoveLineFromFile(String file, int index) {
-		File inputFile = new File(file);
-		File tempFile = new File("_temp2.txt");
-
-		if (!inputFile.exists())
-			return true; // 2015.08.10.
-
-		try {
-			BufferedReader reader = new BufferedReader(
-					new FileReader(inputFile));
-			BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
-
-			String currentLine;
-			int i = 0;
-
-			while ((currentLine = reader.readLine()) != null) {
-				if (i++ == index)
-					continue;
-				writer.write(currentLine + System.getProperty("line.separator"));
-			}
-			writer.close();
-			reader.close();
-			if (!tempFile.renameTo(inputFile)) {
-				inputFile.delete();
-				return tempFile.renameTo(inputFile);
-			} else
-				return true;
-		} catch (IOException e) {
-			System.out.println("Error!\n" + e);
-			LastException = e; // 2015.08.09.
-		}
-		return false;
 	}
 }
