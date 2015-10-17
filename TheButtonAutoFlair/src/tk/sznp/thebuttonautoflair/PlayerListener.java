@@ -30,8 +30,9 @@ public class PlayerListener implements Listener { // 2015.07.16.
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player p = event.getPlayer();
-		MaybeOfflinePlayer.AddPlayerIfNeeded(p.getName()); // 2015.08.08.
-		MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(p.getName()); // 2015.08.08.
+		MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p
+				.getUniqueId());
+		mp.PlayerName = p.getName(); // 2015.10.17. 0:58
 		if (mp.CommentedOnReddit)
 			PluginMain.AppendPlayerDisplayFlair(mp, p); // 2015.08.09.
 		else { // 2015.07.20.
@@ -40,7 +41,9 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				p.sendMessage(message);
 				message = "§bhttps://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/§r";
 				p.sendMessage(message);
-				message = "§bIf you don't want the flair, type /u ignore to prevent this message on login.§r";
+				message = "§6If you don't want the flair, type /u ignore to prevent this message on login.§r";
+				p.sendMessage(message);
+				message = "§bIf you already commented your name, then please wait a few seconds.§r";
 				p.sendMessage(message);
 			}
 		}
@@ -97,13 +100,13 @@ public class PlayerListener implements Listener { // 2015.07.16.
 	}
 
 	public static String NotificationSound; // 2015.08.14.
-	public static float NotificationPitch; // 2015.08.14.
+	public static double NotificationPitch; // 2015.08.14.
 
 	public static boolean ShowRPTag = false; // 2015.08.31.
 
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		MaybeOfflinePlayer player = MaybeOfflinePlayer.AllPlayers.get(event
+		MaybeOfflinePlayer player = MaybeOfflinePlayer.GetFromName(event
 				.getPlayer().getName());
 		String flair = player.Flair; // 2015.08.08.
 		if (player.IgnoredFlair)
@@ -116,9 +119,9 @@ public class PlayerListener implements Listener { // 2015.07.16.
 					p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f, 0.5f); // 2015.08.12.
 				else
 					p.playSound(p.getLocation(), NotificationSound, 1.0f,
-							NotificationPitch); // 2015.08.14.
+							(float) NotificationPitch); // 2015.08.14.
 				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p
-						.getName()); // 2015.08.17.
+						.getUniqueId()); // 2015.08.17.
 				if (mp.Flair.length() > 1)
 					color = mp.Flair.substring(0, 2);
 			}
@@ -146,8 +149,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 					p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f, 0.5f); // 2015.08.12.
 				else
 					p.playSound(p.getLocation(), NotificationSound, 1.0f,
-							NotificationPitch); // 2015.08.14.
-				MaybeOfflinePlayer.AddPlayerIfNeeded(p.getName()); // 2015.08.17.
+							(float) NotificationPitch); // 2015.08.14.
+				MaybeOfflinePlayer.AddPlayerIfNeeded(p.getUniqueId()); // 2015.08.17.
 			}
 			if (p != null) {
 				message = message.replaceAll(nwithoutformatting, n
@@ -223,7 +226,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			}
 		}
 		if (e.getMessage().equalsIgnoreCase("F")) {
-			MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(e
+			MaybeOfflinePlayer mp = MaybeOfflinePlayer.GetFromName(e
 					.getPlayer().getName());
 			if (!mp.PressedF) {
 				if (ActiveF)
@@ -235,7 +238,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			e.setMessage("§2" + e.getMessage());
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("tellraw @p [\"\"");
+		sb.append("tellraw @a [\"\"");
 		sb.append(",{\"text\":\"Hashtags:\"}");
 		int index = -1;
 		ArrayList<String> list = new ArrayList<String>();
@@ -282,7 +285,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			FCount = 0;
 			FTime = System.currentTimeMillis();
 			for (Player p : PluginMain.GetPlayers()) {
-				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(p
+				MaybeOfflinePlayer mp = MaybeOfflinePlayer.GetFromName(p
 						.getName());
 				mp.PressedF = false;
 				p.sendMessage("§bPress F to pay respects.§r");

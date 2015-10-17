@@ -1,6 +1,7 @@
 package tk.sznp.thebuttonautoflair;
 
 import org.apache.commons.io.FileUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -29,7 +30,7 @@ public class Commands implements CommandExecutor {
 			case "u": {
 				if (args.length < 1)
 					return false;
-				MaybeOfflinePlayer p = MaybeOfflinePlayer.AllPlayers.get(player
+				MaybeOfflinePlayer p = MaybeOfflinePlayer.GetFromName(player
 						.getName()); // 2015.08.08.
 				if (!p.CommentedOnReddit
 						&& !args[0].toLowerCase().equals("admin")
@@ -143,12 +144,12 @@ public class Commands implements CommandExecutor {
 				if (args.length == 0) {
 					return false;
 				} else {
-					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = false;
+					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getUniqueId()).RPMode = false;
 					String message = "";
 					for (String arg : args)
 						message += arg + " ";
 					player.chat(message.substring(0, message.length() - 1));
-					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getName()).RPMode = true;
+					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getUniqueId()).RPMode = true;
 				}
 				return true;
 			default:
@@ -173,7 +174,7 @@ public class Commands implements CommandExecutor {
 			PluginMain.LoadFiles(true); // 2015.08.09.
 			for (Player p : PluginMain.GetPlayers()) {
 				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p
-						.getName());
+						.getUniqueId());
 				// if(mp.Flair!=null)
 				if (mp.CommentedOnReddit) {
 					PluginMain.AppendPlayerDisplayFlair(mp, p); // 2015.08.09.
@@ -265,12 +266,12 @@ public class Commands implements CommandExecutor {
 			SendMessage(player, message);
 			return;
 		}
-		if (!MaybeOfflinePlayer.AllPlayers.containsKey(args[2])) {
+		MaybeOfflinePlayer p = MaybeOfflinePlayer.GetFromName(args[2]);
+		if (p == null) {
 			String message = "§cPlayer not found: " + args[2] + "§r";
 			SendMessage(player, message);
 			return;
 		}
-		MaybeOfflinePlayer p = MaybeOfflinePlayer.AllPlayers.get(args[2]);
 		SendMessage(player, "Player name: " + p.PlayerName);
 		SendMessage(player, "User flair: " + p.Flair);
 		SendMessage(player, "Username: " + p.UserName);
@@ -304,21 +305,6 @@ public class Commands implements CommandExecutor {
 		targetplayer.Flair = flair;
 		targetplayer.CommentedOnReddit = true; // Or at least has a flair in
 												// some way
-		if (!PluginMain.RemoveLineFromFile("customflairs.txt",
-				targetplayer.PlayerName)) {
-			SendMessage(player, "§cError removing previous custom flair!§r");
-			return;
-		}
-		File file = new File("customflairs.txt");
-		try {
-			BufferedWriter bw;
-			bw = new BufferedWriter(new FileWriter(file, true));
-			bw.write(targetplayer.PlayerName + " " + targetplayer.Flair + "\n");
-			bw.close();
-		} catch (IOException e) {
-			System.out.println("Error!\n" + e);
-			PluginMain.LastException = e; // 2015.08.09.
-		}
 		SendMessage(player, "§bThe flair has been set. Player: "
 				+ targetplayer.PlayerName + " Flair: " + flair + "§r");
 	}
@@ -335,8 +321,13 @@ public class Commands implements CommandExecutor {
 					"§cYou need to start the flair with a color code: &6(19s)&r");
 			return;
 		}
-		SetPlayerFlair(player, MaybeOfflinePlayer.AddPlayerIfNeeded(args[2]),
-				args[3]);
+		Player p = Bukkit.getPlayer(args[2]);
+		if (p == null) {
+			SendMessage(player, "§cPLayer not found.&r");
+			return;
+		}
+		SetPlayerFlair(player,
+				MaybeOfflinePlayer.AddPlayerIfNeeded(p.getUniqueId()), args[3]);
 	}
 
 	private static void DoUpdatePlugin(Player player) { // 2015.08.10.
@@ -399,21 +390,7 @@ public class Commands implements CommandExecutor {
 					SendMessage(player, "§cUsage: /u announce remove <index>");
 					return;
 				}
-				try {
-					if (!PluginMain.RemoveLineFromFile("announcemessages.txt",
-							Integer.parseInt(args[2]) + 1)) {
-						SendMessage(player,
-								"§cError removing announce message!§r");
-						return;
-					} else {
-						PluginMain.AnnounceMessages.remove(Integer
-								.parseInt(args[2]));
-						SendMessage(player, "§bAnnouncement removed.§r");
-					}
-				} catch (NumberFormatException e) {
-					SendMessage(player, "§cUsage: /u announce remove <index>§r");
-					return;
-				}
+				PluginMain.AnnounceMessages.remove(Integer.parseInt(args[2]));
 				break;
 			case "settime":
 				if (args.length < 3) {
@@ -527,6 +504,7 @@ public class Commands implements CommandExecutor {
 			SendMessage(player, message);
 			return;
 		}
-		//SendMessage(player, "Player " + p.getName() + " position saved/loaded.");s
+		// SendMessage(player, "Player " + p.getName() +
+		// " position saved/loaded.");s
 	}
 }
