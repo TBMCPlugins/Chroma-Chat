@@ -152,6 +152,9 @@ public class Commands implements CommandExecutor {
 					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getUniqueId()).RPMode = true;
 				}
 				return true;
+			case "skype":
+				// "skype:?chat&blob=Y_5Ob1BEcw0ZlstdUHyf0ENS5n1Xz2Huhx-5b-pB2JyMSRO5QMEALkJuTSuUaAb3-XfWXwCndwhGex_UpXDbyQ";
+				return true;
 			default:
 				player.sendMessage("Unknown command: " + cmd.getName());
 				break;
@@ -250,6 +253,8 @@ public class Commands implements CommandExecutor {
 			case "loadpos":
 				DoSaveLoadPos(player, args);
 				break;
+			case "updatedynmap":
+				DoUpdateDynmap(player, args);
 			default:
 				String message = DoAdminUsage;
 				SendMessage(player, message);
@@ -506,5 +511,28 @@ public class Commands implements CommandExecutor {
 		}
 		// SendMessage(player, "Player " + p.getName() +
 		// " position saved/loaded.");s
+	}
+
+	private static void DoUpdateDynmap(Player player, String[] args) {
+		// args[0] is "admin" - args[1] is "updatedynmap"
+		if (args.length == 2) {
+			String message = "§cUsage: /u admin updatedynmap <player>§r";
+			SendMessage(player, message);
+			return;
+		}
+		MaybeOfflinePlayer p = MaybeOfflinePlayer.GetFromName(args[2]);
+		if (p == null) {
+			String message = "§cPlayer not found: " + args[2] + "§r";
+			SendMessage(player, message);
+			return;
+		}
+		SendMessage(player, "Player name: " + p.PlayerName);
+		SendMessage(player, "User flair: " + p.Flair);
+		SendMessage(player, "Username: " + p.UserName);
+		SendMessage(player, "Flair accepted: " + p.AcceptedFlair);
+		SendMessage(player, "Flair ignored: " + p.IgnoredFlair);
+		SendMessage(player, "Flair decided: " + p.FlairDecided);
+		SendMessage(player, "Flair recognised: " + p.FlairRecognised);
+		SendMessage(player, "Commented on Reddit: " + p.CommentedOnReddit);
 	}
 }

@@ -228,9 +228,9 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		if (e.getMessage().equalsIgnoreCase("F")) {
 			MaybeOfflinePlayer mp = MaybeOfflinePlayer.GetFromName(e
 					.getPlayer().getName());
-			if (!mp.PressedF) {
-				if (ActiveF)
-					FCount++;
+			if (!mp.PressedF && ActiveF) {
+				FCount++;
+				mp.PressedF = true;
 			}
 		}
 
