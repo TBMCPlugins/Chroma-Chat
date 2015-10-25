@@ -43,6 +43,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		this.getCommand("ooc").setExecutor(comm);
 		this.getCommand("ooc").setUsage(
 				this.getCommand("ooc").getUsage().replace('&', '§'));
+		this.getCommand("skype").setExecutor(comm);
 		Instance = this; // 2015.08.08.
 		Console = this.getServer().getConsoleSender(); // 2015.08.12.
 		LoadFiles(false); // 2015.08.09.
@@ -95,7 +96,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 						ign = ign.substring(start, end);
 					ign = ign.trim();
 					MaybeOfflinePlayer mp = MaybeOfflinePlayer.GetFromName(ign);
-					if(mp==null)
+					if (mp == null)
 						continue;
 					if (HasIGFlair(mp.UUID))
 						continue;

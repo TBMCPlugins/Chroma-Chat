@@ -11,5 +11,7 @@ commands:
     ooc:
         description: Send message in Out-of-Character
         usage: "&cUsage: /ooc <message>&r"
+    skype:
+        description: Get the Skype conversation link
 author: NorbiPeti
 depend: [Essentials, Towny, TownyChat, Minigames]
