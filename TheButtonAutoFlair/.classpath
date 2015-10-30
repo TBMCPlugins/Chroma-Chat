@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="D:/Downloads/Essentials/Essentials.jar"/>
 	<classpathentry kind="lib" path="D:/Downloads/1404231200wpdm_Towny_Advanced/Towny.jar"/>
 	<classpathentry kind="lib" path="D:/Z - Norbi cucca/0 Projektek/TheButtonMCAutoFlairProto/Spigot server/plugins/_/Minigames-1.7.0.jar"/>
+	<classpathentry kind="lib" path="D:/Z - Norbi cucca/0 Projektek/TheButtonMCAutoFlairProto/Spigot server/plugins/_/TownyChat.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

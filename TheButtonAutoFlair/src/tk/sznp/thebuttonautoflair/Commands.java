@@ -516,23 +516,9 @@ public class Commands implements CommandExecutor {
 	private static void DoUpdateDynmap(Player player, String[] args) {
 		// args[0] is "admin" - args[1] is "updatedynmap"
 		if (args.length == 2) {
-			String message = "§cUsage: /u admin updatedynmap <player>§r";
+			String message = "§cUsage: /u admin updatedynmap <password>§r";
 			SendMessage(player, message);
 			return;
 		}
-		MaybeOfflinePlayer p = MaybeOfflinePlayer.GetFromName(args[2]);
-		if (p == null) {
-			String message = "§cPlayer not found: " + args[2] + "§r";
-			SendMessage(player, message);
-			return;
-		}
-		SendMessage(player, "Player name: " + p.PlayerName);
-		SendMessage(player, "User flair: " + p.Flair);
-		SendMessage(player, "Username: " + p.UserName);
-		SendMessage(player, "Flair accepted: " + p.AcceptedFlair);
-		SendMessage(player, "Flair ignored: " + p.IgnoredFlair);
-		SendMessage(player, "Flair decided: " + p.FlairDecided);
-		SendMessage(player, "Flair recognised: " + p.FlairRecognised);
-		SendMessage(player, "Commented on Reddit: " + p.CommentedOnReddit);
 	}
 }
