@@ -237,44 +237,59 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		if (e.getMessage().startsWith(">"))
 			e.setMessage("§2" + e.getMessage());
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("tellraw @a [\"\"");
-		sb.append(",{\"text\":\"Hashtags:\"}");
-		int index = -1;
-		ArrayList<String> list = new ArrayList<String>();
-		while ((index = e.getMessage().indexOf("#", index + 1)) != -1) {
-			int index2 = e.getMessage().indexOf(" ", index + 1);
-			if (index2 == -1)
-				index2 = e.getMessage().length();
-			int index3 = e.getMessage().indexOf("#", index + 1);
-			if (index3 != -1 && index3 < index2) // A # occurs before a space
-				index2 = index3;
-			String original = e.getMessage().substring(index, index2);
-			list.add(original);
-			sb.append(",{\"text\":\" \"}");
-			sb.append(",{\"text\":\"");
-			sb.append(original);
-			sb.append("\",\"color\":\"blue\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://twitter.com/hashtag/");
-			sb.append(original.substring(1));
-			sb.append("\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open on Twitter\",\"color\":\"blue\"}]}}}");
-		}
-		for (String original : list)
-			e.setMessage(e.getMessage().replace(
-					original,
-					"§9" + original
-							+ (e.getMessage().startsWith("§2>") ? "§2" : "§r")));
 		/*
-		 * for (String original : list)
-		 * System.out.println(e.getMessage().replace( original, "§9" + original
-		 * + (e.getMessage().startsWith("§2>") ? "§2" : "§r")));
+		 * Channel c = ((Chat) Bukkit.getPluginManager().getPlugin("TownyChat"))
+		 * .getChannelsHandler().getActiveChannel(e.getPlayer(),
+		 * channelTypes.GLOBAL);
 		 */
+		/*
+		 * List<String> modes = ((Chat) Bukkit.getPluginManager().getPlugin(
+		 * "TownyChat")).getTowny().getPlayerMode(e.getPlayer()); if
+		 * (modes.size() == 0 || modes.contains("g")) {
+		 */
+		if (e.getFormat().contains("[g]")) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("tellraw @a [\"\"");
+			sb.append(",{\"text\":\"Hashtags:\"}");
+			int index = -1;
+			ArrayList<String> list = new ArrayList<String>();
+			while ((index = e.getMessage().indexOf("#", index + 1)) != -1) {
+				int index2 = e.getMessage().indexOf(" ", index + 1);
+				if (index2 == -1)
+					index2 = e.getMessage().length();
+				int index3 = e.getMessage().indexOf("#", index + 1);
+				if (index3 != -1 && index3 < index2) // A # occurs before a
+														// space
+					index2 = index3;
+				String original = e.getMessage().substring(index, index2);
+				list.add(original);
+				sb.append(",{\"text\":\" \"}");
+				sb.append(",{\"text\":\"");
+				sb.append(original);
+				sb.append("\",\"color\":\"blue\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://twitter.com/hashtag/");
+				sb.append(original.substring(1));
+				sb.append("\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open on Twitter\",\"color\":\"blue\"}]}}}");
+			}
+			for (String original : list)
+				e.setMessage(e.getMessage().replace(
+						original,
+						"§9"
+								+ original
+								+ (e.getMessage().startsWith("§2>") ? "§2"
+										: "§r")));
+			/*
+			 * for (String original : list)
+			 * System.out.println(e.getMessage().replace( original, "§9" +
+			 * original + (e.getMessage().startsWith("§2>") ? "§2" : "§r")));
+			 */
 
-		sb.append("]");
+			sb.append("]");
 
-		if (list.size() > 0)
-			PluginMain.Instance.getServer().dispatchCommand(
-					PluginMain.Instance.getServer().getConsoleSender(),
-					sb.toString());
+			if (list.size() > 0)
+				PluginMain.Instance.getServer().dispatchCommand(
+						PluginMain.Instance.getServer().getConsoleSender(),
+						sb.toString());
+		}
 	}
 
 	@EventHandler
