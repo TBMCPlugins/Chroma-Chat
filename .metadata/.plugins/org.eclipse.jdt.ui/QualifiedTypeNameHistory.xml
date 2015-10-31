@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="org.bukkit.event.player.PlayerJoinEvent"/>
-<fullyQualifiedTypeName name="org.bukkit.event.player.AsyncPlayerChatEvent"/>
-<fullyQualifiedTypeName name="java.util.function.Predicate"/>
-<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.MyPredicate"/>
 <fullyQualifiedTypeName name="org.bukkit.command.CommandExecutor"/>
 <fullyQualifiedTypeName name="org.bukkit.command.CommandSender"/>
 <fullyQualifiedTypeName name="org.bukkit.command.Command"/>
@@ -17,7 +13,6 @@
 <fullyQualifiedTypeName name="com.earth2me.essentials.api.Economy"/>
 <fullyQualifiedTypeName name="com.palmergames.bukkit.towny.Towny"/>
 <fullyQualifiedTypeName name="com.palmergames.bukkit.towny.object.TownyWorld"/>
-<fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="com.palmergames.bukkit.towny.object.Town"/>
 <fullyQualifiedTypeName name="com.palmergames.bukkit.towny.object.WorldCoord"/>
 <fullyQualifiedTypeName name="com.google.common.reflect.Reflection"/>
@@ -44,7 +39,6 @@
 <fullyQualifiedTypeName name="org.bukkit.Location"/>
 <fullyQualifiedTypeName name="java.lang.StringBuilder"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
-<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PlayerListener"/>
 <fullyQualifiedTypeName name="au.com.mineauz.minigames.MinigamePlayer"/>
 <fullyQualifiedTypeName name="au.com.mineauz.minigames.PlayerData"/>
 <fullyQualifiedTypeName name="au.com.mineauz.minigames.Minigames"/>
@@ -60,4 +54,10 @@
 <fullyQualifiedTypeName name="java.util.Calendar"/>
 <fullyQualifiedTypeName name="java.util.TimeZone"/>
 <fullyQualifiedTypeName name="java.time.ZoneId"/>
+<fullyQualifiedTypeName name="com.palmergames.bukkit.TownyChat.channels.Channel"/>
+<fullyQualifiedTypeName name="com.palmergames.bukkit.TownyChat.channels.ChannelsHolder"/>
+<fullyQualifiedTypeName name="com.palmergames.bukkit.TownyChat.Chat"/>
+<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PlayerListener"/>
+<fullyQualifiedTypeName name="com.palmergames.bukkit.TownyChat.channels.channelTypes"/>
+<fullyQualifiedTypeName name="java.util.List"/>
 </qualifiedTypeNameHistroy>
