@@ -310,6 +310,7 @@ public class Commands implements CommandExecutor {
 		targetplayer.Flair = flair;
 		targetplayer.CommentedOnReddit = true; // Or at least has a flair in
 												// some way
+		targetplayer.FlairRecognised = true;
 		SendMessage(player, "§bThe flair has been set. Player: "
 				+ targetplayer.PlayerName + " Flair: " + flair + "§r");
 	}
