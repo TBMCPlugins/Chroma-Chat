@@ -233,12 +233,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		return "";
 	}
 
-	/*
-	 * public static String GetPlayerTown(Player player) { // 2015.07.20. try {
-	 * Town town = WorldCoord.parseWorldCoord(player).getTownBlock() .getTown();
-	 * return town.getName(); } catch (Exception e) { return ""; } }
-	 */
-
 	public static Collection<? extends Player> GetPlayers() {
 		return Instance.getServer().getOnlinePlayers();
 	}
@@ -254,6 +248,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			MaybeOfflinePlayer.AllPlayers.clear();
 			TownColors.clear();
 			AnnounceMessages.clear();
+			Commands.Quiz.clear();
 		}
 		System.out.println("Loading files for The Button Minecraft plugin..."); // 2015.08.09.
 		try {
@@ -277,6 +272,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 						.getDouble("notificationpitch");
 				AnnounceTime = yc.getInt("announcetime");
 				AnnounceMessages.addAll(yc.getStringList("announcements"));
+				Commands.Quiz.addAll(yc.getStringList("quiz"));
 			}
 			System.out.println("The Button Minecraft plugin loaded files!");
 		} catch (IOException e) {
@@ -299,6 +295,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			yc.set("notificationpitch", PlayerListener.NotificationPitch);
 			yc.set("announcetime", AnnounceTime);
 			yc.set("announcements", AnnounceMessages);
+			yc.set("quiz", Commands.Quiz);
 			yc.save(file);
 			System.out.println("The Button Minecraft plugin saved files!");
 		} catch (IOException e) {

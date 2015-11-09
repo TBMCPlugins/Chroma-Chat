@@ -2,19 +2,17 @@ package tk.sznp.thebuttonautoflair;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class Commands implements CommandExecutor {
 
@@ -104,7 +102,7 @@ public class Commands implements CommandExecutor {
 																		// too
 					break;
 				case "announce":
-					DoAnnounce(player, args);
+					DoAnnounce(player, args, null);
 					break;
 				case "name":
 					if (args.length == 1) {
@@ -133,6 +131,9 @@ public class Commands implements CommandExecutor {
 						player.sendMessage("Disabled.");
 					} else
 						player.sendMessage("Unknown command: " + cmd.getName());
+					break;
+				case "quiz":
+					DoQuiz(player, args, null);
 					break;
 				default:
 					return false;
@@ -164,7 +165,16 @@ public class Commands implements CommandExecutor {
 			DoAdmin(null, args); // 2015.08.09.
 			return true; // 2015.08.09.
 		} else if (args.length > 0 && args[0].toLowerCase().equals("announce")) {
-			DoAnnounce(null, args);
+			if (sender instanceof BlockCommandSender)
+				DoAnnounce(null, args, (BlockCommandSender) sender);
+			else
+				DoAnnounce(null, args, null);
+			return true;
+		} else if (args.length > 0 && args[0].toLowerCase().equals("quiz")) {
+			if (sender instanceof BlockCommandSender)
+				DoQuiz(null, args, (BlockCommandSender) sender);
+			else
+				DoQuiz(null, args, null);
 			return true;
 		}
 		return false;
@@ -356,11 +366,12 @@ public class Commands implements CommandExecutor {
 		}
 	}
 
-	private static void DoAnnounce(Player player, String[] args) {
+	private static void DoAnnounce(Player player, String[] args,
+			BlockCommandSender commandblock) {
 		if (player == null || player.isOp()
 				|| player.getName().equals("NorbiPeti")) {
 			if (args.length == 1) {
-				String message = "§cUsage: /u announce add|remove|settime|list§r";
+				String message = "§cUsage: /u announce add|remove|settime|list|edit§r";
 				SendMessage(player, message);
 				return;
 			}
@@ -370,26 +381,15 @@ public class Commands implements CommandExecutor {
 					SendMessage(player, "§cUsage: /u announce add <message>");
 					return;
 				}
-				File file = new File("announcemessages.txt");
-				try {
-					BufferedWriter bw;
-					bw = new BufferedWriter(new FileWriter(file, true));
-					StringBuilder sb = new StringBuilder();
-					for (int i = 2; i < args.length; i++) {
-						sb.append(args[i]);
-						if (i != args.length - 1)
-							sb.append(" ");
-					}
-					String finalmessage = sb.toString().replace('&', '§');
-					PluginMain.AnnounceMessages.add(finalmessage);
-					bw.write(finalmessage);
-					bw.write(System.lineSeparator());
-					bw.close();
-					SendMessage(player, "§bAnnouncement added.§r");
-				} catch (IOException e) {
-					System.out.println("Error!\n" + e);
-					PluginMain.LastException = e; // 2015.08.09.
+				StringBuilder sb = new StringBuilder();
+				for (int i = 2; i < args.length; i++) {
+					sb.append(args[i]);
+					if (i != args.length - 1)
+						sb.append(" ");
 				}
+				String finalmessage = sb.toString().replace('&', '§');
+				PluginMain.AnnounceMessages.add(finalmessage);
+				SendMessage(player, "§bAnnouncement added.§r");
 				break;
 			case "remove":
 				if (args.length < 3) {
@@ -404,55 +404,8 @@ public class Commands implements CommandExecutor {
 							"§cUsage: /u announce settime <minutes>");
 					return;
 				}
-				SendMessage(player, "Setting time between messages...");
 				PluginMain.AnnounceTime = Integer.parseInt(args[2]) * 60 * 1000;
-				File inputFile = new File("announcemessages.txt");
-				File tempFile = new File("_tempAnnounce.txt");
-
-				if (!inputFile.exists())
-					break;
-
-				try {
-					BufferedReader reader = new BufferedReader(new FileReader(
-							inputFile));
-					BufferedWriter writer = new BufferedWriter(new FileWriter(
-							tempFile));
-
-					String currentLine;
-
-					boolean first = true;
-					while ((currentLine = reader.readLine()) != null) {
-						if (first) {
-							writer.write(PluginMain.AnnounceTime
-									+ System.lineSeparator());
-							first = false;
-						} else {
-							writer.write(currentLine
-									+ System.getProperty("line.separator"));
-						}
-					}
-					writer.close();
-					reader.close();
-					if (!tempFile.renameTo(inputFile)) {
-						inputFile.delete();
-						if (tempFile.renameTo(inputFile)) {
-							SendMessage(player,
-									"Setting time between messages done!");
-							break;
-						} else {
-							SendMessage(player,
-									"§cError: Failed to rename file!");
-							break;
-						}
-					} else {
-						SendMessage(player,
-								"Setting time between messages done!");
-						break;
-					}
-				} catch (IOException e) {
-					System.out.println("Error!\n" + e);
-					PluginMain.LastException = e; // 2015.08.09.
-				}
+				SendMessage(player, "Time set between announce messages");
 				break;
 			case "list":
 				SendMessage(player, "§bList of announce messages:§r");
@@ -465,8 +418,36 @@ public class Commands implements CommandExecutor {
 								+ PluginMain.AnnounceTime / 60 / 1000
 								+ " minute(s)§r");
 				break;
+			case "edit":
+				if (commandblock == null) {
+					SendMessage(
+							player,
+							"§cError: This command can only be used from a command block. Use /u announce remove.");
+					break;
+				}
+				if (args.length < 4) {
+					commandblock
+							.sendMessage("§cUsage: /u announce edit <index> <message>");
+					return;
+				}
+				StringBuilder sb1 = new StringBuilder();
+				for (int i1 = 3; i1 < args.length; i1++) {
+					sb1.append(args[i1]);
+					if (i1 != args.length - 1)
+						sb1.append(" ");
+				}
+				String finalmessage1 = sb1.toString().replace('&', '§');
+				int index = Integer.parseInt(args[2]);
+				if (index > 100)
+					break;
+				while (PluginMain.AnnounceMessages.size() <= index)
+					PluginMain.AnnounceMessages.add("");
+				PluginMain.AnnounceMessages.set(Integer.parseInt(args[2]),
+						finalmessage1);
+				commandblock.sendMessage("Announcement edited.");
+				break;
 			default:
-				String message = "§cUsage: /u announce add|remove|settime|list§r";
+				String message = "§cUsage: /u announce add|remove|settime|list|edit§r";
 				SendMessage(player, message);
 				return;
 			}
@@ -522,4 +503,81 @@ public class Commands implements CommandExecutor {
 			return;
 		}
 	}
+
+	public static ArrayList<String> Quiz = new ArrayList<>();
+
+	private static void DoQuiz(Player player, String[] args,
+			BlockCommandSender commandblock) {
+		if (player == null || player.isOp()
+				|| player.getName().equals("NorbiPeti")) {
+			if (args.length == 1) {
+				String message = "§cUsage: /u quiz add|remove|list|edit§r";
+				SendMessage(player, message);
+				return;
+			}
+			switch (args[1].toLowerCase()) {
+			case "add":
+				if (args.length < 3) {
+					SendMessage(player, "§cUsage: /u quiz add <message>");
+					return;
+				}
+				StringBuilder sb = new StringBuilder();
+				for (int i = 2; i < args.length; i++) {
+					sb.append(args[i]);
+					if (i != args.length - 1)
+						sb.append(" ");
+				}
+				String finalmessage = sb.toString().replace('&', '§');
+				Quiz.add(finalmessage);
+				SendMessage(player, "§Quiz question added.§r");
+				break;
+			case "remove":
+				if (args.length < 3) {
+					SendMessage(player, "§cUsage: /u quiz remove <index>");
+					return;
+				}
+				Quiz.remove(Integer.parseInt(args[2]));
+				break;
+			case "list":
+				SendMessage(player, "§bList of quiz questions:§r");
+				SendMessage(player, "§bFormat: [index] question§r");
+				int i = 0;
+				for (String question : Quiz)
+					SendMessage(player, "[" + i++ + "] " + question);
+				break;
+			case "edit":
+				if (commandblock == null) {
+					SendMessage(
+							player,
+							"§cError: This command can only be used from a command block. Use /u quiz remove.");
+					break;
+				}
+				if (args.length < 4) {
+					commandblock
+							.sendMessage("§cUsage: /u quiz edit <index> <message>");
+					return;
+				}
+				StringBuilder sb1 = new StringBuilder();
+				for (int i1 = 3; i1 < args.length; i1++) {
+					sb1.append(args[i1]);
+					if (i1 != args.length - 1)
+						sb1.append(" ");
+				}
+				String finalmessage1 = sb1.toString().replace('&', '§');
+				int index = Integer.parseInt(args[2]);
+				if (index > 100)
+					break;
+				while (Quiz.size() <= index)
+					Quiz.add("");
+				Quiz.set(Integer.parseInt(args[2]), finalmessage1);
+				commandblock.sendMessage("Question edited.");
+				break;
+			default:
+				String message = "§cUsage: /u quiz add|remove|list|edit§r";
+				SendMessage(player, message);
+				return;
+			}
+		}
+	}
+
 }
