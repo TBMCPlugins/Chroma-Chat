@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="org.bukkit.command.CommandExecutor"/>
-<fullyQualifiedTypeName name="org.bukkit.command.CommandSender"/>
 <fullyQualifiedTypeName name="org.bukkit.command.Command"/>
 <fullyQualifiedTypeName name="java.io.BufferedWriter"/>
 <fullyQualifiedTypeName name="java.io.FileWriter"/>
@@ -38,7 +36,6 @@
 <fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PluginMain"/>
 <fullyQualifiedTypeName name="org.bukkit.Location"/>
 <fullyQualifiedTypeName name="java.lang.StringBuilder"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="au.com.mineauz.minigames.MinigamePlayer"/>
 <fullyQualifiedTypeName name="au.com.mineauz.minigames.PlayerData"/>
 <fullyQualifiedTypeName name="au.com.mineauz.minigames.Minigames"/>
@@ -60,4 +57,7 @@
 <fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PlayerListener"/>
 <fullyQualifiedTypeName name="com.palmergames.bukkit.TownyChat.channels.channelTypes"/>
 <fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="org.bukkit.command.BlockCommandSender"/>
+<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.Commands"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
 </qualifiedTypeNameHistroy>
