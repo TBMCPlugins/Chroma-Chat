@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Timer;
 import java.util.UUID;
 
 public class PlayerListener implements Listener { // 2015.07.16.
@@ -34,18 +35,27 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				.getUniqueId());
 		mp.PlayerName = p.getName(); // 2015.10.17. 0:58
 		if (mp.CommentedOnReddit)
+			// if (false)
 			PluginMain.AppendPlayerDisplayFlair(mp, p); // 2015.08.09.
 		else { // 2015.07.20.
-			if (!mp.IgnoredFlair) {
-				String message = "§bHi! If you'd like your flair displayed ingame, write your §6Minecraft name to this thread:§r";
-				p.sendMessage(message);
-				message = "§bhttps://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/§r";
-				p.sendMessage(message);
-				message = "§6If you don't want the flair, type /u ignore to prevent this message on login.§r";
-				p.sendMessage(message);
-				message = "§bIf you already commented your name, then please wait a few seconds.§r";
-				p.sendMessage(message);
-			}
+			Timer timer = new Timer();
+			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
+				@Override
+				public void run() {
+					if (!mp.IgnoredFlair) {
+						String json = "[\"\",{\"text\":\"If you'd like your /r/TheButton flair displayed ingame, write your Minecraft name to \",\"color\":\"aqua\"},{\"text\":\"[this thread].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]";
+						PluginMain.Instance.getServer().dispatchCommand(
+								PluginMain.Console,
+								"tellraw " + mp.PlayerName + " " + json);
+						json = "[\"\",{\"text\":\"If you don't want the flair, type /u ignore to prevent this message after next login.\",\"color\":\"aqua\"}]";
+						PluginMain.Instance.getServer().dispatchCommand(
+								PluginMain.Console,
+								"tellraw " + mp.PlayerName + " " + json);
+					}
+				}
+			};
+			tt.mp = mp;
+			timer.schedule(tt, 15 * 1000);
 		}
 
 		/* NICKNAME LOGIC */
