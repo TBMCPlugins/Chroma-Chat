@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 public class PlayerListener implements Listener { // 2015.07.16.
@@ -116,8 +117,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		MaybeOfflinePlayer player = MaybeOfflinePlayer.GetFromName(event
-				.getPlayer().getName());
+		MaybeOfflinePlayer player = MaybeOfflinePlayer.AllPlayers.get(event
+				.getPlayer().getUniqueId());
 		String flair = player.Flair; // 2015.08.08.
 		if (player.IgnoredFlair)
 			flair = "";
@@ -221,23 +222,12 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 	private boolean ActiveF = false;
 	private int FCount = 0;
-	private long FTime;
 
 	@EventHandler
 	public void onPlayerMessage(AsyncPlayerChatEvent e) {
-		if (ActiveF) {
-			if (System.currentTimeMillis() - FTime > 10000) {
-				ActiveF = false;
-				for (Player p : PluginMain.GetPlayers()) {
-					p.sendMessage("§b" + FCount + " "
-							+ (FCount == 1 ? "person" : "people")
-							+ " paid their respects.§r");
-				}
-			}
-		}
 		if (e.getMessage().equalsIgnoreCase("F")) {
-			MaybeOfflinePlayer mp = MaybeOfflinePlayer.GetFromName(e
-					.getPlayer().getName());
+			MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(e
+					.getPlayer().getUniqueId());
 			if (!mp.PressedF && ActiveF) {
 				FCount++;
 				mp.PressedF = true;
@@ -302,19 +292,37 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		}
 	}
 
+	private Timer Ftimer;
+
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		if (!Minigames.plugin.pdata.getMinigamePlayer(e.getEntity())
 				.isInMinigame() && new Random().nextBoolean()) {
+			if (Ftimer != null)
+				Ftimer.cancel();
 			ActiveF = true;
 			FCount = 0;
-			FTime = System.currentTimeMillis();
 			for (Player p : PluginMain.GetPlayers()) {
-				MaybeOfflinePlayer mp = MaybeOfflinePlayer.GetFromName(p
-						.getName());
+				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(p
+						.getUniqueId());
 				mp.PressedF = false;
 				p.sendMessage("§bPress F to pay respects.§r");
 			}
+			Ftimer = new Timer();
+			TimerTask tt = new TimerTask() {
+				@Override
+				public void run() {
+					if (ActiveF) {
+						ActiveF = false;
+						for (Player p : PluginMain.GetPlayers()) {
+							p.sendMessage("§b" + FCount + " "
+									+ (FCount == 1 ? "person" : "people")
+									+ " paid their respects.§r");
+						}
+					}
+				}
+			};
+			Ftimer.schedule(tt, 15 * 1000);
 		}
 	}
 }

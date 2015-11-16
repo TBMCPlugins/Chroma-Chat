@@ -28,8 +28,8 @@ public class Commands implements CommandExecutor {
 			case "u": {
 				if (args.length < 1)
 					return false;
-				MaybeOfflinePlayer p = MaybeOfflinePlayer.GetFromName(player
-						.getName()); // 2015.08.08.
+				MaybeOfflinePlayer p = MaybeOfflinePlayer.AllPlayers.get(player
+						.getUniqueId()); // 2015.08.08.
 				if (!p.CommentedOnReddit
 						&& !args[0].toLowerCase().equals("admin")
 						&& !args[0].toLowerCase().equals("ignore")) {
