@@ -6,28 +6,39 @@ It can download player flairs for /r/TheButtonMinecraft and do other cool things
 #### Obtaining the flair
 At first, you need to "connect" your Reddit account with your Minecraft account. This is done by writing your Minecraft name to [this thread](https://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/autoflair_system_comment_your_minecraft_name_and/), following the instructions in the post.
 
-When you're done, connect to the server, if you aren't already on. You should see a message asking if you're the correct Reddit user. Type /u accept to confirm it and accept your flair.
+When you're done, connect to the server, if you aren't already on. You should see a message after a while (max. 10 seconds) asking if you're the correct Reddit user. Type /u accept to confirm it and accept your flair.
 
 #### Hiding/ignoring the flair
 If you decide to not show your flair, or someone else tried to use your name, the easiest thing to do is /u ignore. This command works even if you already accepted your flair.
+
+You can also use /u ignore if you don't want to write your name in the thread and don't want to get notified each time you log in.
 
 #### Flair not showing up
 Please note that in some cases your flair cannot be obtained (specifically, if it's not stored by karmadecay.com, in which case possibly Karmancer can't show it as well). In this case, there are two possibilities.
 
 If you're a non-presser or a can't press and only your time is recorded, you can do /u nonpresser or /u cantpress, as a message should tell you.
 
-If nothing is known about your flair, you need to ask an admin (currently FigyTuna, Ghostise) or me (NorbiPeti) to set the flair for you. This is done to prevent abusing the system with setting random flairs and rendering the core of the plugin useless.
+If nothing is known about your flair, you need to ask an admin to set the flair for you. This is done to prevent abusing the system with setting random flairs and rendering the core of the plugin useless.
 
 #### Name mentioning
-If you simply say any online player's full playername, it'll highlight it and play a sound for the target player. This works only once per message per target player.
+If you simply say any online player's full playername or nickname, it'll highlight it and play a sound for the target player. This works only once per message per target player.
 
-Essentials nicknames are now supported. If you say a nickname, it'll show it's original colors, if you say a username, then it will choose based on flair color if known.
+If you say a nickname, it'll show it's original colors, if you say a username, then it will choose based on flair color if known.
 
 #### RP/OOC mode (/nrp or /ooc)
 You can use /ooc <message> to say something Out-of-Character. Otherwise everything you speak should be treated as said in RP, except when it is obvious it's not in RP (like talking about the server).
 
 #### Greentext support (>message)
 Start your message with '>' to make it green.
+
+#### Hashtags (#BlameFigy)
+If you say a hashtag in global chat, it'll highlight it and list the hashtag(s) used above your message, in a clickable form. So if you say "asd #dsa #fgh hgf", it will display it like this:
+
+    Hashtags: #dsa #fgh
+    [g] <PlayerName(flair)> asd #dsa #fgh hgf
+
+#### Paying respects (F)
+If a player dies, sometimes the plugin will tell everyone "Press F to pay respects.". After a few seconds, a message will tell everyone how many people paid their respects.
 
 ### Admins
 Type /u admin for a list of the commands.
@@ -64,14 +75,16 @@ I've made a simple command to allow updating the plugin easily. After running th
 
 This command will not do any other thing than downloading the JAR file from here to the plugins directory. Do not spam it, because it will then generate unnecessary network traffic on the server.
 
+#### Toggle settings
+
+    /u admin togglerpshow - Toggles [RP] tag shown at each message except /ooc or /nrp.
+    /u admin toggledebug - Toggles debug mode. Currently only gives a few info used to solve a specific error.
+
+#### Saving and loading a player's position (/u admin savepos|loadpos)
+This is used in my "Invisible Parkour" as a checkpoint system, using anywhere else is not recommended.
+
 #### Setting the sound played on name mentioning
-You can set the sound played by creating a file named notificationsound.txt and placing a line (*with an endline at the end*) in this format:
-
-<sound name> <pitch>
-
-Example:
-
-mob.pig.say 1.0
+You can set the sound played by editing "notificationsound" and "notificationpitch" the config file (thebuttonmc.yml).
 
 #### Announcements (/u announce)
 You can make announcements broadcasted every n minutes where you can set n and it defaults to 15.
@@ -80,3 +93,4 @@ You can make announcements broadcasted every n minutes where you can set n and i
     /u announce remove <index> - Remove announcement by index (see below).
     /u announce list - List announcements with indexes.
     /u announce settime <minutes> - Set the time between announcements in minutes.
+    /u announce edit <index> <message> - Directly edits the announcement at the specified index. If there are less announcements than index, it'll create enough announcements.
