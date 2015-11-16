@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="org.bukkit.command.Command"/>
-<fullyQualifiedTypeName name="java.io.BufferedWriter"/>
 <fullyQualifiedTypeName name="java.io.FileWriter"/>
 <fullyQualifiedTypeName name="java.io.BufferedReader"/>
 <fullyQualifiedTypeName name="java.io.FileReader"/>
@@ -33,7 +31,6 @@
 <fullyQualifiedTypeName name="com.earth2me.essentials.PlayerList"/>
 <fullyQualifiedTypeName name="org.bukkit.event.entity.PlayerDeathEvent"/>
 <fullyQualifiedTypeName name="java.util.Random"/>
-<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PluginMain"/>
 <fullyQualifiedTypeName name="org.bukkit.Location"/>
 <fullyQualifiedTypeName name="java.lang.StringBuilder"/>
 <fullyQualifiedTypeName name="au.com.mineauz.minigames.MinigamePlayer"/>
@@ -45,7 +42,6 @@
 <fullyQualifiedTypeName name="org.bukkit.configuration.InvalidConfigurationException"/>
 <fullyQualifiedTypeName name="org.bukkit.configuration.file.YamlConfiguration"/>
 <fullyQualifiedTypeName name="org.bukkit.Bukkit"/>
-<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.MaybeOfflinePlayer"/>
 <fullyQualifiedTypeName name="javax.print.attribute.standard.DateTimeAtCompleted"/>
 <fullyQualifiedTypeName name="java.time.Clock"/>
 <fullyQualifiedTypeName name="java.util.Calendar"/>
@@ -60,4 +56,8 @@
 <fullyQualifiedTypeName name="org.bukkit.command.BlockCommandSender"/>
 <fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.Commands"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="java.util.Timer"/>
+<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.PluginMain"/>
+<fullyQualifiedTypeName name="java.util.TimerTask"/>
+<fullyQualifiedTypeName name="tk.sznp.thebuttonautoflair.MaybeOfflinePlayer"/>
 </qualifiedTypeNameHistroy>
