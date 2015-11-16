@@ -1,0 +1,7 @@
+package tk.sznp.thebuttonautoflair;
+
+import java.util.TimerTask;
+
+public class PlayerJoinTimerTask extends TimerTask {
+
+}
