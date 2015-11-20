@@ -37,11 +37,13 @@ public class Commands implements CommandExecutor {
 					return true;
 				}
 				if (!p.FlairRecognised
-						&& !args[0].toLowerCase().equals("admin")) { // 2015.08.10.
+						&& !args[0].toLowerCase().equals("admin")
+						&& !args[0].toLowerCase().equals("ignore")) {
 					player.sendMessage("Sorry, but your flair isn't recorded. Please ask a mod to set it for you.");
 					return true;
 				}
-				if (!p.FlairDecided && !args[0].toLowerCase().equals("admin")) { // 2015.08.19.
+				if (!p.FlairDecided && !args[0].toLowerCase().equals("admin")
+						&& !args[0].toLowerCase().equals("ignore")) {
 					player.sendMessage("Please select between /u nonpresser and /u cantpress");
 					return true;
 				}
