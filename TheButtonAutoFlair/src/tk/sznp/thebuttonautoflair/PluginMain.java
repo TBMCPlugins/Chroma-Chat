@@ -162,6 +162,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		String finalflair;
 		p.FlairDecided = true;
 		p.FlairRecognised = true;
+		p.CommentedOnReddit = true;
+		p.UserName = username;
 		switch (flairclass) {
 		case "press-1":
 			finalflair = "§c(" + text + ")§r";
@@ -202,8 +204,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			return;
 		}
 		p.Flair = finalflair; // 2015.08.08.
-		p.CommentedOnReddit = true; // 2015.08.10.
-		p.UserName = username; // 2015.08.08.
 		System.out.println("Added flair for " + p.PlayerName);
 		AppendPlayerDisplayFlair(p, Bukkit.getPlayer(uuid));
 	}

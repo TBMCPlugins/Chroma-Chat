@@ -14,7 +14,7 @@ public class MaybeOfflinePlayer { // 2015.08.08.
 							// doesn't matter if they accepted it or not
 	public boolean AcceptedFlair;
 	public boolean IgnoredFlair;
-	public boolean FlairDecided; // 2015.08.09.
+	public boolean FlairDecided; // 2015.08.09. //TODO: Detect date
 	public boolean FlairRecognised; // 2015.08.10.
 	public boolean CommentedOnReddit; // 2015.08.10.
 	public boolean RPMode; // 2015.08.25.
