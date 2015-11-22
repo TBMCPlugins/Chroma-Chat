@@ -456,6 +456,7 @@ public class Commands implements CommandExecutor {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private static void DoSaveLoadPos(Player player, String[] args) { // 2015.08.09.
 		// args[0] is "admin" - args[1] is "savepos|loadpos"
 		if (args.length == 2) {
@@ -463,25 +464,22 @@ public class Commands implements CommandExecutor {
 			SendMessage(player, message);
 			return;
 		}
-		if (!MaybeOfflinePlayer.AllPlayers.containsKey(args[2])) {
+		Player p = null;
+		try {
+			p = Bukkit.getPlayer(args[2]);
+		} catch (Exception e) {
+		}
+		if (!MaybeOfflinePlayer.AllPlayers.containsKey(p.getUniqueId())) {
 			String message = "§cPlayer not found: " + args[2] + "§r";
 			SendMessage(player, message);
 			return;
 		}
-		MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(args[2]);
-		Player p = null;
-		for (Player pl : PluginMain.GetPlayers()) {
-			if (pl.getName().equals(args[2])) {
-				p = pl;
-				break;
-			}
-		}
+		MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(p
+				.getUniqueId());
 		if (p == null) {
-			if (!MaybeOfflinePlayer.AllPlayers.containsKey(args[2])) {
-				String message = "§cPlayer is not online: " + args[2] + "§r";
-				SendMessage(player, message);
-				return;
-			}
+			String message = "§cPlayer is not online: " + args[2] + "§r";
+			SendMessage(player, message);
+			return;
 		}
 		if (args[1].equalsIgnoreCase("savepos")) {
 			mp.SavedLocation = p.getLocation();
