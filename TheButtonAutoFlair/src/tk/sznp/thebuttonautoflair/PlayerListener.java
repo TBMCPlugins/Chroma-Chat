@@ -1,6 +1,7 @@
 package tk.sznp.thebuttonautoflair;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,8 +12,12 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
+import au.com.mineauz.minigames.MinigamePlayer;
 import au.com.mineauz.minigames.Minigames;
 
 import java.io.File;
@@ -91,9 +96,6 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		}
 
 		mp.RPMode = true; // 2015.08.25.
-
-		if (p.getName().equals("FigyTuna") && Commands.PluginUpdated)
-			p.sendMessage("§bThe The Button MC plugin got updated. Please restart the server. :P§r");
 	}
 
 	@EventHandler
@@ -324,5 +326,41 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			};
 			Ftimer.schedule(tt, 15 * 1000);
 		}
+	}
+
+	@EventHandler
+	public void onPlayerItemPickup(PlayerPickupItemEvent e) {
+		// System.out.println("A");
+		MinigamePlayer mp = Minigames.plugin.pdata.getMinigamePlayer(e
+				.getPlayer());
+		// System.out.println("B");
+		if (!e.getPlayer().isOp()
+				&& (!mp.isInMinigame() || mp.getMinigame().getName(false)
+						.equalsIgnoreCase(Commands.KittyCannonMinigame)))
+			return;
+		// System.out.println("C");
+		ItemStack item = e.getItem().getItemStack();
+		if (!item.getType().equals(Material.SKULL_ITEM)
+				&& !item.getType().equals(Material.SKULL))
+			return;
+		// System.out.println("D");
+		SkullMeta meta = (SkullMeta) item.getItemMeta();
+		if (!meta.getDisplayName().equals("§rOcelot Head")
+				|| !meta.getOwner().equals("MHF_Ocelot"))
+			return;
+		// System.out.println("E");
+		if (meta.getLore() == null || meta.getLore().size() == 0)
+			return;
+		// System.out.println("F");
+		ItemStack hat = e.getPlayer().getInventory().getHelmet();
+		if (!(hat != null
+				&& (hat.getType().equals(Material.SKULL) || hat.getType()
+						.equals(Material.SKULL_ITEM)) && ((SkullMeta) hat
+					.getItemMeta()).getDisplayName().equals("§rWolf Head")))
+			e.getPlayer().damage(1f, Bukkit.getPlayer(meta.getLore().get(0)));
+		e.getItem().remove();
+		// System.out.println("G");
+		e.setCancelled(true);
+		// System.out.println("H");
 	}
 }

@@ -2,17 +2,31 @@ package tk.sznp.thebuttonautoflair;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Ocelot;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import com.earth2me.essentials.Mob;
+import com.earth2me.essentials.Mob.MobException;
+
+import au.com.mineauz.minigames.MinigamePlayer;
+import au.com.mineauz.minigames.Minigames;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Commands implements CommandExecutor {
 
@@ -137,6 +151,9 @@ public class Commands implements CommandExecutor {
 				case "quiz":
 					DoQuiz(player, args, null);
 					break;
+				case "kittycannon":
+					DoKittyCannon(player, args);
+					break;
 				default:
 					return false;
 				}
@@ -154,9 +171,6 @@ public class Commands implements CommandExecutor {
 					player.chat(message.substring(0, message.length() - 1));
 					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getUniqueId()).RPMode = true;
 				}
-				return true;
-			case "skype":
-				// "skype:?chat&blob=Y_5Ob1BEcw0ZlstdUHyf0ENS5n1Xz2Huhx-5b-pB2JyMSRO5QMEALkJuTSuUaAb3-XfWXwCndwhGex_UpXDbyQ";
 				return true;
 			default:
 				player.sendMessage("Unknown command: " + cmd.getName());
@@ -580,4 +594,60 @@ public class Commands implements CommandExecutor {
 		}
 	}
 
+	private static Random random = new Random();
+
+	public static String KittyCannonMinigame = "KittyCannon";
+
+	private static void DoKittyCannon(Player player, String[] args) {
+		if (player == null) {
+			SendMessage(player,
+					"§cThis command can only be used by a player.§r");
+			return;
+		}
+		MinigamePlayer mp = Minigames.plugin.pdata.getMinigamePlayer(player);
+		if (!player.isOp()
+				&& (!mp.isInMinigame() || mp.getMinigame().getName(false)
+						.equalsIgnoreCase(KittyCannonMinigame))) {
+			SendMessage(player,
+					"§You can only use KittyCannon in it's minigame!");
+			return;
+		}
+		try {
+			final Mob cat = Mob.OCELOT;
+			final Ocelot ocelot = (Ocelot) cat.spawn(player.getWorld(),
+					player.getServer(), player.getEyeLocation());
+			if (ocelot == null) {
+				return;
+			}
+			final ArrayList<String> lore = new ArrayList<>();
+			lore.add(player.getName());
+			final int i = random.nextInt(Ocelot.Type.values().length);
+			ocelot.setCatType(Ocelot.Type.values()[i]);
+			ocelot.setTamed(true);
+			ocelot.setBaby();
+			ocelot.addPotionEffect(new PotionEffect(
+					PotionEffectType.DAMAGE_RESISTANCE, 5, 5));
+			ocelot.setVelocity(player.getEyeLocation().getDirection()
+					.multiply(2));
+			Bukkit.getScheduler().scheduleSyncDelayedTask(PluginMain.Instance,
+					new Runnable() {
+						@SuppressWarnings("deprecation")
+						@Override
+						public void run() {
+							final Location loc = ocelot.getLocation();
+							ocelot.remove();
+							loc.getWorld().createExplosion(loc, 0F);
+							final ItemStack head = new ItemStack(
+									Material.SKULL_ITEM, 1, (short) 3, (byte) 3);
+							SkullMeta im = (SkullMeta) head.getItemMeta();
+							im.setDisplayName("§rOcelot Head");
+							im.setOwner("MHF_Ocelot");
+							im.setLore(lore);
+							head.setItemMeta(im);
+							loc.getWorld().dropItem(loc, head);
+						}
+					}, 20);
+		} catch (MobException e) {
+		}
+	}
 }
