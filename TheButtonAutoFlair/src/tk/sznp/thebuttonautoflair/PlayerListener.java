@@ -334,9 +334,14 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		MinigamePlayer mp = Minigames.plugin.pdata.getMinigamePlayer(e
 				.getPlayer());
 		// System.out.println("B");
-		if (!e.getPlayer().isOp()
-				&& (!mp.isInMinigame() || mp.getMinigame().getName(false)
-						.equalsIgnoreCase(Commands.KittyCannonMinigame)))
+
+		/*
+		 * if (!e.getPlayer().isOp() && (!mp.isInMinigame() ||
+		 * mp.getMinigame().getName(false)
+		 * .equalsIgnoreCase(Commands.KittyCannonMinigame))) return;
+		 */
+		if (!(mp.isInMinigame() && mp.getMinigame().getName(false)
+				.equalsIgnoreCase(Commands.KittyCannonMinigame)))
 			return;
 		// System.out.println("C");
 		ItemStack item = e.getItem().getItemStack();
