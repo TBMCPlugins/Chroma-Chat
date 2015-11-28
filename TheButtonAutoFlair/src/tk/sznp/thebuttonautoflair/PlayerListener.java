@@ -362,7 +362,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				&& (hat.getType().equals(Material.SKULL) || hat.getType()
 						.equals(Material.SKULL_ITEM)) && ((SkullMeta) hat
 					.getItemMeta()).getDisplayName().equals("§rWolf Head")))
-			e.getPlayer().damage(1f, Bukkit.getPlayer(meta.getLore().get(0)));
+			e.getPlayer().damage(1f * item.getAmount(),
+					Bukkit.getPlayer(meta.getLore().get(0)));
 		e.getItem().remove();
 		// System.out.println("G");
 		e.setCancelled(true);
