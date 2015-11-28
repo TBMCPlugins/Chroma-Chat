@@ -608,11 +608,10 @@ public class Commands implements CommandExecutor {
 			return;
 		}
 		MinigamePlayer mp = Minigames.plugin.pdata.getMinigamePlayer(player);
-		if (!player.isOp()
-				&& (!mp.isInMinigame() || mp.getMinigame().getName(false)
-						.equalsIgnoreCase(KittyCannonMinigame))) {
+		if (!(mp.isInMinigame() && mp.getMinigame().getName(false)
+				.equalsIgnoreCase(Commands.KittyCannonMinigame))) {
 			SendMessage(player,
-					"§You can only use KittyCannon in it's minigame!");
+					"§cYou can only use KittyCannon in it's minigame!");
 			return;
 		}
 		try {
