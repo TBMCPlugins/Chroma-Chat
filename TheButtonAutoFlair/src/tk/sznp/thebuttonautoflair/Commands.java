@@ -46,18 +46,21 @@ public class Commands implements CommandExecutor {
 						.getUniqueId()); // 2015.08.08.
 				if (!p.CommentedOnReddit
 						&& !args[0].toLowerCase().equals("admin")
-						&& !args[0].toLowerCase().equals("ignore")) {
+						&& !args[0].toLowerCase().equals("ignore")
+						&& !args[0].toLowerCase().equals("kittycannon")) {
 					player.sendMessage("§cError: You need to write your username to the reddit thread at /r/TheButtonMinecraft§r");
 					return true;
 				}
 				if (!p.FlairRecognised
 						&& !args[0].toLowerCase().equals("admin")
-						&& !args[0].toLowerCase().equals("ignore")) {
+						&& !args[0].toLowerCase().equals("ignore")
+						&& !args[0].toLowerCase().equals("kittycannon")) {
 					player.sendMessage("Sorry, but your flair isn't recorded. Please ask a mod to set it for you.");
 					return true;
 				}
 				if (!p.FlairDecided && !args[0].toLowerCase().equals("admin")
-						&& !args[0].toLowerCase().equals("ignore")) {
+						&& !args[0].toLowerCase().equals("ignore")
+						&& !args[0].toLowerCase().equals("kittycannon")) {
 					player.sendMessage("Please select between /u nonpresser and /u cantpress");
 					return true;
 				}
