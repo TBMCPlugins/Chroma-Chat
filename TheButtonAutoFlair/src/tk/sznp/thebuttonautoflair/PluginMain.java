@@ -126,8 +126,10 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 						continue;
 					if (!mp.UserNames.contains(author))
 						mp.UserNames.add(author);
-					if (mp.FlairState.equals(FlairStates.NoComment))
+					if (mp.FlairState.equals(FlairStates.NoComment)) {
 						mp.FlairState = FlairStates.Commented;
+						ConfirmUserMessage(mp);
+					}
 					try {
 						Thread.sleep(10);
 					} catch (InterruptedException ex) {
@@ -256,13 +258,16 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		Date date = parserSDF.parse(joindate);
 		return date.before(new Calendar.Builder()
 				.setTimeZone(TimeZone.getTimeZone("UTC")).setDate(2015, 4, 1)
-				.build().getTime()); 
+				.build().getTime());
 	}
 
 	public static void ConfirmUserMessage(MaybeOfflinePlayer mp) {
 		Player p = Bukkit.getPlayer(mp.UUID);
 		if (mp.FlairState.equals(FlairStates.Commented) && p != null)
-			p.sendMessage("§9" + "?§r §6Type /u accept or /u ignore§r");
+			if (mp.UserNames.size() > 1)
+				p.sendMessage("§9Multiple Reddit users commented your name. You can select with /u accept.§r §6Type /u accept or /u ignore§r");
+			else
+				p.sendMessage("§9A Reddit user commented your name. Is that you?§r §6Type /u accept or /u ignore§r");
 	}
 
 	public static Collection<? extends Player> GetPlayers() {
