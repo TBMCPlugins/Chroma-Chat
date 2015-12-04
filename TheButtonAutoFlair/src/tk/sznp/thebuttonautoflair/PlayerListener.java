@@ -40,15 +40,15 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p
 				.getUniqueId());
 		mp.PlayerName = p.getName(); // 2015.10.17. 0:58
-		if (mp.CommentedOnReddit)
+		if (!mp.FlairState.equals(FlairStates.NoComment))
 			// if (false)
-			PluginMain.AppendPlayerDisplayFlair(mp, p); // 2015.08.09.
+			PluginMain.ConfirmUserMessage(mp); // 2015.08.09.
 		else { // 2015.07.20.
 			Timer timer = new Timer();
 			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
 				@Override
 				public void run() {
-					if (!mp.IgnoredFlair) {
+					if (mp.FlairState.equals(FlairStates.NoComment)) {
 						String json = "[\"\",{\"text\":\"If you'd like your /r/TheButton flair displayed ingame, write your Minecraft name to \",\"color\":\"aqua\"},{\"text\":\"[this thread].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]";
 						PluginMain.Instance.getServer().dispatchCommand(
 								PluginMain.Console,
@@ -121,9 +121,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		MaybeOfflinePlayer player = MaybeOfflinePlayer.AllPlayers.get(event
 				.getPlayer().getUniqueId());
-		String flair = player.Flair; // 2015.08.08.
-		if (player.IgnoredFlair)
-			flair = "";
+		String flair = player.GetFormattedFlair();
 		String message = event.getMessage(); // 2015.08.08.
 		for (Player p : PluginMain.GetPlayers()) { // 2015.08.12.
 			String color = ""; // 2015.08.17.
@@ -135,11 +133,10 @@ public class PlayerListener implements Listener { // 2015.07.16.
 							(float) NotificationPitch); // 2015.08.14.
 				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p
 						.getUniqueId()); // 2015.08.17.
-				if (mp.Flair.length() > 1)
-					color = mp.Flair.substring(0, 2);
+				color = String.format("%x", mp.FlairColor);
 			}
 
-			message = message.replaceAll(p.getName(), color + p.getName()
+			message = message.replace(p.getName(), color + p.getName()
 					+ (event.getMessage().startsWith("§2>") ? "§2" : "§r"));
 		}
 		for (String n : nicknames.keySet()) {
@@ -147,14 +144,14 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			String nwithoutformatting = new String(n);
 			int index;
 			while ((index = nwithoutformatting.indexOf("§k")) != -1)
-				nwithoutformatting = nwithoutformatting.replaceAll("§k"
+				nwithoutformatting = nwithoutformatting.replace("§k"
 						+ nwithoutformatting.charAt(index + 2), ""); // Support
 																		// for
 																		// one
 																		// random
 																		// char
 			while ((index = nwithoutformatting.indexOf('§')) != -1)
-				nwithoutformatting = nwithoutformatting.replaceAll("§"
+				nwithoutformatting = nwithoutformatting.replace("§"
 						+ nwithoutformatting.charAt(index + 1), "");
 			if (message.contains(nwithoutformatting)) {
 				p = Bukkit.getPlayer(nicknames.get(n));
@@ -166,7 +163,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				MaybeOfflinePlayer.AddPlayerIfNeeded(p.getUniqueId()); // 2015.08.17.
 			}
 			if (p != null) {
-				message = message.replaceAll(nwithoutformatting, n
+				message = message.replace(nwithoutformatting, n
 						+ (event.getMessage().startsWith("§2>") ? "§2" : "§r"));
 			}
 		}
@@ -193,14 +190,14 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			String nwithoutformatting = nickname;
 			int index;
 			while ((index = nwithoutformatting.indexOf("§k")) != -1)
-				nwithoutformatting = nwithoutformatting.replaceAll("§k"
+				nwithoutformatting = nwithoutformatting.replace("§k"
 						+ nwithoutformatting.charAt(index + 2), ""); // Support
 																		// for
 																		// one
 																		// random
 																		// char
 			while ((index = nwithoutformatting.indexOf('§')) != -1)
-				nwithoutformatting = nwithoutformatting.replaceAll("§"
+				nwithoutformatting = nwithoutformatting.replace("§"
 						+ nwithoutformatting.charAt(index + 1), "");
 			if (nwithoutformatting.startsWith(name)
 					&& !nwithoutformatting.equals(Bukkit.getPlayer(

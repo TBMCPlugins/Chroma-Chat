@@ -7,19 +7,24 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.TagNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
 import java.lang.String;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	// A user, which flair isn't obtainable:
@@ -30,7 +35,30 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	// Fired when plugin is first enabled
 	@Override
 	public void onEnable() {
-		System.out.println("The Button Minecraft server plugin");
+		try {
+			System.out.println("Extracting necessary libraries...");
+			final File[] libs = new File[] { new File(getDataFolder(),
+					"htmlcleaner-2.16.jar") };
+			for (final File lib : libs) {
+				if (!lib.exists()) {
+					JarUtils.extractFromJar(lib.getName(),
+							lib.getAbsolutePath());
+				}
+			}
+			for (final File lib : libs) {
+				if (!lib.exists()) {
+					getLogger().warning(
+							"Failed to load plugin! Could not find lib: "
+									+ lib.getName());
+					Bukkit.getServer().getPluginManager().disablePlugin(this);
+					return;
+				}
+				addClassPath(JarUtils.getJarUrl(lib));
+			}
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+
 		getServer().getPluginManager().registerEvents(new PlayerListener(),
 				this);
 		Commands comm = new Commands();
@@ -71,8 +99,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		stop = true;
 	}
 
-	public void ThreadMethod() // <-- 2015.07.16.
-	{
+	private void ThreadMethod() {
 		while (!stop) {
 			try {
 				String body = DownloadString("https://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/autoflair_system_comment_your_minecraft_name_and/.json?limit=1000");
@@ -97,29 +124,15 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					MaybeOfflinePlayer mp = MaybeOfflinePlayer.GetFromName(ign);
 					if (mp == null)
 						continue;
-					if (HasIGFlair(mp.UUID))
-						continue;
+					if (!mp.UserNames.contains(author))
+						mp.UserNames.add(author);
+					if (mp.FlairState.equals(FlairStates.NoComment))
+						mp.FlairState = FlairStates.Commented;
 					try {
 						Thread.sleep(10);
 					} catch (InterruptedException ex) {
 						Thread.currentThread().interrupt();
 					}
-					String[] flairdata = DownloadString(
-							"http://karmadecay.com/thebutton-data.php?users="
-									+ author).replace("\"", "").split(":");
-					String flair;
-					if (flairdata.length > 1) // 2015.07.15.
-						flair = flairdata[1];
-					else
-						flair = "";
-					if (flair != "-1")
-						flair = flair + "s";
-					String flairclass;
-					if (flairdata.length > 2)
-						flairclass = flairdata[2];
-					else
-						flairclass = "unknown";
-					SetFlair(mp.UUID, flair, flairclass, author);
 				}
 				try {
 					Thread.sleep(10000);
@@ -131,6 +144,24 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 				LastException = e; // 2015.08.09.
 			}
 		}
+	}
+
+	public void DownloadFlair(MaybeOfflinePlayer mp)
+			throws MalformedURLException, IOException {
+		String[] flairdata = DownloadString(
+				"http://karmadecay.com/thebutton-data.php?users=" + mp.UserName)
+				.replace("\"", "").split(":");
+		String flair;
+		if (flairdata.length > 1)
+			flair = flairdata[1];
+		else
+			flair = "";
+		String flairclass;
+		if (flairdata.length > 2)
+			flairclass = flairdata[2];
+		else
+			flairclass = "unknown";
+		SetFlair(mp, flair, flairclass, mp.UserName);
 	}
 
 	public static Exception LastException; // 2015.08.09.
@@ -148,88 +179,90 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		return body;
 	}
 
-	public static Map<String, String> TownColors = new HashMap<String, String>(); // 2015.07.20.
-
-	public Boolean HasIGFlair(UUID uuid) {
-		MaybeOfflinePlayer p = MaybeOfflinePlayer.AddPlayerIfNeeded(uuid); // 2015.08.08.
-		return p.CommentedOnReddit; // 2015.08.10.
-	}
-
-	public void SetFlair(UUID uuid, String text, String flairclass,
+	private void SetFlair(MaybeOfflinePlayer p, String text, String flairclass,
 			String username) {
-		MaybeOfflinePlayer p = MaybeOfflinePlayer.AddPlayerIfNeeded(uuid); // 2015.08.08.
-		String finalflair;
-		p.FlairDecided = true;
-		p.FlairRecognised = true;
-		p.CommentedOnReddit = true;
 		p.UserName = username;
+		p.FlairState = FlairStates.Recognised;
 		switch (flairclass) {
 		case "press-1":
-			finalflair = "§c(" + text + ")§r";
+			p.FlairColor = 0xc;
 			break;
 		case "press-2":
-			finalflair = "§6(" + text + ")§r";
+			p.FlairColor = 0x6;
 			break;
 		case "press-3":
-			finalflair = "§e(" + text + ")§r";
+			p.FlairColor = 0xe;
 			break;
 		case "press-4":
-			finalflair = "§a(" + text + ")§r";
+			p.FlairColor = 0xa;
 			break;
 		case "press-5":
-			finalflair = "§9(" + text + ")§r";
+			p.FlairColor = 0x9;
 			break;
 		case "press-6":
-			finalflair = "§5(" + text + ")§r";
+			p.FlairColor = 0x5;
 			break;
 		case "no-press":
-			finalflair = "§7(--s)§r";
+			p.FlairColor = 0x7;
 			break;
 		case "cheater":
-			finalflair = "§5(" + text + ")§r";
+			p.FlairColor = 0x5;
 			break;
-		case "cant-press": // 2015.08.08.
-			finalflair = "§r(??s)§r";
+		case "cant-press":
+			p.FlairColor = 0xf;
 			break;
 		case "unknown":
 			if (text.equals("-1")) // If true, only non-presser/can't press; if
 									// false, any flair
-				p.FlairDecided = false;
-			else
-				p.FlairRecognised = false;
-			finalflair = "";
-			break;
+			{
+				try {
+					if (CheckForJoinDate(p)) {
+						p.FlairColor = 0x7;
+						p.FlairTime = "--";
+					} else {
+						p.FlairColor = 0xf;
+						p.FlairTime = "--";
+					}
+				} catch (Exception e) {
+					p.FlairState = FlairStates.Commented; // Flair unknown
+					p.FlairColor = 0;
+					e.printStackTrace();
+				}
+			} else {
+				p.FlairState = FlairStates.Commented; // Flair unknown
+				p.FlairColor = 0;
+			}
+			return;
 		default:
 			return;
 		}
-		p.Flair = finalflair; // 2015.08.08.
-		System.out.println("Added flair for " + p.PlayerName);
-		AppendPlayerDisplayFlair(p, Bukkit.getPlayer(uuid));
+		p.FlairTime = text;
 	}
 
-	public static String GetFlair(Player player) { // 2015.07.16.
-		String flair = MaybeOfflinePlayer.AllPlayers.get(player.getUniqueId()).Flair; // 2015.08.08.
-		return flair; // 2015.08.10.
+	public static boolean CheckForJoinDate(MaybeOfflinePlayer mp)
+			throws Exception {
+		URL url = new URL("https://www.reddit.com/u/" + mp.UserName);
+		URLConnection con = url.openConnection();
+		con.setRequestProperty("User-Agent", "TheButtonAutoFlair");
+		InputStream in = con.getInputStream();
+		HtmlCleaner cleaner = new HtmlCleaner();
+		TagNode node = cleaner.clean(in);
+
+		node = node.getElementsByAttValue("class", "age", true, true)[0];
+		node = node.getElementsByName("time", false)[0];
+		String joindate = node.getAttributeByName("datetime");
+		SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-MM-dd");
+		joindate = joindate.split("T")[0];
+		Date date = parserSDF.parse(joindate);
+		return date.before(new Calendar.Builder()
+				.setTimeZone(TimeZone.getTimeZone("UTC")).setDate(2015, 4, 1)
+				.build().getTime()); 
 	}
 
-	public static void AppendPlayerDisplayFlair(MaybeOfflinePlayer player,
-			Player p) // <-- 2015.08.09.
-	{
-
-		if (MaybeOfflinePlayer.AllPlayers.get(p.getUniqueId()).IgnoredFlair)
-			return;
-		if (MaybeOfflinePlayer.AllPlayers.get(p.getUniqueId()).AcceptedFlair) {
-			if (!player.FlairDecided)
-				p.sendMessage("§9Your flair type is unknown. Are you a non-presser or a can't press? (/u nonpresser or /u cantpress)§r"); // 2015.08.09.
-		} else
-			p.sendMessage("§9Are you Reddit user " + player.UserName
-					+ "?§r §6Type /u accept or /u ignore§r");
-	}
-
-	public static String GetColorForTown(String townname) { // 2015.07.20.
-		if (TownColors.containsKey(townname))
-			return TownColors.get(townname);
-		return "";
+	public static void ConfirmUserMessage(MaybeOfflinePlayer mp) {
+		Player p = Bukkit.getPlayer(mp.UUID);
+		if (mp.FlairState.equals(FlairStates.Commented) && p != null)
+			p.sendMessage("§9" + "?§r §6Type /u accept or /u ignore§r");
 	}
 
 	public static Collection<? extends Player> GetPlayers() {
@@ -239,17 +272,15 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	public static ArrayList<String> AnnounceMessages = new ArrayList<>();
 	public static int AnnounceTime = 15 * 60 * 1000;
 
-	public static void LoadFiles(boolean reload) // <-- 2015.08.09.
-	{
-		if (reload) { // 2015.08.09.
+	public static void LoadFiles(boolean reload) {
+		if (reload) {
 			System.out
 					.println("The Button Minecraft plugin cleanup for reloading...");
 			MaybeOfflinePlayer.AllPlayers.clear();
-			TownColors.clear();
 			AnnounceMessages.clear();
 			Commands.Quiz.clear();
 		}
-		System.out.println("Loading files for The Button Minecraft plugin..."); // 2015.08.09.
+		System.out.println("Loading files for The Button Minecraft plugin...");
 		try {
 			File file = new File("announcemessages.txt");
 			if (file.exists())
@@ -276,16 +307,15 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			System.out.println("The Button Minecraft plugin loaded files!");
 		} catch (IOException e) {
 			System.out.println("Error!\n" + e);
-			LastException = e; // 2015.08.09.
+			LastException = e;
 		} catch (InvalidConfigurationException e) {
 			System.out.println("Error!\n" + e);
-			LastException = e; // 2015.08.09.
+			LastException = e;
 		}
 	}
 
-	public static void SaveFiles() // <-- 2015.08.09.
-	{
-		System.out.println("Saving files for The Button Minecraft plugin..."); // 2015.08.09.
+	public static void SaveFiles() {
+		System.out.println("Saving files for The Button Minecraft plugin...");
 		try {
 			File file = new File("thebuttonmc.yml");
 			YamlConfiguration yc = new YamlConfiguration();
@@ -299,7 +329,23 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			System.out.println("The Button Minecraft plugin saved files!");
 		} catch (IOException e) {
 			System.out.println("Error!\n" + e);
-			LastException = e; // 2015.08.09.
+			LastException = e;
+		}
+	}
+
+	private void addClassPath(final URL url) throws IOException {
+		final URLClassLoader sysloader = (URLClassLoader) ClassLoader
+				.getSystemClassLoader();
+		final Class<URLClassLoader> sysclass = URLClassLoader.class;
+		try {
+			final Method method = sysclass.getDeclaredMethod("addURL",
+					new Class[] { URL.class });
+			method.setAccessible(true);
+			method.invoke(sysloader, new Object[] { url });
+		} catch (final Throwable t) {
+			t.printStackTrace();
+			throw new IOException("Error adding " + url
+					+ " to system classloader");
 		}
 	}
 }

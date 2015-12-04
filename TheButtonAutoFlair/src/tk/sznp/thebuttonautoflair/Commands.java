@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Timer;
 
 public class Commands implements CommandExecutor {
 
@@ -44,81 +45,102 @@ public class Commands implements CommandExecutor {
 					return false;
 				MaybeOfflinePlayer p = MaybeOfflinePlayer.AllPlayers.get(player
 						.getUniqueId()); // 2015.08.08.
-				if (!p.CommentedOnReddit
-						&& !args[0].toLowerCase().equals("admin")
-						&& !args[0].toLowerCase().equals("ignore")
-						&& !args[0].toLowerCase().equals("kittycannon")) {
+				if (p.FlairState.equals(FlairStates.NoComment)) {
 					player.sendMessage("§cError: You need to write your username to the reddit thread at /r/TheButtonMinecraft§r");
-					return true;
-				}
-				if (!p.FlairRecognised
-						&& !args[0].toLowerCase().equals("admin")
-						&& !args[0].toLowerCase().equals("ignore")
-						&& !args[0].toLowerCase().equals("kittycannon")) {
-					player.sendMessage("Sorry, but your flair isn't recorded. Please ask a mod to set it for you.");
-					return true;
-				}
-				if (!p.FlairDecided && !args[0].toLowerCase().equals("admin")
-						&& !args[0].toLowerCase().equals("ignore")
-						&& !args[0].toLowerCase().equals("kittycannon")) {
-					player.sendMessage("Please select between /u nonpresser and /u cantpress");
 					return true;
 				}
 				switch (args[0].toLowerCase()) // toLowerCase: 2015.08.09.
 				{
 				case "accept": {
-					if (p.IgnoredFlair)
-						p.IgnoredFlair = false; // 2015.08.08.
-					if (!p.AcceptedFlair) {
-						String flair = p.Flair; // 2015.08.08.
-						p.AcceptedFlair = true; // 2015.08.08.
-						PluginMain.AppendPlayerDisplayFlair(p, player);
-						player.sendMessage("§bYour flair has been set:§r "
-								+ flair);
-					} else
+					if (args.length < 2 && p.UserNames.size() > 1) {
+						player.sendMessage("§9Multiple users commented your name. §bPlease pick one using /u accept <username>");
+						StringBuilder sb = new StringBuilder();
+						sb.append("§6Usernames:");
+						for (String username : p.UserNames)
+							sb.append(" ").append(username);
+						player.sendMessage(sb.toString());
+						return true;
+					}
+					if (p.FlairState.equals(FlairStates.NoComment)
+							|| p.UserNames.size() == 0) {
+						player.sendMessage("§cError: You need to write your username to the reddit thread at /r/TheButtonMinecraft§r");
+						return true;
+					}
+					if (args.length > 1 && !p.UserNames.contains(args[1])) {
+						player.sendMessage("§cError: Unknown name: " + args[1]
+								+ "§r");
+						return true;
+					}
+					if (p.Working) {
+						player.sendMessage("§cError: Something is already in progress.§r");
+						return true;
+					}
+
+					if ((args.length > 1 ? args[1] : p.UserNames.get(0))
+							.equals(p.UserName)) {
 						player.sendMessage("§cYou already have this user's flair.§r");
+						return true;
+					}
+					if (args.length > 1)
+						p.UserName = args[1];
+					else
+						p.UserName = p.UserNames.get(0);
+
+					player.sendMessage("§bObtaining flair...");
+					p.Working = true;
+					Timer timer = new Timer();
+					PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
+						@Override
+						public void run() {
+							try {
+								PluginMain.Instance.DownloadFlair(mp);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+
+							Player player = Bukkit.getPlayer(mp.UUID);
+							if (mp.FlairState.equals(FlairStates.Commented)) {
+								player.sendMessage("Sorry, but your flair isn't recorded. Please ask an admin to set it for you. Also, prepare a comment on /r/thebutton, if possible.");
+								return;
+							}
+							String flair = mp.GetFormattedFlair();
+							mp.FlairState = FlairStates.Accepted;
+							PluginMain.ConfirmUserMessage(mp);
+							player.sendMessage("§bYour flair has been set:§r "
+									+ flair);
+							mp.Working = false;
+						}
+					};
+					tt.mp = p;
+					timer.schedule(tt, 20);
 					break;
 				}
 				case "ignore": {
-					if (p.AcceptedFlair)
-						p.AcceptedFlair = false; // 2015.08.08.
-					if (!p.IgnoredFlair) {
-						p.IgnoredFlair = true;
-						player.sendMessage("§bYou have ignored this request. You can still use /u accept though.§r");
+					if (p.FlairState.equals(FlairStates.NoComment)) {
+						player.sendMessage("§cError: You need to write your username to the reddit thread at /r/TheButtonMinecraft§r");
+						return true;
+					}
+					if (p.FlairState.equals(FlairStates.Commented)) {
+						player.sendMessage("Sorry, but your flair isn't recorded. Please ask a mod to set it for you.");
+						return true;
+					}
+					if (!p.FlairState.equals(FlairStates.Ignored)) {
+						p.FlairState = FlairStates.Ignored;
+						p.FlairTime = "";
+						p.UserName = "";
+						player.sendMessage("§bYou have removed your flair. You can still use /u accept to get one.§r");
 					} else
-						player.sendMessage("§cYou already ignored this request.§r");
+						player.sendMessage("§cYou already removed your flair.§r");
 					break;
 				}
 				case "admin": // 2015.08.09.
 					DoAdmin(player, args);
 					break;
-				case "nonpresser": // 2015.08.09.
-					if (!p.AcceptedFlair) {
-						player.sendMessage("§cYou need to accept the flair first.§r");
-						break;
-					}
-					if (p.FlairDecided) {
-						player.sendMessage("§cYou have already set the flair type.§r");
-						break;
-					}
-					SetPlayerFlair(player, p, "§7(--s)§r");
-					break;
-				case "cantpress": // 2015.08.09.
-					if (!p.AcceptedFlair) {
-						player.sendMessage("§cYou need to accept the flair first.§r");
-						break;
-					}
-					if (p.FlairDecided) {
-						player.sendMessage("§cYou have already set the flair type or your flair type is known.§r");
-						break;
-					}
-					SetPlayerFlair(player, p, "§r(??s)§r");
-					break;
 				case "opme": // 2015.08.10.
-					player.sendMessage("It would be nice, isn't it?"); // Sometimes
-																		// I'm
-																		// bored
-																		// too
+					player.sendMessage("It would be nice, wouldn't it?"); // Sometimes
+																			// I'm
+																			// bored
+																			// too
 					break;
 				case "announce":
 					DoAnnounce(player, args, null);
@@ -128,14 +150,14 @@ public class Commands implements CommandExecutor {
 						player.sendMessage("§cUsage: /u name <playername>§r");
 						break;
 					}
-					if (!MaybeOfflinePlayer.AllPlayers.containsKey(args[1])) {
+					MaybeOfflinePlayer mp = MaybeOfflinePlayer
+							.GetFromName(args[1]);
+					if (mp == null) {
 						player.sendMessage("§cUnknown user: " + args[1]);
 						break;
 					}
-					player.sendMessage("§bUsername of "
-							+ args[1]
-							+ ": "
-							+ MaybeOfflinePlayer.AllPlayers.get(args[1]).UserName);
+					player.sendMessage("§bUsername of " + args[1] + ": "
+							+ mp.UserName);
 					break;
 				case "enable":
 					if (player.getName().equals("NorbiPeti")) {
@@ -175,6 +197,8 @@ public class Commands implements CommandExecutor {
 					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getUniqueId()).RPMode = true;
 				}
 				return true;
+			case "unlol": // TODO: Unlol
+				return true;
 			default:
 				player.sendMessage("Unknown command: " + cmd.getName());
 				break;
@@ -207,9 +231,9 @@ public class Commands implements CommandExecutor {
 			for (Player p : PluginMain.GetPlayers()) {
 				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p
 						.getUniqueId());
-				// if(mp.Flair!=null)
-				if (mp.CommentedOnReddit) {
-					PluginMain.AppendPlayerDisplayFlair(mp, p); // 2015.08.09.
+				if (mp.FlairState.equals(FlairStates.Recognised)
+						|| mp.FlairState.equals(FlairStates.Commented)) {
+					PluginMain.ConfirmUserMessage(mp);
 				}
 				String msg = "§bNote: The auto-flair plugin has been reloaded. You might need to wait 10s to have your flair.§r"; // 2015.08.09.
 				p.sendMessage(msg); // 2015.08.09.
@@ -307,13 +331,9 @@ public class Commands implements CommandExecutor {
 			return;
 		}
 		SendMessage(player, "Player name: " + p.PlayerName);
-		SendMessage(player, "User flair: " + p.Flair);
+		SendMessage(player, "User flair: " + p.GetFormattedFlair());
 		SendMessage(player, "Username: " + p.UserName);
-		SendMessage(player, "Flair accepted: " + p.AcceptedFlair);
-		SendMessage(player, "Flair ignored: " + p.IgnoredFlair);
-		SendMessage(player, "Flair decided: " + p.FlairDecided);
-		SendMessage(player, "Flair recognised: " + p.FlairRecognised);
-		SendMessage(player, "Commented on Reddit: " + p.CommentedOnReddit);
+		SendMessage(player, "Flair state: " + p.FlairState);
 	}
 
 	private static void SendMessage(Player player, String message) { // 2015.08.09.
@@ -334,26 +354,21 @@ public class Commands implements CommandExecutor {
 	}
 
 	private static void SetPlayerFlair(Player player,
-			MaybeOfflinePlayer targetplayer, String flair) { // 2015.08.09.
-		flair = flair.replace('&', '§');
-		targetplayer.Flair = flair;
-		targetplayer.CommentedOnReddit = true; // Or at least has a flair in
-												// some way
-		targetplayer.FlairRecognised = true;
-		SendMessage(player, "§bThe flair has been set. Player: "
-				+ targetplayer.PlayerName + " Flair: " + flair + "§r");
+			MaybeOfflinePlayer targetplayer, short flaircolor, String flairtime) {
+		targetplayer.FlairColor = flaircolor;
+		targetplayer.FlairTime = flairtime;
+		targetplayer.FlairState = FlairStates.Accepted;
+		targetplayer.UserName = "";
+		SendMessage(player,
+				"§bThe flair has been set. Player: " + targetplayer.PlayerName
+						+ " Flair: " + targetplayer.GetFormattedFlair() + "§r");
 	}
 
 	private static void DoSetFlair(Player player, String[] args) {
 		// args[0] is "admin" - args[1] is "setflair"
 		if (args.length < 4) {
 			SendMessage(player,
-					"§cUsage: /u admin setflair <playername> <flair>");
-			return;
-		}
-		if (args[3].charAt(0) != '&') {
-			SendMessage(player,
-					"§cYou need to start the flair with a color code: &6(19s)&r");
+					"§cUsage: /u admin setflair <playername> <flaircolor> [number]");
 			return;
 		}
 		Player p = Bukkit.getPlayer(args[2]);
@@ -361,8 +376,17 @@ public class Commands implements CommandExecutor {
 			SendMessage(player, "§cPLayer not found.&r");
 			return;
 		}
+		short flaircolor = 0x00;
+		try {
+			flaircolor = Short.parseShort(args[3], 16);
+		} catch (Exception e) {
+			SendMessage(player,
+					"§cFlaircolor must be a hexadecimal number (don't include &).");
+			return;
+		}
 		SetPlayerFlair(player,
-				MaybeOfflinePlayer.AddPlayerIfNeeded(p.getUniqueId()), args[3]);
+				MaybeOfflinePlayer.AddPlayerIfNeeded(p.getUniqueId()),
+				flaircolor, (args.length < 5 ? "" : args[4]));
 	}
 
 	private static void DoUpdatePlugin(Player player) { // 2015.08.10.
