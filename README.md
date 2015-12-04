@@ -8,17 +8,24 @@ At first, you need to "connect" your Reddit account with your Minecraft account.
 
 When you're done, connect to the server, if you aren't already on. You should see a message after a while (max. 10 seconds) asking if you're the correct Reddit user. Type /u accept to confirm it and accept your flair.
 
-#### Hiding/ignoring the flair
-If you decide to not show your flair, or someone else tried to use your name, the easiest thing to do is /u ignore. This command works even if you already accepted your flair.
+__Note__: You can comment your ingame name from multiple Reddit accounts. In this case, you'll need to specify the exact username you want to pair with your Minecraft account. For example:
 
-You can also use /u ignore if you don't want to write your name in the thread and don't want to get notified each time you log in.
+    /u accept NorbiPeti
+
+__Tip__: If an admin set a custom flair for you, you can reset the automatic one by doing /u ignore, then /u accept.
+
+#### Hiding/ignoring the flair
+If you decide to hide your exact press time and your username (see /u name), use /u ignore. You can also use it to hide the notice showing up after you log in if you don't have a flair accepted.
 
 #### Flair not showing up
 Please note that in some cases your flair cannot be obtained (specifically, if it's not stored by karmadecay.com, in which case possibly Karmancer can't show it as well). In this case, there are two possibilities.
 
-If you're a non-presser or a can't press and only your time is recorded, you can do /u nonpresser or /u cantpress, as a message should tell you.
+If you're a non-presser or a can't press and only your time is recorded, it will automatically decide based on your account creation date.
 
 If nothing is known about your flair, you need to ask an admin to set the flair for you. This is done to prevent abusing the system with setting random flairs and rendering the core of the plugin useless.
+
+#### Getting someone's Reddit username (/u name)
+You can see a player's username if they have a flair shown.
 
 #### Name mentioning
 If you simply say any online player's full playername or nickname, it'll highlight it and play a sound for the target player. This works only once per message per target player.
@@ -45,16 +52,16 @@ Type /u admin for a list of the commands.
 #### Seeing status of flairs (/u admin playerinfo)
 You can check someone's flair status in case something goes wrong.
 
-It outputs the player name (useful if something goes *really* wrong), the player's current ingame flair, the Reddit username, and some other things:
+It outputs the player name (useful if something goes *really* wrong), the player's current ingame flair, the Reddit username, and their flair status:
 
-* Flair accepted: True if the player accepted the flair with /u accept in the past
-* Flair ignored: True if the player ignored the flair with /u ignore in the past
-* Flair decided: False if we don't know if the user is a non-presser or a can't press
-* Flair recognised: False if we don't know anything about the flair (i.e. it could be a presser too) and the flair isn't set by any manual way too
-* Commented on Reddit: True if the player commented their name on that specific thread with the correct format or a custom flair has been set
+* Accepted: The user has a flair shown after their name.
+* Ignored: The user chose to hide their flair, but they have one.
+* Recognised: The user has recognised flair(s) but haven't accepted any.
+* Commented: The user commented, but their flair isn't known.
+* NoComment: The user haven't commented in the thread.
 
 #### Reloading the plugin (/u admin reload)
-This is useful if you want to change a file related to the plugin or the plugin bugs out (which shouldn't happen).
+This is useful if you want to change a file related to the plugin.
 
 Be careful and make sure you do /u admin save before you reload the plugin. You need to confirm your action (/u admin confirm) to make sure no setting is lost.
 
@@ -64,11 +71,18 @@ If you want to edit a file, you need to do /u admin save, then edit the file you
 This command's sole purpose is to give me (or any admins, if they want) some information about the errors and if they even happened. It's not fully tested, so a full stack trace might be needed if the plugin breaks.
 
 #### Setting the flair by hand (/u admin setflair)
-This allows you to set any flair you want to any player. This will override the automatic flairs, though it's not recommended to do so.
+This allows you to set any flair you want to any player. This will override the automatic flairs, though it's not recommended to do so. However, the player can reset the automatic flair at any time (see /u accept).
 
-Note that you need to specify the full flair with color codes, for example:
+* To set an unknown flair (??s), specify only the flair color without time.
+* To remove a user's flair, do the same, with the color being 0.
+* To set a non-presser or can't press flair, specify "--" as flair time with the correct color code behind it.
 
-/u admin setflair Player &7(--s)&r
+Usage and example:
+
+    /u admin setflair <playername> <color code (without §)> [time (without s)]
+    /u admin setflair Player 7 --
+    /u admin setflair Player 6 19
+    /u admin setflair Player 6
 
 #### Updating the plugin (/u admin updateplugin)
 I've made a simple command to allow updating the plugin easily. After running this command, the server needs to get restarted for the changes to take effect.
