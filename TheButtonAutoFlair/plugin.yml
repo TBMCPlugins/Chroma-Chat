@@ -12,6 +12,6 @@ commands:
         description: Send message in Out-of-Character
         usage: "&cUsage: /ooc <message>&r"
     unlol:
-        description: Unlol the last lol. Context: https://www.reddit.com/r/TheButtonMinecraft/comments/3urd29//cxnecs8
+        description: Unlol the last lol.
 author: NorbiPeti
 depend: [Essentials, Towny, TownyChat, Minigames]
