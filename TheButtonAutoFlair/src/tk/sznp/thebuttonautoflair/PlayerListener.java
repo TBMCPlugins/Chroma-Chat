@@ -133,7 +133,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 							(float) NotificationPitch); // 2015.08.14.
 				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p
 						.getUniqueId()); // 2015.08.17.
-				color = String.format("%x", mp.FlairColor);
+				color = String.format("§%x", mp.FlairColor);
 			}
 
 			message = message.replace(p.getName(), color + p.getName()
