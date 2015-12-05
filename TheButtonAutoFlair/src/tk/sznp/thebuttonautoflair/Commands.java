@@ -173,9 +173,6 @@ public class Commands implements CommandExecutor {
 					} else
 						player.sendMessage("Unknown command: " + cmd.getName());
 					break;
-				case "quiz":
-					DoQuiz(player, args, null);
-					break;
 				case "kittycannon":
 					DoKittyCannon(player, args);
 					break;
@@ -212,12 +209,6 @@ public class Commands implements CommandExecutor {
 				DoAnnounce(null, args, (BlockCommandSender) sender);
 			else
 				DoAnnounce(null, args, null);
-			return true;
-		} else if (args.length > 0 && args[0].toLowerCase().equals("quiz")) {
-			if (sender instanceof BlockCommandSender)
-				DoQuiz(null, args, (BlockCommandSender) sender);
-			else
-				DoQuiz(null, args, null);
 			return true;
 		}
 		return false;
@@ -334,6 +325,11 @@ public class Commands implements CommandExecutor {
 		SendMessage(player, "User flair: " + p.GetFormattedFlair());
 		SendMessage(player, "Username: " + p.UserName);
 		SendMessage(player, "Flair state: " + p.FlairState);
+		StringBuilder sb = new StringBuilder();
+		sb.append("§6Usernames:");
+		for (String username : p.UserNames)
+			sb.append(" ").append(username);
+		SendMessage(player, sb.toString());
 	}
 
 	private static void SendMessage(Player player, String message) { // 2015.08.09.
@@ -542,82 +538,6 @@ public class Commands implements CommandExecutor {
 			String message = "§cUsage: /u admin updatedynmap <password>§r";
 			SendMessage(player, message);
 			return;
-		}
-	}
-
-	public static ArrayList<String> Quiz = new ArrayList<>();
-
-	private static void DoQuiz(Player player, String[] args,
-			BlockCommandSender commandblock) {
-		if (player == null || player.isOp()
-				|| player.getName().equals("NorbiPeti")) {
-			if (args.length == 1) {
-				String message = "§cUsage: /u quiz add|remove|list|edit§r";
-				SendMessage(player, message);
-				return;
-			}
-			switch (args[1].toLowerCase()) {
-			case "add":
-				if (args.length < 3) {
-					SendMessage(player, "§cUsage: /u quiz add <message>");
-					return;
-				}
-				StringBuilder sb = new StringBuilder();
-				for (int i = 2; i < args.length; i++) {
-					sb.append(args[i]);
-					if (i != args.length - 1)
-						sb.append(" ");
-				}
-				String finalmessage = sb.toString().replace('&', '§');
-				Quiz.add(finalmessage);
-				SendMessage(player, "§Quiz question added.§r");
-				break;
-			case "remove":
-				if (args.length < 3) {
-					SendMessage(player, "§cUsage: /u quiz remove <index>");
-					return;
-				}
-				Quiz.remove(Integer.parseInt(args[2]));
-				break;
-			case "list":
-				SendMessage(player, "§bList of quiz questions:§r");
-				SendMessage(player, "§bFormat: [index] question§r");
-				int i = 0;
-				for (String question : Quiz)
-					SendMessage(player, "[" + i++ + "] " + question);
-				break;
-			case "edit":
-				if (commandblock == null) {
-					SendMessage(
-							player,
-							"§cError: This command can only be used from a command block. Use /u quiz remove.");
-					break;
-				}
-				if (args.length < 4) {
-					commandblock
-							.sendMessage("§cUsage: /u quiz edit <index> <message>");
-					return;
-				}
-				StringBuilder sb1 = new StringBuilder();
-				for (int i1 = 3; i1 < args.length; i1++) {
-					sb1.append(args[i1]);
-					if (i1 != args.length - 1)
-						sb1.append(" ");
-				}
-				String finalmessage1 = sb1.toString().replace('&', '§');
-				int index = Integer.parseInt(args[2]);
-				if (index > 100)
-					break;
-				while (Quiz.size() <= index)
-					Quiz.add("");
-				Quiz.set(Integer.parseInt(args[2]), finalmessage1);
-				commandblock.sendMessage("Question edited.");
-				break;
-			default:
-				String message = "§cUsage: /u quiz add|remove|list|edit§r";
-				SendMessage(player, message);
-				return;
-			}
 		}
 	}
 
