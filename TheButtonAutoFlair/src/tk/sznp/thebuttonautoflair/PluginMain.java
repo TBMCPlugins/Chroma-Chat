@@ -238,6 +238,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		default:
 			return;
 		}
+		if (text.equals("-1"))
+			text = "--";
 		p.FlairTime = text;
 	}
 
@@ -283,7 +285,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					.println("The Button Minecraft plugin cleanup for reloading...");
 			MaybeOfflinePlayer.AllPlayers.clear();
 			AnnounceMessages.clear();
-			Commands.Quiz.clear();
 		}
 		System.out.println("Loading files for The Button Minecraft plugin...");
 		try {
@@ -307,7 +308,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 						.getDouble("notificationpitch");
 				AnnounceTime = yc.getInt("announcetime");
 				AnnounceMessages.addAll(yc.getStringList("announcements"));
-				Commands.Quiz.addAll(yc.getStringList("quiz"));
 			}
 			System.out.println("The Button Minecraft plugin loaded files!");
 		} catch (IOException e) {
@@ -329,7 +329,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			yc.set("notificationpitch", PlayerListener.NotificationPitch);
 			yc.set("announcetime", AnnounceTime);
 			yc.set("announcements", AnnounceMessages);
-			yc.set("quiz", Commands.Quiz);
 			yc.save(file);
 			System.out.println("The Button Minecraft plugin saved files!");
 		} catch (IOException e) {
