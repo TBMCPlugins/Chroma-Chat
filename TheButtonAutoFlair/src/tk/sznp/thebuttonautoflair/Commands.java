@@ -44,12 +44,8 @@ public class Commands implements CommandExecutor {
 				if (args.length < 1)
 					return false;
 				MaybeOfflinePlayer p = MaybeOfflinePlayer.AllPlayers.get(player
-						.getUniqueId()); // 2015.08.08.
-				if (p.FlairState.equals(FlairStates.NoComment)) {
-					player.sendMessage("§cError: You need to write your username to the reddit thread at /r/TheButtonMinecraft§r");
-					return true;
-				}
-				switch (args[0].toLowerCase()) // toLowerCase: 2015.08.09.
+						.getUniqueId());
+				switch (args[0].toLowerCase())
 				{
 				case "accept": {
 					if (args.length < 2 && p.UserNames.size() > 1) {
