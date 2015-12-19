@@ -31,7 +31,7 @@ import java.util.Timer;
 
 public class Commands implements CommandExecutor {
 
-	public static boolean PluginUpdated = false; // 2015.08.31.
+	public static MaybeOfflinePlayer Lastlol = null;
 
 	// This method is called, when somebody uses our command
 	@Override
@@ -45,8 +45,7 @@ public class Commands implements CommandExecutor {
 					return false;
 				MaybeOfflinePlayer p = MaybeOfflinePlayer.AllPlayers.get(player
 						.getUniqueId());
-				switch (args[0].toLowerCase())
-				{
+				switch (args[0].toLowerCase()) {
 				case "accept": {
 					if (args.length < 2 && p.UserNames.size() > 1) {
 						player.sendMessage("§9Multiple users commented your name. §bPlease pick one using /u accept <username>");
@@ -122,7 +121,7 @@ public class Commands implements CommandExecutor {
 					}
 					if (!p.FlairState.equals(FlairStates.Ignored)) {
 						p.FlairState = FlairStates.Ignored;
-						p.FlairTime = "";
+						p.SetFlairTime("");
 						p.UserName = "";
 						player.sendMessage("§bYou have removed your flair. You can still use /u accept to get one.§r");
 					} else
@@ -190,7 +189,17 @@ public class Commands implements CommandExecutor {
 					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getUniqueId()).RPMode = true;
 				}
 				return true;
-			case "unlol": // TODO: Unlol
+			case "unlol":
+				Player p = null;
+				if (Lastlol != null
+						&& (p = Bukkit.getPlayer(Lastlol.UUID)) != null) {
+					p.addPotionEffect(new PotionEffect(
+							PotionEffectType.BLINDNESS, 10 * 20, 5, false, false));
+					for (Player pl : PluginMain.GetPlayers())
+						pl.sendMessage(player.getDisplayName() + " unlolled "
+								+ p.getDisplayName());
+					Lastlol = null;
+				}
 				return true;
 			default:
 				player.sendMessage("Unknown command: " + cmd.getName());
@@ -347,8 +356,7 @@ public class Commands implements CommandExecutor {
 
 	private static void SetPlayerFlair(Player player,
 			MaybeOfflinePlayer targetplayer, short flaircolor, String flairtime) {
-		targetplayer.FlairColor = flaircolor;
-		targetplayer.FlairTime = flairtime;
+		targetplayer.SetFlair(flaircolor, flairtime);
 		targetplayer.FlairState = FlairStates.Accepted;
 		targetplayer.UserName = "";
 		SendMessage(player,
@@ -390,7 +398,6 @@ public class Commands implements CommandExecutor {
 					"https://github.com/NorbiPeti/thebuttonautoflairmc/raw/master/TheButtonAutoFlair.jar");
 			FileUtils.copyURLToFile(url, new File(
 					"plugins/TheButtonAutoFlair.jar"));
-			PluginUpdated = true; // 2015.08.31.
 			SendMessage(player, "Updating done!");
 		} catch (MalformedURLException e) {
 			System.out.println("Error!\n" + e);

@@ -5,21 +5,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 public class MaybeOfflinePlayer {
 	public String PlayerName;
 	public String UserName;
 	public List<String> UserNames;
-	public String FlairTime;
-	public short FlairColor;
+	private String FlairTime;
+	private short FlairColor;
 	public FlairStates FlairState;
 	public boolean RPMode = true;
 	public boolean PressedF;
 	public Location SavedLocation;
 	public boolean Working;
+	public int Tables = 10;
 
 	public UUID UUID;
 
@@ -85,5 +88,38 @@ public class MaybeOfflinePlayer {
 		if (FlairTime == null || FlairTime.length() == 0)
 			return String.format("§%x(??s)§r", FlairColor);
 		return String.format("§%x(%ss)§r", FlairColor, FlairTime);
+	}
+
+	public void SetFlairColor(int color) {
+		FlairColor = (short) color;
+		SetFlair2();
+	}
+
+	public void SetFlairTime(String time) {
+		FlairTime = time;
+		SetFlair2();
+	}
+
+	public void SetFlair(int color, String time) {
+		FlairColor = (short) color;
+		FlairTime = time;
+		SetFlair2();
+	}
+
+	private void SetFlair2() {
+
+		// Flairs from Command Block The Button - Teams
+		// PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard().getTeams().add()
+		Player p = Bukkit.getPlayer(UUID);
+		p.setPlayerListName(String.format("%s%s", p.getPlayerListName(),
+				GetFormattedFlair()));
+	}
+
+	public short GetFlairColor() {
+		return FlairColor;
+	}
+
+	public String GetFlairTime() {
+		return FlairTime;
 	}
 }
