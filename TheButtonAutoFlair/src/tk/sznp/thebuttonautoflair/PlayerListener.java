@@ -28,6 +28,7 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class PlayerListener implements Listener { // 2015.07.16.
 	public static HashMap<String, UUID> nicknames = new HashMap<>();
@@ -97,7 +98,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 		mp.RPMode = true; // 2015.08.25.
 
-		mp.SetFlairColor(mp.GetFlairColor()); //Update display
+		mp.SetFlairColor(mp.GetFlairColor()); // Update display
 	}
 
 	@EventHandler
@@ -139,8 +140,11 @@ public class PlayerListener implements Listener { // 2015.07.16.
 						: mp.GetFlairColor())); // TODO: Quiz queue
 			}
 
-			message = message.replace(p.getName(), color + p.getName()
-					+ (event.getMessage().startsWith("§2>") ? "§2" : "§r"));
+			message = message.replaceAll("(?i)" + Pattern.quote(p.getName()),
+					color
+							+ p.getName()
+							+ (event.getMessage().startsWith("§2>") ? "§2"
+									: "§r"));
 		}
 		for (String n : nicknames.keySet()) {
 			Player p = null;
@@ -166,8 +170,10 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				MaybeOfflinePlayer.AddPlayerIfNeeded(p.getUniqueId()); // 2015.08.17.
 			}
 			if (p != null) {
-				message = message.replace(nwithoutformatting, n
-						+ (event.getMessage().startsWith("§2>") ? "§2" : "§r"));
+				message = message.replaceAll(
+						"(?i)" + Pattern.quote(nwithoutformatting), n
+								+ (event.getMessage().startsWith("§2>") ? "§2"
+										: "§r"));
 			}
 		}
 
@@ -267,6 +273,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				sb.append("\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open on Twitter\",\"color\":\"blue\"}]}}}");
 			}
 			for (String original : list)
+				// Hashtags
 				e.setMessage(e.getMessage().replace(
 						original,
 						"§9"
