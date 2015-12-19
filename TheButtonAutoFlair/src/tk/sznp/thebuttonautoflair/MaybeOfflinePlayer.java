@@ -111,7 +111,7 @@ public class MaybeOfflinePlayer {
 		// Flairs from Command Block The Button - Teams
 		// PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard().getTeams().add()
 		Player p = Bukkit.getPlayer(UUID);
-		p.setPlayerListName(String.format("%s%s", p.getPlayerListName(),
+		p.setPlayerListName(String.format("%s%s", p.getName(),
 				GetFormattedFlair()));
 	}
 
