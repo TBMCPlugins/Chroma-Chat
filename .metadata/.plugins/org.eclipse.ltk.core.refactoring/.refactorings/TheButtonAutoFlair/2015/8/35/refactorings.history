@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete element from project &apos;TheButtonAutoFlair&apos;&#x0D;&#x0A;- Original project: &apos;TheButtonAutoFlair&apos;&#x0D;&#x0A;- Original element: &apos;TheButtonAutoFlair/src/de.inventivegames.TellRawAutoMessage&apos;" description="Delete element" element1="/src&lt;de.inventivegames.TellRawAutoMessage" element2="/src&lt;de.inventivegames" element3="/src&lt;de" elements="3" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1440800831420" subPackages="false" version="1.0"/>
+</session>

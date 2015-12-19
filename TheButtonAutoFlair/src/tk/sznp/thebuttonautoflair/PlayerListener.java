@@ -96,6 +96,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		}
 
 		mp.RPMode = true; // 2015.08.25.
+
+		mp.SetFlairColor(mp.GetFlairColor()); //Update display
 	}
 
 	@EventHandler
@@ -133,7 +135,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 							(float) NotificationPitch); // 2015.08.14.
 				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p
 						.getUniqueId()); // 2015.08.17.
-				color = String.format("§%x", mp.FlairColor);
+				color = String.format("§%x", (mp.GetFlairColor() == 0x00 ? 0xb
+						: mp.GetFlairColor())); // TODO: Quiz queue
 			}
 
 			message = message.replace(p.getName(), color + p.getName()
@@ -236,16 +239,10 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		if (e.getMessage().startsWith(">"))
 			e.setMessage("§2" + e.getMessage());
 
-		/*
-		 * Channel c = ((Chat) Bukkit.getPluginManager().getPlugin("TownyChat"))
-		 * .getChannelsHandler().getActiveChannel(e.getPlayer(),
-		 * channelTypes.GLOBAL);
-		 */
-		/*
-		 * List<String> modes = ((Chat) Bukkit.getPluginManager().getPlugin(
-		 * "TownyChat")).getTowny().getPlayerMode(e.getPlayer()); if
-		 * (modes.size() == 0 || modes.contains("g")) {
-		 */
+		if (e.getMessage().contains("lol"))
+			Commands.Lastlol = MaybeOfflinePlayer.AllPlayers.get(e.getPlayer()
+					.getUniqueId());
+
 		if (e.getFormat().contains("[g]")) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("tellraw @a [\"\"");

@@ -71,6 +71,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		this.getCommand("ooc").setExecutor(comm);
 		this.getCommand("ooc").setUsage(
 				this.getCommand("ooc").getUsage().replace('&', '§'));
+		this.getCommand("unlol").setExecutor(comm);
 		Instance = this; // 2015.08.08.
 		Console = this.getServer().getConsoleSender(); // 2015.08.12.
 		LoadFiles(false); // 2015.08.09.
@@ -187,31 +188,31 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		p.FlairState = FlairStates.Recognised;
 		switch (flairclass) {
 		case "press-1":
-			p.FlairColor = 0xc;
+			p.SetFlairColor(0xc);
 			break;
 		case "press-2":
-			p.FlairColor = 0x6;
+			p.SetFlairColor(0x6);
 			break;
 		case "press-3":
-			p.FlairColor = 0xe;
+			p.SetFlairColor(0xe);
 			break;
 		case "press-4":
-			p.FlairColor = 0xa;
+			p.SetFlairColor(0xa);
 			break;
 		case "press-5":
-			p.FlairColor = 0x9;
+			p.SetFlairColor(0x9);
 			break;
 		case "press-6":
-			p.FlairColor = 0x5;
+			p.SetFlairColor(0x5);
 			break;
 		case "no-press":
-			p.FlairColor = 0x7;
+			p.SetFlairColor(0x7);
 			break;
 		case "cheater":
-			p.FlairColor = 0x5;
+			p.SetFlairColor(0x5);
 			break;
 		case "cant-press":
-			p.FlairColor = 0xf;
+			p.SetFlairColor(0xf);
 			break;
 		case "unknown":
 			if (text.equals("-1")) // If true, only non-presser/can't press; if
@@ -219,20 +220,18 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			{
 				try {
 					if (CheckForJoinDate(p)) {
-						p.FlairColor = 0x7;
-						p.FlairTime = "--";
+						p.SetFlair(0x7, "--");
 					} else {
-						p.FlairColor = 0xf;
-						p.FlairTime = "--";
+						p.SetFlair(0xf, "--");
 					}
 				} catch (Exception e) {
 					p.FlairState = FlairStates.Commented; // Flair unknown
-					p.FlairColor = 0;
+					p.SetFlairColor(0);
 					e.printStackTrace();
 				}
 			} else {
 				p.FlairState = FlairStates.Commented; // Flair unknown
-				p.FlairColor = 0;
+				p.SetFlairColor(0);
 			}
 			return;
 		default:
@@ -240,7 +239,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		}
 		if (text.equals("-1"))
 			text = "--";
-		p.FlairTime = text;
+		p.SetFlairTime(text);
 	}
 
 	public static boolean CheckForJoinDate(MaybeOfflinePlayer mp)
