@@ -143,7 +143,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		boolean greentext = event.getMessage().startsWith(">");
 		if (event.getMessage().contains("lol"))
 			Commands.Lastlol = MaybeOfflinePlayer.AllPlayers.get(event
-					.getPlayer().getUniqueId());
+					.getPlayer().getUniqueId()); //TODO: Formatting after nicknames
 
 		MaybeOfflinePlayer player = MaybeOfflinePlayer.AllPlayers.get(event
 				.getPlayer().getUniqueId());
@@ -305,7 +305,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				Objective obj = PluginMain.SB.getObjective("town");
 				// System.out.println("obj: " + obj);
 				for (Player p : PluginMain.GetPlayers()) {
-					System.out.println(town.getName());
+					//System.out.println(town.getName());
 					try {
 						if (PluginMain.Instance.TU.getResidentMap()
 								.get(p.getName().toLowerCase()).getTown()
