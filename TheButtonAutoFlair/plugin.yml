@@ -14,4 +14,4 @@ commands:
     unlol:
         description: Unlol the last lol.
 author: NorbiPeti
-depend: [Essentials, Towny, TownyChat, Minigames]
+depend: [Essentials, Towny, Minigames]

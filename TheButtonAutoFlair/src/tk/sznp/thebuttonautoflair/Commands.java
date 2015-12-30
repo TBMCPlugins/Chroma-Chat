@@ -177,7 +177,7 @@ public class Commands implements CommandExecutor {
 				return true;
 			}
 			case "nrp":
-			case "ooc":
+			case "ooc": {
 				if (args.length == 0) {
 					return false;
 				} else {
@@ -189,18 +189,27 @@ public class Commands implements CommandExecutor {
 					MaybeOfflinePlayer.AddPlayerIfNeeded(player.getUniqueId()).RPMode = true;
 				}
 				return true;
-			case "unlol":
+			}
+			case "unlol": {
 				Player p = null;
 				if (Lastlol != null
 						&& (p = Bukkit.getPlayer(Lastlol.UUID)) != null) {
 					p.addPotionEffect(new PotionEffect(
-							PotionEffectType.BLINDNESS, 10 * 20, 5, false, false));
+							PotionEffectType.BLINDNESS, 10 * 20, 5, false,
+							false));
 					for (Player pl : PluginMain.GetPlayers())
 						pl.sendMessage(player.getDisplayName() + " unlolled "
 								+ p.getDisplayName());
 					Lastlol = null;
 				}
 				return true;
+			}
+			case "yeehaw": {
+				for (Player p : PluginMain.GetPlayers()) {
+					p.playSound(p.getLocation(), "tbmc.yeehaw", 1f, 1f);
+					p.sendMessage("§b* " + p.getDisplayName() + " YEEHAWs.");
+				}
+			}
 			default:
 				player.sendMessage("Unknown command: " + cmd.getName());
 				break;

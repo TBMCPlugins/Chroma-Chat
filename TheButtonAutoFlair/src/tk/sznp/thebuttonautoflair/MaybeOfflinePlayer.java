@@ -22,7 +22,9 @@ public class MaybeOfflinePlayer {
 	public boolean PressedF;
 	public Location SavedLocation;
 	public boolean Working;
-	public int Tables = 10;
+	// public int Tables = 10;
+	public Channel CurrentChannel = Channel.GlobalChat;
+	public int FCount;
 
 	public UUID UUID;
 
@@ -58,6 +60,7 @@ public class MaybeOfflinePlayer {
 				mp.FlairState = FlairStates.NoComment;
 			mp.PlayerName = cs2.getString("playername");
 			mp.UserNames = cs2.getStringList("usernames");
+			mp.FCount = cs2.getInt("fcount");
 		}
 	}
 
@@ -72,6 +75,7 @@ public class MaybeOfflinePlayer {
 			cs2.set("flairstate", mp.FlairState.toString());
 			cs2.set("uuid", mp.UUID.toString());
 			cs2.set("usernames", mp.UserNames);
+			cs2.set("fcount", mp.FCount);
 		}
 	}
 
