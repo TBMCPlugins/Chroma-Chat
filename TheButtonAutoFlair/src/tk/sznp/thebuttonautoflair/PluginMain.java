@@ -7,10 +7,16 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.Scoreboard;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.palmergames.bukkit.towny.Towny;
+import com.palmergames.bukkit.towny.object.Nation;
+import com.palmergames.bukkit.towny.object.Town;
+import com.palmergames.bukkit.towny.object.TownyUniverse;
 
 import java.io.*;
 import java.lang.String;
@@ -31,6 +37,10 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	// https://www.reddit.com/r/thebutton/comments/31c32v/i_pressed_the_button_without_really_thinking/
 	public static PluginMain Instance;
 	public static ConsoleCommandSender Console; // 2015.08.12.
+	public static Scoreboard SB;
+	public TownyUniverse TU;
+	public ArrayList<Town> Towns;
+	public ArrayList<Nation> Nations;
 
 	// Fired when plugin is first enabled
 	@Override
@@ -75,6 +85,18 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		Instance = this; // 2015.08.08.
 		Console = this.getServer().getConsoleSender(); // 2015.08.12.
 		LoadFiles(false); // 2015.08.09.
+
+		SB = PluginMain.Instance.getServer().getScoreboardManager()
+				.getMainScoreboard(); // Main can be detected with @a[score_...]
+		if (SB.getObjective("town") == null)
+			SB.registerNewObjective("town", "dummy");
+		if (SB.getObjective("nation") == null)
+			SB.registerNewObjective("nation", "dummy");
+		TU = ((Towny) Bukkit.getPluginManager().getPlugin("Towny"))
+				.getTownyUniverse();
+		Towns = new ArrayList<Town>(TU.getTownsMap().values());
+		Nations = new ArrayList<Nation>(TU.getNationsMap().values());
+		
 		Runnable r = new Runnable() {
 			public void run() {
 				ThreadMethod();
@@ -287,16 +309,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		}
 		System.out.println("Loading files for The Button Minecraft plugin...");
 		try {
-			File file = new File("announcemessages.txt");
-			if (file.exists())
-				file.delete();
-			file = new File("flairsaccepted.txt");
-			if (file.exists())
-				file.delete();
-			file = new File("flairsignored.txt");
-			if (file.exists())
-				file.delete();
-			file = new File("thebuttonmc.yml");
+			File file = new File("thebuttonmc.yml");
 			if (file.exists()) {
 				YamlConfiguration yc = new YamlConfiguration();
 				yc.load(file);

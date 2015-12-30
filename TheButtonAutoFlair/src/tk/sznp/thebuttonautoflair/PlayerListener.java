@@ -11,11 +11,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.scoreboard.Objective;
+
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+import com.palmergames.bukkit.towny.object.Nation;
+import com.palmergames.bukkit.towny.object.Resident;
+import com.palmergames.bukkit.towny.object.Town;
 
 import au.com.mineauz.minigames.MinigamePlayer;
 import au.com.mineauz.minigames.Minigames;
@@ -122,6 +129,21 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
+		if (event.getMessage().equalsIgnoreCase("F")) {
+			MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(event
+					.getPlayer().getUniqueId());
+			if (!mp.PressedF && ActiveF) {
+				FCount++;
+				mp.PressedF = true;
+				if (FPlayer != null && FPlayer.FCount < Integer.MAX_VALUE - 1)
+					FPlayer.FCount++;
+			}
+		}
+
+		boolean greentext = event.getMessage().startsWith(">");
+		Commands.Lastlol = MaybeOfflinePlayer.AllPlayers.get(event.getPlayer()
+				.getUniqueId());
+
 		MaybeOfflinePlayer player = MaybeOfflinePlayer.AllPlayers.get(event
 				.getPlayer().getUniqueId());
 		String flair = player.GetFormattedFlair();
@@ -190,6 +212,262 @@ public class PlayerListener implements Listener { // 2015.07.16.
 						"{isitwilds}",
 						(event.getPlayer().getWorld().getName()
 								.equalsIgnoreCase("wilds") ? "[PVP]" : ""))); // 2015.09.04.
+
+		event.setCancelled(true);
+		StringBuilder json = new StringBuilder();
+		json.append("[\"\",");
+		json.append(String.format("{\"text\":\"[%s]%s <\"},",
+				player.CurrentChannel.DisplayName, (!player.RPMode ? "[OOC]"
+						: "")));
+		json.append(String.format("{\"text\":\"%s%s\",", event.getPlayer()
+				.getDisplayName(), player.GetFormattedFlair()));
+		json.append("\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[");
+		json.append(String.format("{\"text\":\"%s\n\",", event.getPlayer()
+				.getName()));
+		json.append(String
+				.format("\"color\":\"aqua\"},{\"text\":\"World: %s\n\",\"color\":\"white\"},",
+						event.getPlayer().getWorld().getName()));
+		json.append(String.format(
+				"{\"text\":\"Respect: %s%s\",\"color\":\"white\"}]}}},",
+				(player.FCount == Integer.MAX_VALUE - 1 ? player.FCount + "+"
+						: player.FCount), (player.UserName != null
+						&& !player.UserName.isEmpty() ? "\nUserName: "
+						+ player.UserName : "")));
+		json.append("{\"text\":\"> \",\"color\":\"white\"},");
+
+		int index = -1;
+		ArrayList<String> list = new ArrayList<String>();
+		while ((index = event.getMessage().indexOf("#", index + 1)) != -1) {
+			int index2 = event.getMessage().indexOf(" ", index + 1);
+			if (index2 == -1)
+				index2 = event.getMessage().length();
+			int index3 = event.getMessage().indexOf("#", index + 1);
+			if (index3 != -1 && index3 < index2) // A # occurs before a
+													// space
+				index2 = index3;
+			String original = event.getMessage().substring(index + 1, index2);
+			list.add(original);
+		}
+		String finalstring = event.getMessage().replace('"', '\'');
+		for (String original : list)
+			// Hashtags
+			finalstring = finalstring
+					.replace(
+							"#" + original,
+							String.format(
+									"\",\"color\":\"%s\"},{\"text\":\"#%s\",\"color\":\"blue\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://twitter.com/hashtag/%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open on Twitter\",\"color\":\"blue\"}]}}},{\"text\":\"",
+									(greentext ? "dark_green"
+											: player.CurrentChannel.Color),
+									original, original));
+		json.append(String.format("{\"text\":\"%s\",\"color\":\"%s\"}]",
+				finalstring, (greentext ? "dark_green"
+						: player.CurrentChannel.Color)));
+		if (!player.CurrentChannel.equals(Channel.GlobalChat))
+			// for (Resident resident :
+			// PluginMain.Instance.TU.getResidentMap().values()) {
+			for (Player p : PluginMain.GetPlayers()) {
+				try {
+					Resident resident = PluginMain.Instance.TU.getResidentMap()
+							.get(p.getName());
+					if (!resident.getName().equals(event.getPlayer().getName())
+							&& resident.getModes().contains("spy"))
+						Bukkit.getPlayer(resident.getName()).sendMessage(
+								String.format("[SPY-%s] - %s: %s",
+										player.CurrentChannel.DisplayName,
+										event.getPlayer().getDisplayName(),
+										event.getMessage()));
+				} catch (Exception e) {
+				}
+			}
+		if (player.CurrentChannel.equals(Channel.TownChat)) {
+			try {
+				// System.out.println(PluginMain.Instance.TU.getResidentMap().keys().nextElement());
+				Town town = null;
+				try {
+					town = PluginMain.Instance.TU.getResidentMap()
+							.get(event.getPlayer().getName().toLowerCase())
+							.getTown();
+				} catch (NotRegisteredException e) {
+				}
+				if (town == null) {
+					event.getPlayer().sendMessage(
+							"§cYou aren't in a town or an error occured.");
+					return;
+				}
+				index = PluginMain.Instance.Towns.indexOf(town);
+				if (index < 0) {
+					PluginMain.Instance.Towns.add(town);
+					index = PluginMain.Instance.Towns.size() - 1;
+				}
+				// PluginMain.SB.getObjective("town").getScore(event.getPlayer().getName()).setScore(index);
+				Objective obj = PluginMain.SB.getObjective("town");
+				for (Player p : PluginMain.GetPlayers()) {
+					try {
+						if (PluginMain.Instance.TU.getResidentMap()
+								.get(p.getName()).getTown().equals(town))
+							obj.getScore(p.getName()).setScore(index);
+					} catch (Exception e) {
+					}
+				}
+				PluginMain.Instance
+						.getServer()
+						.dispatchCommand(
+								PluginMain.Console,
+								String.format(
+										"tellraw @a[score_town=%d,score_town_min=%d] %s",
+										index, index, json.toString()));
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+				event.getPlayer()
+						.sendMessage(
+								"§cAn error occured while sending the message. (IllegalStateException)");
+				return;
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+				event.getPlayer()
+						.sendMessage(
+								"§cAn error occured while sending the message. (IllegalArgumentException)");
+				return;
+			}
+		} else if (player.CurrentChannel.equals(Channel.NationChat)) {
+			try {
+				Town town = null;
+				try {
+					town = PluginMain.Instance.TU.getResidentMap()
+							.get(event.getPlayer().getName().toLowerCase())
+							.getTown();
+				} catch (NotRegisteredException e) {
+				}
+				if (town == null) {
+					event.getPlayer().sendMessage(
+							"§cYou aren't in a town or an error occured.");
+					return;
+				}
+				Nation nation = null;
+				try {
+					nation = town.getNation();
+				} catch (NotRegisteredException e) {
+				}
+				if (nation == null) {
+					event.getPlayer()
+							.sendMessage(
+									"§cYour town isn't in a nation or an error occured.");
+					return;
+				}
+				index = PluginMain.Instance.Nations.indexOf(nation);
+				if (index < 0) {
+					PluginMain.Instance.Nations.add(nation);
+					index = PluginMain.Instance.Nations.size() - 1;
+				}
+				// PluginMain.SB.getObjective("nation").getScore(event.getPlayer().getName()).setScore(index);
+				Objective obj = PluginMain.SB.getObjective("nation");
+				for (Player p : PluginMain.GetPlayers()) {
+					try {
+						if (PluginMain.Instance.TU.getResidentMap()
+								.get(p.getName()).getTown().getNation().equals(nation))
+							obj.getScore(p.getName()).setScore(index);
+					} catch (Exception e) {
+					}
+				}
+				PluginMain.Instance
+						.getServer()
+						.dispatchCommand(
+								PluginMain.Console,
+								String.format(
+										"tellraw @a[score_nation=%d,score_nation_min=%d] %s",
+										index, index, json.toString()));
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+				event.getPlayer()
+						.sendMessage(
+								"§cAn error occured while sending the message. (IllegalStateException)");
+				return;
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+				event.getPlayer()
+						.sendMessage(
+								"§cAn error occured while sending the message. (IllegalArgumentException)");
+				return;
+			}
+		} else
+			PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
+					String.format("tellraw @a %s", json.toString()));
+		PluginMain.Instance
+				.getServer()
+				.getConsoleSender()
+				.sendMessage(
+						String.format("[%s] <%s%s> %s",
+								player.CurrentChannel.DisplayName, event
+										.getPlayer().getDisplayName(), player
+										.GetFormattedFlair(), message));
+	}
+
+	@EventHandler
+	public void PlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+		if (event.getMessage().length() < 2)
+			return;
+		int index = event.getMessage().indexOf(" ");
+		MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(event
+				.getPlayer().getUniqueId());
+		if (index == -1) {
+			String cmd = event.getMessage().substring(1);
+			// System.out.println("cmd: " + cmd);
+			if (cmd.equalsIgnoreCase(Channel.GlobalChat.Command)) {
+				mp.CurrentChannel = Channel.GlobalChat;
+				event.getPlayer().sendMessage(
+						"§6You are now talking in: §b"
+								+ mp.CurrentChannel.DisplayName);
+				event.setCancelled(true);
+			} else if (cmd.equalsIgnoreCase(Channel.TownChat.Command)) {
+				if (mp.CurrentChannel.equals(Channel.TownChat))
+					mp.CurrentChannel = Channel.GlobalChat;
+				else
+					mp.CurrentChannel = Channel.TownChat;
+				event.getPlayer().sendMessage(
+						"§6You are now talking in: §b"
+								+ mp.CurrentChannel.DisplayName);
+				event.setCancelled(true);
+			} else if (cmd.equalsIgnoreCase(Channel.NationChat.Command)) {
+				if (mp.CurrentChannel.equals(Channel.NationChat))
+					mp.CurrentChannel = Channel.GlobalChat;
+				else
+					mp.CurrentChannel = Channel.NationChat;
+				event.getPlayer().sendMessage(
+						"§6You are now talking in: §b"
+								+ mp.CurrentChannel.DisplayName);
+				event.setCancelled(true);
+			}
+		} else {
+			String cmd = event.getMessage().substring(1, index);
+			// System.out.println("cmd: " + cmd);
+			if (cmd.equalsIgnoreCase(Channel.GlobalChat.Command)) {
+				event.setCancelled(true);
+				Channel c = mp.CurrentChannel;
+				mp.CurrentChannel = Channel.GlobalChat;
+				event.getPlayer().chat(event.getMessage().substring(index + 1));
+				mp.CurrentChannel = c;
+			} else if (cmd.equalsIgnoreCase(Channel.TownChat.Command)) {
+				event.setCancelled(true);
+				Channel c = mp.CurrentChannel;
+				mp.CurrentChannel = Channel.TownChat;
+				event.getPlayer().chat(event.getMessage().substring(index + 1));
+				mp.CurrentChannel = c;
+			} else if (cmd.equalsIgnoreCase(Channel.NationChat.Command)) {
+				event.setCancelled(true);
+				Channel c = mp.CurrentChannel;
+				mp.CurrentChannel = Channel.NationChat;
+				event.getPlayer().chat(event.getMessage().substring(index + 1));
+				mp.CurrentChannel = c;
+			} else if (cmd.equalsIgnoreCase("tpahere")) {
+				Player player = Bukkit.getPlayer(event.getMessage().substring(
+						index + 1));
+				if (player != null)
+					player.sendMessage("§b"
+							+ event.getPlayer().getDisplayName()
+							+ " §bis in this world: "
+							+ event.getPlayer().getWorld().getName());
+			}
+		}
 	}
 
 	@EventHandler
@@ -230,70 +508,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 	private boolean ActiveF = false;
 	private int FCount = 0;
-
-	@EventHandler
-	public void onPlayerMessage(AsyncPlayerChatEvent e) {
-		if (e.getMessage().equalsIgnoreCase("F")) {
-			MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(e
-					.getPlayer().getUniqueId());
-			if (!mp.PressedF && ActiveF) {
-				FCount++;
-				mp.PressedF = true;
-			}
-		}
-
-		if (e.getMessage().startsWith(">"))
-			e.setMessage("§2" + e.getMessage());
-
-		if (e.getMessage().contains("lol"))
-			Commands.Lastlol = MaybeOfflinePlayer.AllPlayers.get(e.getPlayer()
-					.getUniqueId());
-
-		if (e.getFormat().contains("[g]")) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("tellraw @a [\"\"");
-			sb.append(",{\"text\":\"Hashtags:\"}");
-			int index = -1;
-			ArrayList<String> list = new ArrayList<String>();
-			while ((index = e.getMessage().indexOf("#", index + 1)) != -1) {
-				int index2 = e.getMessage().indexOf(" ", index + 1);
-				if (index2 == -1)
-					index2 = e.getMessage().length();
-				int index3 = e.getMessage().indexOf("#", index + 1);
-				if (index3 != -1 && index3 < index2) // A # occurs before a
-														// space
-					index2 = index3;
-				String original = e.getMessage().substring(index, index2);
-				list.add(original);
-				sb.append(",{\"text\":\" \"}");
-				sb.append(",{\"text\":\"");
-				sb.append(original);
-				sb.append("\",\"color\":\"blue\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://twitter.com/hashtag/");
-				sb.append(original.substring(1));
-				sb.append("\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open on Twitter\",\"color\":\"blue\"}]}}}");
-			}
-			for (String original : list)
-				// Hashtags
-				e.setMessage(e.getMessage().replace(
-						original,
-						"§9"
-								+ original
-								+ (e.getMessage().startsWith("§2>") ? "§2"
-										: "§r")));
-			/*
-			 * for (String original : list)
-			 * System.out.println(e.getMessage().replace( original, "§9" +
-			 * original + (e.getMessage().startsWith("§2>") ? "§2" : "§r")));
-			 */
-
-			sb.append("]");
-
-			if (list.size() > 0)
-				PluginMain.Instance.getServer().dispatchCommand(
-						PluginMain.Instance.getServer().getConsoleSender(),
-						sb.toString());
-		}
-	}
+	private MaybeOfflinePlayer FPlayer = null;
 
 	private Timer Ftimer;
 
@@ -305,6 +520,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				Ftimer.cancel();
 			ActiveF = true;
 			FCount = 0;
+			FPlayer = MaybeOfflinePlayer.AllPlayers.get(e.getEntity()
+					.getUniqueId());
 			for (Player p : PluginMain.GetPlayers()) {
 				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(p
 						.getUniqueId());
