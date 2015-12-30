@@ -304,7 +304,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				for (Player p : PluginMain.GetPlayers()) {
 					try {
 						if (PluginMain.Instance.TU.getResidentMap()
-								.get(p.getName()).getTown().equals(town))
+								.get(p.getName()).getTown().getName().equals(town.getName()))
 							obj.getScore(p.getName()).setScore(index);
 					} catch (Exception e) {
 					}
@@ -364,7 +364,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				for (Player p : PluginMain.GetPlayers()) {
 					try {
 						if (PluginMain.Instance.TU.getResidentMap()
-								.get(p.getName()).getTown().getNation().equals(nation))
+								.get(p.getName()).getTown().getNation().getName().equals(nation.getName()))
 							obj.getScore(p.getName()).setScore(index);
 					} catch (Exception e) {
 					}
