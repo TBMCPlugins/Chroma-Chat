@@ -141,8 +141,9 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		}
 
 		boolean greentext = event.getMessage().startsWith(">");
-		Commands.Lastlol = MaybeOfflinePlayer.AllPlayers.get(event.getPlayer()
-				.getUniqueId());
+		if (event.getMessage().contains("lol"))
+			Commands.Lastlol = MaybeOfflinePlayer.AllPlayers.get(event
+					.getPlayer().getUniqueId());
 
 		MaybeOfflinePlayer player = MaybeOfflinePlayer.AllPlayers.get(event
 				.getPlayer().getUniqueId());
@@ -300,15 +301,15 @@ public class PlayerListener implements Listener { // 2015.07.16.
 					index = PluginMain.Instance.Towns.size() - 1;
 				}
 				// PluginMain.SB.getObjective("town").getScore(event.getPlayer().getName()).setScore(index);
-				//System.out.println("index: " + index);
+				// System.out.println("index: " + index);
 				Objective obj = PluginMain.SB.getObjective("town");
-				//System.out.println("obj: " + obj);
+				// System.out.println("obj: " + obj);
 				for (Player p : PluginMain.GetPlayers()) {
 					System.out.println(town.getName());
 					try {
 						if (PluginMain.Instance.TU.getResidentMap()
-								.get(p.getName().toLowerCase()).getTown().getName()
-								.equals(town.getName()))
+								.get(p.getName().toLowerCase()).getTown()
+								.getName().equals(town.getName()))
 							obj.getScore(p.getName()).setScore(index);
 						else
 							obj.getScore(p.getName()).setScore(-1);
@@ -370,8 +371,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				for (Player p : PluginMain.GetPlayers()) {
 					try {
 						if (PluginMain.Instance.TU.getResidentMap()
-								.get(p.getName().toLowerCase()).getTown().getNation()
-								.getName().equals(nation.getName()))
+								.get(p.getName().toLowerCase()).getTown()
+								.getNation().getName().equals(nation.getName()))
 							obj.getScore(p.getName()).setScore(index);
 					} catch (Exception e) {
 					}
