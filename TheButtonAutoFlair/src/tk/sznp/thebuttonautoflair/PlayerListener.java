@@ -161,64 +161,92 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 		MaybeOfflinePlayer player = MaybeOfflinePlayer.AllPlayers.get(event
 				.getPlayer().getUniqueId());
-		String message = event.getMessage(); // 2015.08.08.
-		for (Player p : PluginMain.GetPlayers()) { // 2015.08.12.
-			String color = ""; // 2015.08.17.
-			if (message.matches("(?i).*" + Pattern.quote(p.getName()) + ".*")) {
-				if (NotificationSound == null)
-					p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f, 0.5f); // 2015.08.12.
-				else
-					p.playSound(p.getLocation(), NotificationSound, 1.0f,
-							(float) NotificationPitch); // 2015.08.14.
-				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p
-						.getUniqueId());
-				color = String.format("§%x", (mp.GetFlairColor() == 0x00 ? 0xb
-						: mp.GetFlairColor())); // TODO: Quiz queue
+		String message = event.getMessage();
+		message = message.replace("\"", "''");
+
+		// URLs
+		String[] parts = message.split("\\s+");
+		boolean hadurls = false;
+		for (String item : parts)
+			try {
+				URL url = new URL(item);
+				message = message
+						.replace(
+								item,
+								String.format(
+										"\",\"color\":\"%s\"},{\"text\":\"%s\",\"color\":\"%s\",\"underlined\":\"true\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open URL\",\"color\":\"blue\"}]}}},{\"text\":\"",
+										(greentext ? "green"
+												: player.CurrentChannel.Color),
+										url, (greentext ? "green"
+												: player.CurrentChannel.Color),
+										url));
+				hadurls = true;
+				// System.out.println("URL: " + url);
+			} catch (MalformedURLException e) {
 			}
 
-			message = message.replaceAll(
-					"(?i)" + Pattern.quote(p.getName()),
-					color
-							+ p.getName()
-							+ (greentext ? "§a"
-									: player.CurrentChannel.DisplayName
-											.substring(0, 2)));
-		}
-		for (String n : nicknames.keySet()) {
-			Player p = null;
-			String nwithoutformatting = new String(n);
-			int index;
-			while ((index = nwithoutformatting.indexOf("§k")) != -1)
-				nwithoutformatting = nwithoutformatting.replace("§k"
-						+ nwithoutformatting.charAt(index + 2), ""); // Support
-																		// for
-																		// one
-																		// random
-																		// char
-			while ((index = nwithoutformatting.indexOf('§')) != -1)
-				nwithoutformatting = nwithoutformatting.replace("§"
-						+ nwithoutformatting.charAt(index + 1), "");
-			if (message.matches("(?i).*" + Pattern.quote(nwithoutformatting)
-					+ ".*")) {
-				p = Bukkit.getPlayer(nicknames.get(n));
-				if (NotificationSound == null)
-					p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f, 0.5f); // 2015.08.12.
-				else
-					p.playSound(p.getLocation(), NotificationSound, 1.0f,
-							(float) NotificationPitch); // 2015.08.14.
-				MaybeOfflinePlayer.AddPlayerIfNeeded(p.getUniqueId()); // 2015.08.17.
-			}
-			if (p != null) {
+		if (!hadurls) {
+			for (Player p : PluginMain.GetPlayers()) { // 2015.08.12.
+				String color = ""; // 2015.08.17.
+				if (message.matches("(?i).*" + Pattern.quote(p.getName())
+						+ ".*")) {
+					if (NotificationSound == null)
+						p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f,
+								0.5f); // 2015.08.12.
+					else
+						p.playSound(p.getLocation(), NotificationSound, 1.0f,
+								(float) NotificationPitch); // 2015.08.14.
+					MaybeOfflinePlayer mp = MaybeOfflinePlayer
+							.AddPlayerIfNeeded(p.getUniqueId());
+					color = String.format(
+							"§%x",
+							(mp.GetFlairColor() == 0x00 ? 0xb : mp
+									.GetFlairColor())); // TODO: Quiz queue
+				}
+
 				message = message.replaceAll(
-						"(?i)" + Pattern.quote(nwithoutformatting),
-						n
+						"(?i)" + Pattern.quote(p.getName()),
+						color
+								+ p.getName()
 								+ (greentext ? "§a"
 										: player.CurrentChannel.DisplayName
 												.substring(0, 2)));
 			}
+			for (String n : nicknames.keySet()) {
+				Player p = null;
+				String nwithoutformatting = new String(n);
+				int index;
+				while ((index = nwithoutformatting.indexOf("§k")) != -1)
+					nwithoutformatting = nwithoutformatting.replace("§k"
+							+ nwithoutformatting.charAt(index + 2), ""); // Support
+																			// for
+																			// one
+																			// random
+																			// char
+				while ((index = nwithoutformatting.indexOf('§')) != -1)
+					nwithoutformatting = nwithoutformatting.replace("§"
+							+ nwithoutformatting.charAt(index + 1), "");
+				if (message.matches("(?i).*"
+						+ Pattern.quote(nwithoutformatting) + ".*")) {
+					p = Bukkit.getPlayer(nicknames.get(n));
+					if (NotificationSound == null)
+						p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f,
+								0.5f); // 2015.08.12.
+					else
+						p.playSound(p.getLocation(), NotificationSound, 1.0f,
+								(float) NotificationPitch); // 2015.08.14.
+					MaybeOfflinePlayer.AddPlayerIfNeeded(p.getUniqueId()); // 2015.08.17.
+				}
+				if (p != null) {
+					message = message.replaceAll(
+							"(?i)" + Pattern.quote(nwithoutformatting),
+							n
+									+ (greentext ? "§a"
+											: player.CurrentChannel.DisplayName
+													.substring(0, 2)));
+				}
+			}
 		}
-
-		event.setMessage(message);
 
 		/*
 		 * event.setFormat(event .getFormat() .replace( "{rptag}",
@@ -234,9 +262,11 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 		StringBuilder json = new StringBuilder();
 		json.append("[\"\",");
-		json.append(String.format("{\"text\":\"[%s]%s <\"},",
-				player.CurrentChannel.DisplayName, (!player.RPMode ? "[OOC]"
-						: "")));
+		json.append(String
+				.format("{\"text\":\"[%s]%s\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Copy message\",\"color\":\"blue\"}},clickEvent:{\"action\":\"suggest_command\",\"value\":\"%s\"}},",
+						player.CurrentChannel.DisplayName,
+						(!player.RPMode ? "[OOC]" : ""), event.getMessage()));
+		json.append("{\"text\":\" <\"},");
 		json.append(String.format("{\"text\":\"%s%s\",", event.getPlayer()
 				.getDisplayName(), player.GetFormattedFlair()));
 		json.append("\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[");
@@ -266,40 +296,22 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			String original = event.getMessage().substring(index + 1, index2);
 			list.add(original);
 		}
-		String finalstring = event.getMessage().replace("\"", "''");
-		for (String original : list)
-			// Hashtags
-			finalstring = finalstring
-					.replace(
-							"#" + original,
-							String.format(
-									"\",\"color\":\"%s\"},{\"text\":\"#%s\",\"color\":\"blue\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://twitter.com/hashtag/%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open on Twitter\",\"color\":\"blue\"}]}}},{\"text\":\"",
-									(greentext ? "green"
-											: player.CurrentChannel.Color),
-									original, original));
 
-		String[] parts = finalstring.split("\\s+");
-
-		// URLs
-		for (String item : parts)
-			try {
-				URL url = new URL(item);
-				finalstring = finalstring
+		if (!hadurls) {
+			for (String original : list)
+				// Hashtags
+				message = message
 						.replace(
-								item,
+								"#" + original,
 								String.format(
-										"\",\"color\":\"%s\"},{\"text\":\"%s\",\"color\":\"%s\",\"underlined\":\"true\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open URL\",\"color\":\"blue\"}]}}},{\"text\":\"",
+										"\",\"color\":\"%s\"},{\"text\":\"#%s\",\"color\":\"blue\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://twitter.com/hashtag/%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open on Twitter\",\"color\":\"blue\"}]}}},{\"text\":\"",
 										(greentext ? "green"
 												: player.CurrentChannel.Color),
-										url, (greentext ? "green"
-												: player.CurrentChannel.Color),
-										url));
-			} catch (MalformedURLException e) {
-			}
+										original, original));
+		}
 
 		json.append(String.format("{\"text\":\"%s\",\"color\":\"%s\"}]",
-				finalstring, (greentext ? "green"
-						: player.CurrentChannel.Color)));
+				message, (greentext ? "green" : player.CurrentChannel.Color)));
 		if (player.CurrentChannel.equals(Channel.TownChat)
 				|| player.CurrentChannel.equals(Channel.NationChat))
 			// for (Resident resident :
@@ -513,7 +525,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 						String.format("[%s] <%s%s> %s",
 								player.CurrentChannel.DisplayName, event
 										.getPlayer().getDisplayName(), player
-										.GetFormattedFlair(), message));
+										.GetFormattedFlair(), event
+										.getMessage()));
 	}
 
 	@EventHandler
