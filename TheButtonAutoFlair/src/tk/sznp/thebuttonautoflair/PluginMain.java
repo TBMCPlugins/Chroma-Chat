@@ -100,7 +100,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 				.getTownyUniverse();
 		Towns = new ArrayList<Town>(TU.getTownsMap().values());
 		Nations = new ArrayList<Nation>(TU.getNationsMap().values());
-		
+
 		Runnable r = new Runnable() {
 			public void run() {
 				ThreadMethod();
@@ -242,7 +242,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			break;
 		case "unknown":
 			if (text.equals("-1")) // If true, only non-presser/can't press; if
-									// false, any flair
+									// false, any flair (but we can still detect
+									// can't press)
 			{
 				try {
 					if (CheckForJoinDate(p)) {
@@ -256,8 +257,18 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					e.printStackTrace();
 				}
 			} else {
-				p.FlairState = FlairStates.Commented; // Flair unknown
-				p.SetFlairColor(0);
+				try {
+					if (CheckForJoinDate(p)) {
+						p.FlairState = FlairStates.Commented; // Flair unknown
+						p.SetFlairColor(0);
+					} else {
+						p.SetFlair(0xf, "--");
+					}
+				} catch (Exception e) {
+					p.FlairState = FlairStates.Commented; // Flair unknown
+					p.SetFlairColor(0);
+					e.printStackTrace();
+				}
 			}
 			return;
 		default:
@@ -324,6 +335,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 						.getDouble("notificationpitch");
 				AnnounceTime = yc.getInt("announcetime");
 				AnnounceMessages.addAll(yc.getStringList("announcements"));
+				PlayerListener.AlphaDeaths = yc.getInt("alphadeaths");
 			}
 			System.out.println("The Button Minecraft plugin loaded files!");
 		} catch (IOException e) {
@@ -345,6 +357,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			yc.set("notificationpitch", PlayerListener.NotificationPitch);
 			yc.set("announcetime", AnnounceTime);
 			yc.set("announcements", AnnounceMessages);
+			yc.set("alphadeaths", PlayerListener.AlphaDeaths);
 			yc.save(file);
 			System.out.println("The Button Minecraft plugin saved files!");
 		} catch (IOException e) {
