@@ -19,6 +19,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scoreboard.Objective;
 
+import ru.tehkode.permissions.bukkit.PermissionsEx;
+
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -29,6 +31,8 @@ import au.com.mineauz.minigames.Minigames;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -37,6 +41,8 @@ import java.util.TimerTask;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import com.earth2me.essentials.*;
+
 public class PlayerListener implements Listener { // 2015.07.16.
 	public static HashMap<String, UUID> nicknames = new HashMap<>();
 
@@ -44,6 +50,9 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		if (essentials == null)
+			essentials = ((Essentials) Bukkit.getPluginManager().getPlugin(
+					"Essentials"));
 		Player p = event.getPlayer();
 		MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p
 				.getUniqueId());
@@ -122,13 +131,18 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			nicknames.remove(deletenick);
 	}
 
-	public static String NotificationSound; // 2015.08.14.
-	public static double NotificationPitch; // 2015.08.14.
+	public static String NotificationSound;
+	public static double NotificationPitch;
 
-	public static boolean ShowRPTag = false; // 2015.08.31.
+	public static boolean ShowRPTag = false;
+
+	private Essentials essentials = null;
 
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
+		if (essentials == null)
+			essentials = ((Essentials) Bukkit.getPluginManager().getPlugin(
+					"Essentials"));
 		if (event.getMessage().equalsIgnoreCase("F")) {
 			MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(event
 					.getPlayer().getUniqueId());
@@ -143,31 +157,32 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		boolean greentext = event.getMessage().startsWith(">");
 		if (event.getMessage().contains("lol"))
 			Commands.Lastlol = MaybeOfflinePlayer.AllPlayers.get(event
-					.getPlayer().getUniqueId()); //TODO: Formatting after nicknames
+					.getPlayer().getUniqueId());
 
 		MaybeOfflinePlayer player = MaybeOfflinePlayer.AllPlayers.get(event
 				.getPlayer().getUniqueId());
-		String flair = player.GetFormattedFlair();
 		String message = event.getMessage(); // 2015.08.08.
 		for (Player p : PluginMain.GetPlayers()) { // 2015.08.12.
 			String color = ""; // 2015.08.17.
-			if (message.contains(p.getName())) {
+			if (message.matches("(?i).*" + Pattern.quote(p.getName()) + ".*")) {
 				if (NotificationSound == null)
 					p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f, 0.5f); // 2015.08.12.
 				else
 					p.playSound(p.getLocation(), NotificationSound, 1.0f,
 							(float) NotificationPitch); // 2015.08.14.
 				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p
-						.getUniqueId()); // 2015.08.17.
+						.getUniqueId());
 				color = String.format("§%x", (mp.GetFlairColor() == 0x00 ? 0xb
 						: mp.GetFlairColor())); // TODO: Quiz queue
 			}
 
-			message = message.replaceAll("(?i)" + Pattern.quote(p.getName()),
+			message = message.replaceAll(
+					"(?i)" + Pattern.quote(p.getName()),
 					color
 							+ p.getName()
-							+ (event.getMessage().startsWith("§2>") ? "§2"
-									: "§r"));
+							+ (greentext ? "§2"
+									: player.CurrentChannel.DisplayName
+											.substring(0, 2)));
 		}
 		for (String n : nicknames.keySet()) {
 			Player p = null;
@@ -183,7 +198,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			while ((index = nwithoutformatting.indexOf('§')) != -1)
 				nwithoutformatting = nwithoutformatting.replace("§"
 						+ nwithoutformatting.charAt(index + 1), "");
-			if (message.contains(nwithoutformatting)) {
+			if (message.matches("(?i).*" + Pattern.quote(nwithoutformatting)
+					+ ".*")) {
 				p = Bukkit.getPlayer(nicknames.get(n));
 				if (NotificationSound == null)
 					p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f, 0.5f); // 2015.08.12.
@@ -194,27 +210,28 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			}
 			if (p != null) {
 				message = message.replaceAll(
-						"(?i)" + Pattern.quote(nwithoutformatting), n
-								+ (event.getMessage().startsWith("§2>") ? "§2"
-										: "§r"));
+						"(?i)" + Pattern.quote(nwithoutformatting),
+						n
+								+ (greentext ? "§2"
+										: player.CurrentChannel.DisplayName
+												.substring(0, 2)));
 			}
 		}
 
-		event.setMessage(message); // 2015.09.05.
+		event.setMessage(message);
 
-		event.setFormat(event
-				.getFormat()
-				.replace(
-						"{rptag}",
-						(player.RPMode ? (ShowRPTag ? "§2[RP]§r" : "")
-								: "§8[OOC]§r"))
-				.replace("{buttonflair}", flair)
-				.replace(
-						"{isitwilds}",
-						(event.getPlayer().getWorld().getName()
-								.equalsIgnoreCase("wilds") ? "[PVP]" : ""))); // 2015.09.04.
+		/*
+		 * event.setFormat(event .getFormat() .replace( "{rptag}",
+		 * (player.RPMode ? (ShowRPTag ? "§2[RP]§r" : "") : "§8[OOC]§r"))
+		 * .replace("{buttonflair}", flair) .replace( "{isitwilds}",
+		 * (event.getPlayer().getWorld().getName() .equalsIgnoreCase("wilds") ?
+		 * "[PVP]" : ""))); // 2015.09.04.
+		 */
 
 		event.setCancelled(true);
+		if (essentials.getUser(event.getPlayer()).isMuted())
+			return;
+
 		StringBuilder json = new StringBuilder();
 		json.append("[\"\",");
 		json.append(String.format("{\"text\":\"[%s]%s <\"},",
@@ -249,7 +266,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			String original = event.getMessage().substring(index + 1, index2);
 			list.add(original);
 		}
-		String finalstring = event.getMessage().replace('"', '\'');
+		String finalstring = event.getMessage().replace("\"", "''");
 		for (String original : list)
 			// Hashtags
 			finalstring = finalstring
@@ -260,10 +277,31 @@ public class PlayerListener implements Listener { // 2015.07.16.
 									(greentext ? "dark_green"
 											: player.CurrentChannel.Color),
 									original, original));
+
+		String[] parts = finalstring.split("\\s+");
+
+		// URLs
+		for (String item : parts)
+			try {
+				URL url = new URL(item);
+				finalstring = finalstring
+						.replace(
+								item,
+								String.format(
+										"\",\"color\":\"%s\"},{\"text\":\"%s\",\"color\":\"%s\",\"underlined\":\"true\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open URL\",\"color\":\"blue\"}]}}},{\"text\":\"",
+										(greentext ? "dark_green"
+												: player.CurrentChannel.Color),
+										url, (greentext ? "dark_green"
+												: player.CurrentChannel.Color),
+										url));
+			} catch (MalformedURLException e) {
+			}
+
 		json.append(String.format("{\"text\":\"%s\",\"color\":\"%s\"}]",
 				finalstring, (greentext ? "dark_green"
 						: player.CurrentChannel.Color)));
-		if (!player.CurrentChannel.equals(Channel.GlobalChat))
+		if (player.CurrentChannel.equals(Channel.TownChat)
+				|| player.CurrentChannel.equals(Channel.NationChat))
 			// for (Resident resident :
 			// PluginMain.Instance.TU.getResidentMap().values()) {
 			for (Player p : PluginMain.GetPlayers()) {
@@ -305,7 +343,9 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				Objective obj = PluginMain.SB.getObjective("town");
 				// System.out.println("obj: " + obj);
 				for (Player p : PluginMain.GetPlayers()) {
-					//System.out.println(town.getName());
+					// System.out.println(town.getName()); //Mute fixed,
+					// re-enabled /minecraft:me except when muted, admin and mod
+					// channel added, links implemented
 					try {
 						if (PluginMain.Instance.TU.getResidentMap()
 								.get(p.getName().toLowerCase()).getTown()
@@ -397,6 +437,72 @@ public class PlayerListener implements Listener { // 2015.07.16.
 								"§cAn error occured while sending the message. (IllegalArgumentException)");
 				return;
 			}
+		} else if (player.CurrentChannel.equals(Channel.AdminChat)) {
+			try {
+				if (!event.getPlayer().isOp()) {
+					event.getPlayer().sendMessage(
+							"§cYou need to be an OP to use this channel.");
+					return;
+				}
+				Objective obj = PluginMain.SB.getObjective("admin");
+				for (Player p : PluginMain.GetPlayers()) {
+					if (p.isOp())
+						obj.getScore(p.getName()).setScore(1);
+					else
+						obj.getScore(p.getName()).setScore(0);
+				}
+				PluginMain.Instance
+						.getServer()
+						.dispatchCommand(
+								PluginMain.Console,
+								String.format(
+										"tellraw @a[score_admin=%d,score_admin_min=%d] %s",
+										1, 1, json.toString()));
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+				event.getPlayer()
+						.sendMessage(
+								"§cAn error occured while sending the message. (IllegalStateException)");
+				return;
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+				event.getPlayer()
+						.sendMessage(
+								"§cAn error occured while sending the message. (IllegalArgumentException)");
+				return;
+			}
+		} else if (player.CurrentChannel.equals(Channel.ModChat)) {
+			try {
+				if (!PermissionsEx.getUser(event.getPlayer()).inGroup("mod")) {
+					event.getPlayer().sendMessage(
+							"§cYou need to be a mod to use this channel.");
+					return;
+				}
+				Objective obj = PluginMain.SB.getObjective("mod");
+				for (Player p : PluginMain.GetPlayers()) {
+					if (PermissionsEx.getUser(p).inGroup("mod"))
+						obj.getScore(p.getName()).setScore(1);
+					else
+						obj.getScore(p.getName()).setScore(0);
+				}
+				PluginMain.Instance.getServer().dispatchCommand(
+						PluginMain.Console,
+						String.format(
+								"tellraw @a[score_mod=%d,score_mod_min=%d] %s",
+								1, 1, json.toString()));
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+				event.getPlayer()
+						.sendMessage(
+								"§cAn error occured while sending the message. (IllegalStateException)");
+				return;
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+				event.getPlayer()
+						.sendMessage(
+								"§cAn error occured while sending the message. (IllegalArgumentException)");
+				return;
+			}
 		} else
 			PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 					String.format("tellraw @a %s", json.toString()));
@@ -444,6 +550,24 @@ public class PlayerListener implements Listener { // 2015.07.16.
 						"§6You are now talking in: §b"
 								+ mp.CurrentChannel.DisplayName);
 				event.setCancelled(true);
+			} else if (cmd.equalsIgnoreCase(Channel.AdminChat.Command)) {
+				if (mp.CurrentChannel.equals(Channel.AdminChat))
+					mp.CurrentChannel = Channel.GlobalChat;
+				else
+					mp.CurrentChannel = Channel.AdminChat;
+				event.getPlayer().sendMessage(
+						"§6You are now talking in: §b"
+								+ mp.CurrentChannel.DisplayName);
+				event.setCancelled(true);
+			} else if (cmd.equalsIgnoreCase(Channel.ModChat.Command)) {
+				if (mp.CurrentChannel.equals(Channel.ModChat))
+					mp.CurrentChannel = Channel.GlobalChat;
+				else
+					mp.CurrentChannel = Channel.ModChat;
+				event.getPlayer().sendMessage(
+						"§6You are now talking in: §b"
+								+ mp.CurrentChannel.DisplayName);
+				event.setCancelled(true);
 			}
 		} else {
 			String cmd = event.getMessage().substring(1, index);
@@ -466,6 +590,18 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				mp.CurrentChannel = Channel.NationChat;
 				event.getPlayer().chat(event.getMessage().substring(index + 1));
 				mp.CurrentChannel = c;
+			} else if (cmd.equalsIgnoreCase(Channel.AdminChat.Command)) {
+				event.setCancelled(true);
+				Channel c = mp.CurrentChannel;
+				mp.CurrentChannel = Channel.AdminChat;
+				event.getPlayer().chat(event.getMessage().substring(index + 1));
+				mp.CurrentChannel = c;
+			} else if (cmd.equalsIgnoreCase(Channel.ModChat.Command)) {
+				event.setCancelled(true);
+				Channel c = mp.CurrentChannel;
+				mp.CurrentChannel = Channel.ModChat;
+				event.getPlayer().chat(event.getMessage().substring(index + 1));
+				mp.CurrentChannel = c;
 			} else if (cmd.equalsIgnoreCase("tpahere")) {
 				Player player = Bukkit.getPlayer(event.getMessage().substring(
 						index + 1));
@@ -474,6 +610,14 @@ public class PlayerListener implements Listener { // 2015.07.16.
 							+ event.getPlayer().getDisplayName()
 							+ " §bis in this world: "
 							+ event.getPlayer().getWorld().getName());
+			} else if (cmd.equalsIgnoreCase("minecraft:me")) {
+				if (!essentials.getUser(event.getPlayer()).isMuted()) {
+					event.setCancelled(true);
+					String message = event.getMessage().substring(index + 1);
+					for (Player p : PluginMain.GetPlayers())
+						p.sendMessage(String.format("* %s %s", event
+								.getPlayer().getDisplayName(), message));
+				}
 			}
 		}
 	}

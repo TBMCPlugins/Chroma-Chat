@@ -92,6 +92,10 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			SB.registerNewObjective("town", "dummy");
 		if (SB.getObjective("nation") == null)
 			SB.registerNewObjective("nation", "dummy");
+		if (SB.getObjective("admin") == null)
+			SB.registerNewObjective("admin", "dummy");
+		if (SB.getObjective("mod") == null)
+			SB.registerNewObjective("mod", "dummy");
 		TU = ((Towny) Bukkit.getPluginManager().getPlugin("Towny"))
 				.getTownyUniverse();
 		Towns = new ArrayList<Town>(TU.getTownsMap().values());
