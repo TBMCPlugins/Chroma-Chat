@@ -25,6 +25,7 @@ public class MaybeOfflinePlayer {
 	// public int Tables = 10;
 	public Channel CurrentChannel = Channel.GlobalChat;
 	public int FCount;
+	public boolean SendingLink = false;
 
 	public UUID UUID;
 
