@@ -180,7 +180,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 					"(?i)" + Pattern.quote(p.getName()),
 					color
 							+ p.getName()
-							+ (greentext ? "§2"
+							+ (greentext ? "§a"
 									: player.CurrentChannel.DisplayName
 											.substring(0, 2)));
 		}
@@ -212,7 +212,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				message = message.replaceAll(
 						"(?i)" + Pattern.quote(nwithoutformatting),
 						n
-								+ (greentext ? "§2"
+								+ (greentext ? "§a"
 										: player.CurrentChannel.DisplayName
 												.substring(0, 2)));
 			}
@@ -274,7 +274,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 							"#" + original,
 							String.format(
 									"\",\"color\":\"%s\"},{\"text\":\"#%s\",\"color\":\"blue\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://twitter.com/hashtag/%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open on Twitter\",\"color\":\"blue\"}]}}},{\"text\":\"",
-									(greentext ? "dark_green"
+									(greentext ? "green"
 											: player.CurrentChannel.Color),
 									original, original));
 
@@ -289,16 +289,16 @@ public class PlayerListener implements Listener { // 2015.07.16.
 								item,
 								String.format(
 										"\",\"color\":\"%s\"},{\"text\":\"%s\",\"color\":\"%s\",\"underlined\":\"true\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open URL\",\"color\":\"blue\"}]}}},{\"text\":\"",
-										(greentext ? "dark_green"
+										(greentext ? "green"
 												: player.CurrentChannel.Color),
-										url, (greentext ? "dark_green"
+										url, (greentext ? "green"
 												: player.CurrentChannel.Color),
 										url));
 			} catch (MalformedURLException e) {
 			}
 
 		json.append(String.format("{\"text\":\"%s\",\"color\":\"%s\"}]",
-				finalstring, (greentext ? "dark_green"
+				finalstring, (greentext ? "green"
 						: player.CurrentChannel.Color)));
 		if (player.CurrentChannel.equals(Channel.TownChat)
 				|| player.CurrentChannel.equals(Channel.NationChat))
@@ -661,11 +661,13 @@ public class PlayerListener implements Listener { // 2015.07.16.
 	private boolean ActiveF = false;
 	private int FCount = 0;
 	private MaybeOfflinePlayer FPlayer = null;
-
 	private Timer Ftimer;
+	public static int AlphaDeaths;
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
+		if (e.getEntity().getName().equals("Alpha_Bacca44"))
+			AlphaDeaths++;
 		if (!Minigames.plugin.pdata.getMinigamePlayer(e.getEntity())
 				.isInMinigame() && new Random().nextBoolean()) {
 			if (Ftimer != null)
