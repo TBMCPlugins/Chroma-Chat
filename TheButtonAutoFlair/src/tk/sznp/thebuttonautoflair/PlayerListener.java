@@ -201,7 +201,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 					color = String.format(
 							"§%x",
 							(mp.GetFlairColor() == 0x00 ? 0xb : mp
-									.GetFlairColor())); // TODO: Quiz queue
+									.GetFlairColor()));
 				}
 
 				message = message.replaceAll(
