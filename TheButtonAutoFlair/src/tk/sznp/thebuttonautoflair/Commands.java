@@ -32,6 +32,7 @@ import java.util.Timer;
 public class Commands implements CommandExecutor {
 
 	public static MaybeOfflinePlayer Lastlol = null;
+	public static boolean Lastlolornot;
 
 	// This method is called, when somebody uses our command
 	@Override
@@ -201,7 +202,8 @@ public class Commands implements CommandExecutor {
 							PotionEffectType.BLINDNESS, 10 * 20, 5, false,
 							false));
 					for (Player pl : PluginMain.GetPlayers())
-						pl.sendMessage(player.getDisplayName() + " unlolled "
+						pl.sendMessage(player.getDisplayName()
+								+ (Lastlolornot ? " unlolled " : " unlaughed ")
 								+ p.getDisplayName());
 					Lastlol = null;
 				}

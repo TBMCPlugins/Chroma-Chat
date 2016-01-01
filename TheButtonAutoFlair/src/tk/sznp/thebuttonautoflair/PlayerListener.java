@@ -155,9 +155,16 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		}
 
 		boolean greentext = event.getMessage().startsWith(">");
-		if (event.getMessage().contains("lol"))
+		String msg = event.getMessage().toLowerCase();
+		if (msg.contains("lol")) {
 			Commands.Lastlol = MaybeOfflinePlayer.AllPlayers.get(event
 					.getPlayer().getUniqueId());
+			Commands.Lastlolornot = true;
+		} else if (msg.contains("xd") || msg.contains("lel")) {
+			Commands.Lastlol = MaybeOfflinePlayer.AllPlayers.get(event
+					.getPlayer().getUniqueId());
+			Commands.Lastlolornot = false;
+		}
 
 		MaybeOfflinePlayer player = MaybeOfflinePlayer.AllPlayers.get(event
 				.getPlayer().getUniqueId());
