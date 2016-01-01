@@ -111,21 +111,24 @@ public class Commands implements CommandExecutor {
 					break;
 				}
 				case "ignore": {
-					if (p.FlairState.equals(FlairStates.NoComment)) {
-						player.sendMessage("§cError: You need to write your username to the reddit thread at /r/TheButtonMinecraft§r");
-						return true;
-					}
-					if (p.FlairState.equals(FlairStates.Commented)) {
-						player.sendMessage("Sorry, but your flair isn't recorded. Please ask a mod to set it for you.");
-						return true;
-					}
-					if (!p.FlairState.equals(FlairStates.Ignored)) {
-						p.FlairState = FlairStates.Ignored;
-						p.SetFlairTime("");
-						p.UserName = "";
-						player.sendMessage("§bYou have removed your flair. You can still use /u accept to get one.§r");
-					} else
-						player.sendMessage("§cYou already removed your flair.§r");
+					/*
+					 * if (p.FlairState.equals(FlairStates.NoComment)) {
+					 * player.sendMessage(
+					 * "§cError: You need to write your username to the reddit thread at /r/TheButtonMinecraft§r"
+					 * ); return true; } if
+					 * (p.FlairState.equals(FlairStates.Commented)) {
+					 * player.sendMessage(
+					 * "Sorry, but your flair isn't recorded. Please ask a mod to set it for you."
+					 * ); return true; } if
+					 * (!p.FlairState.equals(FlairStates.Ignored)) {
+					 * p.FlairState = FlairStates.Ignored; p.SetFlairTime("");
+					 * p.UserName = ""; player.sendMessage(
+					 * "§bYou have removed your flair. You can still use /u accept to get one.§r"
+					 * ); } else
+					 * player.sendMessage("§cYou already removed your flair.§r"
+					 * );
+					 */
+					player.sendMessage("§cSorry, but ignoring the flair is no longer possible. As with the original Button, you can't undo what already happened.");
 					break;
 				}
 				case "admin": // 2015.08.09.
@@ -365,12 +368,21 @@ public class Commands implements CommandExecutor {
 
 	private static void SetPlayerFlair(Player player,
 			MaybeOfflinePlayer targetplayer, short flaircolor, String flairtime) {
-		targetplayer.SetFlair(flaircolor, flairtime);
-		targetplayer.FlairState = FlairStates.Accepted;
-		targetplayer.UserName = "";
-		SendMessage(player,
-				"§bThe flair has been set. Player: " + targetplayer.PlayerName
-						+ " Flair: " + targetplayer.GetFormattedFlair() + "§r");
+		if (targetplayer.GetFlairColor() == 0x00 || flairtime.length() > 0) {
+			targetplayer.SetFlair(flaircolor, flairtime);
+			targetplayer.FlairState = FlairStates.Accepted;
+			targetplayer.UserName = "";
+			SendMessage(player,
+					"§bThe flair has been set. Player: "
+							+ targetplayer.PlayerName + " Flair: "
+							+ targetplayer.GetFormattedFlair() + "§r");
+		} else {
+			SendMessage(
+					player,
+					"§cSorry, but you can't change an existing flair. (Use -- as time to set non-presser or can't press)");
+			SendMessage(Bukkit.getPlayer(targetplayer.UUID),
+					"§cYour flair cannot be changed.");
+		}
 	}
 
 	private static void DoSetFlair(Player player, String[] args) {
