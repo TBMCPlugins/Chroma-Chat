@@ -112,24 +112,21 @@ public class Commands implements CommandExecutor {
 					break;
 				}
 				case "ignore": {
-					/*
-					 * if (p.FlairState.equals(FlairStates.NoComment)) {
-					 * player.sendMessage(
-					 * "§cError: You need to write your username to the reddit thread at /r/TheButtonMinecraft§r"
-					 * ); return true; } if
-					 * (p.FlairState.equals(FlairStates.Commented)) {
-					 * player.sendMessage(
-					 * "Sorry, but your flair isn't recorded. Please ask a mod to set it for you."
-					 * ); return true; } if
-					 * (!p.FlairState.equals(FlairStates.Ignored)) {
-					 * p.FlairState = FlairStates.Ignored; p.SetFlairTime("");
-					 * p.UserName = ""; player.sendMessage(
-					 * "§bYou have removed your flair. You can still use /u accept to get one.§r"
-					 * ); } else
-					 * player.sendMessage("§cYou already removed your flair.§r"
-					 * );
-					 */
-					player.sendMessage("§cSorry, but ignoring the flair is no longer possible. As with the original Button, you can't undo what already happened.");
+					if (p.FlairState.equals(FlairStates.Accepted)) {
+						player.sendMessage("§cSorry, but ignoring the flair is no longer possible. As with the original Button, you can't undo what already happened.");
+						return true;
+					}
+					if (p.FlairState.equals(FlairStates.Commented)) {
+						player.sendMessage("Sorry, but your flair isn't recorded. Please ask a mod to set it for you.");
+						return true;
+					}
+					if (!p.FlairState.equals(FlairStates.Ignored)) {
+						p.FlairState = FlairStates.Ignored;
+						p.SetFlairTime("");
+						p.UserName = "";
+						player.sendMessage("§bYou have removed your flair. You can still use /u accept to get one.§r");
+					} else
+						player.sendMessage("§cYou already removed your flair.§r");
 					break;
 				}
 				case "admin": // 2015.08.09.
@@ -194,6 +191,7 @@ public class Commands implements CommandExecutor {
 				}
 				return true;
 			}
+			case "unlaugh":
 			case "unlol": {
 				Player p = null;
 				if (Lastlol != null
