@@ -169,7 +169,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		MaybeOfflinePlayer player = MaybeOfflinePlayer.AllPlayers.get(event
 				.getPlayer().getUniqueId());
 		String message = event.getMessage();
-		message = message.replace("\"", "''");
+		message = message.replace("\"", "\\\"");
 
 		// URLs
 		String[] parts = message.split("\\s+");
@@ -272,7 +272,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		json.append(String
 				.format("{\"text\":\"[%s]%s\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Copy message\",\"color\":\"blue\"}},clickEvent:{\"action\":\"suggest_command\",\"value\":\"%s\"}},",
 						player.CurrentChannel.DisplayName,
-						(!player.RPMode ? "[OOC]" : ""), event.getMessage().replace("\"", "''")));
+						(!player.RPMode ? "[OOC]" : ""), event.getMessage().replace("\"", "\\\"")));
 		json.append("{\"text\":\" <\"},");
 		json.append(String.format("{\"text\":\"%s%s\",", event.getPlayer()
 				.getDisplayName(), player.GetFormattedFlair()));
