@@ -12,6 +12,8 @@ commands:
         description: Send message in Out-of-Character
         usage: "&cUsage: /ooc <message>&r"
     unlol:
-        description: Unlol the last lol.
+        description: Unlaugh the last laugh.
+    unlaugh:
+        description: Unlaugh the last laugh.
 author: NorbiPeti
 depend: [Essentials, Towny, Minigames]
