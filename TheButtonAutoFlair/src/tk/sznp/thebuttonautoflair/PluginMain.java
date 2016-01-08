@@ -82,6 +82,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		this.getCommand("ooc").setUsage(
 				this.getCommand("ooc").getUsage().replace('&', '§'));
 		this.getCommand("unlol").setExecutor(comm);
+		this.getCommand("unlaugh").setExecutor(comm);
 		Instance = this; // 2015.08.08.
 		Console = this.getServer().getConsoleSender(); // 2015.08.12.
 		LoadFiles(false); // 2015.08.09.
