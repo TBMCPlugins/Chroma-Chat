@@ -137,6 +137,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 	public static boolean ShowRPTag = false;
 
 	private Essentials essentials = null;
+	private final String[] LaughStrings = new String[] { "xd", "lel", "lawl",
+			"kek" };
 
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
@@ -160,10 +162,15 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			Commands.Lastlol = MaybeOfflinePlayer.AllPlayers.get(event
 					.getPlayer().getUniqueId());
 			Commands.Lastlolornot = true;
-		} else if (msg.contains("xd") || msg.contains("lel")) {
-			Commands.Lastlol = MaybeOfflinePlayer.AllPlayers.get(event
-					.getPlayer().getUniqueId());
-			Commands.Lastlolornot = false;
+		} else {
+			for (int i = 0; i < LaughStrings.length; i++) {
+				if (msg.contains(LaughStrings[i])) {
+					Commands.Lastlol = MaybeOfflinePlayer.AllPlayers.get(event
+							.getPlayer().getUniqueId());
+					Commands.Lastlolornot = false;
+					break;
+				}
+			}
 		}
 
 		MaybeOfflinePlayer player = MaybeOfflinePlayer.AllPlayers.get(event
@@ -272,7 +279,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		json.append(String
 				.format("{\"text\":\"[%s]%s\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Copy message\",\"color\":\"blue\"}},clickEvent:{\"action\":\"suggest_command\",\"value\":\"%s\"}},",
 						player.CurrentChannel.DisplayName,
-						(!player.RPMode ? "[OOC]" : ""), event.getMessage().replace("\"", "\\\"")));
+						(!player.RPMode ? "[OOC]" : ""), event.getMessage()
+								.replace("\"", "\\\"")));
 		json.append("{\"text\":\" <\"},");
 		json.append(String.format("{\"text\":\"%s%s\",", event.getPlayer()
 				.getDisplayName(), player.GetFormattedFlair()));
