@@ -7,6 +7,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -25,6 +26,9 @@ import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
+import com.palmergames.bukkit.towny.object.TownBlock;
+import com.palmergames.bukkit.towny.object.TownyUniverse;
+import com.palmergames.bukkit.towny.object.WorldCoord;
 
 import au.com.mineauz.minigames.MinigamePlayer;
 import au.com.mineauz.minigames.Minigames;
@@ -291,11 +295,13 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				.format("\"color\":\"aqua\"},{\"text\":\"World: %s\n\",\"color\":\"white\"},",
 						event.getPlayer().getWorld().getName()));
 		json.append(String.format(
-				"{\"text\":\"Respect: %s%s\",\"color\":\"white\"}]}}},",
+				"{\"text\":\"Respect: %s%s%s\",\"color\":\"white\"}]}}},",
 				(player.FCount == Integer.MAX_VALUE - 1 ? player.FCount + "+"
 						: player.FCount), (player.UserName != null
 						&& !player.UserName.isEmpty() ? "\nUserName: "
-						+ player.UserName : "")));
+						+ player.UserName : ""), (player.PlayerName
+						.equals("\nAlpha_Bacca44") ? "\nDeaths: " + AlphaDeaths
+						: "")));
 		json.append("{\"text\":\"> \",\"color\":\"white\"},");
 
 		int index = -1;
@@ -544,15 +550,16 @@ public class PlayerListener implements Listener { // 2015.07.16.
 										.getMessage()));
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void PlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		if (event.getMessage().length() < 2)
 			return;
 		int index = event.getMessage().indexOf(" ");
 		MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(event
 				.getPlayer().getUniqueId());
+		String cmd = "";
 		if (index == -1) {
-			String cmd = event.getMessage().substring(1);
+			cmd = event.getMessage().substring(1);
 			// System.out.println("cmd: " + cmd);
 			if (cmd.equalsIgnoreCase(Channel.GlobalChat.Command)) {
 				mp.CurrentChannel = Channel.GlobalChat;
@@ -598,7 +605,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				event.setCancelled(true);
 			}
 		} else {
-			String cmd = event.getMessage().substring(1, index);
+			cmd = event.getMessage().substring(1, index);
 			// System.out.println("cmd: " + cmd);
 			if (cmd.equalsIgnoreCase(Channel.GlobalChat.Command)) {
 				event.setCancelled(true);
@@ -646,6 +653,35 @@ public class PlayerListener implements Listener { // 2015.07.16.
 						p.sendMessage(String.format("* %s %s", event
 								.getPlayer().getDisplayName(), message));
 				}
+			}
+		}
+		if (cmd.equalsIgnoreCase("sethome")) {
+			TownyUniverse tu = PluginMain.Instance.TU;
+			try {
+				TownBlock tb = WorldCoord.parseWorldCoord(event.getPlayer())
+						.getTownBlock();
+				if (tb.hasTown()) {
+					Town town = tb.getTown();
+					if (town.hasNation()) {
+						Resident res = tu.getResidentMap().get(
+								event.getPlayer().getName());
+						if (res.hasTown()) {
+							Town town2 = res.getTown();
+							if (town2.hasNation()) {
+								if (town.getNation().getEnemies()
+										.contains(town2.getNation())) {
+									event.getPlayer()
+											.sendMessage(
+													"§cYou cannot set homes in enemy territory.");
+									event.setCancelled(true);
+									return;
+								}
+							}
+						}
+					}
+				}
+			} catch (NotRegisteredException e) {
+				return;
 			}
 		}
 	}
