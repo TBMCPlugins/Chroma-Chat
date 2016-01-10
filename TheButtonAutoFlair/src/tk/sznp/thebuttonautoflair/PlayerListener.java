@@ -471,7 +471,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				return;
 			}
 		} else if (player.CurrentChannel.equals(Channel.AdminChat)) {
-			try {
+			try { // TODO: Put message JSON into it's structure
 				if (!event.getPlayer().isOp()) {
 					event.getPlayer().sendMessage(
 							"§cYou need to be an OP to use this channel.");
@@ -665,7 +665,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 					if (town.hasNation()) {
 						Resident res = tu.getResidentMap().get(
 								event.getPlayer().getName());
-						if (res.hasTown()) {
+						if (res != null && res.hasTown()) {
 							Town town2 = res.getTown();
 							if (town2.hasNation()) {
 								if (town.getNation().getEnemies()
