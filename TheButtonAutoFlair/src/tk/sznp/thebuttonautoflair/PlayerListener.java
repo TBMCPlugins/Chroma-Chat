@@ -29,6 +29,8 @@ import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
 import com.palmergames.bukkit.towny.object.WorldCoord;
+import com.vexsoftware.votifier.model.Vote;
+import com.vexsoftware.votifier.model.VotifierEvent;
 
 import au.com.mineauz.minigames.MinigamePlayer;
 import au.com.mineauz.minigames.Minigames;
@@ -149,6 +151,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		if (essentials == null)
 			essentials = ((Essentials) Bukkit.getPluginManager().getPlugin(
 					"Essentials"));
+		if (event.isCancelled()) // TODO: Change FactionChat to /tellraw
+			return;
 		if (event.getMessage().equalsIgnoreCase("F")) {
 			MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(event
 					.getPlayer().getUniqueId());
@@ -181,6 +185,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				.getPlayer().getUniqueId());
 		String message = event.getMessage();
 		message = message.replace("\"", "\\\"");
+		message = message.replace("\\", "\\\\");
 
 		// URLs
 		String[] parts = message.split("\\s+");
@@ -665,7 +670,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 					if (town.hasNation()) {
 						Resident res = tu.getResidentMap().get(
 								event.getPlayer().getName());
-						if (res != null && res.hasTown()) {
+						if (res != null && res.hasTown()) { // TODO: Fix
 							Town town2 = res.getTown();
 							if (town2.hasNation()) {
 								if (town.getNation().getEnemies()
@@ -804,5 +809,18 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		// System.out.println("G");
 		e.setCancelled(true);
 		// System.out.println("H");
+	}
+
+	@SuppressWarnings("deprecation")
+	@EventHandler
+	public void onVotifierEvent(VotifierEvent event) {
+		Vote vote = event.getVote();
+		System.out.println("Vote: " + vote);
+		org.bukkit.OfflinePlayer op = Bukkit.getOfflinePlayer(vote
+				.getUsername());
+		if (op != null) {
+			PluginMain.economy.depositPlayer(op, 50.0);
+		}
+
 	}
 }

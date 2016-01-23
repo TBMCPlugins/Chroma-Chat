@@ -16,4 +16,4 @@ commands:
     unlaugh:
         description: Unlaugh the last laugh.
 author: NorbiPeti
-depend: [Essentials, Towny, Minigames]
+depend: [Essentials, Towny, Minigames, Votifier]

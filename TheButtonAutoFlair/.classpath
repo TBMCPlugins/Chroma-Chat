@@ -24,5 +24,7 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="D:/Downloads/htmlcleaner-2.16/htmlcleaner-2.16.jar"/>
 	<classpathentry kind="lib" path="D:/Z - Norbi cucca/0 Projektek/TheButtonMCAutoFlairProto/Spigot server/plugins/_/PermissionsEx-1.23.3.jar"/>
+	<classpathentry kind="lib" path="D:/Z - Norbi cucca/0 Projektek/TheButtonMCAutoFlairProto/Spigot server/plugins/_/votifier-1.9.jar"/>
+	<classpathentry kind="lib" path="D:/Z - Norbi cucca/0 Projektek/TheButtonMCAutoFlairProto/Spigot server/plugins/Vault.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
