@@ -1,11 +1,16 @@
 package tk.sznp.thebuttonautoflair;
 
+import net.milkbowl.vault.chat.Chat;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
+
 import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.htmlcleaner.HtmlCleaner;
@@ -101,6 +106,10 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 				.getTownyUniverse();
 		Towns = new ArrayList<Town>(TU.getTownsMap().values());
 		Nations = new ArrayList<Nation>(TU.getNationsMap().values());
+
+		setupChat();
+		setupEconomy();
+		setupPermissions();
 
 		Runnable r = new Runnable() {
 			public void run() {
@@ -381,5 +390,41 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			throw new IOException("Error adding " + url
 					+ " to system classloader");
 		}
+	}
+
+	public static Permission permission = null;
+	public static Economy economy = null;
+	public static Chat chat = null;
+
+	private boolean setupPermissions() {
+		RegisteredServiceProvider<Permission> permissionProvider = getServer()
+				.getServicesManager().getRegistration(
+						net.milkbowl.vault.permission.Permission.class);
+		if (permissionProvider != null) {
+			permission = permissionProvider.getProvider();
+		}
+		return (permission != null);
+	}
+
+	private boolean setupChat() {
+		RegisteredServiceProvider<Chat> chatProvider = getServer()
+				.getServicesManager().getRegistration(
+						net.milkbowl.vault.chat.Chat.class);
+		if (chatProvider != null) {
+			chat = chatProvider.getProvider();
+		}
+
+		return (chat != null);
+	}
+
+	private boolean setupEconomy() {
+		RegisteredServiceProvider<Economy> economyProvider = getServer()
+				.getServicesManager().getRegistration(
+						net.milkbowl.vault.economy.Economy.class);
+		if (economyProvider != null) {
+			economy = economyProvider.getProvider();
+		}
+
+		return (economy != null);
 	}
 }
