@@ -144,7 +144,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 	private Essentials essentials = null;
 	private final String[] LaughStrings = new String[] { "xd", "lel", "lawl",
-			"kek" };
+			"kek", "lmao" };
 
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
@@ -808,7 +808,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 					Bukkit.getPlayer(meta.getLore().get(0)));
 		e.getItem().remove();
 		// System.out.println("G");
-		e.setCancelled(true); // TODO: /tableflip /unflip with spawm detection
+		e.setCancelled(true); // TODO: /tableflip /unflip with spam detection
 		// System.out.println("H");
 	}
 
