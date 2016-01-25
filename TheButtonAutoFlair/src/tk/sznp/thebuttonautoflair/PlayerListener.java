@@ -345,7 +345,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			for (Player p : PluginMain.GetPlayers()) {
 				try {
 					Resident resident = PluginMain.Instance.TU.getResidentMap()
-							.get(p.getName());
+							.get(p.getName().toLowerCase());
 					if (!resident.getName().equals(event.getPlayer().getName())
 							&& resident.getModes().contains("spy"))
 						Bukkit.getPlayer(resident.getName()).sendMessage(
@@ -354,6 +354,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 										event.getPlayer().getDisplayName(),
 										event.getMessage()));
 				} catch (Exception e) {
+					// e.printStackTrace();
 				}
 			}
 		if (player.CurrentChannel.equals(Channel.TownChat)) {
@@ -807,12 +808,12 @@ public class PlayerListener implements Listener { // 2015.07.16.
 					Bukkit.getPlayer(meta.getLore().get(0)));
 		e.getItem().remove();
 		// System.out.println("G");
-		e.setCancelled(true);
+		e.setCancelled(true); // TODO: /tableflip /unflip with spawm detection
 		// System.out.println("H");
 	}
 
-	@SuppressWarnings("deprecation")
 	@EventHandler
+	@SuppressWarnings("deprecation")
 	public void onVotifierEvent(VotifierEvent event) {
 		Vote vote = event.getVote();
 		System.out.println("Vote: " + vote);
