@@ -152,7 +152,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 	private Essentials essentials = null;
 	private final String[] LaughStrings = new String[] { "xd", "lel", "lawl",
-			"kek", "lmao" };
+			"kek", "lmao", "hue", "hah" };
 
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
