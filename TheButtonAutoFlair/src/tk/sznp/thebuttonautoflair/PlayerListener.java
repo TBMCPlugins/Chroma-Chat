@@ -59,14 +59,22 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		if (essentials == null)
 			essentials = ((Essentials) Bukkit.getPluginManager().getPlugin(
 					"Essentials"));
-		Player p = event.getPlayer();
+		final Player p = event.getPlayer();
 		MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p
 				.getUniqueId());
-		mp.PlayerName = p.getName(); // 2015.10.17. 0:58
-		if (!mp.FlairState.equals(FlairStates.NoComment))
-			// if (false)
-			PluginMain.ConfirmUserMessage(mp); // 2015.08.09.
-		else { // 2015.07.20.
+		mp.PlayerName = p.getName();
+		if (!mp.FlairState.equals(FlairStates.NoComment)) {
+			PluginMain.ConfirmUserMessage(mp);
+			Timer timer = new Timer();
+			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
+				@Override
+				public void run() {
+					p.setPlayerListName(p.getName() + mp.GetFormattedFlair());
+				}
+			};
+			tt.mp = mp;
+			timer.schedule(tt, 1000);
+		} else {
 			Timer timer = new Timer();
 			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
 				@Override
@@ -183,17 +191,24 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 		MaybeOfflinePlayer player = MaybeOfflinePlayer.AllPlayers.get(event
 				.getPlayer().getUniqueId());
-		String message = event.getMessage();
-		message = message.replace("\"", "\\\"");
-		message = message.replace("\\", "\\\\");
+		String formattedmessage = event.getMessage();
+		formattedmessage = formattedmessage.replace("\\", "\\\\"); // It's
+																	// really
+																	// important
+																	// to escape
+																	// the
+																	// slashes
+																	// first
+		formattedmessage = formattedmessage.replace("\"", "\\\"");
+		String suggestmsg = formattedmessage;
 
 		// URLs
-		String[] parts = message.split("\\s+");
+		String[] parts = formattedmessage.split("\\s+");
 		boolean hadurls = false;
 		for (String item : parts)
 			try {
 				URL url = new URL(item);
-				message = message
+				formattedmessage = formattedmessage
 						.replace(
 								item,
 								String.format(
@@ -211,8 +226,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		if (!hadurls) {
 			for (Player p : PluginMain.GetPlayers()) { // 2015.08.12.
 				String color = ""; // 2015.08.17.
-				if (message.matches("(?i).*" + Pattern.quote(p.getName())
-						+ ".*")) {
+				if (formattedmessage.matches("(?i).*"
+						+ Pattern.quote(p.getName()) + ".*")) {
 					if (NotificationSound == null)
 						p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f,
 								0.5f); // 2015.08.12.
@@ -227,7 +242,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 									.GetFlairColor()));
 				}
 
-				message = message.replaceAll(
+				formattedmessage = formattedmessage.replaceAll(
 						"(?i)" + Pattern.quote(p.getName()),
 						color
 								+ p.getName()
@@ -249,7 +264,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				while ((index = nwithoutformatting.indexOf('§')) != -1)
 					nwithoutformatting = nwithoutformatting.replace("§"
 							+ nwithoutformatting.charAt(index + 1), "");
-				if (message.matches("(?i).*"
+				if (formattedmessage.matches("(?i).*"
 						+ Pattern.quote(nwithoutformatting) + ".*")) {
 					p = Bukkit.getPlayer(nicknames.get(n));
 					if (NotificationSound == null)
@@ -261,7 +276,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 					MaybeOfflinePlayer.AddPlayerIfNeeded(p.getUniqueId()); // 2015.08.17.
 				}
 				if (p != null) {
-					message = message.replaceAll(
+					formattedmessage = formattedmessage.replaceAll(
 							"(?i)" + Pattern.quote(nwithoutformatting),
 							n
 									+ (greentext ? "§a"
@@ -288,8 +303,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		json.append(String
 				.format("{\"text\":\"[%s]%s\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Copy message\",\"color\":\"blue\"}},clickEvent:{\"action\":\"suggest_command\",\"value\":\"%s\"}},",
 						player.CurrentChannel.DisplayName,
-						(!player.RPMode ? "[OOC]" : ""), event.getMessage()
-								.replace("\"", "\\\"")));
+						(!player.RPMode ? "[OOC]" : ""), suggestmsg));
 		json.append("{\"text\":\" <\"},");
 		json.append(String.format("{\"text\":\"%s%s\",", event.getPlayer()
 				.getDisplayName(), player.GetFormattedFlair()));
@@ -326,7 +340,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		if (!hadurls) {
 			for (String original : list)
 				// Hashtags
-				message = message
+				formattedmessage = formattedmessage
 						.replace(
 								"#" + original,
 								String.format(
@@ -337,7 +351,9 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		}
 
 		json.append(String.format("{\"text\":\"%s\",\"color\":\"%s\"}]",
-				message, (greentext ? "green" : player.CurrentChannel.Color)));
+				formattedmessage, (greentext ? "green"
+						: player.CurrentChannel.Color)));
+		//System.out.println(formattedmessage); // TO!DO: TMP
 		if (player.CurrentChannel.equals(Channel.TownChat)
 				|| player.CurrentChannel.equals(Channel.NationChat))
 			// for (Resident resident :
@@ -545,6 +561,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		} else
 			PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 					String.format("tellraw @a %s", json.toString()));
+		//System.out.println("JSON: " + json); // TO!DO: TMP
 		PluginMain.Instance
 				.getServer()
 				.getConsoleSender()
@@ -671,7 +688,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 					if (town.hasNation()) {
 						Resident res = tu.getResidentMap().get(
 								event.getPlayer().getName());
-						if (res != null && res.hasTown()) { // TODO: Fix
+						if (res != null && res.hasTown()) {
 							Town town2 = res.getTown();
 							if (town2.hasNation()) {
 								if (town.getNation().getEnemies()
