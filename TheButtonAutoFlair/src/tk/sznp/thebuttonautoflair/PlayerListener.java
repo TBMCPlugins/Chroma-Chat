@@ -469,6 +469,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 								.get(p.getName().toLowerCase()).getTown()
 								.getNation().getName().equals(nation.getName()))
 							obj.getScore(p.getName()).setScore(index);
+						else
+							obj.getScore(p.getName()).setScore(-1);
 					} catch (Exception e) {
 					}
 				}
