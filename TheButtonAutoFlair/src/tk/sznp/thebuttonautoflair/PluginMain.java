@@ -43,6 +43,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	public static PluginMain Instance;
 	public static ConsoleCommandSender Console; // 2015.08.12.
 	public static Scoreboard SB;
+	public final static String FlairThreadURL = "https://www.reddit.com/r/TheButtonMinecraft/comments/433ptk/autoflair_thread/";
 	public TownyUniverse TU;
 	public ArrayList<Town> Towns;
 	public ArrayList<Nation> Nations;
@@ -139,7 +140,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	private void ThreadMethod() {
 		while (!stop) {
 			try {
-				String body = DownloadString("https://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/autoflair_system_comment_your_minecraft_name_and/.json?limit=1000");
+				String body = DownloadString(FlairThreadURL
+						+ ".json?limit=1000");
 				JSONArray json = new JSONArray(body).getJSONObject(1)
 						.getJSONObject("data").getJSONArray("children");
 				for (Object obj : json) {
