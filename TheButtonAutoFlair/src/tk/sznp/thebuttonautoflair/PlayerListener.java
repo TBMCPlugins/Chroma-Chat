@@ -80,7 +80,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				@Override
 				public void run() {
 					if (mp.FlairState.equals(FlairStates.NoComment)) {
-						String json = "[\"\",{\"text\":\"If you'd like your /r/TheButton flair displayed ingame, write your Minecraft name to \",\"color\":\"aqua\"},{\"text\":\"[this thread].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]";
+						String json = String.format("[\"\",{\"text\":\"If you'd like your /r/TheButton flair displayed ingame, write your Minecraft name to \",\"color\":\"aqua\"},{\"text\":\"[this thread].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]", PluginMain.FlairThreadURL);
 						PluginMain.Instance.getServer().dispatchCommand(
 								PluginMain.Console,
 								"tellraw " + mp.PlayerName + " " + json);
@@ -353,7 +353,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		json.append(String.format("{\"text\":\"%s\",\"color\":\"%s\"}]",
 				formattedmessage, (greentext ? "green"
 						: player.CurrentChannel.Color)));
-		//System.out.println(formattedmessage); // TO!DO: TMP
+		// System.out.println(formattedmessage); // TO!DO: TMP
 		if (player.CurrentChannel.equals(Channel.TownChat)
 				|| player.CurrentChannel.equals(Channel.NationChat))
 			// for (Resident resident :
@@ -561,7 +561,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		} else
 			PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 					String.format("tellraw @a %s", json.toString()));
-		//System.out.println("JSON: " + json); // TO!DO: TMP
+		// System.out.println("JSON: " + json); // TO!DO: TMP
 		PluginMain.Instance
 				.getServer()
 				.getConsoleSender()
