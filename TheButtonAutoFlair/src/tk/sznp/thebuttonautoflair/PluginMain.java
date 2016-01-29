@@ -18,6 +18,8 @@ import org.htmlcleaner.TagNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import au.com.mineauz.minigames.mechanics.GameMechanics;
+
 import com.palmergames.bukkit.towny.Towny;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
@@ -111,6 +113,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		setupChat();
 		setupEconomy();
 		setupPermissions();
+
+		GameMechanics.addGameMechanic(new CreativeGlobalMechanic());
 
 		Runnable r = new Runnable() {
 			public void run() {
