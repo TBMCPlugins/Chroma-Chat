@@ -37,8 +37,7 @@ public class CreativeGlobalMechanic extends GameMechanicBase {
 
 	@Override
 	public void joinMinigame(Minigame mg, MinigamePlayer mp) {
-		mp.getPlayer().setAllowFlight(true);
-		mp.getPlayer().setFlying(true);
+		mp.setCanFly(true);
 		mp.setAllowTeleport(true);
 	}
 
@@ -69,6 +68,7 @@ public class CreativeGlobalMechanic extends GameMechanicBase {
 			final List<MinigamePlayer> players = event.getPlayers();
 			//final Minigame minigame = event.getMinigame();
 			for (MinigamePlayer player : players) {
+				player.setCanFly(true);
 				player.setAllowTeleport(true);
 			}
 		}
