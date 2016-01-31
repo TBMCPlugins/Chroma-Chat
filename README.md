@@ -4,7 +4,7 @@ It can download player flairs for /r/TheButtonMinecraft and do other cool things
 ## How to use
 ### Players
 #### Obtaining the flair
-At first, you need to "connect" your Reddit account with your Minecraft account. This is done by writing your Minecraft name to [this thread](https://www.reddit.com/r/TheButtonMinecraft/comments/3d25do/autoflair_system_comment_your_minecraft_name_and/), following the instructions in the post.
+At first, you need to "connect" your Reddit account with your Minecraft account. This is done by writing your Minecraft name to [this thread](https://www.reddit.com/r/TheButtonMinecraft/comments/433ptk/autoflair_thread/), following the instructions in the post.
 
 When you're done, connect to the server, if you aren't already on. You should see a message after a while (max. 10 seconds) asking if you're the correct Reddit user. Type /u accept to confirm it and accept your flair.
 
@@ -39,13 +39,12 @@ You can use /ooc <message> to say something Out-of-Character. Otherwise everythi
 Start your message with '>' to make it green.
 
 #### Hashtags (#BlameFigy)
-If you say a hashtag in global chat, it'll highlight it and list the hashtag(s) used above your message, in a clickable form. So if you say "asd #dsa #fgh hgf", it will display it like this:
-
-    Hashtags: #dsa #fgh
-    [g] <PlayerName(flair)> asd #dsa #fgh hgf
+If you say a hashtag in global chat, it'll highlight it and makes it clickable.
 
 #### Paying respects (F)
 If a player dies, sometimes the plugin will tell everyone "Press F to pay respects.". After a few seconds, a message will tell everyone how many people paid their respects.
+
+If you hover over a player's name in chat, you can see how much respect they gained this way.
 
 ### Admins
 Type /u admin for a list of the commands.
@@ -98,7 +97,7 @@ This command will not do any other thing than downloading the JAR file from here
 This is used in my "Invisible Parkour" as a checkpoint system, using anywhere else is not recommended.
 
 #### Setting the sound played on name mentioning
-You can set the sound played by editing "notificationsound" and "notificationpitch" the config file (thebuttonmc.yml).
+You can set the sound played by editing "notificationsound" and "notificationpitch" in the config file (thebuttonmc.yml).
 
 #### Announcements (/u announce)
 You can make announcements broadcasted every n minutes where you can set n and it defaults to 15.
