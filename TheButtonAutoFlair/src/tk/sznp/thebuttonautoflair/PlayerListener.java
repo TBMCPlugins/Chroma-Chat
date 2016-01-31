@@ -80,7 +80,9 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				@Override
 				public void run() {
 					if (mp.FlairState.equals(FlairStates.NoComment)) {
-						String json = String.format("[\"\",{\"text\":\"If you'd like your /r/TheButton flair displayed ingame, write your Minecraft name to \",\"color\":\"aqua\"},{\"text\":\"[this thread].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]", PluginMain.FlairThreadURL);
+						String json = String
+								.format("[\"\",{\"text\":\"If you'd like your /r/TheButton flair displayed ingame, write your Minecraft name to \",\"color\":\"aqua\"},{\"text\":\"[this thread].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
+										PluginMain.FlairThreadURL);
 						PluginMain.Instance.getServer().dispatchCommand(
 								PluginMain.Console,
 								"tellraw " + mp.PlayerName + " " + json);
@@ -707,6 +709,14 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				}
 			} catch (NotRegisteredException e) {
 				return;
+			}
+		} else if (cmd.equalsIgnoreCase("home") || cmd.equalsIgnoreCase("tpa") || cmd.equalsIgnoreCase("tp")) {
+			MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(event
+					.getPlayer());
+			if (mgp.isInMinigame()
+					&& mgp.getMinigame().getMechanic().getMechanic()
+							.equals("creativeglobal")) {
+				mgp.setAllowTeleport(true);
 			}
 		}
 	}

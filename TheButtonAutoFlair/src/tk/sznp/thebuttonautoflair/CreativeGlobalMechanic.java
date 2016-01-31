@@ -66,7 +66,7 @@ public class CreativeGlobalMechanic extends GameMechanicBase {
 	private void minigameStart(StartMinigameEvent event) {
 		if (event.getMinigame().getMechanicName().equals(getMechanic())) {
 			final List<MinigamePlayer> players = event.getPlayers();
-			//final Minigame minigame = event.getMinigame();
+			// final Minigame minigame = event.getMinigame();
 			for (MinigamePlayer player : players) {
 				player.setCanFly(true);
 				player.setAllowTeleport(true);
