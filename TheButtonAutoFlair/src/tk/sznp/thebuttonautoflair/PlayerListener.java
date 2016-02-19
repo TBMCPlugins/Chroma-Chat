@@ -16,8 +16,11 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.help.HelpTopic;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Objective;
 
 import ru.tehkode.permissions.bukkit.PermissionsEx;
@@ -710,13 +713,42 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			} catch (NotRegisteredException e) {
 				return;
 			}
-		} else if (cmd.equalsIgnoreCase("home") || cmd.equalsIgnoreCase("tpa") || cmd.equalsIgnoreCase("tp")) {
+		} else if (cmd.equalsIgnoreCase("home") || cmd.equalsIgnoreCase("tpa")
+				|| cmd.equalsIgnoreCase("tp")) {
 			MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(event
 					.getPlayer());
 			if (mgp.isInMinigame()
 					&& mgp.getMinigame().getMechanic().getMechanic()
 							.equals("creativeglobal")) {
 				mgp.setAllowTeleport(true);
+			}
+		} else if (cmd.toLowerCase().startsWith("un")) {
+			for (HelpTopic ht : PluginMain.Instance.getServer().getHelpMap()
+					.getHelpTopics()) {
+				// event.getPlayer().sendMessage("HT: " + ht.getName());
+				if (ht.getName().equalsIgnoreCase("/" + cmd))
+					return;
+			}
+			if (PluginMain.permission.has(event.getPlayer(), "tbmc.admin")) {
+				String s = cmd.substring(2);
+				Player target = null;
+				target = Bukkit.getPlayer(event.getMessage().substring(
+						index + 1));
+				if (target == null) {
+					event.getPlayer().sendMessage(
+							"§cError: Player not found. (/un" + s
+									+ " <player>)");
+					event.setCancelled(true);
+				}
+				if (target != null) {
+					target.addPotionEffect(new PotionEffect(
+							PotionEffectType.BLINDNESS, 10 * 20, 5, false,
+							false));
+					for (Player pl : PluginMain.GetPlayers())
+						pl.sendMessage(event.getPlayer().getDisplayName()
+								+ " un" + s + "'d " + target.getDisplayName());
+					event.setCancelled(true);
+				}
 			}
 		}
 	}

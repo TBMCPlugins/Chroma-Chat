@@ -15,5 +15,11 @@ commands:
         description: Unlaugh the last laugh.
     unlaugh:
         description: Unlaugh the last laugh.
+    mwiki:
+        description: Search the wiki.
+        usage: "&vUsage: /mwiki [query]&r"
 author: NorbiPeti
 depend: [Essentials, Towny, Minigames, Votifier]
+permissions:
+  tbmc.admin:
+    description: Gives access to /un- commands and /u admin commands
