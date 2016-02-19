@@ -213,6 +213,9 @@ public class Commands implements CommandExecutor {
 					p.sendMessage("§b* " + p.getDisplayName() + " YEEHAWs.");
 				}
 			}
+			case "mwiki": {
+				DoMWiki(player, args);
+			}
 			default:
 				player.sendMessage("Unknown command: " + cmd.getName());
 				break;
@@ -259,9 +262,8 @@ public class Commands implements CommandExecutor {
 
 	private static String DoAdminUsage = "§cUsage: /u admin reload|playerinfo|getlasterror|save|setflair|updateplugin|togglerpshow|toggledebug|savepos|loadpos§r";
 
-	private static void DoAdmin(Player player, String[] args) { // 2015.08.09.
-		if (player == null || player.isOp()
-				|| player.getName().equals("NorbiPeti")) {
+	private static void DoAdmin(Player player, String[] args) {
+		if (player == null || PluginMain.permission.has(player, "tbmc.admin")) {
 			if (args.length == 1) {
 				String message = DoAdminUsage;
 				SendMessage(player, message);
@@ -322,7 +324,7 @@ public class Commands implements CommandExecutor {
 				return;
 			}
 		} else
-			player.sendMessage("§cYou need to be OP to use this command.§r");
+			player.sendMessage("§cYou don't have permission to use this command.§r");
 	}
 
 	private static void DoPlayerInfo(Player player, String[] args) { // 2015.08.09.
@@ -619,5 +621,19 @@ public class Commands implements CommandExecutor {
 					}, 20);
 		} catch (MobException e) {
 		}
+	}
+
+	private static void DoMWiki(Player player, String[] args) {
+		String query = "";
+		for (int i = 0; i < args.length; i++)
+			query += args[i];
+		query = query.trim();
+		if (args.length == 0)
+			SendMessage(player,
+					"§bMinecraft Wiki link: http://minecraft.gamepedia.com/");
+		else
+			SendMessage(player,
+					"§bMinecraft Wiki link: http://minecraft.gamepedia.com/index.php?search="
+							+ query + "&title=Special%3ASearch&go=Go");
 	}
 }
