@@ -790,7 +790,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 	}
 
 	private boolean ActiveF = false;
-	private int FCount = 0;
+	private int FCount = 0; // TODO: Change to rate
 	private MaybeOfflinePlayer FPlayer = null;
 	private Timer Ftimer;
 	public static int AlphaDeaths;
@@ -799,8 +799,9 @@ public class PlayerListener implements Listener { // 2015.07.16.
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		if (e.getEntity().getName().equals("Alpha_Bacca44"))
 			AlphaDeaths++;
-		if (!Minigames.plugin.pdata.getMinigamePlayer(e.getEntity())
-				.isInMinigame() && new Random().nextBoolean()) {
+		MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(e
+				.getEntity());
+		if ((mgp != null && !mgp.isInMinigame()) && new Random().nextBoolean()) { //Don't store Fs for NPCs
 			if (Ftimer != null)
 				Ftimer.cancel();
 			ActiveF = true;
