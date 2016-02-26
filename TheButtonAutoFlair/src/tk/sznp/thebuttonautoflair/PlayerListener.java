@@ -209,12 +209,20 @@ public class PlayerListener implements Listener { // 2015.07.16.
 																	// slashes
 																	// first
 		formattedmessage = formattedmessage.replace("\"", "\\\"");
+		if (PluginMain.permission.has(event.getPlayer(), "tbmc.admin")) {
+			formattedmessage = formattedmessage.replace("&", "§");
+			formattedmessage = formattedmessage.replace("§r", "§"
+					+ player.CurrentChannel.DisplayName.charAt(1));
+		}
 		String suggestmsg = formattedmessage;
 
-		// URLs
+		// URLs + Rainbow text
 		String[] parts = formattedmessage.split("\\s+");
 		boolean hadurls = false;
-		for (String item : parts)
+		final String[] RainbowPresserColors = new String[] { "c", "6", "e",
+				"a", "9", "5" };
+		int rpc = 0;
+		for (String item : parts) {
 			try {
 				URL url = new URL(item);
 				formattedmessage = formattedmessage
@@ -231,6 +239,15 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				// System.out.println("URL: " + url);
 			} catch (MalformedURLException e) {
 			}
+			if (player.RainbowPresserColorMode) {
+				formattedmessage = formattedmessage.replace(item, "§"
+						+ RainbowPresserColors[rpc] + item);
+				if (rpc + 1 < RainbowPresserColors.length)
+					rpc++;
+				else
+					rpc = 0;
+			}
+		}
 
 		if (!hadurls) {
 			for (Player p : PluginMain.GetPlayers()) { // 2015.08.12.
