@@ -142,6 +142,7 @@ public class Commands implements CommandExecutor {
 					DoAnnounce(player, args, null);
 					break;
 				case "name":
+				{
 					if (args.length == 1) {
 						player.sendMessage("§cUsage: /u name <playername>§r");
 						break;
@@ -155,6 +156,7 @@ public class Commands implements CommandExecutor {
 					player.sendMessage("§bUsername of " + args[1] + ": "
 							+ mp.UserName);
 					break;
+				}
 				case "enable":
 					if (player.getName().equals("NorbiPeti")) {
 						PlayerListener.Enable = true;
@@ -171,6 +173,18 @@ public class Commands implements CommandExecutor {
 					break;
 				case "kittycannon":
 					DoKittyCannon(player, args);
+					break;
+				case "c":
+					if (PluginMain.permission.has(player, "tbmc.admin"))
+					{
+						p.RainbowPresserColorMode = !p.RainbowPresserColorMode;
+						if(p.RainbowPresserColorMode)
+							player.sendMessage("§eRainbow colors §aenabled.");
+						else
+							player.sendMessage("§eRainbow colors §cdisabled.");
+					}
+					else
+						return false;
 					break;
 				default:
 					return false;
