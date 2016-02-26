@@ -1,6 +1,6 @@
 name: TheButtonMCPlugin
 main: tk.sznp.thebuttonautoflair.PluginMain
-version: 3.0
+version: 4.0
 commands:
     u:
         description: Auto-flair system. Accept or ignore flair.
@@ -19,7 +19,7 @@ commands:
         description: Search the wiki.
         usage: "&vUsage: /mwiki [query]&r"
 author: NorbiPeti
-depend: [Essentials, Towny, Minigames, Votifier]
+depend: [Essentials, Towny, Minigames, Votifier, Factions]
 permissions:
   tbmc.admin:
     description: Gives access to /un- commands and /u admin commands

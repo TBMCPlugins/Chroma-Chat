@@ -26,6 +26,7 @@ public class MaybeOfflinePlayer {
 	public Channel CurrentChannel = Channel.GlobalChat;
 	public int FCount;
 	public boolean SendingLink = false;
+	public int FDeaths;
 
 	public UUID UUID;
 
@@ -62,6 +63,7 @@ public class MaybeOfflinePlayer {
 			mp.PlayerName = cs2.getString("playername");
 			mp.UserNames = cs2.getStringList("usernames");
 			mp.FCount = cs2.getInt("fcount");
+			mp.FDeaths = cs2.getInt("fdeaths");
 		}
 	}
 
@@ -77,6 +79,7 @@ public class MaybeOfflinePlayer {
 			cs2.set("uuid", mp.UUID.toString());
 			cs2.set("usernames", mp.UserNames);
 			cs2.set("fcount", mp.FCount);
+			cs2.set("fdeaths", mp.FDeaths);
 		}
 	}
 
