@@ -1,6 +1,19 @@
 package tk.sznp.thebuttonautoflair;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.UUID;
+import java.util.regex.Pattern;
+
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -14,17 +27,25 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Objective;
+import org.bukkit.util.Vector;
 
 import ru.tehkode.permissions.bukkit.PermissionsEx;
+import au.com.mineauz.minigames.MinigamePlayer;
+import au.com.mineauz.minigames.Minigames;
 
+import com.earth2me.essentials.Essentials;
+import com.massivecraft.factions.entity.BoardColl;
+import com.massivecraft.massivecore.ps.PS;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -34,23 +55,6 @@ import com.palmergames.bukkit.towny.object.TownyUniverse;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
-
-import au.com.mineauz.minigames.MinigamePlayer;
-import au.com.mineauz.minigames.Minigames;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
-import java.util.regex.Pattern;
-
-import com.earth2me.essentials.*;
 
 public class PlayerListener implements Listener { // 2015.07.16.
 	public static HashMap<String, UUID> nicknames = new HashMap<>();
@@ -318,14 +322,14 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		json.append(String
 				.format("\"color\":\"aqua\"},{\"text\":\"World: %s\n\",\"color\":\"white\"},",
 						event.getPlayer().getWorld().getName()));
-		json.append(String.format(
-				"{\"text\":\"Respect: %s%s%s\",\"color\":\"white\"}]}}},",
-				(player.FCount == Integer.MAX_VALUE - 1 ? player.FCount + "+"
-						: player.FCount), (player.UserName != null
-						&& !player.UserName.isEmpty() ? "\nUserName: "
-						+ player.UserName : ""), (player.PlayerName
-						.equals("\nAlpha_Bacca44") ? "\nDeaths: " + AlphaDeaths
-						: "")));
+		json.append(String
+				.format("{\"text\":\"Respect: %s%s%s\",\"color\":\"white\"}]}}},",
+						player.FCount / (double) player.FDeaths,
+						(player.UserName != null && !player.UserName.isEmpty() ? "\nUserName: "
+								+ player.UserName
+								: ""), (player.PlayerName
+								.equals("\nAlpha_Bacca44") ? "\nDeaths: "
+								+ AlphaDeaths : "")));
 		json.append("{\"text\":\"> \",\"color\":\"white\"},");
 
 		int index = -1;
@@ -684,6 +688,63 @@ public class PlayerListener implements Listener { // 2015.07.16.
 								.getPlayer().getDisplayName(), message));
 				}
 			}
+			boolean tping = false;
+			boolean tphering = false;
+			if (cmd.equalsIgnoreCase("tpa") || cmd.equalsIgnoreCase("call")
+					|| cmd.equalsIgnoreCase("ecall")
+					|| cmd.equalsIgnoreCase("etpa")
+					|| cmd.equalsIgnoreCase("tpask")
+					|| cmd.equalsIgnoreCase("etpask"))
+				tping = true;
+			if (cmd.equalsIgnoreCase("tpahere")
+					|| cmd.equalsIgnoreCase("etpahere"))
+				tphering = true;
+
+			/*
+			 * for (HelpTopic ht : PluginMain.Instance.getServer()
+			 * .getHelpMap().getHelpTopics()) { if
+			 * (ht.getName().equalsIgnoreCase("/tpa")) { tping = true; break; }
+			 * }
+			 */
+
+			/*
+			 * for (HelpTopic ht : PluginMain.Instance.getServer()
+			 * .getHelpMap().getHelpTopics()) { if
+			 * (ht.getName().equalsIgnoreCase("/tpahere")) tphering = true;
+			 * break; }
+			 */
+
+			if (tphering) {
+				Player target = Bukkit.getPlayer(event.getMessage()
+						.substring(index + 1).split(" ")[0]);
+				if (target != null
+						&& BoardColl.get()
+								.getFactionAt(PS.valueOf(target.getLocation()))
+								.getId().equalsIgnoreCase("tower")) {
+					event.getPlayer()
+							.sendMessage(
+									"§cYou are not allowed to teleport players out from the Tower");
+					event.setCancelled(true);
+				}
+			}
+			/*
+			 * for (String s : Bukkit.getCommandAliases().get("/tpahere")) { if
+			 * (cmd.equalsIgnoreCase(s)) { tping = true; break; } }
+			 */
+			if (tping) {
+				if (
+				// MPlayer.get(event.getPlayer()).getFaction().getId().equalsIgnoreCase("nomansland"))
+				// {
+				BoardColl
+						.get()
+						.getFactionAt(
+								PS.valueOf(event.getPlayer().getLocation()))
+						.getId().equalsIgnoreCase("tower")) {
+					event.getPlayer().sendMessage(
+							"§cYou are not allowed to teleport to the Tower");
+					event.setCancelled(true);
+				}
+			}
 		}
 		if (cmd.equalsIgnoreCase("sethome")) {
 			TownyUniverse tu = PluginMain.Instance.TU;
@@ -790,7 +851,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 	}
 
 	private boolean ActiveF = false;
-	private int FCount = 0; // TODO: Change to rate
+	private int FCount = 0;
 	private MaybeOfflinePlayer FPlayer = null;
 	private Timer Ftimer;
 	public static int AlphaDeaths;
@@ -801,13 +862,18 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			AlphaDeaths++;
 		MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(e
 				.getEntity());
-		if ((mgp != null && !mgp.isInMinigame()) && new Random().nextBoolean()) { //Don't store Fs for NPCs
+		if ((mgp != null && !mgp.isInMinigame()) && new Random().nextBoolean()) { // Don't
+																					// store
+																					// Fs
+																					// for
+																					// NPCs
 			if (Ftimer != null)
 				Ftimer.cancel();
 			ActiveF = true;
 			FCount = 0;
 			FPlayer = MaybeOfflinePlayer.AllPlayers.get(e.getEntity()
 					.getUniqueId());
+			FPlayer.FDeaths++;
 			for (Player p : PluginMain.GetPlayers()) {
 				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(p
 						.getUniqueId());
@@ -884,6 +950,61 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		if (op != null) {
 			PluginMain.economy.depositPlayer(op, 50.0);
 		}
+	}
 
+	/*
+	 * @EventHandler public void onPlayerLogin(PlayerLoginEvent e) {
+	 * System.out.println("Result:" + e.getResult());
+	 * System.out.println("Kick message: " + e.getKickMessage()); }
+	 */
+
+	/*
+	 * @EventHandler public void onPlayerPreLogin(AsyncPlayerPreLoginEvent e) {
+	 * System.out.println("Pre - LoginResult:" + e.getLoginResult());
+	 * System.out.println("Pre - Kick message: " + e.getKickMessage()); }
+	 */
+
+	@EventHandler
+	public void onPlayerMove(PlayerMoveEvent e) {
+		// minecraft:tp @a[x=190,y=-80,z=45,dx=5,dy=50,dz=5] 190 1 45
+		if (e.getPlayer().getWorld().getName().equals("wilds")
+				&& e.getTo().getBlockX() > 185 && e.getTo().getBlockX() < 200
+				&& e.getTo().getBlockZ() > 40 && e.getTo().getBlockZ() < 60
+				&& e.getTo().getBlockY() < -64) {
+			final Player p = e.getPlayer();
+			p.setVelocity(new Vector(0, 0, 0));
+			p.setFallDistance(0);
+			Bukkit.getServer()
+					.getScheduler()
+					.scheduleSyncDelayedTask(PluginMain.Instance,
+							new Runnable() {
+								public void run() {
+									p.setVelocity(new Vector(0, 0, 0));
+									p.setFallDistance(0);
+									p.teleport(new Location(Bukkit
+											.getWorld("wilds"), 190, 1, 50));
+									p.setVelocity(new Vector(0, 0, 0));
+									p.setFallDistance(0);
+								}
+							});
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onPlayerTeleport(PlayerTeleportEvent e) {
+		if (BoardColl.get().getFactionAt(PS.valueOf(e.getFrom())).getId()
+				.equalsIgnoreCase("nomansland")
+				|| BoardColl.get().getFactionAt(PS.valueOf(e.getTo())).getId()
+						.equalsIgnoreCase("nomansland")) {
+			// e.setTo(e.getFrom());
+			e.setCancelled(true); // Relative coordinates mess it up
+			/*
+			 * System.out.println("From: " + e.getFrom());
+			 * System.out.println("To: " + e.getTo());
+			 * System.out.println("Cause: "+e.getCause());
+			 */
+			e.getPlayer().sendMessage(
+					"§cYou are not allowed to teleport to/from No Mans Land.");
+		}
 	}
 }

@@ -212,9 +212,11 @@ public class Commands implements CommandExecutor {
 					p.playSound(p.getLocation(), "tbmc.yeehaw", 1f, 1f);
 					p.sendMessage("§b* " + p.getDisplayName() + " YEEHAWs.");
 				}
+				return true;
 			}
 			case "mwiki": {
 				DoMWiki(player, args);
+				return true;
 			}
 			default:
 				player.sendMessage("Unknown command: " + cmd.getName());
