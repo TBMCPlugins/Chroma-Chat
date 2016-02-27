@@ -23,3 +23,5 @@ depend: [Essentials, Towny, Minigames, Votifier, Factions]
 permissions:
   tbmc.admin:
     description: Gives access to /un- commands and /u admin commands
+  tbmc.rainbow:
+    description: Gives access to rainbow colors (/u c).

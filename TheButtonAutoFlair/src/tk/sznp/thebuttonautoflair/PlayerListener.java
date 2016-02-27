@@ -240,6 +240,21 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			} catch (MalformedURLException e) {
 			}
 			if (player.RainbowPresserColorMode) {
+				if (item.startsWith(RainbowPresserColors[rpc])) { // Prevent
+																	// words
+																	// being
+																	// equal/starting
+																	// with a
+																	// color
+																	// code
+																	// letter to
+																	// be messed
+																	// up
+					if (rpc + 1 < RainbowPresserColors.length)
+						rpc++;
+					else
+						rpc = 0;
+				}
 				formattedmessage = formattedmessage.replace(item, "§"
 						+ RainbowPresserColors[rpc] + item);
 				if (rpc + 1 < RainbowPresserColors.length)
@@ -380,6 +395,13 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				formattedmessage, (greentext ? "green"
 						: player.CurrentChannel.Color)));
 		// System.out.println(formattedmessage); // TO!DO: TMP
+		String jsonstr = json.toString();
+		if (jsonstr.length() >= 32767) {
+			event.getPlayer()
+					.sendMessage(
+							"§cError: Message too large. Try shortening it, or remove hashtags and other formatting.");
+			return;
+		}
 		if (player.CurrentChannel.equals(Channel.TownChat)
 				|| player.CurrentChannel.equals(Channel.NationChat))
 			// for (Resident resident :
@@ -835,8 +857,9 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				if (args[0].toLowerCase().equals("enemy")
 						&& args[1].equalsIgnoreCase("newhaven")) {
 					event.setCancelled(true);
-					event.getPlayer().sendMessage(
-							"§cYou are not allowed to set New Haven as your enemy faction.");
+					event.getPlayer()
+							.sendMessage(
+									"§cYou are not allowed to set New Haven as your enemy faction.");
 				}
 			}
 		}
