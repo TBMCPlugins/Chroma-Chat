@@ -175,7 +175,7 @@ public class Commands implements CommandExecutor {
 					DoKittyCannon(player, args);
 					break;
 				case "c":
-					if (PluginMain.permission.has(player, "tbmc.admin"))
+					if (PluginMain.permission.has(player, "tbmc.rainbow"))
 					{
 						p.RainbowPresserColorMode = !p.RainbowPresserColorMode;
 						if(p.RainbowPresserColorMode)
