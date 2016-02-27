@@ -829,6 +829,17 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				}
 			}
 		}
+		if (cmd.equalsIgnoreCase("f")) {
+			String[] args = event.getMessage().substring(index + 1).split(" ");
+			if (args.length > 1) {
+				if (args[0].toLowerCase().equals("enemy")
+						&& args[1].equalsIgnoreCase("newhaven")) {
+					event.setCancelled(true);
+					event.getPlayer().sendMessage(
+							"§cYou are not allowed to set New Haven as your enemy faction.");
+				}
+			}
+		}
 	}
 
 	@EventHandler
