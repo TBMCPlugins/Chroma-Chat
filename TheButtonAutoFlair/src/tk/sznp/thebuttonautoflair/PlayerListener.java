@@ -10,7 +10,6 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
@@ -27,6 +26,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -223,6 +223,7 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		final String[] RainbowPresserColors = new String[] { "c", "6", "e",
 				"a", "9", "5" };
 		int rpc = 0;
+		int currentindex = 0;
 		for (String item : parts) {
 			try {
 				URL url = new URL(item);
@@ -256,15 +257,25 @@ public class PlayerListener implements Listener { // 2015.07.16.
 					else
 						rpc = 0;
 				}
-				formattedmessage = formattedmessage.replaceFirst(
-						"(?i)" + Pattern.quote(item),
-						Matcher.quoteReplacement("§"
-								+ RainbowPresserColors[rpc] + item));
+				/*System.out.println("item: " + item); // TO!DO: TMP
+				System.out.println("currentindex: " + currentindex);
+				System.out.println("format: "
+						+ String.format("§%s%s", RainbowPresserColors[rpc],
+								item));
+				System.out.println("formattedmessage: " + formattedmessage);*/
+				StringBuffer buf = new StringBuffer(formattedmessage);
+				buf.replace(currentindex, currentindex + item.length(),
+						String.format("§%s%s", RainbowPresserColors[rpc], item));
+				formattedmessage = buf.toString();
+				/*
+				 * "§" + RainbowPresserColors[rpc] + item));
+				 */
 				if (rpc + 1 < RainbowPresserColors.length)
 					rpc++;
 				else
 					rpc = 0;
 			}
+			currentindex += item.length() + 3;
 		}
 		if (player.OtherColorMode != 0xFF) {
 			formattedmessage = String.format("§%x%s", player.OtherColorMode,
@@ -1063,6 +1074,23 @@ public class PlayerListener implements Listener { // 2015.07.16.
 			 */
 			e.getPlayer().sendMessage(
 					"§cYou are not allowed to teleport to/from No Mans Land.");
+		}
+	}
+
+	@EventHandler
+	public void onPlayerInteract(PlayerInteractEvent e) {
+		MinigamePlayer mp = Minigames.plugin.pdata.getMinigamePlayer(e
+				.getPlayer());
+		if (mp == null)
+			return;
+		if (mp.getMinigame().getName(false).equalsIgnoreCase("twohundred")) {
+			if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
+				e.setCancelled(true);
+				e.getPlayer().sendMessage(
+						"§You are not allowed to use enderchests here.");
+				System.out.println(e.getPlayer().getName()
+						+ " tried to use an enderchest in twohundred.");
+			}
 		}
 	}
 }
