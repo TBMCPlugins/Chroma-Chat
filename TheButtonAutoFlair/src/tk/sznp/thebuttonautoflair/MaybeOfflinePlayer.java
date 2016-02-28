@@ -28,6 +28,7 @@ public class MaybeOfflinePlayer {
 	public boolean SendingLink = false;
 	public int FDeaths;
 	public boolean RainbowPresserColorMode = false;
+	public short OtherColorMode = 0xFF;
 
 	public UUID UUID;
 

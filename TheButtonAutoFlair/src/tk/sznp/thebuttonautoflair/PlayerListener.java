@@ -263,6 +263,10 @@ public class PlayerListener implements Listener { // 2015.07.16.
 					rpc = 0;
 			}
 		}
+		if (player.OtherColorMode != 0xFF) {
+			formattedmessage = String.format("§%x%s", player.OtherColorMode,
+					formattedmessage);
+		}
 
 		if (!hadurls) {
 			for (Player p : PluginMain.GetPlayers()) { // 2015.08.12.
@@ -1019,8 +1023,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 	public void onPlayerMove(PlayerMoveEvent e) {
 		// minecraft:tp @a[x=190,y=-80,z=45,dx=5,dy=50,dz=5] 190 1 45
 		if (e.getPlayer().getWorld().getName().equals("wilds")
-				&& e.getTo().getBlockX() > 185 && e.getTo().getBlockX() < 200
-				&& e.getTo().getBlockZ() > 40 && e.getTo().getBlockZ() < 60
+				&& e.getTo().getBlockX() > 100 && e.getTo().getBlockX() < 250
+				&& e.getTo().getBlockZ() > 0 && e.getTo().getBlockZ() < 200
 				&& e.getTo().getBlockY() < -64) {
 			final Player p = e.getPlayer();
 			p.setVelocity(new Vector(0, 0, 0));
