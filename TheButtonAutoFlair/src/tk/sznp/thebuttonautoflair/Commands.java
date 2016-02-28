@@ -141,8 +141,7 @@ public class Commands implements CommandExecutor {
 				case "announce":
 					DoAnnounce(player, args, null);
 					break;
-				case "name":
-				{
+				case "name": {
 					if (args.length == 1) {
 						player.sendMessage("§cUsage: /u name <playername>§r");
 						break;
@@ -175,16 +174,29 @@ public class Commands implements CommandExecutor {
 					DoKittyCannon(player, args);
 					break;
 				case "c":
-					if (PluginMain.permission.has(player, "tbmc.rainbow"))
-					{
-						p.RainbowPresserColorMode = !p.RainbowPresserColorMode;
-						if(p.RainbowPresserColorMode)
-							player.sendMessage("§eRainbow colors §aenabled.");
-						else
-							player.sendMessage("§eRainbow colors §cdisabled.");
+					if (args.length < 2) {
+						if (PluginMain.permission.has(player, "tbmc.rainbow")) {
+							p.RainbowPresserColorMode = !p.RainbowPresserColorMode;
+							p.OtherColorMode = 0xFF;
+							if (p.RainbowPresserColorMode)
+								player.sendMessage("§eRainbow colors §aenabled.");
+							else
+								player.sendMessage("§eRainbow colors §cdisabled.");
+						} else {
+							player.sendMessage("§cYou don't have permission for this command. Donate to get it!");
+							return true;
+						}
+					} else {
+						if (PluginMain.permission.has(player, "tbmc.admin")) {
+							p.RainbowPresserColorMode = false;
+							p.OtherColorMode = Short.parseShort(args[1], 16);
+							if (p.OtherColorMode != 0xFF)
+								player.sendMessage("§eMessage color set to §"
+										+ p.OtherColorMode + p.OtherColorMode);
+							else
+								player.sendMessage("§eMessage color reset.");
+						}
 					}
-					else
-						return false;
 					break;
 				default:
 					return false;
