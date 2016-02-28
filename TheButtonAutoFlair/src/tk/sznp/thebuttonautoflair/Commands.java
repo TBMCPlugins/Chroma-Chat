@@ -191,8 +191,9 @@ public class Commands implements CommandExecutor {
 							p.RainbowPresserColorMode = false;
 							p.OtherColorMode = Short.parseShort(args[1], 16);
 							if (p.OtherColorMode != 0xFF)
-								player.sendMessage("§eMessage color set to §"
-										+ p.OtherColorMode + p.OtherColorMode);
+								player.sendMessage(String.format(
+										"§eMessage color set to §%x%x",
+										p.OtherColorMode, p.OtherColorMode));
 							else
 								player.sendMessage("§eMessage color reset.");
 						}

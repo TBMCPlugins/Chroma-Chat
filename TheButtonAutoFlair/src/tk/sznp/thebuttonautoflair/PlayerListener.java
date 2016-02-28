@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
@@ -255,8 +256,10 @@ public class PlayerListener implements Listener { // 2015.07.16.
 					else
 						rpc = 0;
 				}
-				formattedmessage = formattedmessage.replace(item, "§"
-						+ RainbowPresserColors[rpc] + item);
+				formattedmessage = formattedmessage.replaceFirst(
+						"(?i)" + Pattern.quote(item),
+						Matcher.quoteReplacement("§"
+								+ RainbowPresserColors[rpc] + item));
 				if (rpc + 1 < RainbowPresserColors.length)
 					rpc++;
 				else
