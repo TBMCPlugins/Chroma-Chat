@@ -257,12 +257,13 @@ public class PlayerListener implements Listener { // 2015.07.16.
 					else
 						rpc = 0;
 				}
-				/*System.out.println("item: " + item); // TO!DO: TMP
-				System.out.println("currentindex: " + currentindex);
-				System.out.println("format: "
-						+ String.format("§%s%s", RainbowPresserColors[rpc],
-								item));
-				System.out.println("formattedmessage: " + formattedmessage);*/
+				/*
+				 * System.out.println("item: " + item); // TO!DO: TMP
+				 * System.out.println("currentindex: " + currentindex);
+				 * System.out.println("format: " + String.format("§%s%s",
+				 * RainbowPresserColors[rpc], item));
+				 * System.out.println("formattedmessage: " + formattedmessage);
+				 */
 				StringBuffer buf = new StringBuffer(formattedmessage);
 				buf.replace(currentindex, currentindex + item.length(),
 						String.format("§%s%s", RainbowPresserColors[rpc], item));
@@ -1083,7 +1084,9 @@ public class PlayerListener implements Listener { // 2015.07.16.
 				.getPlayer());
 		if (mp == null)
 			return;
-		if (mp.getMinigame().getName(false).equalsIgnoreCase("twohundred")) {
+		if (mp.isInMinigame()
+				&& mp.getMinigame().getName(false)
+						.equalsIgnoreCase("twohundred")) {
 			if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
 				e.setCancelled(true);
 				e.getPlayer().sendMessage(
