@@ -196,6 +196,9 @@ public class Commands implements CommandExecutor {
 										p.OtherColorMode, p.OtherColorMode));
 							else
 								player.sendMessage("§eMessage color reset.");
+						} else {
+							player.sendMessage("§cYou don't have permission for this command.");
+							return true;
 						}
 					}
 					break;
