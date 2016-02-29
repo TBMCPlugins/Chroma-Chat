@@ -344,6 +344,13 @@ public class PlayerListener implements Listener { // 2015.07.16.
 													.substring(0, 2)));
 				}
 			}
+
+			if (formattedmessage.matches("(?i).*" + Pattern.quote("@console")
+					+ ".*")) {
+				formattedmessage = formattedmessage.replaceAll("(?i)"
+						+ Pattern.quote("@console"), "§b@console§r");
+				System.out.println("\007");
+			}
 		}
 
 		/*

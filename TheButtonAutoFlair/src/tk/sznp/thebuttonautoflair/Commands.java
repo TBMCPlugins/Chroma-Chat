@@ -248,6 +248,12 @@ public class Commands implements CommandExecutor {
 				DoMWiki(player, args);
 				return true;
 			}
+			case "chat": {
+				/*ConsolePlayer cp = new ConsolePlayer();
+				cp.chat("Test!");
+				System.out.println("Sent msg");*/
+				return true;
+			}
 			default:
 				player.sendMessage("Unknown command: " + cmd.getName());
 				break;
