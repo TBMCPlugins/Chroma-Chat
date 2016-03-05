@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -347,8 +348,8 @@ public class PlayerListener implements Listener { // 2015.07.16.
 
 			if (formattedmessage.matches("(?i).*" + Pattern.quote("@console")
 					+ ".*")) {
-				formattedmessage = formattedmessage.replaceAll("(?i)"
-						+ Pattern.quote("@console"), "§b@console§r");
+				formattedmessage = formattedmessage.replaceAll(
+						"(?i)" + Pattern.quote("@console"), "§b@console§r");
 				System.out.println("\007");
 			}
 		}
@@ -1094,7 +1095,10 @@ public class PlayerListener implements Listener { // 2015.07.16.
 		if (mp.isInMinigame()
 				&& mp.getMinigame().getName(false)
 						.equalsIgnoreCase("twohundred")) {
-			if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
+			Block block = e.getClickedBlock();
+			if (block == null)
+				return;
+			if (block.getType() == Material.ENDER_CHEST) {
 				e.setCancelled(true);
 				e.getPlayer().sendMessage(
 						"§You are not allowed to use enderchests here.");
