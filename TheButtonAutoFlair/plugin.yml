@@ -18,8 +18,6 @@ commands:
     mwiki:
         description: Search the wiki.
         usage: "&vUsage: /mwiki [query]&r"
-    chat:
-        description: Chats from console.
 author: NorbiPeti
 depend: [Essentials, Towny, Minigames, Votifier, Factions]
 permissions:
