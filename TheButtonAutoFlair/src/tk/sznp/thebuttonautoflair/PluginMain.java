@@ -94,7 +94,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		this.getCommand("mwiki").setExecutor(comm);
 		this.getCommand("mwiki").setUsage(
 				this.getCommand("mwiki").getUsage().replace('&', '§'));
-		this.getCommand("chat").setExecutor(comm);
 		Instance = this; // 2015.08.08.
 		Console = this.getServer().getConsoleSender(); // 2015.08.12.
 		LoadFiles(false); // 2015.08.09.

@@ -233,6 +233,13 @@ public class Commands implements CommandExecutor {
 						pl.sendMessage(player.getDisplayName()
 								+ (Lastlolornot ? " unlolled " : " unlaughed ")
 								+ p.getDisplayName());
+					Bukkit.getServer()
+							.getConsoleSender()
+							.sendMessage(
+									player.getDisplayName()
+											+ (Lastlolornot ? " unlolled "
+													: " unlaughed ")
+											+ p.getDisplayName());
 					Lastlol = null;
 				}
 				return true;
@@ -246,12 +253,6 @@ public class Commands implements CommandExecutor {
 			}
 			case "mwiki": {
 				DoMWiki(player, args);
-				return true;
-			}
-			case "chat": {
-				/*ConsolePlayer cp = new ConsolePlayer();
-				cp.chat("Test!");
-				System.out.println("Sent msg");*/
 				return true;
 			}
 			default:
@@ -268,11 +269,39 @@ public class Commands implements CommandExecutor {
 			else
 				DoAnnounce(null, args, null);
 			return true;
+		} else {
+			switch (cmd.getName()) {
+			case "unlaugh":
+			case "unlol": {
+				Player p = null;
+				if (Lastlol != null
+						&& (p = Bukkit.getPlayer(Lastlol.UUID)) != null) {
+					p.addPotionEffect(new PotionEffect(
+							PotionEffectType.BLINDNESS, 10 * 20, 5, false,
+							false));
+					for (Player pl : PluginMain.GetPlayers())
+						pl.sendMessage(Bukkit.getServer().getConsoleSender()
+								.getName()
+								+ (Lastlolornot ? " unlolled " : " unlaughed ")
+								+ p.getDisplayName());
+					Bukkit.getServer()
+							.getConsoleSender()
+							.sendMessage(
+									Bukkit.getServer().getConsoleSender()
+											.getName()
+											+ (Lastlolornot ? " unlolled "
+													: " unlaughed ")
+											+ p.getDisplayName());
+					Lastlol = null;
+				}
+				return true;
+			}
+			}
 		}
 		return false;
 	}
 
-	private static void DoReload(Player player) { // 2015.07.20.
+	private static void DoReload(Player player) {
 		try {
 			PluginMain.Console
 					.sendMessage("§6-- Reloading The Button Minecraft plugin...§r");
