@@ -645,7 +645,7 @@ public class PlayerListener implements Listener {
 				event.getSender().sendMessage(
 						"§6You are now talking in: §b"
 								+ ConsoleChannel.DisplayName);
-				event.setCancelled(true);
+				event.setCommand("dontrunthiscmd");
 			} else if (cmd.equalsIgnoreCase(Channel.AdminChat.Command)) {
 				if (ConsoleChannel.equals(Channel.AdminChat))
 					ConsoleChannel = Channel.GlobalChat;
@@ -654,7 +654,7 @@ public class PlayerListener implements Listener {
 				event.getSender().sendMessage(
 						"§6You are now talking in: §b"
 								+ ConsoleChannel.DisplayName);
-				event.setCancelled(true);
+				event.setCommand("dontrunthiscmd");
 			} else if (cmd.equalsIgnoreCase(Channel.ModChat.Command)) {
 				if (ConsoleChannel.equals(Channel.ModChat))
 					ConsoleChannel = Channel.GlobalChat;
@@ -663,50 +663,50 @@ public class PlayerListener implements Listener {
 				event.getSender().sendMessage(
 						"§6You are now talking in: §b"
 								+ ConsoleChannel.DisplayName);
-				event.setCancelled(true);
+				event.setCommand("dontrunthiscmd");
 			}
 		} else {
 			cmd = event.getCommand().substring(0, index);
 			if (cmd.equalsIgnoreCase(Channel.GlobalChat.Command)) {
-				event.setCancelled(true);
 				Channel c = ConsoleChannel;
 				ConsoleChannel = Channel.GlobalChat;
 				ChatProcessing.ProcessChat(Bukkit.getServer()
 						.getConsoleSender(),
 						event.getCommand().substring(index + 1));
 				ConsoleChannel = c;
+				event.setCommand("dontrunthiscmd");
 			} else if (cmd.equalsIgnoreCase(Channel.TownChat.Command)) {
-				event.setCancelled(true);
 				Channel c = ConsoleChannel;
 				ConsoleChannel = Channel.TownChat;
 				ChatProcessing.ProcessChat(Bukkit.getServer()
 						.getConsoleSender(),
 						event.getCommand().substring(index + 1));
 				ConsoleChannel = c;
+				event.setCommand("dontrunthiscmd");
 			} else if (cmd.equalsIgnoreCase(Channel.NationChat.Command)) {
-				event.setCancelled(true);
 				Channel c = ConsoleChannel;
 				ConsoleChannel = Channel.NationChat;
 				ChatProcessing.ProcessChat(Bukkit.getServer()
 						.getConsoleSender(),
 						event.getCommand().substring(index + 1));
 				ConsoleChannel = c;
+				event.setCommand("dontrunthiscmd");
 			} else if (cmd.equalsIgnoreCase(Channel.AdminChat.Command)) {
-				event.setCancelled(true);
 				Channel c = ConsoleChannel;
 				ConsoleChannel = Channel.AdminChat;
 				ChatProcessing.ProcessChat(Bukkit.getServer()
 						.getConsoleSender(),
 						event.getCommand().substring(index + 1));
 				ConsoleChannel = c;
+				event.setCommand("dontrunthiscmd");
 			} else if (cmd.equalsIgnoreCase(Channel.ModChat.Command)) {
-				event.setCancelled(true);
 				Channel c = ConsoleChannel;
 				ConsoleChannel = Channel.ModChat;
 				ChatProcessing.ProcessChat(Bukkit.getServer()
 						.getConsoleSender(),
 						event.getCommand().substring(index + 1));
 				ConsoleChannel = c;
+				event.setCommand("dontrunthiscmd");
 			}
 		}
 		if (cmd.toLowerCase().startsWith("un")) {
@@ -722,7 +722,7 @@ public class PlayerListener implements Listener {
 			if (target == null) {
 				event.getSender().sendMessage(
 						"§cError: Player not found. (/un" + s + " <player>)");
-				event.setCancelled(true);
+				event.setCommand("dontrunthiscmd");
 			}
 			if (target != null) {
 				target.addPotionEffect(new PotionEffect(
@@ -735,7 +735,7 @@ public class PlayerListener implements Listener {
 						.sendMessage(
 								event.getSender().getName() + " un" + s + "'d "
 										+ target.getDisplayName());
-				event.setCancelled(true);
+				event.setCommand("dontrunthiscmd");
 			}
 		}
 	}
