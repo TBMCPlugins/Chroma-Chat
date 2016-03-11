@@ -70,7 +70,8 @@ public class ChatProcessing {
 																	// slashes
 																	// first
 		formattedmessage = formattedmessage.replace("\"", "\\\"");
-		formattedmessage = formattedmessage.replace("&", "§");
+		if (PluginMain.permission.has(sender, "tbmc.admin"))
+			formattedmessage = formattedmessage.replace("&", "§");
 		formattedmessage = formattedmessage.replace("§r", "§"
 				+ currentchannel.DisplayName.charAt(1));
 		String suggestmsg = formattedmessage;
@@ -213,9 +214,8 @@ public class ChatProcessing {
 		json.append("[\"\",");
 		json.append(String
 				.format("{\"text\":\"[%s]%s\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Copy message\",\"color\":\"blue\"}},clickEvent:{\"action\":\"suggest_command\",\"value\":\"%s\"}},",
-						currentchannel.DisplayName,
-						(mplayer != null && !mplayer.RPMode ? "[OOC]" : ""),
-						suggestmsg));
+						currentchannel.DisplayName, (mplayer != null
+								&& !mplayer.RPMode ? "[OOC]" : ""), suggestmsg));
 		json.append("{\"text\":\" <\"},");
 		json.append(String.format("{\"text\":\"%s%s\",",
 				(player != null ? player.getDisplayName() : sender.getName()),
