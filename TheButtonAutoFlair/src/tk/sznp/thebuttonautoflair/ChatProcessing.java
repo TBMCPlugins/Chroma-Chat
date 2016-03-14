@@ -462,8 +462,6 @@ public class ChatProcessing {
 										: sender.getName()),
 								(mplayer != null ? mplayer.GetFormattedFlair()
 										: ""), message));
-		System.out.println(json.toString()); //TODO: TMP
-		System.out.println("Col 107: "+json.toString().charAt(107)); //TODO: TMP
 		return true;
 	}
 }
