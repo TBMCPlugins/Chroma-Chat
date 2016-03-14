@@ -213,7 +213,7 @@ public class ChatProcessing {
 		StringBuilder json = new StringBuilder();
 		json.append("[\"\",");
 		json.append(String
-				.format("{\"text\":\"[%s]%s\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Copy message\",\"color\":\"blue\"}},clickEvent:{\"action\":\"suggest_command\",\"value\":\"%s\"}},",
+				.format("{\"text\":\"[%s]%s\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Copy message\",\"color\":\"blue\"}},\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"%s\"}},",
 						currentchannel.DisplayName, (mplayer != null
 								&& !mplayer.RPMode ? "[OOC]" : ""), suggestmsg));
 		json.append("{\"text\":\" <\"},");
@@ -462,6 +462,8 @@ public class ChatProcessing {
 										: sender.getName()),
 								(mplayer != null ? mplayer.GetFormattedFlair()
 										: ""), message));
+		System.out.println(json.toString()); //TODO: TMP
+		System.out.println("Col 107: "+json.toString().charAt(107)); //TODO: TMP
 		return true;
 	}
 }
