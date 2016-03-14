@@ -140,7 +140,7 @@ public class ChatProcessing {
 				if (formattedmessage.matches("(?i).*"
 						+ Pattern.quote(p.getName()) + ".*")) {
 					if (PlayerListener.NotificationSound == null)
-						p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f,
+						p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f,
 								0.5f);
 					else
 						p.playSound(p.getLocation(),
@@ -180,7 +180,7 @@ public class ChatProcessing {
 						+ Pattern.quote(nwithoutformatting) + ".*")) {
 					p = Bukkit.getPlayer(PlayerListener.nicknames.get(n));
 					if (PlayerListener.NotificationSound == null)
-						p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1.0f,
+						p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f,
 								0.5f); // 2015.08.12.
 					else
 						p.playSound(p.getLocation(),
