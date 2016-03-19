@@ -1,5 +1,6 @@
 package tk.sznp.thebuttonautoflair;
 
+import me.steffansk1997.OreRegenerator.OreRegenerator;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -24,6 +25,8 @@ import com.palmergames.bukkit.towny.Towny;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.flags.StateFlag;
 
 import java.io.*;
 import java.lang.String;
@@ -94,6 +97,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		this.getCommand("mwiki").setExecutor(comm);
 		this.getCommand("mwiki").setUsage(
 				this.getCommand("mwiki").getUsage().replace('&', '§'));
+		this.getCommand("warmode").setExecutor(comm);
 		Instance = this; // 2015.08.08.
 		Console = this.getServer().getConsoleSender(); // 2015.08.12.
 		LoadFiles(false); // 2015.08.09.
@@ -118,6 +122,11 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		setupPermissions();
 
 		GameMechanics.addGameMechanic(new CreativeGlobalMechanic());
+
+		((WorldGuardPlugin) Bukkit.getPluginManager().getPlugin("WorldGuard"))
+				.getRegionManager(Bukkit.getWorlds().get(0))
+				.getRegion("__global__")
+				.setFlag(OreRegenerator.FLAG_REGENORES, StateFlag.State.DENY);
 
 		Runnable r = new Runnable() {
 			public void run() {

@@ -547,8 +547,12 @@ public class PlayerListener implements Listener {
 		System.out.println("Vote: " + vote);
 		org.bukkit.OfflinePlayer op = Bukkit.getOfflinePlayer(vote
 				.getUsername());
+		Player p = Bukkit.getPlayer(vote.getUsername());
 		if (op != null) {
 			PluginMain.economy.depositPlayer(op, 50.0);
+		}
+		if (p != null) {
+			p.sendMessage("§bThanks for voting! $50 was added to your account.");
 		}
 	}
 
