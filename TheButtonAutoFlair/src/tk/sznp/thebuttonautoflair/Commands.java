@@ -1,5 +1,7 @@
 package tk.sznp.thebuttonautoflair;
 
+import me.steffansk1997.OreRegenerator.OreRegenerator;
+
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,6 +19,10 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.earth2me.essentials.Mob;
 import com.earth2me.essentials.Mob.MobException;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import au.com.mineauz.minigames.MinigamePlayer;
 import au.com.mineauz.minigames.Minigames;
@@ -253,6 +259,27 @@ public class Commands implements CommandExecutor {
 			}
 			case "mwiki": {
 				DoMWiki(player, args);
+				return true;
+			}
+			case "warmode": {
+				ApplicableRegionSet ars = ((WorldGuardPlugin) Bukkit
+						.getPluginManager().getPlugin("WorldGuard"))
+						.getRegionManager(player.getWorld())
+						.getApplicableRegions(player.getLocation());
+				for (ProtectedRegion pr : ars) {
+					if (pr.getFlag(OreRegenerator.FLAG_REGENORES) == StateFlag.State.ALLOW) {
+						pr.setFlag(OreRegenerator.FLAG_REGENORES,
+								StateFlag.State.DENY);
+						sender.sendMessage("§eWarmode §cdisabled §ein "
+								+ pr.getId());
+					} else {
+						pr.setFlag(OreRegenerator.FLAG_REGENORES,
+								StateFlag.State.ALLOW);
+						sender.sendMessage("§eWarmode §aenabled §ein "
+								+ pr.getId());
+					}
+					break;
+				}
 				return true;
 			}
 			default:

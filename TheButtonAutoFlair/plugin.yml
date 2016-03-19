@@ -19,8 +19,10 @@ commands:
         description: Search the wiki.
         usage: "&vUsage: /mwiki [query]&r"
     dontrunthiscmd:
+    warmode:
+        description: Toggles war mode
 author: NorbiPeti
-depend: [Essentials, Towny, Minigames, Votifier, Factions]
+depend: [Essentials, Towny, Minigames, Votifier, Factions, WorldGuard, WorldEdit, OreRegenerator]
 permissions:
   tbmc.admin:
     description: Gives access to /un- commands and /u admin commands
