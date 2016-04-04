@@ -32,5 +32,7 @@
 	<classpathentry kind="lib" path="D:/Z - Norbi cucca/0 Projektek/TheButtonMCAutoFlairProto/Spigot server/plugins/_/worldguard-legacy-6.1.2-SNAPSHOT-dist.jar"/>
 	<classpathentry kind="lib" path="D:/Z - Norbi cucca/0 Projektek/TheButtonMCAutoFlairProto/Spigot server/plugins/_/worldedit-bukkit-6.1.jar"/>
 	<classpathentry kind="lib" path="D:/Z - Norbi cucca/0 Projektek/TheButtonMCAutoFlairProto/Spigot server/plugins/_server/OreRegen1.5.jar"/>
+	<classpathentry kind="lib" path="D:/Z - Norbi cucca/0 Projektek/TheButtonMCAutoFlairProto/Spigot server/plugins/_/ProtocolLib.jar"/>
+	<classpathentry kind="lib" path="D:/Z - Norbi cucca/0 Projektek/TheButtonMCAutoFlairProto/Spigot server/plugins/FastLogin.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

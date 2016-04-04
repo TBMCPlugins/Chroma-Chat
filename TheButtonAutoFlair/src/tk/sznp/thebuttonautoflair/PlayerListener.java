@@ -40,6 +40,7 @@ import au.com.mineauz.minigames.MinigamePlayer;
 import au.com.mineauz.minigames.Minigames;
 
 import com.earth2me.essentials.Essentials;
+import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.massivecraft.factions.entity.BoardColl;
 import com.massivecraft.massivecore.ps.PS;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
@@ -130,9 +131,19 @@ public class PlayerListener implements Listener {
 			}
 		}
 
-		mp.RPMode = true; // 2015.08.25.
+		mp.RPMode = true;
 
 		mp.SetFlairColor(mp.GetFlairColor()); // Update display
+
+		if (!PluginMain.permission.has(event.getPlayer(), "authme.player.*")
+				&& (((FastLoginBukkit) FastLoginBukkit
+						.getPlugin(FastLoginBukkit.class)).getEnabledPremium()
+						.contains(event.getPlayer().getName())
+						|| mp.FlairState.equals(FlairStates.Accepted) || mp.FlairState
+							.equals(FlairStates.Commented))) {
+			PluginMain.permission.playerAdd(event.getPlayer(),
+					"authme.player.*");
+		}
 	}
 
 	@EventHandler
