@@ -6,10 +6,10 @@ commands:
         description: Auto-flair system. Accept or ignore flair.
         usage: "&cUsage: /u accept|ignore|opme&r"
     nrp:
-        description: Send message in Out-of-Character
+        description: Send message in Out-of-Character.
         usage: "&cUsage: /nrp <message>&r"
     ooc:
-        description: Send message in Out-of-Character
+        description: Send message in Out-of-Character.
         usage: "&cUsage: /ooc <message>&r"
     unlol:
         description: Unlaugh the last laugh.
@@ -22,7 +22,7 @@ commands:
     warmode:
         description: Toggles war mode
 author: NorbiPeti
-depend: [Essentials, Towny, Minigames, Votifier, Factions, WorldGuard, WorldEdit, OreRegenerator, ProtocolLib, FastLogin, Vault]
+depend: [Essentials, Towny, Minigames, Votifier, Factions, WorldGuard, WorldEdit, ProtocolLib, FastLogin, Vault]
 permissions:
   tbmc.admin:
     description: Gives access to /un- commands and /u admin commands

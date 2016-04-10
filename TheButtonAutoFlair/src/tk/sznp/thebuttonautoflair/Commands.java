@@ -92,17 +92,21 @@ public class Commands implements CommandExecutor {
 					p.Working = true;
 					Timer timer = new Timer();
 					PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
+						Player player = Bukkit.getPlayer(mp.UUID);
 						@Override
 						public void run() {
 							try {
 								PluginMain.Instance.DownloadFlair(mp);
 							} catch (Exception e) {
 								e.printStackTrace();
+								player.sendMessage("Sorry, but an error occured while trying to get your flair. Please contact a mod.");
+								mp.Working = false;
+								return;
 							}
 
-							Player player = Bukkit.getPlayer(mp.UUID);
 							if (mp.FlairState.equals(FlairStates.Commented)) {
 								player.sendMessage("Sorry, but your flair isn't recorded. Please ask an admin to set it for you. Also, prepare a comment on /r/thebutton, if possible.");
+								mp.Working = false;
 								return;
 							}
 							String flair = mp.GetFormattedFlair();
