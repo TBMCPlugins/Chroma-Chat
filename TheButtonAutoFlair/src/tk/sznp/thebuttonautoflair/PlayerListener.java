@@ -52,6 +52,8 @@ import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
 
+import fr.xephi.authme.AuthMe;
+
 public class PlayerListener implements Listener {
 	public static HashMap<String, UUID> nicknames = new HashMap<>();
 
@@ -135,14 +137,26 @@ public class PlayerListener implements Listener {
 
 		mp.SetFlairColor(mp.GetFlairColor()); // Update display
 
+		boolean ispremium = ((FastLoginBukkit) FastLoginBukkit
+				.getPlugin(FastLoginBukkit.class)).getEnabledPremium()
+				.contains(event.getPlayer().getName());
+
 		if (!PluginMain.permission.has(event.getPlayer(), "authme.player.*")
-				&& (((FastLoginBukkit) FastLoginBukkit
-						.getPlugin(FastLoginBukkit.class)).getEnabledPremium()
-						.contains(event.getPlayer().getName())
-						|| mp.FlairState.equals(FlairStates.Accepted) || mp.FlairState
-							.equals(FlairStates.Commented))) {
+				&& (ispremium || mp.FlairState.equals(FlairStates.Accepted) || mp.FlairState
+						.equals(FlairStates.Commented))) {
 			PluginMain.permission.playerAdd(event.getPlayer(),
 					"authme.player.*");
+		}
+		
+		if(ispremium)
+		{
+			Bukkit.getScheduler().runTaskLater(PluginMain.Instance, new Runnable(){
+				public void run()
+				{
+					AuthMe.getInstance().api.forceLogout(p);
+					AuthMe.getInstance().api.forceLogin(p);
+				}
+			}, 100);
 		}
 	}
 

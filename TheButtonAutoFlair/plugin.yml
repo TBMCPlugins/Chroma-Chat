@@ -22,7 +22,7 @@ commands:
     warmode:
         description: Toggles war mode
 author: NorbiPeti
-depend: [Essentials, Towny, Minigames, Votifier, Factions, WorldGuard, WorldEdit, ProtocolLib, FastLogin, Vault]
+depend: [Essentials, Towny, Minigames, Votifier, Factions, WorldGuard, WorldEdit, ProtocolLib, FastLogin, Vault, AuthMe]
 permissions:
   tbmc.admin:
     description: Gives access to /un- commands and /u admin commands
