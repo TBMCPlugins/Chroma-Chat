@@ -8,6 +8,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
+import com.palmergames.bukkit.towny.Towny;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -48,6 +49,7 @@ import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
+import com.palmergames.bukkit.towny.war.eventwar.War;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
@@ -390,10 +392,23 @@ public class PlayerListener implements Listener {
 				|| cmd.equalsIgnoreCase("tp")) {
 			MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(event
 					.getPlayer());
+			String currentWorld = event.getPlayer().getLocation().getWorld().getName();
+			Location currentLocation = event.getPlayer().getLocation();
+			TownyUniverse universe = Towny.plugin.getTownyUniverse();
 			if (mgp.isInMinigame()
 					&& mgp.getMinigame().getMechanic().getMechanic()
 							.equals("creativeglobal")) {
 				mgp.setAllowTeleport(true);
+			}
+			else if (universe.isWarTime())
+			{
+				War war = universe.getWarEvent();
+				if (war.isWarZone(new WorldCoord(currentWorld, currentLocation.getBlockX(), currentLocation.getBlockZ())))
+				{
+					event.getPlayer().sendMessage(
+							"§cError: You can't teleport out of a war zone!");
+					event.setCancelled(true);
+				}
 			}
 		} else if (cmd.toLowerCase().startsWith("un")) {
 			for (HelpTopic ht : PluginMain.Instance.getServer().getHelpMap()
