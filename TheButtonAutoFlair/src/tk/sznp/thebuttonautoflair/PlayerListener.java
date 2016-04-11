@@ -404,13 +404,13 @@ public class PlayerListener implements Listener {
 					.getPlayer());
 			String currentWorld = event.getPlayer().getLocation().getWorld().getName();
 			Location currentLocation = event.getPlayer().getLocation();
-			TownyUniverse universe = Towny.plugin.getTownyUniverse();
+			TownyUniverse universe = Towny.getPlugin(Towny.class).getTownyUniverse();
 			if (mgp.isInMinigame()
 					&& mgp.getMinigame().getMechanic().getMechanic()
 							.equals("creativeglobal")) {
 				mgp.setAllowTeleport(true);
 			}
-			else if (universe.isWarTime())
+			else if (TownyUniverse.isWarTime())
 			{
 				War war = universe.getWarEvent();
 				if (war.isWarZone(new WorldCoord(currentWorld, currentLocation.getBlockX(), currentLocation.getBlockZ())))
