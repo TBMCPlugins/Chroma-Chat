@@ -163,6 +163,16 @@ public class PlayerListener implements Listener {
 				}
 			}, 120);
 		}
+		else if(!mp.FlairState.equals(FlairStates.Accepted) && !mp.FlairState
+				.equals(FlairStates.Commented))
+		{	
+				String json = String
+				.format("[\"\",{\"text\":\"Welcome! You appear to log in from a non-premium account. Please verify your /r/thebutton flair to play, \",\"color\":\"aqua\"},{\"text\":\"[here].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
+						PluginMain.FlairThreadURL);
+		PluginMain.Instance.getServer().dispatchCommand(
+				PluginMain.Console,
+				"tellraw " + mp.PlayerName + " " + json);
+		}
 	}
 
 	@EventHandler

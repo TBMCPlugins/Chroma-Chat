@@ -171,6 +171,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					MaybeOfflinePlayer mp = MaybeOfflinePlayer.GetFromName(ign);
 					if (mp == null)
 						continue;
+					if (!JoinedBefore(mp, 2015, 6, 5))
+						continue;
 					if (!mp.UserNames.contains(author))
 						mp.UserNames.add(author);
 					if (mp.FlairState.equals(FlairStates.NoComment)) {
@@ -301,6 +303,11 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 	public static boolean CheckForJoinDate(MaybeOfflinePlayer mp)
 			throws Exception {
+		return JoinedBefore(mp, 2015, 4, 1);
+	}
+
+	public static boolean JoinedBefore(MaybeOfflinePlayer mp, int year,
+			int month, int day) throws Exception {
 		URL url = new URL("https://www.reddit.com/u/" + mp.UserName);
 		URLConnection con = url.openConnection();
 		con.setRequestProperty("User-Agent", "TheButtonAutoFlair");
@@ -315,8 +322,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		joindate = joindate.split("T")[0];
 		Date date = parserSDF.parse(joindate);
 		return date.before(new Calendar.Builder()
-				.setTimeZone(TimeZone.getTimeZone("UTC")).setDate(2015, 4, 1)
-				.build().getTime());
+				.setTimeZone(TimeZone.getTimeZone("UTC"))
+				.setDate(year, month, day).build().getTime());
 	}
 
 	public static void ConfirmUserMessage(MaybeOfflinePlayer mp) {
