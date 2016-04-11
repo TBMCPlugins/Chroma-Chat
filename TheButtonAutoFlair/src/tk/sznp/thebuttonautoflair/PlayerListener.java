@@ -154,9 +154,14 @@ public class PlayerListener implements Listener {
 				public void run()
 				{
 					AuthMe.getInstance().api.forceLogout(p);
-					AuthMe.getInstance().api.forceLogin(p);
 				}
 			}, 100);
+			Bukkit.getScheduler().runTaskLater(PluginMain.Instance, new Runnable(){
+				public void run()
+				{
+					AuthMe.getInstance().api.forceLogin(p);
+				}
+			}, 120);
 		}
 	}
 
