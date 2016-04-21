@@ -93,6 +93,7 @@ public class Commands implements CommandExecutor {
 					Timer timer = new Timer();
 					PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
 						Player player = Bukkit.getPlayer(mp.UUID);
+
 						@Override
 						public void run() {
 							try {
@@ -187,7 +188,7 @@ public class Commands implements CommandExecutor {
 					if (args.length < 2) {
 						if (PluginMain.permission.has(player, "tbmc.rainbow")) {
 							p.RainbowPresserColorMode = !p.RainbowPresserColorMode;
-							p.OtherColorMode = 0xFF;
+							p.OtherColorMode = "";
 							if (p.RainbowPresserColorMode)
 								player.sendMessage("§eRainbow colors §aenabled.");
 							else
@@ -199,11 +200,11 @@ public class Commands implements CommandExecutor {
 					} else {
 						if (PluginMain.permission.has(player, "tbmc.admin")) {
 							p.RainbowPresserColorMode = false;
-							p.OtherColorMode = Short.parseShort(args[1], 16);
-							if (p.OtherColorMode != 0xFF)
+							p.OtherColorMode = args[1];
+							if (p.OtherColorMode.length() > 0)
 								player.sendMessage(String.format(
-										"§eMessage color set to §%x%x",
-										p.OtherColorMode, p.OtherColorMode));
+										"§eMessage color set to %s",
+										p.OtherColorMode));
 							else
 								player.sendMessage("§eMessage color reset.");
 						} else {

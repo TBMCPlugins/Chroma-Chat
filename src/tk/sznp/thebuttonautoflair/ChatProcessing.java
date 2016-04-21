@@ -26,19 +26,20 @@ public class ChatProcessing {
 			PlayerListener.essentials = (Essentials) (Bukkit.getPluginManager()
 					.getPlugin("Essentials"));
 		Player player = (sender instanceof Player ? (Player) sender : null);
-		if (player != null && message.equalsIgnoreCase("F")) {
-			MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(player
-					.getUniqueId());
-			if (!mp.PressedF && PlayerListener.ActiveF) {
-				PlayerListener.FCount++;
-				mp.PressedF = true;
-				if (PlayerListener.FPlayer != null
-						&& PlayerListener.FPlayer.FCount < Integer.MAX_VALUE - 1)
-					PlayerListener.FPlayer.FCount++;
+		MaybeOfflinePlayer mp = null;
+		if (player != null) {
+			mp = MaybeOfflinePlayer.AllPlayers.get(player.getUniqueId());
+			if (message.equalsIgnoreCase("F")) {
+				if (!mp.PressedF && PlayerListener.ActiveF) {
+					PlayerListener.FCount++;
+					mp.PressedF = true;
+					if (PlayerListener.FPlayer != null
+							&& PlayerListener.FPlayer.FCount < Integer.MAX_VALUE - 1)
+						PlayerListener.FPlayer.FCount++;
+				}
 			}
 		}
 
-		boolean greentext = message.startsWith(">");
 		String msg = message.toLowerCase();
 		if (player != null && msg.contains("lol")) {
 			Commands.Lastlol = MaybeOfflinePlayer.AllPlayers.get(player
@@ -54,13 +55,16 @@ public class ChatProcessing {
 				}
 			}
 		}
+		Channel currentchannel = (mp == null ? PlayerListener.ConsoleChannel
+				: mp.CurrentChannel);
 
-		MaybeOfflinePlayer mplayer = null;
-		if (player != null) {
-			mplayer = MaybeOfflinePlayer.AllPlayers.get(player.getUniqueId());
-		}
-		Channel currentchannel = (mplayer == null ? PlayerListener.ConsoleChannel
-				: mplayer.CurrentChannel);
+		String colormode = currentchannel.Color;
+		if (mp.OtherColorMode.length() > 0)
+			colormode = mp.OtherColorMode;
+		if (message.startsWith(">"))
+			colormode = "green"; // If greentext, ignore channel or player
+									// colors
+
 		String formattedmessage = message;
 		formattedmessage = formattedmessage.replace("\\", "\\\\"); // It's
 																	// really
@@ -91,17 +95,14 @@ public class ChatProcessing {
 								item,
 								String.format(
 										"\",\"color\":\"%s\"},{\"text\":\"%s\",\"color\":\"%s\",\"underlined\":\"true\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open URL\",\"color\":\"blue\"}]}}},{\"text\":\"",
-										(greentext ? "green"
-												: currentchannel.Color), url,
-										(greentext ? "green"
-												: currentchannel.Color), url));
+										colormode, url, colormode, url));
 				hadurls = true;
 			} catch (MalformedURLException e) {
 			}
-			if (mplayer != null && mplayer.RainbowPresserColorMode) { // TODO:
-																		// Rainbow
-																		// mode
-																		// for
+			if (mp != null && mp.RainbowPresserColorMode) { // TODO:
+															// Rainbow
+															// mode
+															// for
 				// console
 				if (item.startsWith(RainbowPresserColors[rpc])) { // Prevent
 																	// words
@@ -129,10 +130,6 @@ public class ChatProcessing {
 			}
 			currentindex += item.length() + 3;
 		}
-		if (mplayer != null && mplayer.OtherColorMode != 0xFF) {
-			formattedmessage = String.format("§%x%s", mplayer.OtherColorMode,
-					formattedmessage);
-		}
 
 		if (!hadurls) {
 			for (Player p : PluginMain.GetPlayers()) {
@@ -140,27 +137,24 @@ public class ChatProcessing {
 				if (formattedmessage.matches("(?i).*"
 						+ Pattern.quote(p.getName()) + ".*")) {
 					if (PlayerListener.NotificationSound == null)
-						p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f,
-								0.5f);
+						p.playSound(p.getLocation(),
+								Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO:
+																			// Airhorn
 					else
 						p.playSound(p.getLocation(),
 								PlayerListener.NotificationSound, 1.0f,
 								(float) PlayerListener.NotificationPitch);
-					MaybeOfflinePlayer mp = MaybeOfflinePlayer
+					MaybeOfflinePlayer mpp = MaybeOfflinePlayer
 							.AddPlayerIfNeeded(p.getUniqueId());
 					color = String.format(
 							"§%x",
-							(mp.GetFlairColor() == 0x00 ? 0xb : mp
+							(mpp.GetFlairColor() == 0x00 ? 0xb : mpp
 									.GetFlairColor()));
 				}
 
 				formattedmessage = formattedmessage.replaceAll(
 						"(?i)" + Pattern.quote(p.getName()),
-						color
-								+ p.getName()
-								+ (greentext ? "§a"
-										: currentchannel.DisplayName.substring(
-												0, 2)));
+						color + p.getName() + "§r");
 			}
 			for (String n : PlayerListener.nicknames.keySet()) {
 				Player p = null;
@@ -180,8 +174,8 @@ public class ChatProcessing {
 						+ Pattern.quote(nwithoutformatting) + ".*")) {
 					p = Bukkit.getPlayer(PlayerListener.nicknames.get(n));
 					if (PlayerListener.NotificationSound == null)
-						p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f,
-								0.5f); // 2015.08.12.
+						p.playSound(p.getLocation(),
+								Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // 2015.08.12.
 					else
 						p.playSound(p.getLocation(),
 								PlayerListener.NotificationSound, 1.0f,
@@ -189,12 +183,8 @@ public class ChatProcessing {
 					MaybeOfflinePlayer.AddPlayerIfNeeded(p.getUniqueId());
 				}
 				if (p != null) {
-					formattedmessage = formattedmessage.replaceAll(
-							"(?i)" + Pattern.quote(nwithoutformatting),
-							n
-									+ (greentext ? "§a"
-											: currentchannel.DisplayName
-													.substring(0, 2)));
+					formattedmessage = formattedmessage.replaceAll("(?i)"
+							+ Pattern.quote(nwithoutformatting), n + "§r");
 				}
 			}
 
@@ -214,29 +204,28 @@ public class ChatProcessing {
 		json.append("[\"\",");
 		json.append(String
 				.format("{\"text\":\"[%s]%s\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Copy message\",\"color\":\"blue\"}},\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"%s\"}},",
-						currentchannel.DisplayName, (mplayer != null
-								&& !mplayer.RPMode ? "[OOC]" : ""), suggestmsg));
+						currentchannel.DisplayName,
+						(mp != null && !mp.RPMode ? "[OOC]" : ""), suggestmsg));
 		json.append("{\"text\":\" <\"},");
 		json.append(String.format("{\"text\":\"%s%s\",",
 				(player != null ? player.getDisplayName() : sender.getName()),
-				(mplayer != null ? mplayer.GetFormattedFlair() : "")));
+				(mp != null ? mp.GetFormattedFlair() : "")));
 		json.append("\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[");
 		json.append(String.format("{\"text\":\"%s\n\",",
 				(player != null ? player.getName() : sender.getName())));
 		json.append(String
 				.format("\"color\":\"aqua\"},{\"text\":\"World: %s\n\",\"color\":\"white\"},",
 						(player != null ? player.getWorld().getName() : "-")));
-		json.append(String.format(
-				"{\"text\":\"Respect: %s%s%s\",\"color\":\"white\"}]}}},",
-				(mplayer != null ? (mplayer.FCount / (double) mplayer.FDeaths)
-						: "Infinite"),
-				(mplayer != null && mplayer.UserName != null
-						&& !mplayer.UserName.isEmpty() ? "\nUserName: "
-						+ mplayer.UserName : ""),
-				(mplayer != null
-						&& mplayer.PlayerName.equals("\nAlpha_Bacca44") ? "\nDeaths: "
-						+ PlayerListener.AlphaDeaths
-						: "")));
+		json.append(String
+				.format("{\"text\":\"Respect: %s%s%s\",\"color\":\"white\"}]}}},",
+						(mp != null ? (mp.FCount / (double) mp.FDeaths)
+								: "Infinite"),
+						(mp != null && mp.UserName != null
+								&& !mp.UserName.isEmpty() ? "\nUserName: "
+								+ mp.UserName : ""),
+						(mp != null && mp.PlayerName.equals("\nAlpha_Bacca44") ? "\nDeaths: "
+								+ PlayerListener.AlphaDeaths
+								: "")));
 		json.append("{\"text\":\"> \",\"color\":\"white\"},");
 
 		int index = -1;
@@ -261,13 +250,11 @@ public class ChatProcessing {
 								"#" + original,
 								String.format(
 										"\",\"color\":\"%s\"},{\"text\":\"#%s\",\"color\":\"blue\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://twitter.com/hashtag/%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open on Twitter\",\"color\":\"blue\"}]}}},{\"text\":\"",
-										(greentext ? "green"
-												: currentchannel.Color),
-										original, original));
+										colormode, original, original));
 		}
 
 		json.append(String.format("{\"text\":\"%s\",\"color\":\"%s\"}]",
-				formattedmessage, (greentext ? "green" : currentchannel.Color)));
+				formattedmessage, colormode));
 		String jsonstr = json.toString();
 		if (jsonstr.length() >= 32767) {
 			sender.sendMessage("§cError: Message too large. Try shortening it, or remove hashtags and other formatting.");
@@ -460,8 +447,8 @@ public class ChatProcessing {
 								currentchannel.DisplayName,
 								(player != null ? player.getDisplayName()
 										: sender.getName()),
-								(mplayer != null ? mplayer.GetFormattedFlair()
-										: ""), message));
+								(mp != null ? mp.GetFormattedFlair() : ""),
+								message));
 		return true;
 	}
 }
