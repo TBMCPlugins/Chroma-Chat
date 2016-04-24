@@ -94,10 +94,18 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		this.getCommand("mwiki").setExecutor(comm);
 		this.getCommand("mwiki").setUsage(
 				this.getCommand("mwiki").getUsage().replace('&', '§'));
-		this.getCommand("warmode").setExecutor(comm);
-		Instance = this; // 2015.08.08.
-		Console = this.getServer().getConsoleSender(); // 2015.08.12.
-		LoadFiles(false); // 2015.08.09.
+		this.getCommand("tableflip").setExecutor(comm);
+		this.getCommand("tableflip").setUsage(
+				this.getCommand("tableflip").getUsage().replace('&', '§'));
+		this.getCommand("unflip").setExecutor(comm);
+		this.getCommand("unflip").setUsage(
+				this.getCommand("unflip").getUsage().replace('&', '§'));
+		this.getCommand("chatonly").setExecutor(comm);
+		this.getCommand("chatonly").setUsage(
+				this.getCommand("chatonly").getUsage().replace('&', '§'));
+		Instance = this;
+		Console = this.getServer().getConsoleSender();
+		LoadFiles(false);
 
 		SB = PluginMain.Instance.getServer().getScoreboardManager()
 				.getMainScoreboard(); // Main can be detected with @a[score_...]

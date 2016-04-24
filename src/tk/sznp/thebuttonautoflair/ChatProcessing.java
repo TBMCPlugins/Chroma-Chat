@@ -26,6 +26,11 @@ public class ChatProcessing {
 			PlayerListener.essentials = (Essentials) (Bukkit.getPluginManager()
 					.getPlugin("Essentials"));
 		Player player = (sender instanceof Player ? (Player) sender : null);
+
+		if (player != null
+				&& PlayerListener.essentials.getUser(player).isMuted())
+			return true;
+
 		MaybeOfflinePlayer mp = null;
 		if (player != null) {
 			mp = MaybeOfflinePlayer.AllPlayers.get(player.getUniqueId());
@@ -41,16 +46,28 @@ public class ChatProcessing {
 		}
 
 		String msg = message.toLowerCase();
-		if (player != null && msg.contains("lol")) {
-			Commands.Lastlol = MaybeOfflinePlayer.AllPlayers.get(player
-					.getUniqueId());
-			Commands.Lastlolornot = true;
+		if (msg.contains("lol")) {
+			if (player != null) {
+				Commands.Lastlol = player;
+				Commands.Lastlolornot = true;
+				Commands.Lastlolconsole = false;
+			} else {
+				Commands.Lastlolornot = true;
+				Commands.Lastlolconsole = true;
+				Commands.Lastlol = null;
+			}
 		} else {
 			for (int i = 0; i < PlayerListener.LaughStrings.length; i++) {
 				if (msg.contains(PlayerListener.LaughStrings[i])) {
-					Commands.Lastlol = MaybeOfflinePlayer.AllPlayers.get(player
-							.getUniqueId());
-					Commands.Lastlolornot = false;
+					if (player != null) {
+						Commands.Lastlol = player;
+						Commands.Lastlolornot = false;
+						Commands.Lastlolconsole = false;
+					} else {
+						Commands.Lastlolornot = false;
+						Commands.Lastlolconsole = true;
+						Commands.Lastlol = null;
+					}
 					break;
 				}
 			}
@@ -59,7 +76,7 @@ public class ChatProcessing {
 				: mp.CurrentChannel);
 
 		String colormode = currentchannel.Color;
-		if (mp.OtherColorMode.length() > 0)
+		if (mp != null && mp.OtherColorMode.length() > 0)
 			colormode = mp.OtherColorMode;
 		if (message.startsWith(">"))
 			colormode = "green"; // If greentext, ignore channel or player
@@ -99,11 +116,7 @@ public class ChatProcessing {
 				hadurls = true;
 			} catch (MalformedURLException e) {
 			}
-			if (mp != null && mp.RainbowPresserColorMode) { // TODO:
-															// Rainbow
-															// mode
-															// for
-				// console
+			if (mp != null && mp.RainbowPresserColorMode) {
 				if (item.startsWith(RainbowPresserColors[rpc])) { // Prevent
 																	// words
 																	// being
@@ -196,16 +209,16 @@ public class ChatProcessing {
 			}
 		}
 
-		if (player != null
-				&& PlayerListener.essentials.getUser(player).isMuted())
-			return true;
-
 		StringBuilder json = new StringBuilder();
 		json.append("[\"\",");
 		json.append(String
-				.format("{\"text\":\"[%s]%s\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Copy message\",\"color\":\"blue\"}},\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"%s\"}},",
-						currentchannel.DisplayName,
-						(mp != null && !mp.RPMode ? "[OOC]" : ""), suggestmsg));
+				.format("%s{\"text\":\"[%s]%s\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Copy message\",\"color\":\"blue\"}},\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"%s\"}},",
+						(mp != null && mp.ChatOnly ? "{\"text\":\"[C]\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Chat only\",\"color\":\"blue\"}]}}},"
+								// (mp != null && mp.ChatOnly ?
+								// "{\"text:\":\"\"}," - I have been staring at
+								// this one line for hours... Hours...
+								: ""), currentchannel.DisplayName, (mp != null
+								&& !mp.RPMode ? "[OOC]" : ""), suggestmsg));
 		json.append("{\"text\":\" <\"},");
 		json.append(String.format("{\"text\":\"%s%s\",",
 				(player != null ? player.getDisplayName() : sender.getName()),

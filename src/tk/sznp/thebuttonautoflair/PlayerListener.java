@@ -9,7 +9,9 @@ import java.util.TimerTask;
 import java.util.UUID;
 
 import com.palmergames.bukkit.towny.Towny;
+
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -149,31 +151,32 @@ public class PlayerListener implements Listener {
 			PluginMain.permission.playerAdd(event.getPlayer(),
 					"authme.player.*");
 		}
-		
-		if(ispremium)
-		{
-			Bukkit.getScheduler().runTaskLater(PluginMain.Instance, new Runnable(){
-				public void run()
-				{
-					AuthMe.getInstance().api.forceLogout(p);
-				}
-			}, 100);
-			Bukkit.getScheduler().runTaskLater(PluginMain.Instance, new Runnable(){
-				public void run()
-				{
-					AuthMe.getInstance().api.forceLogin(p);
-				}
-			}, 120);
+
+		if (ispremium) {
+			Bukkit.getScheduler().runTaskLater(PluginMain.Instance,
+					new Runnable() {
+						public void run() {
+							AuthMe.getInstance().api.forceLogout(p);
+						}
+					}, 100);
+			Bukkit.getScheduler().runTaskLater(PluginMain.Instance,
+					new Runnable() {
+						public void run() {
+							AuthMe.getInstance().api.forceLogin(p);
+						}
+					}, 120);
+		} else if (!mp.FlairState.equals(FlairStates.Accepted)
+				&& !mp.FlairState.equals(FlairStates.Commented)) {
+			String json = String
+					.format("[\"\",{\"text\":\"Welcome! You appear to log in from a non-premium account. Please verify your /r/thebutton flair to play, \",\"color\":\"aqua\"},{\"text\":\"[here].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
+							PluginMain.FlairThreadURL);
+			PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
+					"tellraw " + mp.PlayerName + " " + json);
 		}
-		else if(!mp.FlairState.equals(FlairStates.Accepted) && !mp.FlairState
-				.equals(FlairStates.Commented))
-		{	
-				String json = String
-				.format("[\"\",{\"text\":\"Welcome! You appear to log in from a non-premium account. Please verify your /r/thebutton flair to play, \",\"color\":\"aqua\"},{\"text\":\"[here].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
-						PluginMain.FlairThreadURL);
-		PluginMain.Instance.getServer().dispatchCommand(
-				PluginMain.Console,
-				"tellraw " + mp.PlayerName + " " + json);
+
+		if (mp.ChatOnly) {
+			mp.ChatOnly = false;
+			p.setGameMode(GameMode.SURVIVAL);
 		}
 	}
 
@@ -402,19 +405,19 @@ public class PlayerListener implements Listener {
 				|| cmd.equalsIgnoreCase("tp")) {
 			MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(event
 					.getPlayer());
-			String currentWorld = event.getPlayer().getLocation().getWorld().getName();
+			String currentWorld = event.getPlayer().getLocation().getWorld()
+					.getName();
 			Location currentLocation = event.getPlayer().getLocation();
-			TownyUniverse universe = Towny.getPlugin(Towny.class).getTownyUniverse();
+			TownyUniverse universe = Towny.getPlugin(Towny.class)
+					.getTownyUniverse();
 			if (mgp.isInMinigame()
 					&& mgp.getMinigame().getMechanic().getMechanic()
 							.equals("creativeglobal")) {
 				mgp.setAllowTeleport(true);
-			}
-			else if (TownyUniverse.isWarTime())
-			{
+			} else if (TownyUniverse.isWarTime()) {
 				War war = universe.getWarEvent();
-				if (war.isWarZone(new WorldCoord(currentWorld, currentLocation.getBlockX(), currentLocation.getBlockZ())))
-				{
+				if (war.isWarZone(new WorldCoord(currentWorld, currentLocation
+						.getBlockX(), currentLocation.getBlockZ()))) {
 					event.getPlayer().sendMessage(
 							"§cError: You can't teleport out of a war zone!");
 					event.setCancelled(true);
@@ -590,9 +593,7 @@ public class PlayerListener implements Listener {
 			e.getPlayer().damage(1f * item.getAmount(),
 					Bukkit.getPlayer(meta.getLore().get(0)));
 		e.getItem().remove();
-		// System.out.println("G");
-		e.setCancelled(true); // TODO: /tableflip /unflip with spam detection
-		// System.out.println("H");
+		e.setCancelled(true);
 	}
 
 	@EventHandler
@@ -610,18 +611,6 @@ public class PlayerListener implements Listener {
 			p.sendMessage("§bThanks for voting! $50 was added to your account.");
 		}
 	}
-
-	/*
-	 * @EventHandler public void onPlayerLogin(PlayerLoginEvent e) {
-	 * System.out.println("Result:" + e.getResult());
-	 * System.out.println("Kick message: " + e.getKickMessage()); }
-	 */
-
-	/*
-	 * @EventHandler public void onPlayerPreLogin(AsyncPlayerPreLoginEvent e) {
-	 * System.out.println("Pre - LoginResult:" + e.getLoginResult());
-	 * System.out.println("Pre - Kick message: " + e.getKickMessage()); }
-	 */
 
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e) {
@@ -647,6 +636,10 @@ public class PlayerListener implements Listener {
 								}
 							});
 		}
+		
+		MaybeOfflinePlayer mp=MaybeOfflinePlayer.GetFromPlayer(e.getPlayer());
+		if(mp.ChatOnly)
+			e.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -664,6 +657,12 @@ public class PlayerListener implements Listener {
 			 */
 			e.getPlayer().sendMessage(
 					"§cYou are not allowed to teleport to/from No Mans Land.");
+		}
+		
+		if(MaybeOfflinePlayer.GetFromPlayer(e.getPlayer()).ChatOnly)
+		{
+			e.setCancelled(true);
+			e.getPlayer().sendMessage("§cYou are not allowed to teleport while in chat-only mode.");
 		}
 	}
 

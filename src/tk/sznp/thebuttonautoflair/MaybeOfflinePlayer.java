@@ -29,6 +29,7 @@ public class MaybeOfflinePlayer {
 	public int FDeaths;
 	public boolean RainbowPresserColorMode = false;
 	public String OtherColorMode = "";
+	public boolean ChatOnly = false;
 
 	public UUID UUID;
 
@@ -131,5 +132,9 @@ public class MaybeOfflinePlayer {
 
 	public String GetFlairTime() {
 		return FlairTime;
+	}
+
+	public static MaybeOfflinePlayer GetFromPlayer(Player p) {
+		return MaybeOfflinePlayer.AllPlayers.get(p.getUniqueId());
 	}
 }

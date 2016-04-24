@@ -17,10 +17,17 @@ commands:
         description: Unlaugh the last laugh.
     mwiki:
         description: Search the wiki.
-        usage: "&vUsage: /mwiki [query]&r"
+        usage: "&cUsage: /mwiki [query]&r"
     dontrunthiscmd:
-    warmode:
-        description: Toggles war mode
+    tableflip:
+        description: Flip a table.
+        usage: "&cUsage: /tableflip [message]&r"
+    unflip:
+        description: Unflip a flip.
+        usage: "&cUsage: /unflip [message]&r"
+    chatonly:
+        description: Enable chat only mode. Useful for chat clients.
+        usage: "&cUsage: /chatonly&r"
 author: NorbiPeti
 depend: [Essentials, Towny, Minigames, Votifier, Factions, WorldGuard, WorldEdit, ProtocolLib, FastLogin, Vault, AuthMe]
 permissions:

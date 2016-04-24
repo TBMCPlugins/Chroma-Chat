@@ -1,9 +1,8 @@
 package tk.sznp.thebuttonautoflair;
 
-import me.steffansk1997.OreRegenerator.OreRegenerator;
-
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.BlockCommandSender;
@@ -19,10 +18,6 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.earth2me.essentials.Mob;
 import com.earth2me.essentials.Mob.MobException;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.flags.StateFlag;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import au.com.mineauz.minigames.MinigamePlayer;
 import au.com.mineauz.minigames.Minigames;
@@ -37,8 +32,9 @@ import java.util.Timer;
 
 public class Commands implements CommandExecutor {
 
-	public static MaybeOfflinePlayer Lastlol = null;
+	public static Player Lastlol = null;
 	public static boolean Lastlolornot;
+	public static boolean Lastlolconsole;
 
 	// This method is called, when somebody uses our command
 	@Override
@@ -55,9 +51,9 @@ public class Commands implements CommandExecutor {
 				switch (args[0].toLowerCase()) {
 				case "accept": {
 					if (args.length < 2 && p.UserNames.size() > 1) {
-						player.sendMessage("§9Multiple users commented your name. §bPlease pick one using /u accept <username>");
+						player.sendMessage("Â§9Multiple users commented your name. Â§bPlease pick one using /u accept <username>");
 						StringBuilder sb = new StringBuilder();
-						sb.append("§6Usernames:");
+						sb.append("Â§6Usernames:");
 						for (String username : p.UserNames)
 							sb.append(" ").append(username);
 						player.sendMessage(sb.toString());
@@ -65,22 +61,22 @@ public class Commands implements CommandExecutor {
 					}
 					if (p.FlairState.equals(FlairStates.NoComment)
 							|| p.UserNames.size() == 0) {
-						player.sendMessage("§cError: You need to write your username to the reddit thread at /r/TheButtonMinecraft§r");
+						player.sendMessage("Â§cError: You need to write your username to the reddit thread at /r/TheButtonMinecraftÂ§r");
 						return true;
 					}
 					if (args.length > 1 && !p.UserNames.contains(args[1])) {
-						player.sendMessage("§cError: Unknown name: " + args[1]
-								+ "§r");
+						player.sendMessage("Â§cError: Unknown name: " + args[1]
+								+ "Â§r");
 						return true;
 					}
 					if (p.Working) {
-						player.sendMessage("§cError: Something is already in progress.§r");
+						player.sendMessage("Â§cError: Something is already in progress.Â§r");
 						return true;
 					}
 
 					if ((args.length > 1 ? args[1] : p.UserNames.get(0))
 							.equals(p.UserName)) {
-						player.sendMessage("§cYou already have this user's flair.§r");
+						player.sendMessage("Â§cYou already have this user's flair.Â§r");
 						return true;
 					}
 					if (args.length > 1)
@@ -88,7 +84,7 @@ public class Commands implements CommandExecutor {
 					else
 						p.UserName = p.UserNames.get(0);
 
-					player.sendMessage("§bObtaining flair...");
+					player.sendMessage("Â§bObtaining flair...");
 					p.Working = true;
 					Timer timer = new Timer();
 					PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
@@ -113,7 +109,7 @@ public class Commands implements CommandExecutor {
 							String flair = mp.GetFormattedFlair();
 							mp.FlairState = FlairStates.Accepted;
 							PluginMain.ConfirmUserMessage(mp);
-							player.sendMessage("§bYour flair has been set:§r "
+							player.sendMessage("Â§bYour flair has been set:Â§r "
 									+ flair);
 							mp.Working = false;
 						}
@@ -124,7 +120,7 @@ public class Commands implements CommandExecutor {
 				}
 				case "ignore": {
 					if (p.FlairState.equals(FlairStates.Accepted)) {
-						player.sendMessage("§cSorry, but ignoring the flair is no longer possible. As with the original Button, you can't undo what already happened.");
+						player.sendMessage("Â§cSorry, but ignoring the flair is no longer possible. As with the original Button, you can't undo what already happened.");
 						return true;
 					}
 					if (p.FlairState.equals(FlairStates.Commented)) {
@@ -135,9 +131,9 @@ public class Commands implements CommandExecutor {
 						p.FlairState = FlairStates.Ignored;
 						p.SetFlairTime("");
 						p.UserName = "";
-						player.sendMessage("§bYou have removed your flair. You can still use /u accept to get one.§r");
+						player.sendMessage("Â§bYou have removed your flair. You can still use /u accept to get one.Â§r");
 					} else
-						player.sendMessage("§cYou already removed your flair.§r");
+						player.sendMessage("Â§cYou already removed your flair.Â§r");
 					break;
 				}
 				case "admin": // 2015.08.09.
@@ -154,16 +150,16 @@ public class Commands implements CommandExecutor {
 					break;
 				case "name": {
 					if (args.length == 1) {
-						player.sendMessage("§cUsage: /u name <playername>§r");
+						player.sendMessage("Â§cUsage: /u name <playername>Â§r");
 						break;
 					}
 					MaybeOfflinePlayer mp = MaybeOfflinePlayer
 							.GetFromName(args[1]);
 					if (mp == null) {
-						player.sendMessage("§cUnknown user: " + args[1]);
+						player.sendMessage("Â§cUnknown user: " + args[1]);
 						break;
 					}
-					player.sendMessage("§bUsername of " + args[1] + ": "
+					player.sendMessage("Â§bUsername of " + args[1] + ": "
 							+ mp.UserName);
 					break;
 				}
@@ -190,11 +186,11 @@ public class Commands implements CommandExecutor {
 							p.RainbowPresserColorMode = !p.RainbowPresserColorMode;
 							p.OtherColorMode = "";
 							if (p.RainbowPresserColorMode)
-								player.sendMessage("§eRainbow colors §aenabled.");
+								player.sendMessage("Â§eRainbow colors Â§aenabled.");
 							else
-								player.sendMessage("§eRainbow colors §cdisabled.");
+								player.sendMessage("Â§eRainbow colors Â§cdisabled.");
 						} else {
-							player.sendMessage("§cYou don't have permission for this command. Donate to get it!");
+							player.sendMessage("Â§cYou don't have permission for this command. Donate to get it!");
 							return true;
 						}
 					} else {
@@ -203,12 +199,12 @@ public class Commands implements CommandExecutor {
 							p.OtherColorMode = args[1];
 							if (p.OtherColorMode.length() > 0)
 								player.sendMessage(String.format(
-										"§eMessage color set to %s",
+										"Â§eMessage color set to %s",
 										p.OtherColorMode));
 							else
-								player.sendMessage("§eMessage color reset.");
+								player.sendMessage("Â§eMessage color reset.");
 						} else {
-							player.sendMessage("§cYou don't have permission for this command.");
+							player.sendMessage("Â§cYou don't have permission for this command.");
 							return true;
 						}
 					}
@@ -234,31 +230,44 @@ public class Commands implements CommandExecutor {
 			}
 			case "unlaugh":
 			case "unlol": {
-				Player p = null;
-				if (Lastlol != null
-						&& (p = Bukkit.getPlayer(Lastlol.UUID)) != null) {
-					p.addPotionEffect(new PotionEffect(
+				if (Lastlol != null) {
+					Lastlol.addPotionEffect(new PotionEffect(
 							PotionEffectType.BLINDNESS, 10 * 20, 5, false,
 							false));
 					for (Player pl : PluginMain.GetPlayers())
 						pl.sendMessage(player.getDisplayName()
 								+ (Lastlolornot ? " unlolled " : " unlaughed ")
-								+ p.getDisplayName());
+								+ Lastlol.getDisplayName());
 					Bukkit.getServer()
 							.getConsoleSender()
 							.sendMessage(
 									player.getDisplayName()
 											+ (Lastlolornot ? " unlolled "
 													: " unlaughed ")
-											+ p.getDisplayName());
+											+ Lastlol.getDisplayName());
 					Lastlol = null;
+				} else if (Lastlolconsole) {
+					for (Player pl : PluginMain.GetPlayers())
+						pl.sendMessage(player.getDisplayName()
+								+ (Lastlolornot ? " unlolled " : " unlaughed ")
+								+ Bukkit.getServer().getConsoleSender()
+										.getName());
+					Bukkit.getServer()
+							.getConsoleSender()
+							.sendMessage(
+									player.getDisplayName()
+											+ (Lastlolornot ? " unlolled "
+													: " unlaughed ")
+											+ Bukkit.getServer()
+													.getConsoleSender()
+													.getName());
 				}
 				return true;
 			}
 			case "yeehaw": {
 				for (Player p : PluginMain.GetPlayers()) {
 					p.playSound(p.getLocation(), "tbmc.yeehaw", 1f, 1f);
-					p.sendMessage("§b* " + p.getDisplayName() + " YEEHAWs.");
+					p.sendMessage("Â§b* " + p.getDisplayName() + " YEEHAWs.");
 				}
 				return true;
 			}
@@ -266,25 +275,28 @@ public class Commands implements CommandExecutor {
 				DoMWiki(player, args);
 				return true;
 			}
-			case "warmode": {
-				ApplicableRegionSet ars = ((WorldGuardPlugin) Bukkit
-						.getPluginManager().getPlugin("WorldGuard"))
-						.getRegionManager(player.getWorld())
-						.getApplicableRegions(player.getLocation());
-				for (ProtectedRegion pr : ars) {
-					if (pr.getFlag(OreRegenerator.FLAG_REGENORES) == StateFlag.State.ALLOW) {
-						pr.setFlag(OreRegenerator.FLAG_REGENORES,
-								StateFlag.State.DENY);
-						sender.sendMessage("§eWarmode §cdisabled §ein "
-								+ pr.getId());
-					} else {
-						pr.setFlag(OreRegenerator.FLAG_REGENORES,
-								StateFlag.State.ALLOW);
-						sender.sendMessage("§eWarmode §aenabled §ein "
-								+ pr.getId());
-					}
-					break;
+			case "tableflip": {
+				String msg = "(â•¯Â°â–¡Â°ï¼‰â•¯ï¸µ â”»â”â”»";
+				if (args.length > 0) {
+					msg = args[0] + " " + msg;
 				}
+				player.chat(msg);
+				return true;
+			}
+			case "unflip": {
+				String msg = "â”¬â”€â”¬ï»¿ ãƒŽ( ã‚œ-ã‚œãƒŽ)";
+				if (args.length > 0) {
+					msg = args[0] + "" + msg;
+				}
+				player.chat(msg);
+				return true;
+			}
+			case "chatonly": {
+				MaybeOfflinePlayer p = MaybeOfflinePlayer.AllPlayers.get(player
+						.getUniqueId());
+				p.ChatOnly = true;
+				player.setGameMode(GameMode.SPECTATOR);
+				player.sendMessage("Â§bChat-only mode enabled. You are now invincible.");
 				return true;
 			}
 			default:
@@ -305,17 +317,15 @@ public class Commands implements CommandExecutor {
 			switch (cmd.getName()) {
 			case "unlaugh":
 			case "unlol": {
-				Player p = null;
-				if (Lastlol != null
-						&& (p = Bukkit.getPlayer(Lastlol.UUID)) != null) {
-					p.addPotionEffect(new PotionEffect(
+				if (Lastlol != null) {
+					Lastlol.addPotionEffect(new PotionEffect(
 							PotionEffectType.BLINDNESS, 10 * 20, 5, false,
 							false));
 					for (Player pl : PluginMain.GetPlayers())
 						pl.sendMessage(Bukkit.getServer().getConsoleSender()
 								.getName()
 								+ (Lastlolornot ? " unlolled " : " unlaughed ")
-								+ p.getDisplayName());
+								+ Lastlol.getDisplayName());
 					Bukkit.getServer()
 							.getConsoleSender()
 							.sendMessage(
@@ -323,7 +333,7 @@ public class Commands implements CommandExecutor {
 											.getName()
 											+ (Lastlolornot ? " unlolled "
 													: " unlaughed ")
-											+ p.getDisplayName());
+											+ Lastlol.getDisplayName());
 					Lastlol = null;
 				}
 				return true;
@@ -336,7 +346,7 @@ public class Commands implements CommandExecutor {
 	private static void DoReload(Player player) {
 		try {
 			PluginMain.Console
-					.sendMessage("§6-- Reloading The Button Minecraft plugin...§r");
+					.sendMessage("Â§6-- Reloading The Button Minecraft plugin...Â§r");
 			PluginMain.LoadFiles(true); // 2015.08.09.
 			for (Player p : PluginMain.GetPlayers()) {
 				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p
@@ -345,21 +355,21 @@ public class Commands implements CommandExecutor {
 						|| mp.FlairState.equals(FlairStates.Commented)) {
 					PluginMain.ConfirmUserMessage(mp);
 				}
-				String msg = "§bNote: The auto-flair plugin has been reloaded. You might need to wait 10s to have your flair.§r"; // 2015.08.09.
+				String msg = "Â§bNote: The auto-flair plugin has been reloaded. You might need to wait 10s to have your flair.Â§r"; // 2015.08.09.
 				p.sendMessage(msg); // 2015.08.09.
 			}
-			PluginMain.Console.sendMessage("§6-- Reloading done!§r");
+			PluginMain.Console.sendMessage("Â§6-- Reloading done!Â§r");
 		} catch (Exception e) {
 			System.out.println("Error!\n" + e);
 			if (player != null)
-				player.sendMessage("§cAn error occured. See console for details.§r");
+				player.sendMessage("Â§cAn error occured. See console for details.Â§r");
 			PluginMain.LastException = e; // 2015.08.09.
 		}
 	}
 
 	private static Player ReloadPlayer; // 2015.08.09.
 
-	private static String DoAdminUsage = "§cUsage: /u admin reload|playerinfo|getlasterror|save|setflair|updateplugin|togglerpshow|toggledebug|savepos|loadpos§r";
+	private static String DoAdminUsage = "Â§cUsage: /u admin reload|playerinfo|getlasterror|save|setflair|updateplugin|togglerpshow|toggledebug|savepos|loadposÂ§r";
 
 	private static void DoAdmin(Player player, String[] args) {
 		if (player == null || PluginMain.permission.has(player, "tbmc.admin")) {
@@ -374,7 +384,7 @@ public class Commands implements CommandExecutor {
 				ReloadPlayer = player; // 2015.08.09.
 				SendMessage(
 						player,
-						"§bMake sure to save the current settings before you modify and reload them! Type /u admin confirm when done.§r");
+						"Â§bMake sure to save the current settings before you modify and reload them! Type /u admin confirm when done.Â§r");
 				break;
 			case "playerinfo":
 				DoPlayerInfo(player, args);
@@ -387,12 +397,12 @@ public class Commands implements CommandExecutor {
 					DoReload(player); // 2015.08.09.
 				else
 					SendMessage(player,
-							"§cYou need to do /u admin reload first.§r");
+							"Â§cYou need to do /u admin reload first.Â§r");
 				break;
 			case "save":
 				PluginMain.SaveFiles(); // 2015.08.09.
 				SendMessage(player,
-						"§bSaved files. Now you can edit them and reload if you want.§r");
+						"Â§bSaved files. Now you can edit them and reload if you want.Â§r");
 				break;
 			case "setflair":
 				DoSetFlair(player, args);
@@ -423,19 +433,19 @@ public class Commands implements CommandExecutor {
 				return;
 			}
 		} else
-			player.sendMessage("§cYou don't have permission to use this command.§r");
+			player.sendMessage("Â§cYou don't have permission to use this command.Â§r");
 	}
 
 	private static void DoPlayerInfo(Player player, String[] args) { // 2015.08.09.
 		// args[0] is "admin" - args[1] is "playerinfo"
 		if (args.length == 2) {
-			String message = "§cUsage: /u admin playerinfo <player>§r";
+			String message = "Â§cUsage: /u admin playerinfo <player>Â§r";
 			SendMessage(player, message);
 			return;
 		}
 		MaybeOfflinePlayer p = MaybeOfflinePlayer.GetFromName(args[2]);
 		if (p == null) {
-			String message = "§cPlayer not found: " + args[2] + "§r";
+			String message = "Â§cPlayer not found: " + args[2] + "Â§r";
 			SendMessage(player, message);
 			return;
 		}
@@ -444,7 +454,7 @@ public class Commands implements CommandExecutor {
 		SendMessage(player, "Username: " + p.UserName);
 		SendMessage(player, "Flair state: " + p.FlairState);
 		StringBuilder sb = new StringBuilder();
-		sb.append("§6Usernames:");
+		sb.append("Â§6Usernames:");
 		for (String username : p.UserNames)
 			sb.append(" ").append(username);
 		SendMessage(player, sb.toString());
@@ -474,15 +484,15 @@ public class Commands implements CommandExecutor {
 			targetplayer.FlairState = FlairStates.Accepted;
 			targetplayer.UserName = "";
 			SendMessage(player,
-					"§bThe flair has been set. Player: "
+					"Â§bThe flair has been set. Player: "
 							+ targetplayer.PlayerName + " Flair: "
-							+ targetplayer.GetFormattedFlair() + "§r");
+							+ targetplayer.GetFormattedFlair() + "Â§r");
 		} else {
 			SendMessage(
 					player,
-					"§cSorry, but you can't change an existing flair. (Use -- as time to set non-presser or can't press)");
+					"Â§cSorry, but you can't change an existing flair. (Use -- as time to set non-presser or can't press)");
 			SendMessage(Bukkit.getPlayer(targetplayer.UUID),
-					"§cYour flair cannot be changed.");
+					"Â§cYour flair cannot be changed.");
 		}
 	}
 
@@ -490,12 +500,12 @@ public class Commands implements CommandExecutor {
 		// args[0] is "admin" - args[1] is "setflair"
 		if (args.length < 4) {
 			SendMessage(player,
-					"§cUsage: /u admin setflair <playername> <flaircolor> [number]");
+					"Â§cUsage: /u admin setflair <playername> <flaircolor> [number]");
 			return;
 		}
 		Player p = Bukkit.getPlayer(args[2]);
 		if (p == null) {
-			SendMessage(player, "§cPLayer not found.&r");
+			SendMessage(player, "Â§cPLayer not found.&r");
 			return;
 		}
 		short flaircolor = 0x00;
@@ -503,7 +513,7 @@ public class Commands implements CommandExecutor {
 			flaircolor = Short.parseShort(args[3], 16);
 		} catch (Exception e) {
 			SendMessage(player,
-					"§cFlaircolor must be a hexadecimal number (don't include &).");
+					"Â§cFlaircolor must be a hexadecimal number (don't include &).");
 			return;
 		}
 		SetPlayerFlair(player,
@@ -535,14 +545,14 @@ public class Commands implements CommandExecutor {
 		if (player == null || player.isOp()
 				|| player.getName().equals("NorbiPeti")) {
 			if (args.length == 1) {
-				String message = "§cUsage: /u announce add|remove|settime|list|edit§r";
+				String message = "Â§cUsage: /u announce add|remove|settime|list|editÂ§r";
 				SendMessage(player, message);
 				return;
 			}
 			switch (args[1].toLowerCase()) {
 			case "add":
 				if (args.length < 3) {
-					SendMessage(player, "§cUsage: /u announce add <message>");
+					SendMessage(player, "Â§cUsage: /u announce add <message>");
 					return;
 				}
 				StringBuilder sb = new StringBuilder();
@@ -551,13 +561,13 @@ public class Commands implements CommandExecutor {
 					if (i != args.length - 1)
 						sb.append(" ");
 				}
-				String finalmessage = sb.toString().replace('&', '§');
+				String finalmessage = sb.toString().replace('&', 'Â§');
 				PluginMain.AnnounceMessages.add(finalmessage);
-				SendMessage(player, "§bAnnouncement added.§r");
+				SendMessage(player, "Â§bAnnouncement added.Â§r");
 				break;
 			case "remove":
 				if (args.length < 3) {
-					SendMessage(player, "§cUsage: /u announce remove <index>");
+					SendMessage(player, "Â§cUsage: /u announce remove <index>");
 					return;
 				}
 				PluginMain.AnnounceMessages.remove(Integer.parseInt(args[2]));
@@ -565,33 +575,33 @@ public class Commands implements CommandExecutor {
 			case "settime":
 				if (args.length < 3) {
 					SendMessage(player,
-							"§cUsage: /u announce settime <minutes>");
+							"Â§cUsage: /u announce settime <minutes>");
 					return;
 				}
 				PluginMain.AnnounceTime = Integer.parseInt(args[2]) * 60 * 1000;
 				SendMessage(player, "Time set between announce messages");
 				break;
 			case "list":
-				SendMessage(player, "§bList of announce messages:§r");
-				SendMessage(player, "§bFormat: [index] message§r");
+				SendMessage(player, "Â§bList of announce messages:Â§r");
+				SendMessage(player, "Â§bFormat: [index] messageÂ§r");
 				int i = 0;
 				for (String message : PluginMain.AnnounceMessages)
 					SendMessage(player, "[" + i++ + "] " + message);
 				SendMessage(player,
-						"§bCurrent wait time between announcements: "
+						"Â§bCurrent wait time between announcements: "
 								+ PluginMain.AnnounceTime / 60 / 1000
-								+ " minute(s)§r");
+								+ " minute(s)Â§r");
 				break;
 			case "edit":
 				if (commandblock == null) {
 					SendMessage(
 							player,
-							"§cError: This command can only be used from a command block. Use /u announce remove.");
+							"Â§cError: This command can only be used from a command block. Use /u announce remove.");
 					break;
 				}
 				if (args.length < 4) {
 					commandblock
-							.sendMessage("§cUsage: /u announce edit <index> <message>");
+							.sendMessage("Â§cUsage: /u announce edit <index> <message>");
 					return;
 				}
 				StringBuilder sb1 = new StringBuilder();
@@ -600,7 +610,7 @@ public class Commands implements CommandExecutor {
 					if (i1 != args.length - 1)
 						sb1.append(" ");
 				}
-				String finalmessage1 = sb1.toString().replace('&', '§');
+				String finalmessage1 = sb1.toString().replace('&', 'Â§');
 				int index = Integer.parseInt(args[2]);
 				if (index > 100)
 					break;
@@ -611,7 +621,7 @@ public class Commands implements CommandExecutor {
 				commandblock.sendMessage("Announcement edited.");
 				break;
 			default:
-				String message = "§cUsage: /u announce add|remove|settime|list|edit§r";
+				String message = "Â§cUsage: /u announce add|remove|settime|list|editÂ§r";
 				SendMessage(player, message);
 				return;
 			}
@@ -622,7 +632,7 @@ public class Commands implements CommandExecutor {
 	private static void DoSaveLoadPos(Player player, String[] args) { // 2015.08.09.
 		// args[0] is "admin" - args[1] is "savepos|loadpos"
 		if (args.length == 2) {
-			String message = "§cUsage: /u admin savepos|loadpos <player>§r";
+			String message = "Â§cUsage: /u admin savepos|loadpos <player>Â§r";
 			SendMessage(player, message);
 			return;
 		}
@@ -632,14 +642,14 @@ public class Commands implements CommandExecutor {
 		} catch (Exception e) {
 		}
 		if (!MaybeOfflinePlayer.AllPlayers.containsKey(p.getUniqueId())) {
-			String message = "§cPlayer not found: " + args[2] + "§r";
+			String message = "Â§cPlayer not found: " + args[2] + "Â§r";
 			SendMessage(player, message);
 			return;
 		}
 		MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(p
 				.getUniqueId());
 		if (p == null) {
-			String message = "§cPlayer is not online: " + args[2] + "§r";
+			String message = "Â§cPlayer is not online: " + args[2] + "Â§r";
 			SendMessage(player, message);
 			return;
 		}
@@ -649,7 +659,7 @@ public class Commands implements CommandExecutor {
 			if (mp.SavedLocation != null)
 				p.teleport(mp.SavedLocation);
 		} else {
-			String message = "§cUsage: /u admin savepos|loadpos <player>§r";
+			String message = "Â§cUsage: /u admin savepos|loadpos <player>Â§r";
 			SendMessage(player, message);
 			return;
 		}
@@ -660,7 +670,7 @@ public class Commands implements CommandExecutor {
 	private static void DoUpdateDynmap(Player player, String[] args) {
 		// args[0] is "admin" - args[1] is "updatedynmap"
 		if (args.length == 2) {
-			String message = "§cUsage: /u admin updatedynmap <password>§r";
+			String message = "Â§cUsage: /u admin updatedynmap <password>Â§r";
 			SendMessage(player, message);
 			return;
 		}
@@ -673,14 +683,14 @@ public class Commands implements CommandExecutor {
 	private static void DoKittyCannon(Player player, String[] args) {
 		if (player == null) {
 			SendMessage(player,
-					"§cThis command can only be used by a player.§r");
+					"Â§cThis command can only be used by a player.Â§r");
 			return;
 		}
 		MinigamePlayer mp = Minigames.plugin.pdata.getMinigamePlayer(player);
 		if (!(mp.isInMinigame() && mp.getMinigame().getName(false)
 				.equalsIgnoreCase(Commands.KittyCannonMinigame))) {
 			SendMessage(player,
-					"§cYou can only use KittyCannon in it's minigame!");
+					"Â§cYou can only use KittyCannon in it's minigame!");
 			return;
 		}
 		try {
@@ -711,7 +721,7 @@ public class Commands implements CommandExecutor {
 							final ItemStack head = new ItemStack(
 									Material.SKULL_ITEM, 1, (short) 3, (byte) 3);
 							SkullMeta im = (SkullMeta) head.getItemMeta();
-							im.setDisplayName("§rOcelot Head");
+							im.setDisplayName("Â§rOcelot Head");
 							im.setOwner("MHF_Ocelot");
 							im.setLore(lore);
 							head.setItemMeta(im);
@@ -729,10 +739,10 @@ public class Commands implements CommandExecutor {
 		query = query.trim();
 		if (args.length == 0)
 			SendMessage(player,
-					"§bMinecraft Wiki link: http://minecraft.gamepedia.com/");
+					"Â§bMinecraft Wiki link: http://minecraft.gamepedia.com/");
 		else
 			SendMessage(player,
-					"§bMinecraft Wiki link: http://minecraft.gamepedia.com/index.php?search="
+					"Â§bMinecraft Wiki link: http://minecraft.gamepedia.com/index.php?search="
 							+ query + "&title=Special%3ASearch&go=Go");
 	}
 }
