@@ -507,12 +507,19 @@ public class Commands implements CommandExecutor {
 			return;
 		}
 		short flairtime = 0x00;
-		try {
-			flairtime = Short.parseShort(args[3]);
-		} catch (Exception e) {
-			SendMessage(player, "§cFlairtime must be a number.");
-			return;
-		}
+		if (args[3].equalsIgnoreCase("non-presser"))
+			flairtime = MaybeOfflinePlayer.FlairTimeNonPresser;
+		else if (args[3].equalsIgnoreCase("cant-press"))
+			flairtime = MaybeOfflinePlayer.FlairTimeCantPress;
+		else {
+			try {
+				flairtime = Short.parseShort(args[3]);
+			} catch (Exception e) {
+				SendMessage(player,
+						"§cFlairtime must be a number or \"non-presser\", \"cant-press\".");
+				return;
+			}
+		} //TODO: Split config to per-player
 		boolean cheater = false;
 		if (args[4].equalsIgnoreCase("true"))
 			cheater = true;
