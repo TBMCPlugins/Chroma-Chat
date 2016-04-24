@@ -61,6 +61,8 @@ public class MaybeOfflinePlayer {
 			String tmp = cs2.getString("flairtime");
 			if (tmp.equals("--"))
 				mp.FlairTime = FlairTimeNonPresser;
+			else if (tmp.equals("??"))
+				mp.FlairTime = FlairTimeCantPress;
 			else if (tmp.length() > 0)
 				mp.FlairTime = Short.parseShort(tmp);
 			String flairstate = cs2.getString("flairstate");
@@ -93,7 +95,11 @@ public class MaybeOfflinePlayer {
 	}
 
 	public static MaybeOfflinePlayer GetFromName(String name) {
-		return AllPlayers.get(Bukkit.getPlayer(name).getUniqueId());
+		Player p = Bukkit.getPlayer(name);
+		if (p != null)
+			return AllPlayers.get(p.getUniqueId());
+		else
+			return null;
 	}
 
 	public String GetFormattedFlair() {

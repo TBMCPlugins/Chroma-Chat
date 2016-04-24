@@ -154,7 +154,7 @@ public class Commands implements CommandExecutor {
 					MaybeOfflinePlayer mp = MaybeOfflinePlayer
 							.GetFromName(args[1]);
 					if (mp == null) {
-						player.sendMessage("§cUnknown user: " + args[1]);
+						player.sendMessage("§cUnknown user (player has to be online): " + args[1]);
 						break;
 					}
 					player.sendMessage("§bUsername of " + args[1] + ": "
@@ -443,7 +443,7 @@ public class Commands implements CommandExecutor {
 		}
 		MaybeOfflinePlayer p = MaybeOfflinePlayer.GetFromName(args[2]);
 		if (p == null) {
-			String message = "§cPlayer not found: " + args[2] + "§r";
+			String message = "§cPlayer not found: " + args[2] + " - Currently only online players can be viewed§r";
 			SendMessage(player, message);
 			return;
 		}
