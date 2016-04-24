@@ -15,8 +15,7 @@ public class MaybeOfflinePlayer {
 	public String PlayerName;
 	public String UserName;
 	public List<String> UserNames;
-	private String FlairTime;
-	private short FlairColor;
+	private short FlairTime;
 	public FlairStates FlairState;
 	public boolean RPMode = true;
 	public boolean PressedF;
@@ -30,6 +29,10 @@ public class MaybeOfflinePlayer {
 	public boolean RainbowPresserColorMode = false;
 	public String OtherColorMode = "";
 	public boolean ChatOnly = false;
+	public boolean FlairCheater = false;
+	public static final short FlairTimeNonPresser = -1;
+	public static final short FlairTimeCantPress = -2;
+	public static final short FlairTimeNone = -3;
 
 	public UUID UUID;
 
@@ -39,8 +42,7 @@ public class MaybeOfflinePlayer {
 		if (!AllPlayers.containsKey(uuid)) {
 			MaybeOfflinePlayer player = new MaybeOfflinePlayer();
 			player.UUID = uuid;
-			player.FlairColor = 0;
-			player.FlairTime = "";
+			player.FlairTime = 0;
 			player.FlairState = FlairStates.NoComment;
 			player.UserNames = new ArrayList<>();
 			AllPlayers.put(uuid, player);
@@ -56,8 +58,11 @@ public class MaybeOfflinePlayer {
 			MaybeOfflinePlayer mp = AddPlayerIfNeeded(java.util.UUID
 					.fromString(cs2.getString("uuid")));
 			mp.UserName = cs2.getString("username");
-			mp.FlairColor = (short) cs2.getInt("flaircolor");
-			mp.FlairTime = cs2.getString("flairtime");
+			String tmp = cs2.getString("flairtime");
+			if (tmp.equals("--"))
+				mp.FlairTime = FlairTimeNonPresser;
+			else if (tmp.length() > 0)
+				mp.FlairTime = Short.parseShort(tmp);
 			String flairstate = cs2.getString("flairstate");
 			if (flairstate != null)
 				mp.FlairState = FlairStates.valueOf(flairstate);
@@ -67,6 +72,7 @@ public class MaybeOfflinePlayer {
 			mp.UserNames = cs2.getStringList("usernames");
 			mp.FCount = cs2.getInt("fcount");
 			mp.FDeaths = cs2.getInt("fdeaths");
+			mp.FlairCheater = cs2.getBoolean("flaircheater");
 		}
 	}
 
@@ -76,48 +82,42 @@ public class MaybeOfflinePlayer {
 			ConfigurationSection cs2 = cs.createSection(mp.UUID.toString());
 			cs2.set("playername", mp.PlayerName);
 			cs2.set("username", mp.UserName);
-			cs2.set("flaircolor", mp.FlairColor);
 			cs2.set("flairtime", mp.FlairTime);
 			cs2.set("flairstate", mp.FlairState.toString());
 			cs2.set("uuid", mp.UUID.toString());
 			cs2.set("usernames", mp.UserNames);
 			cs2.set("fcount", mp.FCount);
 			cs2.set("fdeaths", mp.FDeaths);
+			cs2.set("flaircheater", mp.FlairCheater);
 		}
 	}
 
 	public static MaybeOfflinePlayer GetFromName(String name) {
-		for (MaybeOfflinePlayer mp : AllPlayers.values())
-			if (mp.PlayerName.equalsIgnoreCase(name))
-				return mp;
-		return null;
+		return AllPlayers.get(Bukkit.getPlayer(name).getUniqueId());
 	}
 
 	public String GetFormattedFlair() {
-		if (FlairColor == 0x00)
+		if (FlairTime == FlairTimeCantPress)
+			return String.format("§r(--s)§r");
+		if (FlairTime == FlairTimeNonPresser)
+			return String.format("§7(--s)§r");
+		if (FlairTime == FlairTimeNone)
 			return "";
-		if (FlairTime == null || FlairTime.length() == 0)
-			return String.format("§%x(??s)§r", FlairColor);
-		return String.format("§%x(%ss)§r", FlairColor, FlairTime);
+		return String.format("§%x(%ss)§r", GetFlairColor(), FlairTime);
 	}
 
-	public void SetFlairColor(int color) {
-		FlairColor = (short) color;
-		SetFlair2();
-	}
-
-	public void SetFlairTime(String time) {
+	public void SetFlair(short time) {
 		FlairTime = time;
-		SetFlair2();
+		FlairUpdate();
 	}
 
-	public void SetFlair(int color, String time) {
-		FlairColor = (short) color;
+	public void SetFlair(short time, boolean cheater) {
 		FlairTime = time;
-		SetFlair2();
+		FlairCheater = cheater;
+		FlairUpdate();
 	}
 
-	private void SetFlair2() {
+	public void FlairUpdate() {
 
 		// Flairs from Command Block The Button - Teams
 		// PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard().getTeams().add()
@@ -127,10 +127,28 @@ public class MaybeOfflinePlayer {
 	}
 
 	public short GetFlairColor() {
-		return FlairColor;
+		if (FlairCheater)
+			return 0x5;
+		if (FlairTime == -1)
+			return 0x7;
+		else if (FlairTime == -2)
+			return 0xf;
+		else if (FlairTime <= 60 && FlairTime >= 52)
+			return 0x5;
+		else if (FlairTime <= 51 && FlairTime >= 42)
+			return 0x9;
+		else if (FlairTime <= 41 && FlairTime >= 32)
+			return 0xa;
+		else if (FlairTime <= 31 && FlairTime >= 22)
+			return 0xe;
+		else if (FlairTime <= 21 && FlairTime >= 11)
+			return 0x6;
+		else if (FlairTime <= 11 && FlairTime >= 0)
+			return 0xc;
+		return 0xf;
 	}
 
-	public String GetFlairTime() {
+	public short GetFlairTime() {
 		return FlairTime;
 	}
 

@@ -243,33 +243,9 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		p.UserName = username;
 		p.FlairState = FlairStates.Recognised;
 		switch (flairclass) {
-		case "press-1":
-			p.SetFlairColor(0xc);
-			break;
-		case "press-2":
-			p.SetFlairColor(0x6);
-			break;
-		case "press-3":
-			p.SetFlairColor(0xe);
-			break;
-		case "press-4":
-			p.SetFlairColor(0xa);
-			break;
-		case "press-5":
-			p.SetFlairColor(0x9);
-			break;
-		case "press-6":
-			p.SetFlairColor(0x5);
-			break;
-		case "no-press":
-			p.SetFlairColor(0x7);
-			break;
 		case "cheater":
-			p.SetFlairColor(0x5);
-			break;
-		case "cant-press":
-			p.SetFlairColor(0xf);
-			break;
+			p.SetFlair((short) 0x5, true);
+			return;
 		case "unknown":
 			if (text.equals("-1")) // If true, only non-presser/can't press; if
 									// false, any flair (but we can still detect
@@ -277,36 +253,34 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			{
 				try {
 					if (CheckForJoinDate(p)) {
-						p.SetFlair(0x7, "--");
+						p.SetFlair(MaybeOfflinePlayer.FlairTimeNonPresser);
 					} else {
-						p.SetFlair(0xf, "--");
+						p.SetFlair(MaybeOfflinePlayer.FlairTimeCantPress);
 					}
 				} catch (Exception e) {
 					p.FlairState = FlairStates.Commented; // Flair unknown
-					p.SetFlairColor(0);
+					p.SetFlair(MaybeOfflinePlayer.FlairTimeNone);
 					e.printStackTrace();
 				}
 			} else {
 				try {
 					if (CheckForJoinDate(p)) {
 						p.FlairState = FlairStates.Commented; // Flair unknown
-						p.SetFlairColor(0);
+						p.SetFlair(MaybeOfflinePlayer.FlairTimeNone);
 					} else {
-						p.SetFlair(0xf, "--");
+						p.SetFlair(MaybeOfflinePlayer.FlairTimeCantPress);
 					}
 				} catch (Exception e) {
 					p.FlairState = FlairStates.Commented; // Flair unknown
-					p.SetFlairColor(0);
+					p.SetFlair(MaybeOfflinePlayer.FlairTimeNone);
 					e.printStackTrace();
 				}
 			}
 			return;
 		default:
-			return;
+			break;
 		}
-		if (text.equals("-1"))
-			text = "--";
-		p.SetFlairTime(text);
+		p.SetFlair(Short.parseShort(text));
 	}
 
 	public static boolean CheckForJoinDate(MaybeOfflinePlayer mp)

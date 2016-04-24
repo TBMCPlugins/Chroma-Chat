@@ -41,7 +41,7 @@ public class Commands implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
 		if (sender instanceof Player) {
-			Player player = (Player) sender;
+			final Player player = (Player) sender;
 			switch (cmd.getName()) {
 			case "u": {
 				if (args.length < 1)
@@ -88,8 +88,6 @@ public class Commands implements CommandExecutor {
 					p.Working = true;
 					Timer timer = new Timer();
 					PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
-						Player player = Bukkit.getPlayer(mp.UUID);
-
 						@Override
 						public void run() {
 							try {
@@ -129,7 +127,7 @@ public class Commands implements CommandExecutor {
 					}
 					if (!p.FlairState.equals(FlairStates.Ignored)) {
 						p.FlairState = FlairStates.Ignored;
-						p.SetFlairTime("");
+						p.SetFlair(MaybeOfflinePlayer.FlairTimeNone);
 						p.UserName = "";
 						player.sendMessage("§bYou have removed your flair. You can still use /u accept to get one.§r");
 					} else
@@ -478,47 +476,55 @@ public class Commands implements CommandExecutor {
 	}
 
 	private static void SetPlayerFlair(Player player,
-			MaybeOfflinePlayer targetplayer, short flaircolor, String flairtime) {
-		if (targetplayer.GetFlairColor() == 0x00 || flairtime.length() > 0) {
-			targetplayer.SetFlair(flaircolor, flairtime);
-			targetplayer.FlairState = FlairStates.Accepted;
+			MaybeOfflinePlayer targetplayer, short flairtime, boolean cheater,
+			String username) {
+		targetplayer.SetFlair(flairtime, cheater);
+		targetplayer.FlairState = FlairStates.Accepted;
+		if (username == null)
 			targetplayer.UserName = "";
-			SendMessage(player,
-					"§bThe flair has been set. Player: "
-							+ targetplayer.PlayerName + " Flair: "
-							+ targetplayer.GetFormattedFlair() + "§r");
-		} else {
-			SendMessage(
-					player,
-					"§cSorry, but you can't change an existing flair. (Use -- as time to set non-presser or can't press)");
-			SendMessage(Bukkit.getPlayer(targetplayer.UUID),
-					"§cYour flair cannot be changed.");
+		else {
+			targetplayer.UserName = username;
+			if (!targetplayer.UserNames.contains(username))
+				targetplayer.UserNames.add(username);
 		}
+		SendMessage(player,
+				"§bThe flair has been set. Player: " + targetplayer.PlayerName
+						+ " Flair: " + targetplayer.GetFormattedFlair() + "§r");
 	}
 
+	// TODO: Put commands into separate classes
 	private static void DoSetFlair(Player player, String[] args) {
 		// args[0] is "admin" - args[1] is "setflair"
-		if (args.length < 4) {
-			SendMessage(player,
-					"§cUsage: /u admin setflair <playername> <flaircolor> [number]");
+		if (args.length < 5) {
+			SendMessage(
+					player,
+					"§cUsage: /u admin setflair <playername> <flairtime> <cheater(true/false)> [username]");
 			return;
 		}
 		Player p = Bukkit.getPlayer(args[2]);
 		if (p == null) {
-			SendMessage(player, "§cPLayer not found.&r");
+			SendMessage(player, "§cPlayer not found.&r");
 			return;
 		}
-		short flaircolor = 0x00;
+		short flairtime = 0x00;
 		try {
-			flaircolor = Short.parseShort(args[3], 16);
+			flairtime = Short.parseShort(args[3]);
 		} catch (Exception e) {
-			SendMessage(player,
-					"§cFlaircolor must be a hexadecimal number (don't include &).");
+			SendMessage(player, "§cFlairtime must be a number.");
+			return;
+		}
+		boolean cheater = false;
+		if (args[4].equalsIgnoreCase("true"))
+			cheater = true;
+		else if (args[4].equalsIgnoreCase("false"))
+			cheater = false;
+		else {
+			SendMessage(player, "§cUnknown value for cheater parameter.");
 			return;
 		}
 		SetPlayerFlair(player,
 				MaybeOfflinePlayer.AddPlayerIfNeeded(p.getUniqueId()),
-				flaircolor, (args.length < 5 ? "" : args[4]));
+				flairtime, cheater, (args.length > 5 ? args[5] : null));
 	}
 
 	private static void DoUpdatePlugin(Player player) { // 2015.08.10.

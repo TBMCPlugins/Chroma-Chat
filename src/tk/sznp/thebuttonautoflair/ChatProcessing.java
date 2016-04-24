@@ -219,7 +219,7 @@ public class ChatProcessing {
 								String.format(
 										"\",\"color\":\"%s\"},{\"text\":\"§b@console§r\",\"color\":\"blue\"},{\"text\":\"",
 										colormode)); //TODO: Add optional username option to setflair
-				System.out.println("\007");
+				System.out.println("\007"); //TODO: Only store flair times and detect the reset (#17)
 			}
 		}
 

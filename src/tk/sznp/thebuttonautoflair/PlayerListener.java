@@ -139,7 +139,7 @@ public class PlayerListener implements Listener {
 
 		mp.RPMode = true;
 
-		mp.SetFlairColor(mp.GetFlairColor()); // Update display
+		mp.FlairUpdate(); // Update display
 
 		boolean ispremium = ((FastLoginBukkit) FastLoginBukkit
 				.getPlugin(FastLoginBukkit.class)).getEnabledPremium()
