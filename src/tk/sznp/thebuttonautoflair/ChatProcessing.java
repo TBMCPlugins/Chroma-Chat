@@ -165,9 +165,12 @@ public class ChatProcessing {
 									.GetFlairColor()));
 				}
 
-				formattedmessage = formattedmessage.replaceAll(
-						"(?i)" + Pattern.quote(p.getName()),
-						color + p.getName() + "§r");
+				formattedmessage = formattedmessage
+						.replaceAll(
+								"(?i)" + Pattern.quote(p.getName()),
+								String.format(
+										"\",\"color\":\"%s\"},{\"text\":\"%s%s%s\",\"color\":\"blue\"},{\"text\":\"",
+										colormode, color, p.getName(), "§r"));
 			}
 			for (String n : PlayerListener.nicknames.keySet()) {
 				Player p = null;
@@ -196,8 +199,13 @@ public class ChatProcessing {
 					MaybeOfflinePlayer.AddPlayerIfNeeded(p.getUniqueId());
 				}
 				if (p != null) {
-					formattedmessage = formattedmessage.replaceAll("(?i)"
-							+ Pattern.quote(nwithoutformatting), n + "§r");
+
+					formattedmessage = formattedmessage
+							.replaceAll(
+									"(?i)" + Pattern.quote(nwithoutformatting),
+									String.format(
+											"\",\"color\":\"%s\"},{\"text\":\"%s%s\",\"color\":\"blue\"},{\"text\":\"",
+											colormode, n, "§r"));
 				}
 			}
 
@@ -205,6 +213,12 @@ public class ChatProcessing {
 					+ ".*")) {
 				formattedmessage = formattedmessage.replaceAll(
 						"(?i)" + Pattern.quote("@console"), "§b@console§r");
+				formattedmessage = formattedmessage
+						.replaceAll(
+								"(?i)" + Pattern.quote("@console"),
+								String.format(
+										"\",\"color\":\"%s\"},{\"text\":\"§b@console§r\",\"color\":\"blue\"},{\"text\":\"",
+										colormode)); //TODO: Add optional username option to setflair
 				System.out.println("\007");
 			}
 		}
