@@ -154,7 +154,8 @@ public class Commands implements CommandExecutor {
 					MaybeOfflinePlayer mp = MaybeOfflinePlayer
 							.GetFromName(args[1]);
 					if (mp == null) {
-						player.sendMessage("§cUnknown user (player has to be online): " + args[1]);
+						player.sendMessage("§cUnknown user (player has to be online): "
+								+ args[1]);
 						break;
 					}
 					player.sendMessage("§bUsername of " + args[1] + ": "
@@ -443,7 +444,8 @@ public class Commands implements CommandExecutor {
 		}
 		MaybeOfflinePlayer p = MaybeOfflinePlayer.GetFromName(args[2]);
 		if (p == null) {
-			String message = "§cPlayer not found: " + args[2] + " - Currently only online players can be viewed§r";
+			String message = "§cPlayer not found: " + args[2]
+					+ " - Currently only online players can be viewed§r";
 			SendMessage(player, message);
 			return;
 		}
@@ -498,7 +500,7 @@ public class Commands implements CommandExecutor {
 		if (args.length < 5) {
 			SendMessage(
 					player,
-					"§cUsage: /u admin setflair <playername> <flairtime> <cheater(true/false)> [username]");
+					"§cUsage: /u admin setflair <playername> <flairtime (or non-presser, cant-press, none)> <cheater(true/false)> [username]");
 			return;
 		}
 		Player p = Bukkit.getPlayer(args[2]);
@@ -511,15 +513,17 @@ public class Commands implements CommandExecutor {
 			flairtime = MaybeOfflinePlayer.FlairTimeNonPresser;
 		else if (args[3].equalsIgnoreCase("cant-press"))
 			flairtime = MaybeOfflinePlayer.FlairTimeCantPress;
+		else if (args[3].equalsIgnoreCase("none"))
+			flairtime = MaybeOfflinePlayer.FlairTimeNone;
 		else {
 			try {
 				flairtime = Short.parseShort(args[3]);
 			} catch (Exception e) {
 				SendMessage(player,
-						"§cFlairtime must be a number or \"non-presser\", \"cant-press\".");
+						"§cFlairtime must be a number, \"non-presser\", \"cant-press\" or \"none\".");
 				return;
 			}
-		} //TODO: Split config to per-player
+		} // TODO: Split config to per-player
 		boolean cheater = false;
 		if (args[4].equalsIgnoreCase("true"))
 			cheater = true;
