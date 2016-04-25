@@ -42,7 +42,7 @@ public class MaybeOfflinePlayer {
 		if (!AllPlayers.containsKey(uuid)) {
 			MaybeOfflinePlayer player = new MaybeOfflinePlayer();
 			player.UUID = uuid;
-			player.FlairTime = 0;
+			player.FlairTime = FlairTimeNone;
 			player.FlairState = FlairStates.NoComment;
 			player.UserNames = new ArrayList<>();
 			AllPlayers.put(uuid, player);
