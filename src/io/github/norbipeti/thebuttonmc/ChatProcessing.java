@@ -1,4 +1,4 @@
-package tk.sznp.thebuttonautoflair;
+package io.github.norbipeti.thebuttonmc;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -218,7 +218,7 @@ public class ChatProcessing {
 								"(?i)" + Pattern.quote("@console"),
 								String.format(
 										"\",\"color\":\"%s\"},{\"text\":\"§b@console§r\",\"color\":\"blue\"},{\"text\":\"",
-										colormode)); //TODO: Add optional username option to setflair
+										colormode));
 				System.out.println("\007");
 			}
 		}

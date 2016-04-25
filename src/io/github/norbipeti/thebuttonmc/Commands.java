@@ -1,4 +1,4 @@
-package tk.sznp.thebuttonautoflair;
+package io.github.norbipeti.thebuttonmc;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -275,7 +275,7 @@ public class Commands implements CommandExecutor {
 				return true;
 			}
 			case "tableflip": {
-				String msg = "(╯°□°）╯︵ ┻━┻";
+				String msg = "(╯°□°）╯︵ ┻�?┻";
 				if (args.length > 0) {
 					msg = args[0] + " " + msg;
 				}
@@ -283,7 +283,7 @@ public class Commands implements CommandExecutor {
 				return true;
 			}
 			case "unflip": {
-				String msg = "┬─┬﻿ ノ( ゜-゜ノ)";
+				String msg = "┬─┬﻿ �?�( ゜-゜�?�)";
 				if (args.length > 0) {
 					msg = args[0] + "" + msg;
 				}

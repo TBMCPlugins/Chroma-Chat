@@ -1,4 +1,4 @@
-package tk.sznp.thebuttonautoflair;
+package io.github.norbipeti.thebuttonmc;
 
 import org.bukkit.entity.Player;
 

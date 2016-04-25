@@ -1,4 +1,4 @@
-package tk.sznp.thebuttonautoflair;
+package io.github.norbipeti.thebuttonmc;
 
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
