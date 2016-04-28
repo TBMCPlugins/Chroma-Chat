@@ -84,6 +84,8 @@ public class PlayerListener implements Listener {
 			tt.mp = mp;
 			timer.schedule(tt, 1000);
 		} else {
+			if (mp.GetFlairTime() == 0x00)
+				mp.SetFlair(MaybeOfflinePlayer.FlairTimeNone);
 			Timer timer = new Timer();
 			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
 				@Override
@@ -636,9 +638,9 @@ public class PlayerListener implements Listener {
 								}
 							});
 		}
-		
-		MaybeOfflinePlayer mp=MaybeOfflinePlayer.GetFromPlayer(e.getPlayer());
-		if(mp.ChatOnly)
+
+		MaybeOfflinePlayer mp = MaybeOfflinePlayer.GetFromPlayer(e.getPlayer());
+		if (mp.ChatOnly)
 			e.setCancelled(true);
 	}
 
@@ -658,11 +660,12 @@ public class PlayerListener implements Listener {
 			e.getPlayer().sendMessage(
 					"§cYou are not allowed to teleport to/from No Mans Land.");
 		}
-		
-		if(MaybeOfflinePlayer.GetFromPlayer(e.getPlayer()).ChatOnly)
-		{
+
+		if (MaybeOfflinePlayer.GetFromPlayer(e.getPlayer()).ChatOnly) {
 			e.setCancelled(true);
-			e.getPlayer().sendMessage("§cYou are not allowed to teleport while in chat-only mode.");
+			e.getPlayer()
+					.sendMessage(
+							"§cYou are not allowed to teleport while in chat-only mode.");
 		}
 	}
 
