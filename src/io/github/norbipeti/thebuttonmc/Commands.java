@@ -283,7 +283,7 @@ public class Commands implements CommandExecutor {
 				return true;
 			}
 			case "unflip": {
-				String msg = "┬─┬﻿ ノ( ゜-゜ノ)";
+				String msg = "┬─┬ ノ( ゜-゜ノ)";
 				if (args.length > 0) {
 					msg = args[0] + "" + msg;
 				}
