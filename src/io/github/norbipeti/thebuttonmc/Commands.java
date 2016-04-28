@@ -275,7 +275,7 @@ public class Commands implements CommandExecutor {
 				return true;
 			}
 			case "tableflip": {
-				String msg = "(╯°□°）╯︵ ┻�?┻";
+				String msg = "(╯°□°）╯︵ ┻━┻";
 				if (args.length > 0) {
 					msg = args[0] + " " + msg;
 				}
@@ -283,7 +283,7 @@ public class Commands implements CommandExecutor {
 				return true;
 			}
 			case "unflip": {
-				String msg = "┬─┬﻿ �?�( ゜-゜�?�)";
+				String msg = "┬─┬﻿ ノ( ゜-゜ノ)";
 				if (args.length > 0) {
 					msg = args[0] + "" + msg;
 				}
