@@ -1,5 +1,5 @@
 name: TheButtonMCPlugin
-main: tk.sznp.thebuttonautoflair.PluginMain
+main: io.github.norbipeti.thebuttonmc.PluginMain
 version: 4.0
 commands:
     u:
