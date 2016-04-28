@@ -3,7 +3,18 @@ It can download player flairs for /r/TheButtonMinecraft and do other cool things
 
 ## How to use
 ### Players
-#### Obtaining the flair
+#### Connecting with a non-premium account
+You can connect to the server with a non-paid account as long as you confirm your flair. To do this, follow the steps below. The server will let you in if you commented in the thread.
+
+__Note__: Please check if your username isn't taken already, by visiting this page:
+
+    https://minecraft.net/haspaid.jsp?user=<username>
+
+Where username is the Minecraft name you want to check. If the page says "true", the name is taken, if "false", it's available.
+
+If your name is already taken by a premium user, you will be kicked with "Invalid session". We cannot do anything about that.
+
+#### Obtaining the flair (/u accept)
 At first, you need to "connect" your Reddit account with your Minecraft account. This is done by writing your Minecraft name to [this thread](https://www.reddit.com/r/TheButtonMinecraft/comments/433ptk/autoflair_thread/), following the instructions in the post.
 
 When you're done, connect to the server, if you aren't already on. You should see a message after a while (max. 10 seconds) asking if you're the correct Reddit user. Type /u accept to confirm it and accept your flair.
@@ -12,17 +23,17 @@ __Note__: You can comment your ingame name from multiple Reddit accounts. In thi
 
     /u accept NorbiPeti
 
-__Tip__: If an admin set a custom flair for you, you can reset the automatic one by doing /u ignore, then /u accept.
+__Tip__: If an admin set a custom flair for you, you may be able to reset the automatic one by doing /u accept.
 
-#### Hiding/ignoring the flair
-If you decide to hide your exact press time and your username (see /u name), use /u ignore. You can also use it to hide the notice showing up after you log in if you don't have a flair accepted.
+#### Hiding the message (/u ignore)
+You can use this command to hide the notice showing up after you log in if you don't have a flair accepted.
 
 #### Flair not showing up
 Please note that in some cases your flair cannot be obtained (specifically, if it's not stored by karmadecay.com, in which case possibly Karmancer can't show it as well). In this case, there are two possibilities.
 
 If you're a non-presser or a can't press and only your time is recorded, it will automatically decide based on your account creation date.
 
-If nothing is known about your flair, you need to ask an admin to set the flair for you. This is done to prevent abusing the system with setting random flairs and rendering the core of the plugin useless.
+If nothing is known about your flair, you need to ask an admin to set the flair for you. Please prepare a link to a comment you made on /r/thebutton, if possible.
 
 #### Getting someone's Reddit username (/u name)
 You can see a player's username if they have a flair shown.
@@ -31,6 +42,8 @@ You can see a player's username if they have a flair shown.
 If you simply say any online player's full playername or nickname, it'll highlight it and play a sound for the target player. This works only once per message per target player.
 
 If you say a nickname, it'll show it's original colors, if you say a username, then it will choose based on flair color if known.
+
+You can also use @console to ping the console. If someone is there, they'll receive an audible bell signal.
 
 #### RP/OOC mode (/nrp or /ooc)
 You can use /ooc <message> to say something Out-of-Character. Otherwise everything you speak should be treated as said in RP, except when it is obvious it's not in RP (like talking about the server).
@@ -44,7 +57,26 @@ If you say a hashtag in global chat, it'll highlight it and makes it clickable.
 #### Paying respects (F)
 If a player dies, sometimes the plugin will tell everyone "Press F to pay respects.". After a few seconds, a message will tell everyone how many people paid their respects.
 
-If you hover over a player's name in chat, you can see how much respect they gained this way.
+If you hover over a player's name in chat, you can see how much respect they gained this way, divided by the number of eligible deaths.
+
+#### Copy messages
+To copy a message from chat, click the channel identifier (for example: [g] or [TC]) at the beginning of the message.
+
+#### Tableflipping (/tableflip and /unflip)
+The idea of this command came from Discord.
+
+Examples:
+
+    /tableflip - (╯°□°）╯︵ ┻━┻
+    /tableflip test - test(╯°□°）╯︵ ┻━┻
+    /unflip - ┬─┬ ノ( ゜-゜ノ)
+    /unflip test - test┬─┬ ノ( ゜-゜ノ)
+
+#### Chat only (/chatonly)
+You can use this mode to protect yourself if you connect from a chat-only client. This will make you invincible, but unable to move, teleport or interact with the world in any way.
+
+#### Rainbow chat (/u c)
+Rainbow/Presser colors.
 
 ### Admins
 Type /u admin for a list of the commands.
@@ -72,16 +104,25 @@ This command's sole purpose is to give me (or any admins, if they want) some inf
 #### Setting the flair by hand (/u admin setflair)
 This allows you to set any flair you want to any player. This will override the automatic flairs, though it's not recommended to do so. However, the player can reset the automatic flair at any time (see /u accept).
 
-* To set an unknown flair (??s), specify only the flair color without time.
-* To remove a user's flair, do the same, with the color being 0.
-* To set a non-presser or can't press flair, specify "--" as flair time with the correct color code behind it.
+* To remove a user's flair:
 
-Usage and example:
+    /u admin setflair <playername> none false
 
-    /u admin setflair <playername> <color code (without §)> [time (without s)]
-    /u admin setflair Player 7 --
-    /u admin setflair Player 6 19
-    /u admin setflair Player 6
+* To set a non-presser or can't press flair:
+
+    /u admin setflair <playername> non-presser/cant-press false
+
+* To set a cheater flair:
+
+    /u admin setflair <playername> <time> true
+
+* To also set the username for the flair:
+
+    /u admin setflair <playername> <time> <cheater> <username>
+
+Usage:
+
+    /u admin setflair <playername> <time (without s) or non-presser, can't press, none> <cheater (true/false)>> [username]
 
 #### Updating the plugin (/u admin updateplugin)
 I've made a simple command to allow updating the plugin easily. After running this command, the server needs to get restarted for the changes to take effect.
@@ -107,3 +148,6 @@ You can make announcements broadcasted every n minutes where you can set n and i
     /u announce list - List announcements with indexes.
     /u announce settime <minutes> - Set the time between announcements in minutes.
     /u announce edit <index> <message> - Directly edits the announcement at the specified index. If there are less announcements than index, it'll create enough announcements.
+
+#### Color modes (/u c)
+Use /u c \<colorname\> to set the color of your messages.
