@@ -92,8 +92,8 @@ public class ChatProcessing {
 																	// first
 		formattedmessage = formattedmessage.replace("\"", "\\\"");
 		if (PluginMain.permission.has(sender, "tbmc.admin"))
-			formattedmessage = formattedmessage.replace("&", "§");
-		formattedmessage = formattedmessage.replace("§r", "§"
+			formattedmessage = formattedmessage.replace("&", "Â§");
+		formattedmessage = formattedmessage.replace("Â§r", "Â§"
 				+ currentchannel.DisplayName.charAt(1));
 		String suggestmsg = formattedmessage;
 
@@ -134,7 +134,7 @@ public class ChatProcessing {
 				}
 				StringBuffer buf = new StringBuffer(formattedmessage);
 				buf.replace(currentindex, currentindex + item.length(),
-						String.format("§%s%s", RainbowPresserColors[rpc], item));
+						String.format("Â§%s%s", RainbowPresserColors[rpc], item));
 				formattedmessage = buf.toString();
 				if (rpc + 1 < RainbowPresserColors.length)
 					rpc++;
@@ -160,7 +160,7 @@ public class ChatProcessing {
 					MaybeOfflinePlayer mpp = MaybeOfflinePlayer
 							.AddPlayerIfNeeded(p.getUniqueId());
 					color = String.format(
-							"§%x",
+							"Â§%x",
 							(mpp.GetFlairColor() == 0x00 ? 0xb : mpp
 									.GetFlairColor()));
 				}
@@ -170,21 +170,21 @@ public class ChatProcessing {
 								"(?i)" + Pattern.quote(p.getName()),
 								String.format(
 										"\",\"color\":\"%s\"},{\"text\":\"%s%s%s\",\"color\":\"blue\"},{\"text\":\"",
-										colormode, color, p.getName(), "§r"));
+										colormode, color, p.getName(), "Â§r"));
 			}
 			for (String n : PlayerListener.nicknames.keySet()) {
 				Player p = null;
 				String nwithoutformatting = new String(n);
 				int index;
-				while ((index = nwithoutformatting.indexOf("§k")) != -1)
-					nwithoutformatting = nwithoutformatting.replace("§k"
+				while ((index = nwithoutformatting.indexOf("Â§k")) != -1)
+					nwithoutformatting = nwithoutformatting.replace("Â§k"
 							+ nwithoutformatting.charAt(index + 2), ""); // Support
 																			// for
 																			// one
 																			// random
 																			// char
-				while ((index = nwithoutformatting.indexOf('§')) != -1)
-					nwithoutformatting = nwithoutformatting.replace("§"
+				while ((index = nwithoutformatting.indexOf('Â§')) != -1)
+					nwithoutformatting = nwithoutformatting.replace("Â§"
 							+ nwithoutformatting.charAt(index + 1), "");
 				if (formattedmessage.matches("(?i).*"
 						+ Pattern.quote(nwithoutformatting) + ".*")) {
@@ -205,19 +205,19 @@ public class ChatProcessing {
 									"(?i)" + Pattern.quote(nwithoutformatting),
 									String.format(
 											"\",\"color\":\"%s\"},{\"text\":\"%s%s\",\"color\":\"blue\"},{\"text\":\"",
-											colormode, n, "§r"));
+											colormode, n, "Â§r"));
 				}
 			}
 
 			if (formattedmessage.matches("(?i).*" + Pattern.quote("@console")
 					+ ".*")) {
 				formattedmessage = formattedmessage.replaceAll(
-						"(?i)" + Pattern.quote("@console"), "§b@console§r");
+						"(?i)" + Pattern.quote("@console"), "Â§b@consoleÂ§r");
 				formattedmessage = formattedmessage
 						.replaceAll(
 								"(?i)" + Pattern.quote("@console"),
 								String.format(
-										"\",\"color\":\"%s\"},{\"text\":\"§b@console§r\",\"color\":\"blue\"},{\"text\":\"",
+										"\",\"color\":\"%s\"},{\"text\":\"Â§b@consoleÂ§r\",\"color\":\"blue\"},{\"text\":\"",
 										colormode));
 				System.out.println("\007");
 			}
@@ -284,13 +284,13 @@ public class ChatProcessing {
 				formattedmessage, colormode));
 		String jsonstr = json.toString();
 		if (jsonstr.length() >= 32767) {
-			sender.sendMessage("§cError: Message too large. Try shortening it, or remove hashtags and other formatting.");
+			sender.sendMessage("Â§cError: Message too large. Try shortening it, or remove hashtags and other formatting.");
 			return true;
 		}
 		if (currentchannel.equals(Channel.TownChat)
 				|| currentchannel.equals(Channel.NationChat)) {
 			if (player == null) {
-				sender.sendMessage("§cYou are not a player!");
+				sender.sendMessage("Â§cYou are not a player!");
 				return true;
 			}
 			for (Player p : PluginMain.GetPlayers()) {
@@ -316,7 +316,7 @@ public class ChatProcessing {
 				} catch (NotRegisteredException e) {
 				}
 				if (town == null) {
-					player.sendMessage("§cYou aren't in a town or an error occured.");
+					player.sendMessage("Â§cYou aren't in a town or an error occured.");
 					return true;
 				}
 				index = PluginMain.Instance.Towns.indexOf(town);
@@ -345,11 +345,11 @@ public class ChatProcessing {
 										index, index, json.toString()));
 			} catch (IllegalStateException e) {
 				e.printStackTrace();
-				player.sendMessage("§cAn error occured while sending the message. (IllegalStateException)");
+				player.sendMessage("Â§cAn error occured while sending the message. (IllegalStateException)");
 				return true;
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
-				player.sendMessage("§cAn error occured while sending the message. (IllegalArgumentException)");
+				player.sendMessage("Â§cAn error occured while sending the message. (IllegalArgumentException)");
 				return true;
 			}
 		} else if (currentchannel.equals(Channel.NationChat)) {
@@ -361,7 +361,7 @@ public class ChatProcessing {
 				} catch (NotRegisteredException e) {
 				}
 				if (town == null) {
-					player.sendMessage("§cYou aren't in a town or an error occured.");
+					player.sendMessage("Â§cYou aren't in a town or an error occured.");
 					return true;
 				}
 				Nation nation = null;
@@ -370,7 +370,7 @@ public class ChatProcessing {
 				} catch (NotRegisteredException e) {
 				}
 				if (nation == null) {
-					player.sendMessage("§cYour town isn't in a nation or an error occured.");
+					player.sendMessage("Â§cYour town isn't in a nation or an error occured.");
 					return true;
 				}
 				index = PluginMain.Instance.Nations.indexOf(nation);
@@ -399,17 +399,17 @@ public class ChatProcessing {
 										index, index, json.toString()));
 			} catch (IllegalStateException e) {
 				e.printStackTrace();
-				player.sendMessage("§cAn error occured while sending the message. (IllegalStateException)");
+				player.sendMessage("Â§cAn error occured while sending the message. (IllegalStateException)");
 				return true;
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
-				player.sendMessage("§cAn error occured while sending the message. (IllegalArgumentException)");
+				player.sendMessage("Â§cAn error occured while sending the message. (IllegalArgumentException)");
 				return true;
 			}
 		} else if (currentchannel.equals(Channel.AdminChat)) {
 			try { // TODO: Put message JSON into it's structure
 				if (player != null && !player.isOp()) {
-					player.sendMessage("§cYou need to be an OP to use this channel.");
+					player.sendMessage("Â§cYou need to be an OP to use this channel.");
 					return true;
 				}
 				Objective obj = PluginMain.SB.getObjective("admin");
@@ -428,18 +428,18 @@ public class ChatProcessing {
 										1, 1, json.toString()));
 			} catch (IllegalStateException e) {
 				e.printStackTrace();
-				player.sendMessage("§cAn error occured while sending the message. (IllegalStateException)");
+				player.sendMessage("Â§cAn error occured while sending the message. (IllegalStateException)");
 				return true;
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
-				player.sendMessage("§cAn error occured while sending the message. (IllegalArgumentException)");
+				player.sendMessage("Â§cAn error occured while sending the message. (IllegalArgumentException)");
 				return true;
 			}
 		} else if (currentchannel.equals(Channel.ModChat)) {
 			try {
 				if (player != null
 						&& !PermissionsEx.getUser(player).inGroup("mod")) {
-					player.sendMessage("§cYou need to be a mod to use this channel.");
+					player.sendMessage("Â§cYou need to be a mod to use this channel.");
 					return true;
 				}
 				Objective obj = PluginMain.SB.getObjective("mod");
@@ -456,11 +456,11 @@ public class ChatProcessing {
 								1, 1, json.toString()));
 			} catch (IllegalStateException e) {
 				e.printStackTrace();
-				player.sendMessage("§cAn error occured while sending the message. (IllegalStateException)");
+				player.sendMessage("Â§cAn error occured while sending the message. (IllegalStateException)");
 				return true;
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
-				player.sendMessage("§cAn error occured while sending the message. (IllegalArgumentException)");
+				player.sendMessage("Â§cAn error occured while sending the message. (IllegalArgumentException)");
 				return true;
 			}
 		} else

@@ -11,9 +11,9 @@ public class Channel {
 		Command = command;
 	}
 
-	public static Channel GlobalChat = new Channel("§fg§f", "white", "g");
-	public static Channel TownChat = new Channel("§3TC§f", "dark_aqua", "tc");
-	public static Channel NationChat = new Channel("§6NC§f", "gold", "nc");
-	public static Channel AdminChat = new Channel("§cADMIN§f", "red", "a");
-	public static Channel ModChat = new Channel("§9MOD§f", "blue", "mod");
+	public static Channel GlobalChat = new Channel("Â§fgÂ§f", "white", "g");
+	public static Channel TownChat = new Channel("Â§3TCÂ§f", "dark_aqua", "tc");
+	public static Channel NationChat = new Channel("Â§6NCÂ§f", "gold", "nc");
+	public static Channel AdminChat = new Channel("Â§cADMINÂ§f", "red", "a");
+	public static Channel ModChat = new Channel("Â§9MODÂ§f", "blue", "mod");
 }

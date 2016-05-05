@@ -227,7 +227,7 @@ public class PlayerListener implements Listener {
 			if (cmd.equalsIgnoreCase(Channel.GlobalChat.Command)) {
 				mp.CurrentChannel = Channel.GlobalChat;
 				event.getPlayer().sendMessage(
-						"§6You are now talking in: §b"
+						"Â§6You are now talking in: Â§b"
 								+ mp.CurrentChannel.DisplayName);
 				event.setCancelled(true);
 			} else if (cmd.equalsIgnoreCase(Channel.TownChat.Command)) {
@@ -236,7 +236,7 @@ public class PlayerListener implements Listener {
 				else
 					mp.CurrentChannel = Channel.TownChat;
 				event.getPlayer().sendMessage(
-						"§6You are now talking in: §b"
+						"Â§6You are now talking in: Â§b"
 								+ mp.CurrentChannel.DisplayName);
 				event.setCancelled(true);
 			} else if (cmd.equalsIgnoreCase(Channel.NationChat.Command)) {
@@ -245,7 +245,7 @@ public class PlayerListener implements Listener {
 				else
 					mp.CurrentChannel = Channel.NationChat;
 				event.getPlayer().sendMessage(
-						"§6You are now talking in: §b"
+						"Â§6You are now talking in: Â§b"
 								+ mp.CurrentChannel.DisplayName);
 				event.setCancelled(true);
 			} else if (cmd.equalsIgnoreCase(Channel.AdminChat.Command)) {
@@ -254,7 +254,7 @@ public class PlayerListener implements Listener {
 				else
 					mp.CurrentChannel = Channel.AdminChat;
 				event.getPlayer().sendMessage(
-						"§6You are now talking in: §b"
+						"Â§6You are now talking in: Â§b"
 								+ mp.CurrentChannel.DisplayName);
 				event.setCancelled(true);
 			} else if (cmd.equalsIgnoreCase(Channel.ModChat.Command)) {
@@ -263,7 +263,7 @@ public class PlayerListener implements Listener {
 				else
 					mp.CurrentChannel = Channel.ModChat;
 				event.getPlayer().sendMessage(
-						"§6You are now talking in: §b"
+						"Â§6You are now talking in: Â§b"
 								+ mp.CurrentChannel.DisplayName);
 				event.setCancelled(true);
 			}
@@ -304,9 +304,9 @@ public class PlayerListener implements Listener {
 				Player player = Bukkit.getPlayer(event.getMessage().substring(
 						index + 1));
 				if (player != null)
-					player.sendMessage("§b"
+					player.sendMessage("Â§b"
 							+ event.getPlayer().getDisplayName()
-							+ " §bis in this world: "
+							+ " Â§bis in this world: "
 							+ event.getPlayer().getWorld().getName());
 			} else if (cmd.equalsIgnoreCase("minecraft:me")) {
 				if (!essentials.getUser(event.getPlayer()).isMuted()) {
@@ -352,7 +352,7 @@ public class PlayerListener implements Listener {
 								.getId().equalsIgnoreCase("tower")) {
 					event.getPlayer()
 							.sendMessage(
-									"§cYou are not allowed to teleport players out from the Tower");
+									"Â§cYou are not allowed to teleport players out from the Tower");
 					event.setCancelled(true);
 				}
 			}
@@ -370,7 +370,7 @@ public class PlayerListener implements Listener {
 								PS.valueOf(event.getPlayer().getLocation()))
 						.getId().equalsIgnoreCase("tower")) {
 					event.getPlayer().sendMessage(
-							"§cYou are not allowed to teleport to the Tower");
+							"Â§cYou are not allowed to teleport to the Tower");
 					event.setCancelled(true);
 				}
 			}
@@ -392,7 +392,7 @@ public class PlayerListener implements Listener {
 										.contains(town2.getNation())) {
 									event.getPlayer()
 											.sendMessage(
-													"§cYou cannot set homes in enemy territory.");
+													"Â§cYou cannot set homes in enemy territory.");
 									event.setCancelled(true);
 									return;
 								}
@@ -421,7 +421,7 @@ public class PlayerListener implements Listener {
 				if (war.isWarZone(new WorldCoord(currentWorld, currentLocation
 						.getBlockX(), currentLocation.getBlockZ()))) {
 					event.getPlayer().sendMessage(
-							"§cError: You can't teleport out of a war zone!");
+							"Â§cError: You can't teleport out of a war zone!");
 					event.setCancelled(true);
 				}
 			}
@@ -439,7 +439,7 @@ public class PlayerListener implements Listener {
 						index + 1));
 				if (target == null) {
 					event.getPlayer().sendMessage(
-							"§cError: Player not found. (/un" + s
+							"Â§cError: Player not found. (/un" + s
 									+ " <player>)");
 					event.setCancelled(true);
 				}
@@ -468,7 +468,7 @@ public class PlayerListener implements Listener {
 					event.setCancelled(true);
 					event.getPlayer()
 							.sendMessage(
-									"§cYou are not allowed to set New Haven as your enemy faction.");
+									"Â§cYou are not allowed to set New Haven as your enemy faction.");
 				}
 			}
 		}
@@ -480,15 +480,15 @@ public class PlayerListener implements Listener {
 		for (String nickname : nicknames.keySet()) {
 			String nwithoutformatting = nickname;
 			int index;
-			while ((index = nwithoutformatting.indexOf("§k")) != -1)
-				nwithoutformatting = nwithoutformatting.replace("§k"
+			while ((index = nwithoutformatting.indexOf("Â§k")) != -1)
+				nwithoutformatting = nwithoutformatting.replace("Â§k"
 						+ nwithoutformatting.charAt(index + 2), ""); // Support
 																		// for
 																		// one
 																		// random
 																		// char
-			while ((index = nwithoutformatting.indexOf('§')) != -1)
-				nwithoutformatting = nwithoutformatting.replace("§"
+			while ((index = nwithoutformatting.indexOf('Â§')) != -1)
+				nwithoutformatting = nwithoutformatting.replace("Â§"
 						+ nwithoutformatting.charAt(index + 1), "");
 			if (nwithoutformatting.startsWith(name)
 					&& !nwithoutformatting.equals(Bukkit.getPlayer(
@@ -538,7 +538,7 @@ public class PlayerListener implements Listener {
 				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AllPlayers.get(p
 						.getUniqueId());
 				mp.PressedF = false;
-				p.sendMessage("§bPress F to pay respects.§r");
+				p.sendMessage("Â§bPress F to pay respects.Â§r");
 			}
 			Ftimer = new Timer();
 			TimerTask tt = new TimerTask() {
@@ -547,9 +547,9 @@ public class PlayerListener implements Listener {
 					if (ActiveF) {
 						ActiveF = false;
 						for (Player p : PluginMain.GetPlayers()) {
-							p.sendMessage("§b" + FCount + " "
+							p.sendMessage("Â§b" + FCount + " "
 									+ (FCount == 1 ? "person" : "people")
-									+ " paid their respects.§r");
+									+ " paid their respects.Â§r");
 						}
 					}
 				}
@@ -580,7 +580,7 @@ public class PlayerListener implements Listener {
 			return;
 		// System.out.println("D");
 		SkullMeta meta = (SkullMeta) item.getItemMeta();
-		if (!meta.getDisplayName().equals("§rOcelot Head")
+		if (!meta.getDisplayName().equals("Â§rOcelot Head")
 				|| !meta.getOwner().equals("MHF_Ocelot"))
 			return;
 		// System.out.println("E");
@@ -591,7 +591,7 @@ public class PlayerListener implements Listener {
 		if (!(hat != null
 				&& (hat.getType().equals(Material.SKULL) || hat.getType()
 						.equals(Material.SKULL_ITEM)) && ((SkullMeta) hat
-					.getItemMeta()).getDisplayName().equals("§rWolf Head")))
+					.getItemMeta()).getDisplayName().equals("Â§rWolf Head")))
 			e.getPlayer().damage(1f * item.getAmount(),
 					Bukkit.getPlayer(meta.getLore().get(0)));
 		e.getItem().remove();
@@ -610,7 +610,7 @@ public class PlayerListener implements Listener {
 			PluginMain.economy.depositPlayer(op, 50.0);
 		}
 		if (p != null) {
-			p.sendMessage("§bThanks for voting! $50 was added to your account.");
+			p.sendMessage("Â§bThanks for voting! $50 was added to your account.");
 		}
 	}
 
@@ -658,14 +658,14 @@ public class PlayerListener implements Listener {
 			 * System.out.println("Cause: "+e.getCause());
 			 */
 			e.getPlayer().sendMessage(
-					"§cYou are not allowed to teleport to/from No Mans Land.");
+					"Â§cYou are not allowed to teleport to/from No Mans Land.");
 		}
 
 		if (MaybeOfflinePlayer.GetFromPlayer(e.getPlayer()).ChatOnly) {
 			e.setCancelled(true);
 			e.getPlayer()
 					.sendMessage(
-							"§cYou are not allowed to teleport while in chat-only mode.");
+							"Â§cYou are not allowed to teleport while in chat-only mode.");
 		}
 	}
 
@@ -684,7 +684,7 @@ public class PlayerListener implements Listener {
 			if (block.getType() == Material.ENDER_CHEST) {
 				e.setCancelled(true);
 				e.getPlayer().sendMessage(
-						"§You are not allowed to use enderchests here.");
+						"Â§You are not allowed to use enderchests here.");
 				System.out.println(e.getPlayer().getName()
 						+ " tried to use an enderchest in twohundred.");
 			}
@@ -704,7 +704,7 @@ public class PlayerListener implements Listener {
 			if (cmd.equalsIgnoreCase(Channel.GlobalChat.Command)) {
 				ConsoleChannel = Channel.GlobalChat;
 				event.getSender().sendMessage(
-						"§6You are now talking in: §b"
+						"Â§6You are now talking in: Â§b"
 								+ ConsoleChannel.DisplayName);
 				event.setCommand("dontrunthiscmd");
 			} else if (cmd.equalsIgnoreCase(Channel.AdminChat.Command)) {
@@ -713,7 +713,7 @@ public class PlayerListener implements Listener {
 				else
 					ConsoleChannel = Channel.AdminChat;
 				event.getSender().sendMessage(
-						"§6You are now talking in: §b"
+						"Â§6You are now talking in: Â§b"
 								+ ConsoleChannel.DisplayName);
 				event.setCommand("dontrunthiscmd");
 			} else if (cmd.equalsIgnoreCase(Channel.ModChat.Command)) {
@@ -722,7 +722,7 @@ public class PlayerListener implements Listener {
 				else
 					ConsoleChannel = Channel.ModChat;
 				event.getSender().sendMessage(
-						"§6You are now talking in: §b"
+						"Â§6You are now talking in: Â§b"
 								+ ConsoleChannel.DisplayName);
 				event.setCommand("dontrunthiscmd");
 			}
@@ -782,7 +782,7 @@ public class PlayerListener implements Listener {
 			target = Bukkit.getPlayer(event.getCommand().substring(index + 1));
 			if (target == null) {
 				event.getSender().sendMessage(
-						"§cError: Player not found. (/un" + s + " <player>)");
+						"Â§cError: Player not found. (/un" + s + " <player>)");
 				event.setCommand("dontrunthiscmd");
 			}
 			if (target != null) {

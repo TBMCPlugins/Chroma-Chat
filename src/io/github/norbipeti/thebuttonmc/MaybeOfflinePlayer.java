@@ -104,12 +104,12 @@ public class MaybeOfflinePlayer {
 
 	public String GetFormattedFlair() {
 		if (FlairTime == FlairTimeCantPress)
-			return String.format("งr(--s)งr");
+			return String.format("ยงr(--s)ยงr");
 		if (FlairTime == FlairTimeNonPresser)
-			return String.format("ง7(--s)งr");
+			return String.format("ยง7(--s)ยงr");
 		if (FlairTime == FlairTimeNone)
 			return "";
-		return String.format("ง%x(%ss)งr", GetFlairColor(), FlairTime);
+		return String.format("ยง%x(%ss)ยงr", GetFlairColor(), FlairTime);
 	}
 
 	public void SetFlair(short time) {

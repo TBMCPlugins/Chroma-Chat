@@ -82,27 +82,27 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		Commands comm = new Commands();
 		this.getCommand("u").setExecutor(comm);
 		this.getCommand("u").setUsage(
-				this.getCommand("u").getUsage().replace('&', '§'));
+				this.getCommand("u").getUsage().replace('&', 'Â§'));
 		this.getCommand("nrp").setExecutor(comm);
 		this.getCommand("nrp").setUsage(
-				this.getCommand("nrp").getUsage().replace('&', '§'));
+				this.getCommand("nrp").getUsage().replace('&', 'Â§'));
 		this.getCommand("ooc").setExecutor(comm);
 		this.getCommand("ooc").setUsage(
-				this.getCommand("ooc").getUsage().replace('&', '§'));
+				this.getCommand("ooc").getUsage().replace('&', 'Â§'));
 		this.getCommand("unlol").setExecutor(comm);
 		this.getCommand("unlaugh").setExecutor(comm);
 		this.getCommand("mwiki").setExecutor(comm);
 		this.getCommand("mwiki").setUsage(
-				this.getCommand("mwiki").getUsage().replace('&', '§'));
+				this.getCommand("mwiki").getUsage().replace('&', 'Â§'));
 		this.getCommand("tableflip").setExecutor(comm);
 		this.getCommand("tableflip").setUsage(
-				this.getCommand("tableflip").getUsage().replace('&', '§'));
+				this.getCommand("tableflip").getUsage().replace('&', 'Â§'));
 		this.getCommand("unflip").setExecutor(comm);
 		this.getCommand("unflip").setUsage(
-				this.getCommand("unflip").getUsage().replace('&', '§'));
+				this.getCommand("unflip").getUsage().replace('&', 'Â§'));
 		this.getCommand("chatonly").setExecutor(comm);
 		this.getCommand("chatonly").setUsage(
-				this.getCommand("chatonly").getUsage().replace('&', '§'));
+				this.getCommand("chatonly").getUsage().replace('&', 'Â§'));
 		Instance = this;
 		Console = this.getServer().getConsoleSender();
 		LoadFiles(false);
@@ -312,9 +312,9 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		Player p = Bukkit.getPlayer(mp.UUID);
 		if (mp.FlairState.equals(FlairStates.Commented) && p != null)
 			if (mp.UserNames.size() > 1)
-				p.sendMessage("§9Multiple Reddit users commented your name. You can select with /u accept.§r §6Type /u accept or /u ignore§r");
+				p.sendMessage("Â§9Multiple Reddit users commented your name. You can select with /u accept.Â§r Â§6Type /u accept or /u ignoreÂ§r");
 			else
-				p.sendMessage("§9A Reddit user commented your name. Is that you?§r §6Type /u accept or /u ignore§r");
+				p.sendMessage("Â§9A Reddit user commented your name. Is that you?Â§r Â§6Type /u accept or /u ignoreÂ§r");
 	}
 
 	public static Collection<? extends Player> GetPlayers() {
