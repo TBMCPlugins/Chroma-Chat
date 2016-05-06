@@ -96,6 +96,30 @@ public class ChatProcessing {
 		formattedmessage = formattedmessage.replace("§r", "§"
 				+ currentchannel.DisplayName.charAt(1));
 		String suggestmsg = formattedmessage;
+		boolean cont = true;
+		while (cont) {
+
+			int first_under = formattedmessage.indexOf("_");
+			if (first_under != -1 && formattedmessage.indexOf("_", first_under) != -1) // underline
+			{
+				formattedmessage = formattedmessage.replaceFirst("_", "§n").replaceFirst("_", "§r");
+				continue;
+			}
+
+
+			int first_bold = formattedmessage.indexOf("**");
+			if (first_bold != -1 && formattedmessage.indexOf("**", first_bold) != -1) // bold
+			{
+				formattedmessage = formattedmessage.replaceFirst("\\*\\*", "§l").replaceFirst("\\*\\*", "§r");
+				continue;
+			}
+			int first = formattedmessage.indexOf('*');
+			if (first != -1 && formattedmessage.indexOf('*', first) != -1) {
+				formattedmessage = formattedmessage.replaceFirst("\\*", "§o").replaceFirst("\\*", "§r");
+				continue;
+			}
+			cont = false;
+		}
 
 		// URLs + Rainbow text
 		String[] parts = formattedmessage.split("\\s+");
