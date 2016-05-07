@@ -44,6 +44,7 @@ import au.com.mineauz.minigames.Minigames;
 
 import com.earth2me.essentials.Essentials;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.bukkit.PlayerProfile;
 import com.massivecraft.factions.entity.BoardColl;
 import com.massivecraft.massivecore.ps.PS;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
@@ -55,8 +56,6 @@ import com.palmergames.bukkit.towny.war.eventwar.War;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
-
-import fr.xephi.authme.AuthMe;
 
 public class PlayerListener implements Listener {
 	public static HashMap<String, UUID> nicknames = new HashMap<>();
@@ -90,6 +89,8 @@ public class PlayerListener implements Listener {
 			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
 				@Override
 				public void run() {
+					if (Bukkit.getPlayer(mp.PlayerName) == null)
+						return;
 					if (mp.FlairState.equals(FlairStates.NoComment)) {
 						String json = String
 								.format("[\"\",{\"text\":\"If you'd like your /r/TheButton flair displayed ingame, write your Minecraft name to \",\"color\":\"aqua\"},{\"text\":\"[this thread].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
@@ -143,9 +144,10 @@ public class PlayerListener implements Listener {
 
 		mp.FlairUpdate(); // Update display
 
-		boolean ispremium = ((FastLoginBukkit) FastLoginBukkit
-				.getPlugin(FastLoginBukkit.class)).getEnabledPremium()
-				.contains(event.getPlayer().getName());
+		PlayerProfile pp = ((FastLoginBukkit) FastLoginBukkit
+				.getPlugin(FastLoginBukkit.class)).getStorage().getProfile(
+				event.getPlayer().getName(), true);
+		boolean ispremium = pp != null && pp.isPremium();
 
 		if (!PluginMain.permission.has(event.getPlayer(), "authme.player.*")
 				&& (ispremium || mp.FlairState.equals(FlairStates.Accepted) || mp.FlairState
@@ -154,20 +156,16 @@ public class PlayerListener implements Listener {
 					"authme.player.*");
 		}
 
-		if (ispremium) {
-			Bukkit.getScheduler().runTaskLater(PluginMain.Instance,
-					new Runnable() {
-						public void run() {
-							AuthMe.getInstance().api.forceLogout(p);
-						}
-					}, 100);
-			Bukkit.getScheduler().runTaskLater(PluginMain.Instance,
-					new Runnable() {
-						public void run() {
-							AuthMe.getInstance().api.forceLogin(p);
-						}
-					}, 120);
-		} else if (!mp.FlairState.equals(FlairStates.Accepted)
+		/*
+		 * if (ispremium) {
+		 * Bukkit.getScheduler().runTaskLater(PluginMain.Instance, new
+		 * Runnable() { public void run() {
+		 * AuthMe.getInstance().api.forceLogout(p); } }, 100);
+		 * Bukkit.getScheduler().runTaskLater(PluginMain.Instance, new
+		 * Runnable() { public void run() {
+		 * AuthMe.getInstance().api.forceLogin(p); } }, 120); } else
+		 */
+		if (pp == null && !mp.FlairState.equals(FlairStates.Accepted)
 				&& !mp.FlairState.equals(FlairStates.Commented)) {
 			String json = String
 					.format("[\"\",{\"text\":\"Welcome! You appear to log in from a non-premium account. Please verify your /r/thebutton flair to play, \",\"color\":\"aqua\"},{\"text\":\"[here].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
