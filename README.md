@@ -6,14 +6,6 @@ It can download player flairs for /r/TheButtonMinecraft and do other cool things
 #### Connecting with a non-premium account
 You can connect to the server with a non-paid account as long as you confirm your flair. To do this, follow the steps below. The server will let you in if you commented in the thread.
 
-__Note__: Please check if your username isn't taken already, by visiting this page:
-
-    https://minecraft.net/haspaid.jsp?user=<username>
-
-Where username is the Minecraft name you want to check. If the page says "true", the name is taken, if "false", it's available.
-
-If your name is already taken by a premium user, you will be kicked with "Invalid session". We cannot do anything about that.
-
 #### Obtaining the flair (/u accept)
 At first, you need to "connect" your Reddit account with your Minecraft account. This is done by writing your Minecraft name to [this thread](https://www.reddit.com/r/TheButtonMinecraft/comments/433ptk/autoflair_thread/), following the instructions in the post.
 
