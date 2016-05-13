@@ -57,10 +57,14 @@ import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
 
+import fr.xephi.authme.AuthMe;
+
 public class PlayerListener implements Listener {
 	public static HashMap<String, UUID> nicknames = new HashMap<>();
 
 	public static boolean Enable = false;
+
+	public static int LoginWarningCountTotal = 5;
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
@@ -89,9 +93,17 @@ public class PlayerListener implements Listener {
 			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
 				@Override
 				public void run() {
-					if (Bukkit.getPlayer(mp.PlayerName) == null)
+					Player player = Bukkit.getPlayer(mp.PlayerName);
+					if (player == null)
 						return;
-					if (mp.FlairState.equals(FlairStates.NoComment)) {
+
+					PlayerProfile pp = ((FastLoginBukkit) FastLoginBukkit
+							.getPlugin(FastLoginBukkit.class)).getStorage()
+							.getProfile(player.getName(), true);
+					boolean ispremium = pp != null && pp.isPremium();
+
+					if (ispremium
+							&& mp.FlairState.equals(FlairStates.NoComment)) {
 						String json = String
 								.format("[\"\",{\"text\":\"If you'd like your /r/TheButton flair displayed ingame, write your Minecraft name to \",\"color\":\"aqua\"},{\"text\":\"[this thread].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
 										PluginMain.FlairThreadURL);
@@ -108,6 +120,92 @@ public class PlayerListener implements Listener {
 			tt.mp = mp;
 			timer.schedule(tt, 15 * 1000);
 		}
+
+		final Timer timer = new Timer();
+		mp.LoginWarningCount = 0;
+		PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
+			@Override
+			public void run() {
+				final Player player = Bukkit.getPlayer(mp.PlayerName);
+				if (player == null)
+					return;
+
+				PlayerProfile pp = ((FastLoginBukkit) FastLoginBukkit
+						.getPlugin(FastLoginBukkit.class)).getStorage()
+						.getProfile(player.getName(), true);
+				boolean ispremium = pp != null && pp.isPremium();
+				final MaybeOfflinePlayer mplayer = mp;
+
+				if (mp.LoginWarningCount < LoginWarningCountTotal - 1) {
+					if (AuthMe.getInstance().api.isAuthenticated(player)) // The
+																			// player
+																			// logged
+																			// in
+																			// in
+																			// any
+																			// way
+					{
+						{
+							if (!ispremium
+									&& !mp.FlairState
+											.equals(FlairStates.Accepted)
+									&& !mp.FlairState
+											.equals(FlairStates.Commented)) { // The
+																				// player
+																				// isn't
+																				// premium,
+																				// and
+																				// doesn't
+																				// have
+																				// a
+																				// flair
+																				// //
+																				// The
+								// player
+								// isn't
+								// premium,
+								// and
+								// doesn't
+								// have
+								// a
+								// flair
+								String json = String
+										.format("[\"\",{\"text\":\"Welcome! If you are a premium Minecraft user, please do /premium and relog, otherwise please verify your /r/thebutton flair to play, \",\"color\":\"gold\"},{\"text\":\"[here].\",\"color\":\"gold\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
+												PluginMain.FlairThreadURL);
+								PluginMain.Instance.getServer()
+										.dispatchCommand(
+												PluginMain.Console,
+												"tellraw " + mp.PlayerName
+														+ " " + json);
+							}
+						}
+					}
+				} else {
+					if (AuthMe.getInstance().api.isAuthenticated(player)) {
+						if (!ispremium
+								&& !mplayer.FlairState
+										.equals(FlairStates.Accepted)
+								&& !mplayer.FlairState
+										.equals(FlairStates.Commented)) {
+							Bukkit.getScheduler().runTask(PluginMain.Instance,
+									new Runnable() {
+										@Override
+										public void run() {
+											player.kickPlayer("Please either use /premium and relog or verify your flair by commenting in the thread and using /u accept.");
+										}
+									});
+							timer.cancel();
+						}
+					}
+				}
+				mp.LoginWarningCount++;
+			}
+		};
+		tt.mp = mp;
+		int timeout = AuthMe.getInstance().getConfig()
+				.getInt("settings.restrictions.timeout");
+		timer.schedule(tt, timeout / LoginWarningCountTotal * 1000, timeout
+				/ LoginWarningCountTotal * 1000);
 
 		/* NICKNAME LOGIC */
 
@@ -144,37 +242,7 @@ public class PlayerListener implements Listener {
 
 		mp.FlairUpdate(); // Update display
 
-		PlayerProfile pp = ((FastLoginBukkit) FastLoginBukkit
-				.getPlugin(FastLoginBukkit.class)).getStorage().getProfile(
-				event.getPlayer().getName(), true);
-		boolean ispremium = pp != null && pp.isPremium();
-
-		if (!PluginMain.permission.has(event.getPlayer(), "authme.player.*")
-				&& (ispremium || mp.FlairState.equals(FlairStates.Accepted) || mp.FlairState
-						.equals(FlairStates.Commented))) {
-			PluginMain.permission.playerAdd(event.getPlayer(),
-					"authme.player.*");
-		}
-
-		/*
-		 * if (ispremium) {
-		 * Bukkit.getScheduler().runTaskLater(PluginMain.Instance, new
-		 * Runnable() { public void run() {
-		 * AuthMe.getInstance().api.forceLogout(p); } }, 100);
-		 * Bukkit.getScheduler().runTaskLater(PluginMain.Instance, new
-		 * Runnable() { public void run() {
-		 * AuthMe.getInstance().api.forceLogin(p); } }, 120); } else
-		 */
-		if (pp == null && !mp.FlairState.equals(FlairStates.Accepted)
-				&& !mp.FlairState.equals(FlairStates.Commented)) {
-			String json = String
-					.format("[\"\",{\"text\":\"Welcome! You appear to log in from a non-premium account. Please verify your /r/thebutton flair to play, \",\"color\":\"aqua\"},{\"text\":\"[here].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
-							PluginMain.FlairThreadURL);
-			PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-					"tellraw " + mp.PlayerName + " " + json);
-		}
-
-		if (mp.ChatOnly) {
+		if (mp.ChatOnly || p.getGameMode().equals(GameMode.SPECTATOR)) {
 			mp.ChatOnly = false;
 			p.setGameMode(GameMode.SURVIVAL);
 		}

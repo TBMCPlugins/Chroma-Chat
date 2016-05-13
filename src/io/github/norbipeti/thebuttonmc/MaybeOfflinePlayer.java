@@ -30,6 +30,7 @@ public class MaybeOfflinePlayer {
 	public String OtherColorMode = "";
 	public boolean ChatOnly = false;
 	public boolean FlairCheater = false;
+	public int LoginWarningCount = 0;
 	public static final short FlairTimeNonPresser = -1;
 	public static final short FlairTimeCantPress = -2;
 	public static final short FlairTimeNone = -3;
