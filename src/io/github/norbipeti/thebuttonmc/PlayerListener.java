@@ -712,20 +712,20 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerTeleport(PlayerTeleportEvent e) {
-		if (BoardColl.get().getFactionAt(PS.valueOf(e.getFrom())).getId()
+		/*if (BoardColl.get().getFactionAt(PS.valueOf(e.getFrom())).getId()
 				.equalsIgnoreCase("nomansland")
 				|| BoardColl.get().getFactionAt(PS.valueOf(e.getTo())).getId()
-						.equalsIgnoreCase("nomansland")) {
+						.equalsIgnoreCase("nomansland")) {*/
 			// e.setTo(e.getFrom());
-			e.setCancelled(true); // Relative coordinates mess it up
+			//e.setCancelled(true); // Relative coordinates mess it up
 			/*
 			 * System.out.println("From: " + e.getFrom());
 			 * System.out.println("To: " + e.getTo());
 			 * System.out.println("Cause: "+e.getCause());
 			 */
-			e.getPlayer().sendMessage(
+			/*e.getPlayer().sendMessage(
 					"§cYou are not allowed to teleport to/from No Mans Land.");
-		}
+		}*/
 
 		if (MaybeOfflinePlayer.GetFromPlayer(e.getPlayer()).ChatOnly) {
 			e.setCancelled(true);
