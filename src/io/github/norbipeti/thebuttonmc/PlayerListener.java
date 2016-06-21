@@ -117,7 +117,7 @@ public class PlayerListener implements Listener {
 					}
 				}
 			};
-			tt.mp = mp;
+			tt.mp = mp;;
 			timer.schedule(tt, 15 * 1000);
 		}
 
@@ -204,8 +204,8 @@ public class PlayerListener implements Listener {
 		tt.mp = mp;
 		int timeout = AuthMe.getInstance().getConfig()
 				.getInt("settings.restrictions.timeout");
-		timer.schedule(tt, timeout / LoginWarningCountTotal * 1000, timeout
-				/ LoginWarningCountTotal * 1000);
+		timer.schedule(tt, (timeout / LoginWarningCountTotal) * 1000,
+				(timeout / LoginWarningCountTotal) * 1000);
 
 		/* NICKNAME LOGIC */
 
@@ -712,20 +712,22 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerTeleport(PlayerTeleportEvent e) {
-		/*if (BoardColl.get().getFactionAt(PS.valueOf(e.getFrom())).getId()
-				.equalsIgnoreCase("nomansland")
-				|| BoardColl.get().getFactionAt(PS.valueOf(e.getTo())).getId()
-						.equalsIgnoreCase("nomansland")) {*/
-			// e.setTo(e.getFrom());
-			//e.setCancelled(true); // Relative coordinates mess it up
-			/*
-			 * System.out.println("From: " + e.getFrom());
-			 * System.out.println("To: " + e.getTo());
-			 * System.out.println("Cause: "+e.getCause());
-			 */
-			/*e.getPlayer().sendMessage(
-					"§cYou are not allowed to teleport to/from No Mans Land.");
-		}*/
+		/*
+		 * if (BoardColl.get().getFactionAt(PS.valueOf(e.getFrom())).getId()
+		 * .equalsIgnoreCase("nomansland") ||
+		 * BoardColl.get().getFactionAt(PS.valueOf(e.getTo())).getId()
+		 * .equalsIgnoreCase("nomansland")) {
+		 */
+		// e.setTo(e.getFrom());
+		// e.setCancelled(true); // Relative coordinates mess it up
+		/*
+		 * System.out.println("From: " + e.getFrom()); System.out.println("To: "
+		 * + e.getTo()); System.out.println("Cause: "+e.getCause());
+		 */
+		/*
+		 * e.getPlayer().sendMessage(
+		 * "§cYou are not allowed to teleport to/from No Mans Land."); }
+		 */
 
 		if (MaybeOfflinePlayer.GetFromPlayer(e.getPlayer()).ChatOnly) {
 			e.setCancelled(true);

@@ -363,6 +363,7 @@ public class ChatProcessing {
 						else
 							obj.getScore(p.getName()).setScore(-1);
 					} catch (Exception e) {
+						obj.getScore(p.getName()).setScore(-1);
 					}
 				}
 				PluginMain.Instance
