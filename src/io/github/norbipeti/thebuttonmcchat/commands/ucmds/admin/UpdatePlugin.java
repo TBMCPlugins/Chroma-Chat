@@ -26,9 +26,9 @@ public class UpdatePlugin extends AdminCommandBase {
 		URL url;
 		try {
 			url = new URL(
-					"https://github.com/NorbiPeti/thebuttonmcchat/raw/master/TheButtonAutoFlair.jar");
+					"https://github.com/NorbiPeti/thebuttonmcchat/raw/master/TheButtonMCChat.jar"); //TODO: Save with this name
 			FileUtils.copyURLToFile(url, new File(
-					"plugins/TheButtonAutoFlair.jar"));
+					"plugins/TheButtonMCChat.jar"));
 			sender.sendMessage("Updating done!");
 		} catch (MalformedURLException e) {
 			System.out.println("Error!\n" + e);
