@@ -1,4 +1,4 @@
-package io.github.norbipeti.thebuttonmc;
+package io.github.norbipeti.thebuttonmcchat;
 
 import java.io.File;
 import java.io.IOException;

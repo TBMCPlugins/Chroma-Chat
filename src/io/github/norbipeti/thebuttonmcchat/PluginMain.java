@@ -1,4 +1,4 @@
-package io.github.norbipeti.thebuttonmc;
+package io.github.norbipeti.thebuttonmcchat;
 
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
@@ -25,7 +25,7 @@ import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
 
-import io.github.norbipeti.thebuttonmc.commands.TBMCCommandBase;
+import io.github.norbipeti.thebuttonmcchat.commands.TBMCCommandBase;
 
 import java.io.*;
 import java.lang.String;

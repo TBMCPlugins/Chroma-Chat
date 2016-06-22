@@ -1,4 +1,4 @@
-package io.github.norbipeti.thebuttonmc;
+package io.github.norbipeti.thebuttonmcchat;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -214,21 +214,6 @@ public class Commands implements CommandExecutor {
 		if (player == null || player.isOp()
 				|| player.getName().equals("NorbiPeti")) {
 			switch (args[1].toLowerCase()) {
-			case "add":
-				if (args.length < 3) {
-					SendMessage(player, "§cUsage: /u announce add <message>");
-					return;
-				}
-				StringBuilder sb = new StringBuilder();
-				for (int i = 2; i < args.length; i++) {
-					sb.append(args[i]);
-					if (i != args.length - 1)
-						sb.append(" ");
-				}
-				String finalmessage = sb.toString().replace('&', '§');
-				PluginMain.AnnounceMessages.add(finalmessage);
-				SendMessage(player, "§bAnnouncement added.§r");
-				break;
 			case "remove":
 				if (args.length < 3) {
 					SendMessage(player, "§cUsage: /u announce remove <index>");

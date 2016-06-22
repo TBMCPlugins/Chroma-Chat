@@ -1,6 +1,6 @@
-package io.github.norbipeti.thebuttonmc;
+package io.github.norbipeti.thebuttonmcchat;
 
-import io.github.norbipeti.thebuttonmc.commands.UnlolCommand;
+import io.github.norbipeti.thebuttonmcchat.commands.UnlolCommand;
 
 import java.net.MalformedURLException;
 import java.net.URL;
