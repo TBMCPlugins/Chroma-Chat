@@ -105,19 +105,20 @@ public class PlayerListener implements Listener {
 					if (ispremium
 							&& mp.FlairState.equals(FlairStates.NoComment)) {
 						String json = String
-								.format("[\"\",{\"text\":\"If you'd like your /r/TheButton flair displayed ingame, write your Minecraft name to \",\"color\":\"aqua\"},{\"text\":\"[this thread].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
+								.format("[\"\",{\"text\":\"If you're from Reddit and you'd like your /r/TheButton flair displayed ingame, write your Minecraft name to \",\"color\":\"aqua\"},{\"text\":\"[this thread].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
 										PluginMain.FlairThreadURL);
 						PluginMain.Instance.getServer().dispatchCommand(
 								PluginMain.Console,
 								"tellraw " + mp.PlayerName + " " + json);
-						json = "[\"\",{\"text\":\"If you don't want the flair, type /u ignore to prevent this message after next login.\",\"color\":\"aqua\"}]";
+						json = "[\"\",{\"text\":\"If you aren't from Reddit or don't want the flair, type /u ignore to prevent this message after next login.\",\"color\":\"aqua\"}]";
 						PluginMain.Instance.getServer().dispatchCommand(
 								PluginMain.Console,
 								"tellraw " + mp.PlayerName + " " + json);
 					}
 				}
 			};
-			tt.mp = mp;;
+			tt.mp = mp;
+			;
 			timer.schedule(tt, 15 * 1000);
 		}
 
@@ -136,48 +137,20 @@ public class PlayerListener implements Listener {
 				boolean ispremium = pp != null && pp.isPremium();
 				final MaybeOfflinePlayer mplayer = mp;
 
-				if (mp.LoginWarningCount < LoginWarningCountTotal - 1) {
-					if (AuthMe.getInstance().api.isAuthenticated(player)) // The
-																			// player
-																			// logged
-																			// in
-																			// in
-																			// any
-																			// way
-					{
-						{
-							if (!ispremium
-									&& !mp.FlairState
-											.equals(FlairStates.Accepted)
-									&& !mp.FlairState
-											.equals(FlairStates.Commented)) { // The
-																				// player
-																				// isn't
-																				// premium,
-																				// and
-																				// doesn't
-																				// have
-																				// a
-																				// flair
-																				// //
-																				// The
-								// player
-								// isn't
-								// premium,
-								// and
-								// doesn't
-								// have
-								// a
-								// flair
-								String json = String
-										.format("[\"\",{\"text\":\"Welcome! If you are a premium Minecraft user, please do /premium and relog, otherwise please verify your /r/thebutton flair to play, \",\"color\":\"gold\"},{\"text\":\"[here].\",\"color\":\"gold\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
-												PluginMain.FlairThreadURL);
-								PluginMain.Instance.getServer()
-										.dispatchCommand(
-												PluginMain.Console,
-												"tellraw " + mp.PlayerName
-														+ " " + json);
-							}
+				if (mp.LoginWarningCount < LoginWarningCountTotal) {
+					if (AuthMe.getInstance().api.isAuthenticated(player)) {
+						// The player logged in in any way
+						if (!ispremium
+								&& !mp.FlairState.equals(FlairStates.Accepted)
+								&& !mp.FlairState.equals(FlairStates.Commented)) {
+							// The player isn't premium, and doesn't have a
+							// flair
+							String json = String
+									.format("[\"\",{\"text\":\"Welcome! If you are a premium Minecraft user, please do /premium and relog, otherwise please verify your /r/thebutton flair to play, \",\"color\":\"gold\"},{\"text\":\"[here].\",\"color\":\"gold\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
+											PluginMain.FlairThreadURL);
+							PluginMain.Instance.getServer().dispatchCommand(
+									PluginMain.Console,
+									"tellraw " + mp.PlayerName + " " + json);
 						}
 					}
 				} else {
