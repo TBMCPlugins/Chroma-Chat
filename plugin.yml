@@ -5,16 +5,13 @@ commands:
     u:
         description: Auto-flair system. Accept or ignore flair.
         usage: "&cUsage: /u accept|ignore|opme&r"
-    nrp:
-        description: Send message in Out-of-Character.
-        usage: "&cUsage: /nrp <message>&r"
     ooc:
         description: Send message in Out-of-Character.
         usage: "&cUsage: /ooc <message>&r"
+        alias: nrp
     unlol:
         description: Unlaugh the last laugh.
-    unlaugh:
-        description: Unlaugh the last laugh.
+		alias: unlaugh
     mwiki:
         description: Search the wiki.
         usage: "&cUsage: /mwiki [query]&r"

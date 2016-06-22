@@ -25,6 +25,8 @@ import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
 
+import io.github.norbipeti.thebuttonmc.commands.TBMCCommandBase;
+
 import java.io.*;
 import java.lang.String;
 import java.lang.reflect.Method;
@@ -79,30 +81,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 		getServer().getPluginManager().registerEvents(new PlayerListener(),
 				this);
-		Commands comm = new Commands();
-		this.getCommand("u").setExecutor(comm);
-		this.getCommand("u").setUsage(
-				this.getCommand("u").getUsage().replace('&', '§'));
-		this.getCommand("nrp").setExecutor(comm);
-		this.getCommand("nrp").setUsage(
-				this.getCommand("nrp").getUsage().replace('&', '§'));
-		this.getCommand("ooc").setExecutor(comm);
-		this.getCommand("ooc").setUsage(
-				this.getCommand("ooc").getUsage().replace('&', '§'));
-		this.getCommand("unlol").setExecutor(comm);
-		this.getCommand("unlaugh").setExecutor(comm);
-		this.getCommand("mwiki").setExecutor(comm);
-		this.getCommand("mwiki").setUsage(
-				this.getCommand("mwiki").getUsage().replace('&', '§'));
-		this.getCommand("tableflip").setExecutor(comm);
-		this.getCommand("tableflip").setUsage(
-				this.getCommand("tableflip").getUsage().replace('&', '§'));
-		this.getCommand("unflip").setExecutor(comm);
-		this.getCommand("unflip").setUsage(
-				this.getCommand("unflip").getUsage().replace('&', '§'));
-		this.getCommand("chatonly").setExecutor(comm);
-		this.getCommand("chatonly").setUsage(
-				this.getCommand("chatonly").getUsage().replace('&', '§'));
+		TBMCCommandBase.RegisterCommands(this);
 		Instance = this;
 		Console = this.getServer().getConsoleSender();
 		LoadFiles(false);

@@ -1,5 +1,7 @@
 package io.github.norbipeti.thebuttonmc;
 
+import io.github.norbipeti.thebuttonmc.commands.UnlolCommand;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -47,29 +49,15 @@ public class ChatProcessing {
 
 		String msg = message.toLowerCase();
 		if (msg.contains("lol")) {
-			if (player != null) {
-				Commands.Lastlol = player;
-				Commands.Lastlolornot = true;
-				Commands.Lastlolconsole = false;
-			} else {
-				Commands.Lastlolornot = true;
-				Commands.Lastlolconsole = true;
-				Commands.Lastlol = null;
-			}
+			UnlolCommand.Lastlolornot = true;
+			UnlolCommand.Lastlol = sender;
 		} else {
 			for (int i = 0; i < PlayerListener.LaughStrings.length; i++) {
 				if (msg.contains(PlayerListener.LaughStrings[i])) {
-					if (player != null) {
-						Commands.Lastlol = player;
-						Commands.Lastlolornot = false;
-						Commands.Lastlolconsole = false;
-					} else {
-						Commands.Lastlolornot = false;
-						Commands.Lastlolconsole = true;
-						Commands.Lastlol = null;
-					}
-					break;
+					UnlolCommand.Lastlol = sender;
+					UnlolCommand.Lastlolornot = false;
 				}
+				break;
 			}
 		}
 		Channel currentchannel = (mp == null ? PlayerListener.ConsoleChannel

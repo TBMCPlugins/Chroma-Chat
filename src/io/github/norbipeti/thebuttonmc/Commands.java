@@ -32,10 +32,6 @@ import java.util.Timer;
 
 public class Commands implements CommandExecutor {
 
-	public static Player Lastlol = null;
-	public static boolean Lastlolornot;
-	public static boolean Lastlolconsole;
-
 	// This method is called, when somebody uses our command
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
@@ -49,91 +45,6 @@ public class Commands implements CommandExecutor {
 				MaybeOfflinePlayer p = MaybeOfflinePlayer.AllPlayers.get(player
 						.getUniqueId());
 				switch (args[0].toLowerCase()) {
-				case "accept": {
-					if (args.length < 2 && p.UserNames.size() > 1) {
-						player.sendMessage("§9Multiple users commented your name. §bPlease pick one using /u accept <username>");
-						StringBuilder sb = new StringBuilder();
-						sb.append("§6Usernames:");
-						for (String username : p.UserNames)
-							sb.append(" ").append(username);
-						player.sendMessage(sb.toString());
-						return true;
-					}
-					if (p.FlairState.equals(FlairStates.NoComment)
-							|| p.UserNames.size() == 0) {
-						player.sendMessage("§cError: You need to write your username to the reddit thread at /r/TheButtonMinecraft§r");
-						return true;
-					}
-					if (args.length > 1 && !p.UserNames.contains(args[1])) {
-						player.sendMessage("§cError: Unknown name: " + args[1]
-								+ "§r");
-						return true;
-					}
-					if (p.Working) {
-						player.sendMessage("§cError: Something is already in progress.§r");
-						return true;
-					}
-
-					if ((args.length > 1 ? args[1] : p.UserNames.get(0))
-							.equals(p.UserName)) {
-						player.sendMessage("§cYou already have this user's flair.§r");
-						return true;
-					}
-					if (args.length > 1)
-						p.UserName = args[1];
-					else
-						p.UserName = p.UserNames.get(0);
-
-					player.sendMessage("§bObtaining flair...");
-					p.Working = true;
-					Timer timer = new Timer();
-					PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
-						@Override
-						public void run() {
-							try {
-								PluginMain.Instance.DownloadFlair(mp);
-							} catch (Exception e) {
-								e.printStackTrace();
-								player.sendMessage("Sorry, but an error occured while trying to get your flair. Please contact a mod.");
-								mp.Working = false;
-								return;
-							}
-
-							if (mp.FlairState.equals(FlairStates.Commented)) {
-								player.sendMessage("Sorry, but your flair isn't recorded. Please ask an admin to set it for you. Also, prepare a comment on /r/thebutton, if possible.");
-								mp.Working = false;
-								return;
-							}
-							String flair = mp.GetFormattedFlair();
-							mp.FlairState = FlairStates.Accepted;
-							PluginMain.ConfirmUserMessage(mp);
-							player.sendMessage("§bYour flair has been set:§r "
-									+ flair);
-							mp.Working = false;
-						}
-					};
-					tt.mp = p;
-					timer.schedule(tt, 20);
-					break;
-				}
-				case "ignore": {
-					if (p.FlairState.equals(FlairStates.Accepted)) {
-						player.sendMessage("§cSorry, but ignoring the flair is no longer possible. As with the original Button, you can't undo what already happened.");
-						return true;
-					}
-					if (p.FlairState.equals(FlairStates.Commented)) {
-						player.sendMessage("Sorry, but your flair isn't recorded. Please ask a mod to set it for you.");
-						return true;
-					}
-					if (!p.FlairState.equals(FlairStates.Ignored)) {
-						p.FlairState = FlairStates.Ignored;
-						p.SetFlair(MaybeOfflinePlayer.FlairTimeNone);
-						p.UserName = "";
-						player.sendMessage("§bYou have removed your flair. You can still use /u accept to get one.§r");
-					} else
-						player.sendMessage("§cYou already removed your flair.§r");
-					break;
-				}
 				case "admin": // 2015.08.09.
 					DoAdmin(player, args);
 					break;
@@ -228,39 +139,7 @@ public class Commands implements CommandExecutor {
 				return true;
 			}
 			case "unlaugh":
-			case "unlol": {
-				if (Lastlol != null) {
-					Lastlol.addPotionEffect(new PotionEffect(
-							PotionEffectType.BLINDNESS, 10 * 20, 5, false,
-							false));
-					for (Player pl : PluginMain.GetPlayers())
-						pl.sendMessage(player.getDisplayName()
-								+ (Lastlolornot ? " unlolled " : " unlaughed ")
-								+ Lastlol.getDisplayName());
-					Bukkit.getServer()
-							.getConsoleSender()
-							.sendMessage(
-									player.getDisplayName()
-											+ (Lastlolornot ? " unlolled "
-													: " unlaughed ")
-											+ Lastlol.getDisplayName());
-					Lastlol = null;
-				} else if (Lastlolconsole) {
-					for (Player pl : PluginMain.GetPlayers())
-						pl.sendMessage(player.getDisplayName()
-								+ (Lastlolornot ? " unlolled " : " unlaughed ")
-								+ Bukkit.getServer().getConsoleSender()
-										.getName());
-					Bukkit.getServer()
-							.getConsoleSender()
-							.sendMessage(
-									player.getDisplayName()
-											+ (Lastlolornot ? " unlolled "
-													: " unlaughed ")
-											+ Bukkit.getServer()
-													.getConsoleSender()
-													.getName());
-				}
+			case "unlol": { //TODO
 				return true;
 			}
 			case "yeehaw": {
@@ -322,258 +201,18 @@ public class Commands implements CommandExecutor {
 			return true;
 		} else {
 			switch (cmd.getName()) {
-			case "unlaugh":
-			case "unlol": {
-				if (Lastlol != null) {
-					Lastlol.addPotionEffect(new PotionEffect(
-							PotionEffectType.BLINDNESS, 10 * 20, 5, false,
-							false));
-					for (Player pl : PluginMain.GetPlayers())
-						pl.sendMessage(Bukkit.getServer().getConsoleSender()
-								.getName()
-								+ (Lastlolornot ? " unlolled " : " unlaughed ")
-								+ Lastlol.getDisplayName());
-					Bukkit.getServer()
-							.getConsoleSender()
-							.sendMessage(
-									Bukkit.getServer().getConsoleSender()
-											.getName()
-											+ (Lastlolornot ? " unlolled "
-													: " unlaughed ")
-											+ Lastlol.getDisplayName());
-					Lastlol = null;
-				}
 				return true;
-			}
 			}
 		}
 		return false;
 	}
 
-	private static void DoReload(Player player) {
-		try {
-			PluginMain.Console
-					.sendMessage("§6-- Reloading The Button Minecraft plugin...§r");
-			PluginMain.LoadFiles(true); // 2015.08.09.
-			for (Player p : PluginMain.GetPlayers()) {
-				MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p
-						.getUniqueId());
-				if (mp.FlairState.equals(FlairStates.Recognised)
-						|| mp.FlairState.equals(FlairStates.Commented)) {
-					PluginMain.ConfirmUserMessage(mp);
-				}
-				String msg = "§bNote: The auto-flair plugin has been reloaded. You might need to wait 10s to have your flair.§r"; // 2015.08.09.
-				p.sendMessage(msg); // 2015.08.09.
-			}
-			PluginMain.Console.sendMessage("§6-- Reloading done!§r");
-		} catch (Exception e) {
-			System.out.println("Error!\n" + e);
-			if (player != null)
-				player.sendMessage("§cAn error occured. See console for details.§r");
-			PluginMain.LastException = e; // 2015.08.09.
-		}
-	}
-
-	private static Player ReloadPlayer; // 2015.08.09.
-
 	private static String DoAdminUsage = "§cUsage: /u admin reload|playerinfo|getlasterror|save|setflair|updateplugin|togglerpshow|toggledebug|savepos|loadpos§r";
-
-	private static void DoAdmin(Player player, String[] args) {
-		if (player == null || PluginMain.permission.has(player, "tbmc.admin")) {
-			if (args.length == 1) {
-				String message = DoAdminUsage;
-				SendMessage(player, message);
-				return;
-			}
-			// args[0] is "admin"
-			switch (args[1].toLowerCase()) {
-			case "reload":
-				ReloadPlayer = player; // 2015.08.09.
-				SendMessage(
-						player,
-						"§bMake sure to save the current settings before you modify and reload them! Type /u admin confirm when done.§r");
-				break;
-			case "playerinfo":
-				DoPlayerInfo(player, args);
-				break;
-			case "getlasterror":
-				DoGetLastError(player, args);
-				break; // <-- 2015.08.10.
-			case "confirm":
-				if (ReloadPlayer == player)
-					DoReload(player); // 2015.08.09.
-				else
-					SendMessage(player,
-							"§cYou need to do /u admin reload first.§r");
-				break;
-			case "save":
-				PluginMain.SaveFiles(); // 2015.08.09.
-				SendMessage(player,
-						"§bSaved files. Now you can edit them and reload if you want.§r");
-				break;
-			case "setflair":
-				DoSetFlair(player, args);
-				break;
-			case "updateplugin": // 2015.08.10.
-				DoUpdatePlugin(player);
-				break;
-			case "togglerpshow":
-				PlayerListener.ShowRPTag = !PlayerListener.ShowRPTag;
-				SendMessage(player, "RP tag showing "
-						+ (PlayerListener.ShowRPTag ? "enabled" : "disabled"));
-				break;
-			case "toggledebug":
-				PlayerListener.DebugMode = !PlayerListener.DebugMode;
-				SendMessage(player, "DebugMode: " + PlayerListener.DebugMode);
-				break;
-			case "savepos":
-				DoSaveLoadPos(player, args);
-				break;
-			case "loadpos":
-				DoSaveLoadPos(player, args);
-				break;
-			case "updatedynmap":
-				DoUpdateDynmap(player, args);
-			default:
-				String message = DoAdminUsage;
-				SendMessage(player, message);
-				return;
-			}
-		} else
-			player.sendMessage("§cYou don't have permission to use this command.§r");
-	}
-
-	private static void DoPlayerInfo(Player player, String[] args) { // 2015.08.09.
-		// args[0] is "admin" - args[1] is "playerinfo"
-		if (args.length == 2) {
-			String message = "§cUsage: /u admin playerinfo <player>§r";
-			SendMessage(player, message);
-			return;
-		}
-		MaybeOfflinePlayer p = MaybeOfflinePlayer.GetFromName(args[2]);
-		if (p == null) {
-			String message = "§cPlayer not found: " + args[2]
-					+ " - Currently only online players can be viewed§r";
-			SendMessage(player, message);
-			return;
-		}
-		SendMessage(player, "Player name: " + p.PlayerName);
-		SendMessage(player, "User flair: " + p.GetFormattedFlair());
-		SendMessage(player, "Username: " + p.UserName);
-		SendMessage(player, "Flair state: " + p.FlairState);
-		StringBuilder sb = new StringBuilder();
-		sb.append("§6Usernames:");
-		for (String username : p.UserNames)
-			sb.append(" ").append(username);
-		SendMessage(player, sb.toString());
-	}
-
-	private static void SendMessage(Player player, String message) { // 2015.08.09.
-		if (player == null)
-			PluginMain.Console.sendMessage(message); // 2015.08.12.
-		else
-			player.sendMessage(message);
-	}
-
-	private static void DoGetLastError(Player player, String[] args) { // 2015.08.09.
-		// args[0] is "admin" - args[1] is "getlasterror"
-		if (PluginMain.LastException != null) {
-			SendMessage(player, "Last error:");
-			SendMessage(player, PluginMain.LastException.toString());
-			PluginMain.LastException = null;
-		} else
-			SendMessage(player, "There were no exceptions.");
-	}
-
-	private static void SetPlayerFlair(Player player,
-			MaybeOfflinePlayer targetplayer, short flairtime, boolean cheater,
-			String username) {
-		targetplayer.SetFlair(flairtime, cheater);
-		targetplayer.FlairState = FlairStates.Accepted;
-		if (username == null)
-			targetplayer.UserName = "";
-		else {
-			targetplayer.UserName = username;
-			if (!targetplayer.UserNames.contains(username))
-				targetplayer.UserNames.add(username);
-		}
-		SendMessage(player,
-				"§bThe flair has been set. Player: " + targetplayer.PlayerName
-						+ " Flair: " + targetplayer.GetFormattedFlair() + "§r");
-	}
-
-	// TODO: Put commands into separate classes
-	private static void DoSetFlair(Player player, String[] args) {
-		// args[0] is "admin" - args[1] is "setflair"
-		if (args.length < 5) {
-			SendMessage(
-					player,
-					"§cUsage: /u admin setflair <playername> <flairtime (or non-presser, cant-press, none)> <cheater(true/false)> [username]");
-			return;
-		}
-		Player p = Bukkit.getPlayer(args[2]);
-		if (p == null) {
-			SendMessage(player, "§cPlayer not found.&r");
-			return;
-		}
-		short flairtime = 0x00;
-		if (args[3].equalsIgnoreCase("non-presser"))
-			flairtime = MaybeOfflinePlayer.FlairTimeNonPresser;
-		else if (args[3].equalsIgnoreCase("cant-press"))
-			flairtime = MaybeOfflinePlayer.FlairTimeCantPress;
-		else if (args[3].equalsIgnoreCase("none"))
-			flairtime = MaybeOfflinePlayer.FlairTimeNone;
-		else {
-			try {
-				flairtime = Short.parseShort(args[3]);
-			} catch (Exception e) {
-				SendMessage(player,
-						"§cFlairtime must be a number, \"non-presser\", \"cant-press\" or \"none\".");
-				return;
-			}
-		} // TODO: Split config to per-player
-		boolean cheater = false;
-		if (args[4].equalsIgnoreCase("true"))
-			cheater = true;
-		else if (args[4].equalsIgnoreCase("false"))
-			cheater = false;
-		else {
-			SendMessage(player, "§cUnknown value for cheater parameter.");
-			return;
-		}
-		SetPlayerFlair(player,
-				MaybeOfflinePlayer.AddPlayerIfNeeded(p.getUniqueId()),
-				flairtime, cheater, (args.length > 5 ? args[5] : null));
-	}
-
-	private static void DoUpdatePlugin(Player player) { // 2015.08.10.
-		SendMessage(player, "Updating Auto-Flair plugin...");
-		System.out.println("Forced updating of Auto-Flair plugin.");
-		URL url;
-		try {
-			url = new URL(
-					"https://github.com/NorbiPeti/thebuttonautoflairmc/raw/master/TheButtonAutoFlair.jar");
-			FileUtils.copyURLToFile(url, new File(
-					"plugins/TheButtonAutoFlair.jar"));
-			SendMessage(player, "Updating done!");
-		} catch (MalformedURLException e) {
-			System.out.println("Error!\n" + e);
-			PluginMain.LastException = e; // 2015.08.09.
-		} catch (IOException e) {
-			System.out.println("Error!\n" + e);
-			PluginMain.LastException = e; // 2015.08.09.
-		}
-	}
 
 	private static void DoAnnounce(Player player, String[] args,
 			BlockCommandSender commandblock) {
 		if (player == null || player.isOp()
 				|| player.getName().equals("NorbiPeti")) {
-			if (args.length == 1) {
-				String message = "§cUsage: /u announce add|remove|settime|list|edit§r";
-				SendMessage(player, message);
-				return;
-			}
 			switch (args[1].toLowerCase()) {
 			case "add":
 				if (args.length < 3) {
