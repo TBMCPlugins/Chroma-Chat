@@ -54,8 +54,8 @@ public class ChatProcessing {
 				if (msg.contains(PlayerListener.LaughStrings[i])) {
 					UnlolCommand.Lastlol = sender;
 					UnlolCommand.Lastlolornot = false;
+					break;
 				}
-				break;
 			}
 		}
 		Channel currentchannel = (mp == null ? PlayerListener.ConsoleChannel
