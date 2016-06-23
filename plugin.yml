@@ -1,5 +1,5 @@
-name: TheButtonMCPlugin
-main: io.github.norbipeti.thebuttonmc.PluginMain
+name: TheButtonMCChatPlugin
+main: io.github.norbipeti.thebuttonmcchat.PluginMain
 version: 4.0
 commands:
     u:
@@ -11,7 +11,7 @@ commands:
         alias: nrp
     unlol:
         description: Unlaugh the last laugh.
-		alias: unlaugh
+        alias: unlaugh
     mwiki:
         description: Search the wiki.
         usage: "&cUsage: /mwiki [query]&r"
@@ -26,7 +26,7 @@ commands:
         description: Enable chat only mode. Useful for chat clients.
         usage: "&cUsage: /chatonly&r"
 author: NorbiPeti
-depend: [Essentials, Towny, Minigames, Votifier, Factions, WorldGuard, WorldEdit, ProtocolLib, FastLogin, Vault, AuthMe]
+depend: [Essentials, Towny, Minigames, Votifier, WorldGuard, WorldEdit, ProtocolLib, FastLogin, Vault, AuthMe]
 permissions:
   tbmc.admin:
     description: Gives access to /un- commands and /u admin commands

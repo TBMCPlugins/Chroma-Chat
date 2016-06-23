@@ -12,6 +12,8 @@ public abstract class UCommandBase extends TBMCCommandBase {
 
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
+		if (args.length == 0)
+			return false;
 		return OnUCommand(sender, alias,
 				Arrays.copyOfRange(args, 1, args.length));
 	}
@@ -24,7 +26,7 @@ public abstract class UCommandBase extends TBMCCommandBase {
 		return "u";
 	}
 
-	public abstract String GetUCommandName(); //TODO: Help for /u commands
+	public abstract String GetUCommandName(); // TODO: Help for /u commands
 
 	@Override
 	public boolean GetPlayerOnly() {

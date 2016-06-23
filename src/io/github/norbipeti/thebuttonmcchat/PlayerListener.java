@@ -47,8 +47,6 @@ import au.com.mineauz.minigames.Minigames;
 import com.earth2me.essentials.Essentials;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
 import com.github.games647.fastlogin.bukkit.PlayerProfile;
-import com.massivecraft.factions.entity.BoardColl;
-import com.massivecraft.massivecore.ps.PS;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
@@ -358,7 +356,7 @@ public class PlayerListener implements Listener {
 								.getPlayer().getDisplayName(), message));
 				}
 			}
-			boolean tping = false;
+			/*boolean tping = false;
 			boolean tphering = false;
 			if (cmd.equalsIgnoreCase("tpa") || cmd.equalsIgnoreCase("call")
 					|| cmd.equalsIgnoreCase("ecall")
@@ -368,7 +366,7 @@ public class PlayerListener implements Listener {
 				tping = true;
 			if (cmd.equalsIgnoreCase("tpahere")
 					|| cmd.equalsIgnoreCase("etpahere"))
-				tphering = true;
+				tphering = true;*/
 
 			/*
 			 * for (HelpTopic ht : PluginMain.Instance.getServer()
@@ -384,7 +382,7 @@ public class PlayerListener implements Listener {
 			 * break; }
 			 */
 
-			if (tphering) {
+			/*if (tphering) {
 				Player target = Bukkit.getPlayer(event.getMessage()
 						.substring(index + 1).split(" ")[0]);
 				if (target != null
@@ -396,12 +394,12 @@ public class PlayerListener implements Listener {
 									"§cYou are not allowed to teleport players out from the Tower");
 					event.setCancelled(true);
 				}
-			}
+			}*/
 			/*
 			 * for (String s : Bukkit.getCommandAliases().get("/tpahere")) { if
 			 * (cmd.equalsIgnoreCase(s)) { tping = true; break; } }
 			 */
-			if (tping) {
+			/*if (tping) {
 				if (
 				// MPlayer.get(event.getPlayer()).getFaction().getId().equalsIgnoreCase("nomansland"))
 				// {
@@ -414,7 +412,7 @@ public class PlayerListener implements Listener {
 							"§cYou are not allowed to teleport to the Tower");
 					event.setCancelled(true);
 				}
-			}
+			}*/
 		}
 		if (cmd.equalsIgnoreCase("sethome")) {
 			TownyUniverse tu = PluginMain.Instance.TU;

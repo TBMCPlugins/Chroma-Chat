@@ -2,8 +2,6 @@ package io.github.norbipeti.thebuttonmcchat.commands.ucmds;
 
 import org.bukkit.command.CommandSender;
 
-import io.github.norbipeti.thebuttonmcchat.commands.TBMCCommandBase;
-
 public final class UCommand extends UCommandBase {
 
 	@Override
@@ -14,7 +12,7 @@ public final class UCommand extends UCommandBase {
 
 	@Override
 	public boolean OnUCommand(CommandSender sender, String alias, String[] args) {
-		return false;
+		return false; //TODO: Forward call to the correct handler
 	}
 
 	@Override

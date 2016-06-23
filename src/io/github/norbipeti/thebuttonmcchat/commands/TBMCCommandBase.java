@@ -1,6 +1,5 @@
 package io.github.norbipeti.thebuttonmcchat.commands;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import io.github.norbipeti.thebuttonmcchat.PluginMain;

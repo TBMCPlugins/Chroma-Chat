@@ -13,8 +13,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
 
-import ru.tehkode.permissions.bukkit.PermissionsEx;
-
 import com.earth2me.essentials.Essentials;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
@@ -456,13 +454,13 @@ public class ChatProcessing {
 		} else if (currentchannel.equals(Channel.ModChat)) {
 			try {
 				if (player != null
-						&& !PermissionsEx.getUser(player).inGroup("mod")) {
+						&& !PluginMain.permission.playerInGroup(player, "mod")) {
 					player.sendMessage("§cYou need to be a mod to use this channel.");
 					return true;
 				}
 				Objective obj = PluginMain.SB.getObjective("mod");
 				for (Player p : PluginMain.GetPlayers()) {
-					if (PermissionsEx.getUser(p).inGroup("mod"))
+					if (PluginMain.permission.playerInGroup(p, "mod"))
 						obj.getScore(p.getName()).setScore(1);
 					else
 						obj.getScore(p.getName()).setScore(0);
