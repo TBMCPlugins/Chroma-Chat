@@ -3,6 +3,7 @@ package io.github.norbipeti.thebuttonmcchat.commands;
 import java.util.HashMap;
 
 import io.github.norbipeti.thebuttonmcchat.PluginMain;
+import io.github.norbipeti.thebuttonmcchat.commands.appendtext.ShrugCommand;
 import io.github.norbipeti.thebuttonmcchat.commands.appendtext.TableflipCommand;
 import io.github.norbipeti.thebuttonmcchat.commands.appendtext.UnflipCommand;
 import io.github.norbipeti.thebuttonmcchat.commands.ucmds.UCommand;
@@ -28,6 +29,8 @@ public abstract class TBMCCommandBase implements CommandExecutor {
 		cmd = new UnflipCommand();
 		plugin.getCommand(cmd.GetCommandName()).setExecutor(cmd);
 		cmd = new ChatonlyCommand();
+		plugin.getCommand(cmd.GetCommandName()).setExecutor(cmd);
+		cmd = new ShrugCommand();
 		plugin.getCommand(cmd.GetCommandName()).setExecutor(cmd);
 	}
 

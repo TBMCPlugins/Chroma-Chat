@@ -14,10 +14,8 @@ public abstract class AppendTextCommandBase extends TBMCCommandBase {
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		String msg = GetAppendedText();
-		if (args.length > 0) {
-			msg = args[0] + " " + msg;
-		} else
-			msg = " " + msg;
+		for (int i = args.length - 1; i >= 0; i--)
+			msg = args[i] + " " + msg;
 		ChatProcessing.ProcessChat(sender, msg);
 		return true;
 	}

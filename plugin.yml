@@ -25,6 +25,9 @@ commands:
     chatonly:
         description: Enable chat only mode. Useful for chat clients.
         usage: "&cUsage: /chatonly&r"
+    shrug:
+        description: Shrug.
+        usage: "&cUsage: /shrug [message]&r"
 author: NorbiPeti
 depend: [Essentials, Towny, Minigames, Votifier, WorldGuard, WorldEdit, ProtocolLib, FastLogin, Vault, AuthMe]
 permissions:
