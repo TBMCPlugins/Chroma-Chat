@@ -13,7 +13,7 @@ public final class UCommand extends UCommandBase {
 	}
 
 	@Override
-	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
+	public boolean OnUCommand(CommandSender sender, String alias, String[] args) {
 		return false;
 	}
 

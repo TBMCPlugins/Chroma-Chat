@@ -1,5 +1,7 @@
 package io.github.norbipeti.thebuttonmcchat;
 
+import io.github.norbipeti.thebuttonmcchat.commands.ucmds.KittycannonCommand;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -610,7 +612,7 @@ public class PlayerListener implements Listener {
 		 * .equalsIgnoreCase(Commands.KittyCannonMinigame))) return;
 		 */
 		if (!(mp.isInMinigame() && mp.getMinigame().getName(false)
-				.equalsIgnoreCase(Commands.KittyCannonMinigame)))
+				.equalsIgnoreCase(KittycannonCommand.KittyCannonMinigame)))
 			return;
 		// System.out.println("C");
 		ItemStack item = e.getItem().getItemStack();
