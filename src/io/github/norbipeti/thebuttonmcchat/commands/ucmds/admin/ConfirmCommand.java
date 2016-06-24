@@ -13,8 +13,7 @@ public class ConfirmCommand extends AdminCommandBase {
 	}
 
 	@Override
-	public boolean OnAdminCommand(CommandSender sender, String alias,
-			String[] args) {
+	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		if (ReloadCommand.Reloader == sender) {
 			try {
 				if (sender != PluginMain.Console)

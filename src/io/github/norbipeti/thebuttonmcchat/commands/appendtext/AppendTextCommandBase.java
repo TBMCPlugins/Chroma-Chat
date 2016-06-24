@@ -20,8 +20,6 @@ public abstract class AppendTextCommandBase extends TBMCCommandBase {
 		return true;
 	}
 
-	public abstract String GetCommandName();
-
 	@Override
 	public boolean GetPlayerOnly() {
 		return false;

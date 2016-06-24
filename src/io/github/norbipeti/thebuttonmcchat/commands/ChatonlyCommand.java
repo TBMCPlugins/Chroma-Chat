@@ -30,7 +30,7 @@ public final class ChatonlyCommand extends TBMCCommandBase {
 	}
 
 	@Override
-	public String GetCommandName() {
+	public String GetCommandPath() {
 		return "chatonly";
 	}
 

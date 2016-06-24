@@ -10,13 +10,13 @@ public class OpmeCommand extends UCommandBase {
 	}
 
 	@Override
-	public boolean OnUCommand(CommandSender sender, String alias, String[] args) {
+	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		sender.sendMessage("It would be nice, wouldn't it?");
 		return true;
 	}
 
 	@Override
-	public String GetUCommandName() {
+	public String GetUCommandPath() {
 		return "opme";
 	}
 

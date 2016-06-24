@@ -16,7 +16,7 @@ public class CCommand extends UCommandBase {
 	}
 
 	@Override
-	public boolean OnUCommand(CommandSender sender, String alias, String[] args) {
+	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		Player player = (Player) sender;
 		MaybeOfflinePlayer p = MaybeOfflinePlayer.AddPlayerIfNeeded(player
 				.getUniqueId());
@@ -50,7 +50,7 @@ public class CCommand extends UCommandBase {
 	}
 
 	@Override
-	public String GetUCommandName() {
+	public String GetUCommandPath() {
 		return "c";
 	}
 

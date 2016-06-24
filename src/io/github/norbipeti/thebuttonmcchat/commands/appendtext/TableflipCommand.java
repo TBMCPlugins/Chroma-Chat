@@ -16,7 +16,7 @@ public final class TableflipCommand extends AppendTextCommandBase {
 	}
 
 	@Override
-	public String GetCommandName() {
+	public String GetCommandPath() {
 		return "tableflip";
 	}
 }

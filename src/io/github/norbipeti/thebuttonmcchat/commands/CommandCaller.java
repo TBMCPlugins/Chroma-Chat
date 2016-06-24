@@ -2,6 +2,7 @@ package io.github.norbipeti.thebuttonmcchat.commands;
 
 import io.github.norbipeti.thebuttonmcchat.PluginMain;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -12,13 +13,10 @@ import org.bukkit.command.CommandSender;
 import org.reflections.Reflections;
 
 public class CommandCaller implements CommandExecutor {
-	private CommandCaller() {
-	}
 
 	private static HashMap<String, TBMCCommandBase> commands = new HashMap<String, TBMCCommandBase>();
-	private static HashMap<String, TBMCSubCommandBase> subcommands = new HashMap<String, TBMCSubCommandBase>();
 
-	public static void RegisterCommands(PluginMain plugin) {
+	public void RegisterCommands(PluginMain plugin) {
 		System.out.println("Registering commands...");
 		Reflections rf = new Reflections(
 				"io.github.norbipeti.thebuttonmcchat.commands");
@@ -27,28 +25,14 @@ public class CommandCaller implements CommandExecutor {
 		for (Class<? extends TBMCCommandBase> cmd : cmds) {
 			try {
 				TBMCCommandBase c = cmd.newInstance();
-				commands.put(c.GetCommandName(), c);
-				plugin.getCommand(c.GetCommandName()).setExecutor(c);
+				commands.put(c.GetCommandPath(), c);
+				plugin.getCommand(c.GetCommandPath()).setExecutor(this);
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Registering subcommands...");
-		Set<Class<? extends TBMCSubCommandBase>> subcmds = rf
-				.getSubTypesOf(TBMCSubCommandBase.class);
-		for (Class<? extends TBMCSubCommandBase> subcmd : subcmds) {
-			try {
-				TBMCSubCommandBase sc = subcmd.newInstance();
-				subcommands.put(sc.GetCommandPath(), sc);
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
-		}
-		System.out.println("Done registering");
 	}
 
 	@Override
@@ -60,17 +44,23 @@ public class CommandCaller implements CommandExecutor {
 		String path = command.getName();
 		for (String arg : args)
 			path += "/" + arg;
-		TBMCSubCommandBase cmd = subcommands.get(path);
-		while (cmd == null && path.contains("/"))
+		TBMCCommandBase cmd = commands.get(path);
+		int argc = 0;
+		while (cmd == null && path.contains("/")) {
 			path = path.substring(0, path.indexOf('/'));
+			argc++;
+			cmd = commands.get(path);
+		}
 		if (cmd == null) {
-			sender.sendMessage("§cInternal error: Subcommand not registered to CommandCaller");
+			sender.sendMessage("§cInternal error: Command not registered to CommandCaller");
 			if (sender != Bukkit.getConsoleSender())
 				Bukkit.getConsoleSender()
 						.sendMessage(
-								"§cInternal error: Subcommand not registered to CommandCaller");
+								"§cInternal error: Command not registered to CommandCaller");
 			return true;
 		}
+		cmd.OnCommand(sender, alias,
+				Arrays.copyOfRange(args, argc, args.length - 1));
 		return true;
 	}
 }

@@ -30,7 +30,7 @@ public class MWikiCommand extends TBMCCommandBase {
 	}
 
 	@Override
-	public String GetCommandName() {
+	public String GetCommandPath() {
 		return "mwiki";
 	}
 

@@ -15,7 +15,7 @@ public class NameCommand extends UCommandBase {
 	}
 
 	@Override
-	public boolean OnUCommand(CommandSender sender, String alias, String[] args) {
+	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		if (args.length == 1) {
 			return false;
 		}
@@ -30,7 +30,7 @@ public class NameCommand extends UCommandBase {
 	}
 
 	@Override
-	public String GetUCommandName() {
+	public String GetUCommandPath() {
 		return "name";
 	}
 

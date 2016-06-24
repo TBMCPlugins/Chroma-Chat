@@ -42,7 +42,7 @@ public final class UnlolCommand extends TBMCCommandBase {
 	}
 
 	@Override
-	public String GetCommandName() {
+	public String GetCommandPath() {
 		return "unlol";
 	}
 

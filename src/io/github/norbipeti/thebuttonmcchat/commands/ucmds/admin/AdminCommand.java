@@ -11,7 +11,7 @@ public final class AdminCommand extends AdminCommandBase {
 	}
 
 	@Override
-	public boolean OnAdminCommand(CommandSender sender, String alias,
+	public boolean OnCommand(CommandSender sender, String alias,
 			String[] args) {
 		return false;
 	}

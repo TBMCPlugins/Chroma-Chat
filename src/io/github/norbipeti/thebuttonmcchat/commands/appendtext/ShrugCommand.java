@@ -16,7 +16,7 @@ public final class ShrugCommand extends AppendTextCommandBase {
 	}
 
 	@Override
-	public String GetCommandName() {
+	public String GetCommandPath() {
 		return "shrug";
 	}
 

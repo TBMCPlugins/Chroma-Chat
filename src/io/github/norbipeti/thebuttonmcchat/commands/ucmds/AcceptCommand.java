@@ -20,7 +20,7 @@ public class AcceptCommand extends UCommandBase {
 	}
 
 	@Override
-	public boolean OnUCommand(CommandSender sender, String alias, String[] args) {
+	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		final Player player = (Player) sender;
 		MaybeOfflinePlayer p = MaybeOfflinePlayer.GetFromPlayer(player);
 		if (args.length < 1 && p.UserNames.size() > 1) {
@@ -88,7 +88,7 @@ public class AcceptCommand extends UCommandBase {
 	}
 
 	@Override
-	public String GetUCommandName() {
+	public String GetUCommandPath() {
 		return "accept";
 	}
 

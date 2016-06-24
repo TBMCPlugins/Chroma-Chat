@@ -32,7 +32,7 @@ public final class OOCCommand extends TBMCCommandBase {
 	}
 
 	@Override
-	public String GetCommandName() {
+	public String GetCommandPath() {
 		return "ooc";
 	}
 

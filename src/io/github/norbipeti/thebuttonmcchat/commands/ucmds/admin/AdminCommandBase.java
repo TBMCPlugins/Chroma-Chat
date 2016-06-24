@@ -11,27 +11,10 @@ public abstract class AdminCommandBase extends UCommandBase {
 	public abstract String[] GetHelpText(String alias);
 
 	@Override
-	public boolean OnUCommand(CommandSender sender, String alias, String[] args) { // TODO:
-																					// Only
-																					// mods/admins
-																					// should
-																					// be
-																					// able
-																					// to
-																					// use
-																					// these
-		if (args.length == 0)
-			return false;
-		return OnAdminCommand(sender, alias,
-				Arrays.copyOfRange(args, 1, args.length));
-	}
-
-	public abstract boolean OnAdminCommand(CommandSender sender, String alias,
-			String[] args); // TODO: Actually call subcommands
-
-	@Override
-	public String GetUCommandName() {
-		return "admin";
+	public String GetUCommandPath() {
+		if (GetAdminCommandName().equals("admin"))
+			return "admin";
+		return "admin/" + GetAdminCommandName();
 	}
 
 	@Override

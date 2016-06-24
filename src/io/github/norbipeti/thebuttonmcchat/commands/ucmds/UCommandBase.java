@@ -5,7 +5,6 @@ import java.util.Arrays;
 import org.bukkit.command.CommandSender;
 
 import io.github.norbipeti.thebuttonmcchat.commands.TBMCCommandBase;
-import io.github.norbipeti.thebuttonmcchat.commands.TBMCSubCommandBase;
 
 public abstract class UCommandBase extends TBMCCommandBase {
 
@@ -13,7 +12,9 @@ public abstract class UCommandBase extends TBMCCommandBase {
 
 	@Override
 	public String GetCommandPath() {
-		return "u/" + GetUCommandPath();
+		if (GetUCommandPath().equals("u"))
+			return "u";
+		return "u/" + GetUCommandPath(); //TODO: This for others
 	}
 
 	public abstract String GetUCommandPath(); // TODO: Help for /u commands

@@ -9,16 +9,16 @@ public final class UCommand extends UCommandBase {
 	@Override
 	public String[] GetHelpText(String alias) {
 		return new String[] { "§6---- U commands ----",
-				"Subcommands: help, accept, ignore, admin" };
+				"Subcommands: help, accept, ignore, admin" }; //TODO
 	}
 
 	@Override
-	public boolean OnUCommand(CommandSender sender, String alias, String[] args) {
+	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		return false;
 	}
 
 	@Override
-	public String GetUCommandName() {
+	public String GetUCommandPath() {
 		return "u"; // TODO: Same as at AdminCommand
 	}
 
