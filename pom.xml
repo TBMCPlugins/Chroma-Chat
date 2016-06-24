@@ -58,4 +58,11 @@
         <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
     </repository>
   </repositories>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.reflections</groupId>
+  		<artifactId>reflections</artifactId>
+  		<version>0.9.10</version>
+  	</dependency>
+  </dependencies>
 </project>

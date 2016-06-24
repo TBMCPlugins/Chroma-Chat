@@ -5,32 +5,21 @@ import java.util.Arrays;
 import org.bukkit.command.CommandSender;
 
 import io.github.norbipeti.thebuttonmcchat.commands.TBMCCommandBase;
+import io.github.norbipeti.thebuttonmcchat.commands.TBMCSubCommandBase;
 
 public abstract class UCommandBase extends TBMCCommandBase {
 
 	public abstract String[] GetHelpText(String alias);
 
 	@Override
-	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
-		if (args.length == 0)
-			return false;
-		return OnUCommand(sender, alias,
-				Arrays.copyOfRange(args, 1, args.length));
+	public String GetCommandPath() {
+		return "u/" + GetUCommandPath();
 	}
 
-	public abstract boolean OnUCommand(CommandSender sender, String alias,
-			String[] args);
-
-	@Override
-	public String GetCommandName() {
-		return "u";
-	}
-
-	public abstract String GetUCommandName(); // TODO: Help for /u commands
+	public abstract String GetUCommandPath(); // TODO: Help for /u commands
 
 	@Override
 	public boolean GetPlayerOnly() {
 		return true;
 	}
-
 }
