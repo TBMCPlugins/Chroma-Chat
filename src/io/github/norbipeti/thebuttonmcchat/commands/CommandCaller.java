@@ -79,9 +79,6 @@ public class CommandCaller implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
 			String alias, String[] args) {
-		// TODO: Test if path exists, if not,
-		// go up one level, and
-		// finally fallback to args.length==0
 		String path = command.getName();
 		for (String arg : args)
 			path += "/" + arg;
@@ -91,7 +88,6 @@ public class CommandCaller implements CommandExecutor {
 			path = path.substring(0, path.lastIndexOf('/'));
 			argc++;
 			cmd = commands.get(path);
-			System.out.println(path);
 		}
 		if (cmd == null) {
 			sender.sendMessage("§cInternal error: Command not registered to CommandCaller");

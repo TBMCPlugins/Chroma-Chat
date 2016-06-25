@@ -4,7 +4,7 @@ import io.github.norbipeti.thebuttonmcchat.commands.ucmds.UCommandBase;
 
 public abstract class AdminCommandBase extends UCommandBase {
 
-	public abstract String[] GetHelpText(String alias); //TODO: Require permissionű
+	public abstract String[] GetHelpText(String alias); //TODO: Require permission
 
 	@Override
 	public String GetUCommandPath() {

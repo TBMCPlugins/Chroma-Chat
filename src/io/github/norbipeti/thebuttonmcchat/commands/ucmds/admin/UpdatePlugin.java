@@ -26,7 +26,7 @@ public class UpdatePlugin extends AdminCommandBase {
 		URL url;
 		try {
 			url = new URL(
-					"https://github.com/NorbiPeti/thebuttonmcchat/raw/master/TheButtonMCChat.jar"); //TODO: Save with this name
+					"https://github.com/NorbiPeti/thebuttonmcchat/raw/master/TheButtonMCChat.jar");
 			FileUtils.copyURLToFile(url, new File(
 					"plugins/TheButtonMCChat.jar"));
 			sender.sendMessage("Updating done!");
