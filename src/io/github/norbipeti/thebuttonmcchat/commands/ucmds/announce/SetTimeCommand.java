@@ -14,7 +14,7 @@ public class SetTimeCommand extends AnnounceCommandBase {
 	}
 
 	@Override
-	public boolean OnAnnounceCommand(CommandSender sender, String alias,
+	public boolean OnCommand(CommandSender sender, String alias,
 			String[] args) {
 		if (args.length < 3) {
 			return false;
@@ -31,7 +31,7 @@ public class SetTimeCommand extends AnnounceCommandBase {
 	}
 
 	@Override
-	public String GetAnnounceCommandName() {
+	public String GetAnnounceCommandPath() {
 		return "settime";
 	}
 

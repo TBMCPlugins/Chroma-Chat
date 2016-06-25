@@ -13,7 +13,7 @@ public class ListCommand extends AnnounceCommandBase {
 	}
 
 	@Override
-	public boolean OnAnnounceCommand(CommandSender sender, String alias,
+	public boolean OnCommand(CommandSender sender, String alias,
 			String[] args) {
 		sender.sendMessage("§bList of announce messages:§r");
 		sender.sendMessage("§bFormat: [index] message§r");
@@ -26,7 +26,7 @@ public class ListCommand extends AnnounceCommandBase {
 	}
 
 	@Override
-	public String GetAnnounceCommandName() {
+	public String GetAnnounceCommandPath() {
 		return "list";
 	}
 

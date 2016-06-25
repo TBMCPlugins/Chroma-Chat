@@ -17,7 +17,7 @@ public class AddCommand extends AnnounceCommandBase {
 	}
 
 	@Override
-	public boolean OnAnnounceCommand(CommandSender sender, String alias,
+	public boolean OnCommand(CommandSender sender, String alias,
 			String[] args) {
 		if (args.length < 1) {
 			return false;
@@ -35,7 +35,7 @@ public class AddCommand extends AnnounceCommandBase {
 	}
 
 	@Override
-	public String GetAnnounceCommandName() {
+	public String GetAnnounceCommandPath() {
 		return "add";
 	}
 

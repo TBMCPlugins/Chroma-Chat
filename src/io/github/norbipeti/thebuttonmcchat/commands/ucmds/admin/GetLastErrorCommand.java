@@ -14,7 +14,7 @@ public class GetLastErrorCommand extends AdminCommandBase {
 	}
 
 	@Override
-	public boolean OnAdminCommand(CommandSender sender, String alias,
+	public boolean OnCommand(CommandSender sender, String alias,
 			String[] args) {
 		if (PluginMain.LastException != null) {
 			sender.sendMessage("Last error:");
@@ -26,7 +26,7 @@ public class GetLastErrorCommand extends AdminCommandBase {
 	}
 
 	@Override
-	public String GetAdminCommandName() {
+	public String GetAdminCommandPath() {
 		return "getlasterror";
 	}
 

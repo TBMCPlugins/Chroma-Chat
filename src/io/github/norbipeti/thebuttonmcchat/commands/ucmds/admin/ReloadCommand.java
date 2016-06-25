@@ -17,7 +17,7 @@ public final class ReloadCommand extends AdminCommandBase {
 	public static CommandSender Reloader;
 
 	@Override
-	public boolean OnAdminCommand(CommandSender sender, String alias,
+	public boolean OnCommand(CommandSender sender, String alias,
 			String[] args) {
 		Reloader = sender;
 		sender.sendMessage("§bMake sure to save the current settings before you modify and reload them! Type /u admin confirm when done.§r");
@@ -25,7 +25,7 @@ public final class ReloadCommand extends AdminCommandBase {
 	}
 
 	@Override
-	public String GetAdminCommandName() {
+	public String GetAdminCommandPath() {
 		return "reload";
 	}
 

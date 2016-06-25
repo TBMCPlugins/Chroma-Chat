@@ -1,9 +1,5 @@
 package io.github.norbipeti.thebuttonmcchat.commands.ucmds.admin;
 
-import java.util.Arrays;
-
-import org.bukkit.command.CommandSender;
-
 import io.github.norbipeti.thebuttonmcchat.commands.ucmds.UCommandBase;
 
 public abstract class AdminCommandBase extends UCommandBase {
@@ -12,9 +8,7 @@ public abstract class AdminCommandBase extends UCommandBase {
 
 	@Override
 	public String GetUCommandPath() {
-		if (GetAdminCommandName().equals("admin"))
-			return "admin";
-		return "admin/" + GetAdminCommandName();
+		return "admin/" + GetAdminCommandPath();
 	}
 
 	@Override
@@ -22,6 +16,6 @@ public abstract class AdminCommandBase extends UCommandBase {
 		return false; // Allow admin commands in console
 	}
 
-	public abstract String GetAdminCommandName();
+	public abstract String GetAdminCommandPath();
 
 }

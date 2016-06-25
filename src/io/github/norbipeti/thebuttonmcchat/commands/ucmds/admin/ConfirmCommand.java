@@ -28,7 +28,7 @@ public class ConfirmCommand extends AdminCommandBase {
 				System.out.println("Error!\n" + e);
 				if (sender != PluginMain.Console)
 					sender.sendMessage("§cAn error occured. See console for details.§r");
-				PluginMain.LastException = e; // 2015.08.09.
+				PluginMain.LastException = e;
 			}
 		} else
 			sender.sendMessage("§cYou need to do /u admin reload first.§r");
@@ -36,7 +36,7 @@ public class ConfirmCommand extends AdminCommandBase {
 	}
 
 	@Override
-	public String GetAdminCommandName() {
+	public String GetAdminCommandPath() {
 		return "confirm";
 	}
 

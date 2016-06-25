@@ -13,7 +13,7 @@ public class SaveCommand extends AdminCommandBase {
 	}
 
 	@Override
-	public boolean OnAdminCommand(CommandSender sender, String alias,
+	public boolean OnCommand(CommandSender sender, String alias,
 			String[] args) {
 		PluginMain.SaveFiles(); // 2015.08.09.
 		sender.sendMessage("§bSaved files. Now you can edit them and reload if you want.§r");
@@ -21,7 +21,7 @@ public class SaveCommand extends AdminCommandBase {
 	}
 
 	@Override
-	public String GetAdminCommandName() {
+	public String GetAdminCommandPath() {
 		return "save";
 	}
 

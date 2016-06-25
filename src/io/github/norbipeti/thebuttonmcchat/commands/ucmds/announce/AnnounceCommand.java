@@ -1,8 +1,10 @@
 package io.github.norbipeti.thebuttonmcchat.commands.ucmds.announce;
 
+import io.github.norbipeti.thebuttonmcchat.commands.ucmds.UCommandBase;
+
 import org.bukkit.command.CommandSender;
 
-public class AnnounceCommand extends AnnounceCommandBase {
+public class AnnounceCommand extends UCommandBase {
 
 	@Override
 	public String[] GetHelpText(String alias) {
@@ -11,13 +13,12 @@ public class AnnounceCommand extends AnnounceCommandBase {
 	}
 
 	@Override
-	public boolean OnAnnounceCommand(CommandSender sender, String alias,
-			String[] args) {
+	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		return false;
 	}
 
 	@Override
-	public String GetAnnounceCommandName() {
+	public String GetUCommandPath() {
 		return "announce";
 	}
 

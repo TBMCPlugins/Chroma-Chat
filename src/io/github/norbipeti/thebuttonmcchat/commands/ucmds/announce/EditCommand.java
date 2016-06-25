@@ -15,7 +15,7 @@ public class EditCommand extends AnnounceCommandBase {
 	}
 
 	@Override
-	public boolean OnAnnounceCommand(CommandSender sender, String alias,
+	public boolean OnCommand(CommandSender sender, String alias,
 			String[] args) {
 		if (!(sender instanceof BlockCommandSender)) {
 			sender.sendMessage("§cError: This command can only be used from a command block. You can use add and remove, though it's not recommended.");
@@ -43,7 +43,7 @@ public class EditCommand extends AnnounceCommandBase {
 	}
 
 	@Override
-	public String GetAnnounceCommandName() {
+	public String GetAnnounceCommandPath() {
 		return "edit";
 	}
 

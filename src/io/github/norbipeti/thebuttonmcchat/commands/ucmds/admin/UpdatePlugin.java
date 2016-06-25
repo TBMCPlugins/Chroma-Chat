@@ -19,7 +19,7 @@ public class UpdatePlugin extends AdminCommandBase {
 	}
 
 	@Override
-	public boolean OnAdminCommand(CommandSender sender, String alias,
+	public boolean OnCommand(CommandSender sender, String alias,
 			String[] args) {
 		sender.sendMessage("Updating Auto-Flair plugin...");
 		System.out.println("Forced updating of Auto-Flair plugin.");
@@ -41,7 +41,7 @@ public class UpdatePlugin extends AdminCommandBase {
 	}
 
 	@Override
-	public String GetAdminCommandName() {
+	public String GetAdminCommandPath() {
 		return "updateplugin";
 	}
 

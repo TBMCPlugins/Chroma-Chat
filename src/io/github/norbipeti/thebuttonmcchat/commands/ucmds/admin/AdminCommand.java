@@ -1,8 +1,10 @@
 package io.github.norbipeti.thebuttonmcchat.commands.ucmds.admin;
 
+import io.github.norbipeti.thebuttonmcchat.commands.ucmds.UCommandBase;
+
 import org.bukkit.command.CommandSender;
 
-public final class AdminCommand extends AdminCommandBase {
+public final class AdminCommand extends UCommandBase {
 
 	@Override
 	public String[] GetHelpText(String alias) {
@@ -17,7 +19,7 @@ public final class AdminCommand extends AdminCommandBase {
 	}
 
 	@Override
-	public String GetAdminCommandName() {
-		return "admin"; //TODO: Call this by default (so /u admin invalidcmd should point here)
+	public String GetUCommandPath() {
+		return "admin";
 	}
 }

@@ -25,8 +25,7 @@ import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
 
-import io.github.norbipeti.thebuttonmcchat.commands.TBMCCommandBase;
-
+import io.github.norbipeti.thebuttonmcchat.commands.CommandCaller;
 import java.io.*;
 import java.lang.String;
 import java.lang.reflect.Method;
@@ -57,8 +56,10 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	public void onEnable() {
 		try {
 			System.out.println("Extracting necessary libraries...");
-			final File[] libs = new File[] { new File(getDataFolder(),
-					"htmlcleaner-2.16.jar") };
+			final File[] libs = new File[] {
+					new File(getDataFolder(), "htmlcleaner-2.16.jar"),
+					new File(getDataFolder(), "reflections-0.9.10.jar"),
+					new File(getDataFolder(), "javassist-3.19.0-GA.jar") };
 			for (final File lib : libs) {
 				if (!lib.exists()) {
 					JarUtils.extractFromJar(lib.getName(),
@@ -81,7 +82,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 		getServer().getPluginManager().registerEvents(new PlayerListener(),
 				this);
-		TBMCCommandBase.RegisterCommands(this);
+		CommandCaller.RegisterCommands(this);
 		Instance = this;
 		Console = this.getServer().getConsoleSender();
 		LoadFiles(false);
@@ -305,12 +306,11 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 	public static void LoadFiles(boolean reload) {
 		if (reload) {
-			System.out
-					.println("The Button Minecraft plugin cleanup for reloading...");
+			System.out.println("TBMC chat plugin cleanup for reloading...");
 			MaybeOfflinePlayer.AllPlayers.clear();
 			AnnounceMessages.clear();
 		}
-		System.out.println("Loading files for The Button Minecraft plugin...");
+		System.out.println("Loading files for TBMC chat plugin...");
 		try {
 			File file = new File("thebuttonmc.yml");
 			if (file.exists()) {
@@ -325,7 +325,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 				AnnounceMessages.addAll(yc.getStringList("announcements"));
 				PlayerListener.AlphaDeaths = yc.getInt("alphadeaths");
 			}
-			System.out.println("The Button Minecraft plugin loaded files!");
+			System.out.println("TBMC plugin loaded files!");
 		} catch (IOException e) {
 			System.out.println("Error!\n" + e);
 			LastException = e;
