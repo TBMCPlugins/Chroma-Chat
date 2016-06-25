@@ -246,7 +246,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		if (event.isCancelled()) // TODO: Change FactionChat to /tellraw
+		if (event.isCancelled())
 			return;
 		event.setCancelled(ChatProcessing.ProcessChat(event.getPlayer(),
 				event.getMessage()));

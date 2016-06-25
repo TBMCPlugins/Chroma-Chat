@@ -8,10 +8,10 @@ public abstract class UCommandBase extends TBMCCommandBase {
 
 	@Override
 	public String GetCommandPath() {
-		return "u/" + GetUCommandPath(); //TODO: This for others
+		return "u/" + GetUCommandPath();
 	}
 
-	public abstract String GetUCommandPath(); // TODO: Help for /u commands
+	public abstract String GetUCommandPath();
 
 	@Override
 	public boolean GetPlayerOnly() {

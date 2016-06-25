@@ -3,6 +3,7 @@ package io.github.norbipeti.thebuttonmcchat.commands;
 import io.github.norbipeti.thebuttonmcchat.PluginMain;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
@@ -87,7 +88,7 @@ public class CommandCaller implements CommandExecutor {
 		TBMCCommandBase cmd = commands.get(path);
 		int argc = 0;
 		while (cmd == null && path.contains("/")) {
-			path = path.substring(0, path.indexOf('/'));
+			path = path.substring(0, path.lastIndexOf('/'));
 			argc++;
 			cmd = commands.get(path);
 			System.out.println(path);
@@ -100,12 +101,31 @@ public class CommandCaller implements CommandExecutor {
 								"§cInternal error: Command not registered to CommandCaller");
 			return true;
 		}
+		if (cmd.GetPlayerOnly() && sender == Bukkit.getConsoleSender()) {
+			sender.sendMessage("§cOnly ingame players can use this command.");
+			return true;
+		}
 		if (!cmd.OnCommand(
 				sender,
 				alias,
-				(args.length > 0 ? Arrays.copyOfRange(args, argc,
-						args.length - 1) : args)))
+				(args.length > 0 ? Arrays.copyOfRange(args, args.length - argc,
+						args.length) : args)))
 			sender.sendMessage(cmd.GetHelpText(alias));
 		return true;
+	}
+
+	public static String[] GetSubCommands(TBMCCommandBase command) {
+		ArrayList<String> cmds = new ArrayList<String>();
+		cmds.add("§6---- Subcommands ----");
+		for (TBMCCommandBase cmd : CommandCaller.GetCommands().values()) {
+			if (cmd.GetCommandPath().startsWith(command.GetCommandPath() + "/")) {
+				int ind = cmd.GetCommandPath().indexOf('/',
+						command.GetCommandPath().length() + 2);
+				if (ind >= 0)
+					continue;
+				cmds.add(cmd.GetCommandPath().replace('/', ' '));
+			}
+		}
+		return cmds.toArray(new String[cmds.size()]);
 	}
 }

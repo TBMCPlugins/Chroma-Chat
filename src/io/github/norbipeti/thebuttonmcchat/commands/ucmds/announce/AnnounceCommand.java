@@ -1,5 +1,6 @@
 package io.github.norbipeti.thebuttonmcchat.commands.ucmds.announce;
 
+import io.github.norbipeti.thebuttonmcchat.commands.CommandCaller;
 import io.github.norbipeti.thebuttonmcchat.commands.ucmds.UCommandBase;
 
 import org.bukkit.command.CommandSender;
@@ -8,8 +9,7 @@ public class AnnounceCommand extends UCommandBase {
 
 	@Override
 	public String[] GetHelpText(String alias) {
-		return new String[] { "§6---- Announce ----",
-				"Subcommands: add, settime, remove, list, edit" }; // TODO
+		return CommandCaller.GetSubCommands(this);
 	}
 
 	@Override
@@ -22,4 +22,8 @@ public class AnnounceCommand extends UCommandBase {
 		return "announce";
 	}
 
+	@Override
+	public boolean GetPlayerOnly() {
+		return false;
+	}
 }

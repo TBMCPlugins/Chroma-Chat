@@ -1,5 +1,8 @@
 package io.github.norbipeti.thebuttonmcchat.commands.ucmds;
 
+import java.util.ArrayList;
+
+import io.github.norbipeti.thebuttonmcchat.commands.CommandCaller;
 import io.github.norbipeti.thebuttonmcchat.commands.TBMCCommandBase;
 
 import org.bukkit.command.CommandSender;
@@ -8,8 +11,7 @@ public final class UCommand extends TBMCCommandBase {
 
 	@Override
 	public String[] GetHelpText(String alias) {
-		return new String[] { "§6---- U commands ----",
-				"Subcommands: help, accept, ignore, admin" }; // TODO
+		return CommandCaller.GetSubCommands(this);
 	}
 
 	@Override

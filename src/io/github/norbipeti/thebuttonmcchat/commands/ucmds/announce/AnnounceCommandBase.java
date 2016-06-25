@@ -8,9 +8,13 @@ public abstract class AnnounceCommandBase extends UCommandBase {
 
 	@Override
 	public String GetUCommandPath() {
-		return "announce";
+		return "announce/" + GetAnnounceCommandPath();
 	}
 
 	public abstract String GetAnnounceCommandPath();
 
+	@Override
+	public boolean GetPlayerOnly() {
+		return false;
+	}
 }
