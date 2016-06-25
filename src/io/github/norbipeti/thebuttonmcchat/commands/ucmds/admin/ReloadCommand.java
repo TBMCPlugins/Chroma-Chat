@@ -20,7 +20,7 @@ public final class ReloadCommand extends AdminCommandBase {
 	public boolean OnCommand(CommandSender sender, String alias,
 			String[] args) {
 		Reloader = sender;
-		sender.sendMessage("§bMake sure to save the current settings before you modify and reload them! Type /u admin confirm when done.§r");
+		sender.sendMessage("§bMake sure to save the current settings before you modify and reload them! Type /u admin confirm when ready.§r");
 		return true;
 	}
 

@@ -1,8 +1,10 @@
 package io.github.norbipeti.thebuttonmcchat.commands.ucmds.admin;
 
+import io.github.norbipeti.thebuttonmcchat.MaybeOfflinePlayer;
 import io.github.norbipeti.thebuttonmcchat.PluginMain;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class ConfirmCommand extends AdminCommandBase {
 
@@ -21,9 +23,13 @@ public class ConfirmCommand extends AdminCommandBase {
 							.sendMessage("§6-- Reloading The Button Minecraft plugin...§r");
 				sender.sendMessage("§6-- Reloading The Button Minecraft plugin...§r");
 				PluginMain.LoadFiles(true);
+				// TODO: Add players online
+				for (Player p : PluginMain.GetPlayers())
+					MaybeOfflinePlayer.AddPlayerIfNeeded(p.getUniqueId());
 				if (sender != PluginMain.Console)
 					PluginMain.Console.sendMessage("§6-- Reloading done!§r");
 				sender.sendMessage("§6-- Reloading done!§r");
+				ReloadCommand.Reloader = null;
 			} catch (Exception e) {
 				System.out.println("Error!\n" + e);
 				if (sender != PluginMain.Console)

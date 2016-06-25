@@ -12,7 +12,7 @@ public final class ShrugCommand extends AppendTextCommandBase {
 
 	@Override
 	public String GetAppendedText() {
-		return "¯\\_(ツ)_/¯";
+		return "¯\\\\\\_(ツ)\\_/¯"; //TODO: Escape format codes
 	}
 
 	@Override

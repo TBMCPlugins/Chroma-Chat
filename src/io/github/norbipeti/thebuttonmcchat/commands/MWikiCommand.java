@@ -26,7 +26,7 @@ public class MWikiCommand extends TBMCCommandBase {
 		else
 			sender.sendMessage("§bMinecraft Wiki link: http://minecraft.gamepedia.com/index.php?search="
 					+ query + "&title=Special%3ASearch&go=Go");
-		return false;
+		return true;
 	}
 
 	@Override

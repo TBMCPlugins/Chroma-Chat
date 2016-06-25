@@ -63,8 +63,8 @@ public class CommandCaller implements CommandExecutor {
 				{
 					PluginCommand pc = plugin.getCommand(c.GetCommandPath());
 					if (pc == null)
-						System.out.println("Can't find top-level command: "
-								+ c.GetCommandPath());
+						new Exception("Can't find top-level command: "
+								+ c.GetCommandPath()).printStackTrace();
 					else
 						pc.setExecutor(cc);
 				}

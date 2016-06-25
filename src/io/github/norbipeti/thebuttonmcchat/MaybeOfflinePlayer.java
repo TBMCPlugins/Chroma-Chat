@@ -46,6 +46,9 @@ public class MaybeOfflinePlayer {
 			player.FlairTime = FlairTimeNone;
 			player.FlairState = FlairStates.NoComment;
 			player.UserNames = new ArrayList<>();
+			Player p = Bukkit.getPlayer(uuid);
+			if (p != null)
+				player.PlayerName = p.getName();
 			AllPlayers.put(uuid, player);
 			return player;
 		}

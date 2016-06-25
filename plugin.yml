@@ -21,6 +21,8 @@ commands:
         description: Enable chat only mode. Useful for chat clients.
     shrug:
         description: Shrug.
+    yeehaw:
+        description: This command makes you yeehaw.
 author: NorbiPeti
 depend: [Essentials, Towny, Minigames, Votifier, WorldGuard, WorldEdit, ProtocolLib, FastLogin, Vault, AuthMe]
 permissions:

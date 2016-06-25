@@ -74,7 +74,6 @@ public class PlayerListener implements Listener {
 		final Player p = event.getPlayer();
 		MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p
 				.getUniqueId());
-		mp.PlayerName = p.getName();
 		if (!mp.FlairState.equals(FlairStates.NoComment)) {
 			PluginMain.ConfirmUserMessage(mp);
 			Timer timer = new Timer();

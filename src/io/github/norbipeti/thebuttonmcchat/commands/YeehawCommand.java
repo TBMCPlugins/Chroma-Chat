@@ -19,7 +19,7 @@ public class YeehawCommand extends TBMCCommandBase {
 			p.playSound(p.getLocation(), "tbmc.yeehaw", 1f, 1f);
 			p.sendMessage("§b* "
 					+ (sender instanceof Player ? ((Player) sender)
-							.getDisplayName() : sender.getName()) + " YEEHAWs.");
+							.getDisplayName() : sender.getName()) + " §bYEEHAWs.");
 		} //Even a cmdblock could yeehaw in theory
 		return true;
 	}
