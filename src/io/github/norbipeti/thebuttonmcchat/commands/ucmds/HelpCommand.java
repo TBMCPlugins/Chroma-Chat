@@ -12,7 +12,7 @@ public final class HelpCommand extends UCommandBase {
 	@Override
 	public String[] GetHelpText(String alias) {
 		return new String[] { "§6---- Help ----",
-				"Prints out help messages for the TBMC plugin" };
+				"Prints out help messages for the TBMC plugins" };
 	}
 
 	@Override
@@ -23,13 +23,13 @@ public final class HelpCommand extends UCommandBase {
 					"Do /u help <topic> for more info",
 					"Do /u help <commandname> [subcommands] for more info about a command",
 					"Topics:",
-					"flairs: The flairs are the numbers near your name",
+					"newp: Info for new players",
 					"commands: See all the commands from this plugin",
 					"login: If you or someone else has any problems with logins, lost inventory/location, etc." });
 			return true;
 		}
-		if (args[0].equalsIgnoreCase("flairs"))
-			sender.sendMessage(new String[] { "§6---- About flairs ----", "" }); // TODO
+		if (args[0].equalsIgnoreCase("newp"))
+			sender.sendMessage(new String[] { "§6---- Info for new players ----", "(Under construction)" }); // TODO
 		else if (args[0].equalsIgnoreCase("commands")) {
 			ArrayList<String> text = new ArrayList<String>();
 			text.add("§6---- Command list ----");
