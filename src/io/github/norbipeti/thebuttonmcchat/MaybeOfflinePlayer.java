@@ -27,7 +27,7 @@ public class MaybeOfflinePlayer {
 	public boolean SendingLink = false;
 	public int FDeaths;
 	public boolean RainbowPresserColorMode = false;
-	public String OtherColorMode = "";
+	public ChatFormatter.Color OtherColorMode = "";
 	public boolean ChatOnly = false;
 	public boolean FlairCheater = false;
 	public int LoginWarningCount = 0;

@@ -61,101 +61,52 @@ public class ChatProcessing {
 		Channel currentchannel = (mp == null ? PlayerListener.ConsoleChannel
 				: mp.CurrentChannel);
 
-		String colormode = currentchannel.Color;
-		if (mp != null && mp.OtherColorMode.length() > 0)
+		ArrayList<ChatFormatter> formatters = new ArrayList<ChatFormatter>();
+
+		ChatFormatter.Color colormode = currentchannel.Color;
+		if (mp != null && mp.OtherColorMode != null)
 			colormode = mp.OtherColorMode;
 		if (mp != null && mp.RainbowPresserColorMode)
-			colormode = "rpc";
+			colormode = ChatFormatter.Color.RPC;
 		if (message.startsWith(">"))
-			colormode = "green"; // If greentext, ignore channel or player
-									// colors
+			colormode = ChatFormatter.Color.Green;
+		// If greentext, ignore channel or player colors
+
+		if (!colormode.equals(ChatFormatter.Color.RPC))
+			formatters.add(new ChatFormatter(Pattern.compile(".+"), colormode,
+					""));
 
 		String formattedmessage = message;
-		formattedmessage = formattedmessage.replace("\\", "\\\\"); // It's
-																	// really
-																	// important
-																	// to escape
-																	// the
-																	// slashes
-																	// first
+		formattedmessage = formattedmessage.replace("\\", "\\\\");
 		formattedmessage = formattedmessage.replace("\"", "\\\"");
-		if (PluginMain.permission.has(sender, "tbmc.admin"))
-			formattedmessage = formattedmessage.replace("&", "§");
-		formattedmessage = formattedmessage.replace("§r", "§"
-				+ currentchannel.DisplayName.charAt(1));
+		// ^ Tellraw support, needed for both the message and suggestmsg
+		// TODO: Only apply after the formatters, or escaping won't work
+
 		String suggestmsg = formattedmessage;
-		boolean cont = true;
-		while (cont) {
 
-			int first_under = formattedmessage.indexOf("_");
-			if (first_under != -1
-					&& formattedmessage.indexOf("_", first_under + 1) != -1) // underline
-			{
-				formattedmessage = formattedmessage.replaceFirst("_", "§n")
-						.replaceFirst("_", "§r");
-				continue;
-			}
-
-			int first_bold = formattedmessage.indexOf("**");
-			if (first_bold != -1
-					&& formattedmessage.indexOf("**", first_bold + 1) != -1) // bold
-			{
-				formattedmessage = formattedmessage
-						.replaceFirst("\\*\\*", "§l").replaceFirst("\\*\\*",
-								"§r");
-				continue;
-			}
-			int first = formattedmessage.indexOf('*');
-			if (first != -1 && formattedmessage.indexOf('*', first + 1) != -1) {
-				formattedmessage = formattedmessage.replaceFirst("\\*", "§o")
-						.replaceFirst("\\*", "§r");
-				continue;
-			}
-			cont = false;
-		}
+		formatters
+				.add(new ChatFormatter(
+						Pattern.compile("(?<!\\\\)\\*\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*\\*"),
+						ChatFormatter.Format.Bold, "$1$2"));
+		formatters.add(new ChatFormatter(Pattern
+				.compile("(?<!\\\\)\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*"),
+				ChatFormatter.Format.Italic, "$1$2"));
+		formatters.add(new ChatFormatter(Pattern
+				.compile("(?<!\\\\)\\_((?:\\\\\\_|[^\\_])+[^\\_\\\\])\\_"),
+				ChatFormatter.Format.Italic, "$1$2"));
 
 		// URLs + Rainbow text
-		String[] parts = formattedmessage.split("\\s+");
-		boolean hadurls = false;
-		final String[] RainbowPresserColors = new String[] { "red", "gold",
-				"yellow", "green", "blue", "dark_purple" };
-		int rpc = 0;
-		int currentindex = 0;
-		for (String item : parts) {
-			try {
-				URL url = new URL(item);
-				formattedmessage = formattedmessage
+		formatters.add(new ChatFormatter(Pattern
+				.compile("http[\\w:/?=$\\-_.+!*'(),]+"),
+				ChatFormatter.Format.Underlined, ""));
+				/*formattedmessage = formattedmessage
 						.replace(
 								item,
 								String.format(
 										"\",\"color\":\"%s\"},{\"text\":\"%s\",\"color\":\"%s\",\"underlined\":\"true\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open URL\",\"color\":\"blue\"}]}}},{\"text\":\"",
-										colormode, url, colormode, url));
-				hadurls = true;
-			} catch (MalformedURLException e) {
-			}
-			if (colormode.equals("rpc")) {
-				StringBuffer buf = new StringBuffer(formattedmessage);
-				String replacestr;
-				if (currentindex == 0)
-					replacestr = String
-							.format("\",\"color\":\"blue\"},{\"text\":\"%s\",\"color\":\"%s\"}",
-									item, RainbowPresserColors[rpc]);
-				else
-					replacestr = String.format(
-							",{\"text\":\" %s\",\"color\":\"%s\"}", item,
-							RainbowPresserColors[rpc]);
-				buf.replace(currentindex, currentindex + item.length() + 1,
-						replacestr); // +1: spaces
-				currentindex += replacestr.length();
-				formattedmessage = buf.toString();
-				if (rpc + 1 < RainbowPresserColors.length)
-					rpc++;
-				else
-					rpc = 0;
-			}
-		} // TODO: Set properties (color, formatting) per word, so it won't
-			// embed formatting into formatting into formatting...
-		if (colormode.equals("rpc")) { //TODO: Fix URLs in rainbow mode (^)
+										colormode, url, colormode, url));*/
+		}
+		if (colormode.equals("rpc")) { // TODO: Fix URLs in rainbow mode (^)
 			StringBuffer buf = new StringBuffer(formattedmessage);
 			String replacestr = ",{\"text\":\"";
 			buf.append(replacestr);

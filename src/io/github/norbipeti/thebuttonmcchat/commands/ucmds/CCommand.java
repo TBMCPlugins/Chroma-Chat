@@ -1,5 +1,6 @@
 package io.github.norbipeti.thebuttonmcchat.commands.ucmds;
 
+import io.github.norbipeti.thebuttonmcchat.ChatFormatter;
 import io.github.norbipeti.thebuttonmcchat.MaybeOfflinePlayer;
 import io.github.norbipeti.thebuttonmcchat.PluginMain;
 
@@ -36,6 +37,13 @@ public class CCommand extends UCommandBase {
 			if (PluginMain.permission.has(player, "tbmc.admin")) {
 				p.RainbowPresserColorMode = false;
 				p.OtherColorMode = args[0];
+				try {
+					p.OtherColorMode = ChatFormatter.Color.valueOf(args[0]
+							.toLowerCase());
+				} catch (Exception e) {
+					player.sendMessage("§cUnknown message color: " + args[0]);
+					player.sendMessage("§cUse color names, like blue, or dark_aqua");
+				}
 				if (p.OtherColorMode.length() > 0)
 					player.sendMessage(String.format(
 							"§eMessage color set to %s", p.OtherColorMode));
