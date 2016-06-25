@@ -19,7 +19,7 @@ public class MWikiCommand extends TBMCCommandBase {
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		String query = "";
 		for (int i = 0; i < args.length; i++)
-			query += args[i];
+			query += args[i] + " ";
 		query = query.trim();
 		if (args.length == 0)
 			sender.sendMessage("§bMinecraft Wiki link: http://minecraft.gamepedia.com/");

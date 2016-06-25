@@ -64,6 +64,8 @@ public class ChatProcessing {
 		String colormode = currentchannel.Color;
 		if (mp != null && mp.OtherColorMode.length() > 0)
 			colormode = mp.OtherColorMode;
+		if (mp != null && mp.RainbowPresserColorMode)
+			colormode = "rpc";
 		if (message.startsWith(">"))
 			colormode = "green"; // If greentext, ignore channel or player
 									// colors
@@ -115,8 +117,8 @@ public class ChatProcessing {
 		// URLs + Rainbow text
 		String[] parts = formattedmessage.split("\\s+");
 		boolean hadurls = false;
-		final String[] RainbowPresserColors = new String[] { "c", "6", "e",
-				"a", "9", "5" };
+		final String[] RainbowPresserColors = new String[] { "red", "gold",
+				"yellow", "green", "blue", "dark_purple" };
 		int rpc = 0;
 		int currentindex = 0;
 		for (String item : parts) {
@@ -131,32 +133,33 @@ public class ChatProcessing {
 				hadurls = true;
 			} catch (MalformedURLException e) {
 			}
-			if (mp != null && mp.RainbowPresserColorMode) {
-				if (item.startsWith(RainbowPresserColors[rpc])) { // Prevent
-																	// words
-																	// being
-																	// equal/starting
-																	// with a
-																	// color
-																	// code
-																	// letter to
-																	// be messed
-																	// up
-					if (rpc + 1 < RainbowPresserColors.length)
-						rpc++;
-					else
-						rpc = 0;
-				}
+			if (colormode.equals("rpc")) {
 				StringBuffer buf = new StringBuffer(formattedmessage);
-				buf.replace(currentindex, currentindex + item.length(),
-						String.format("§%s%s", RainbowPresserColors[rpc], item));
+				String replacestr;
+				if (currentindex == 0)
+					replacestr = String
+							.format("\",\"color\":\"blue\"},{\"text\":\"%s\",\"color\":\"%s\"}",
+									item, RainbowPresserColors[rpc]);
+				else
+					replacestr = String.format(
+							",{\"text\":\" %s\",\"color\":\"%s\"}", item,
+							RainbowPresserColors[rpc]);
+				buf.replace(currentindex, currentindex + item.length() + 1,
+						replacestr); // +1: spaces
+				currentindex += replacestr.length();
 				formattedmessage = buf.toString();
 				if (rpc + 1 < RainbowPresserColors.length)
 					rpc++;
 				else
 					rpc = 0;
 			}
-			currentindex += item.length() + 3;
+		} // TODO: Set properties (color, formatting) per word, so it won't
+			// embed formatting into formatting into formatting...
+		if (colormode.equals("rpc")) { //TODO: Fix URLs in rainbow mode (^)
+			StringBuffer buf = new StringBuffer(formattedmessage);
+			String replacestr = ",{\"text\":\"";
+			buf.append(replacestr);
+			formattedmessage = buf.toString();
 		}
 
 		if (!hadurls) {
