@@ -72,7 +72,6 @@ public class ChatProcessing {
 			colormode = ChatFormatter.Color.Green;
 		// If greentext, ignore channel or player colors
 
-		if (!colormode.equals(ChatFormatter.Color.RPC))
 			formatters.add(new ChatFormatter(Pattern.compile(".+"), colormode,
 					""));
 
@@ -98,24 +97,18 @@ public class ChatProcessing {
 		// URLs + Rainbow text
 		formatters.add(new ChatFormatter(Pattern
 				.compile("http[\\w:/?=$\\-_.+!*'(),]+"),
-				ChatFormatter.Format.Underlined, ""));
+				ChatFormatter.Format.Underlined, "", true));
+		//TODO: Only format name mentions outisde open_url
 				/*formattedmessage = formattedmessage
 						.replace(
 								item,
 								String.format(
 										"\",\"color\":\"%s\"},{\"text\":\"%s\",\"color\":\"%s\",\"underlined\":\"true\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open URL\",\"color\":\"blue\"}]}}},{\"text\":\"",
 										colormode, url, colormode, url));*/
-		}
-		if (colormode.equals("rpc")) { // TODO: Fix URLs in rainbow mode (^)
-			StringBuffer buf = new StringBuffer(formattedmessage);
-			String replacestr = ",{\"text\":\"";
-			buf.append(replacestr);
-			formattedmessage = buf.toString();
-		}
 
 		if (!hadurls) {
 			for (Player p : PluginMain.GetPlayers()) {
-				String color = "";
+				String color = ""; //TODO: Regex with all names and check for the correct JSON behind them
 				if (formattedmessage.matches("(?i).*"
 						+ Pattern.quote(p.getName()) + ".*")) {
 					if (PlayerListener.NotificationSound == null)
