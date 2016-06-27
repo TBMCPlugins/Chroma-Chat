@@ -45,8 +45,6 @@ import au.com.mineauz.minigames.MinigamePlayer;
 import au.com.mineauz.minigames.Minigames;
 
 import com.earth2me.essentials.Essentials;
-import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
-import com.github.games647.fastlogin.bukkit.PlayerProfile;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
@@ -56,8 +54,6 @@ import com.palmergames.bukkit.towny.war.eventwar.War;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
-
-import fr.xephi.authme.AuthMe;
 
 public class PlayerListener implements Listener {
 	public static HashMap<String, UUID> nicknames = new HashMap<>();
@@ -96,13 +92,17 @@ public class PlayerListener implements Listener {
 					if (player == null)
 						return;
 
-					PlayerProfile pp = ((FastLoginBukkit) FastLoginBukkit
-							.getPlugin(FastLoginBukkit.class)).getStorage()
-							.getProfile(player.getName(), true);
-					boolean ispremium = pp != null && pp.isPremium();
+					/*
+					 * PlayerProfile pp = ((FastLoginBukkit) FastLoginBukkit
+					 * .getPlugin(FastLoginBukkit.class)).getStorage()
+					 * .getProfile(player.getName(), true); boolean ispremium =
+					 * pp != null && pp.isPremium();
+					 */// Login stuff
 
-					if (ispremium
-							&& mp.FlairState.equals(FlairStates.NoComment)) {
+					if (/*
+						 * ispremium &&
+						 */// Login stuff
+					mp.FlairState.equals(FlairStates.NoComment)) {
 						String json = String
 								.format("[\"\",{\"text\":\"If you're from Reddit and you'd like your /r/TheButton flair displayed ingame, write your Minecraft name to \",\"color\":\"aqua\"},{\"text\":\"[this thread].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
 										PluginMain.FlairThreadURL);
@@ -121,63 +121,41 @@ public class PlayerListener implements Listener {
 			timer.schedule(tt, 15 * 1000);
 		}
 
-		final Timer timer = new Timer();
-		mp.LoginWarningCount = 0;
-		PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
-			@Override
-			public void run() {
-				final Player player = Bukkit.getPlayer(mp.PlayerName);
-				if (player == null)
-					return;
-
-				PlayerProfile pp = ((FastLoginBukkit) FastLoginBukkit
-						.getPlugin(FastLoginBukkit.class)).getStorage()
-						.getProfile(player.getName(), true);
-				boolean ispremium = pp != null && pp.isPremium();
-				final MaybeOfflinePlayer mplayer = mp;
-
-				if (mp.LoginWarningCount < LoginWarningCountTotal) {
-					if (AuthMe.getInstance().api.isAuthenticated(player)) {
-						// The player logged in in any way
-						if (!ispremium
-								&& !mp.FlairState.equals(FlairStates.Accepted)
-								&& !mp.FlairState.equals(FlairStates.Commented)) {
-							// The player isn't premium, and doesn't have a
-							// flair
-							String json = String
-									.format("[\"\",{\"text\":\"Welcome! If you are a premium Minecraft user, please do /premium and relog, otherwise please verify your /r/thebutton flair to play, \",\"color\":\"gold\"},{\"text\":\"[here].\",\"color\":\"gold\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
-											PluginMain.FlairThreadURL);
-							PluginMain.Instance.getServer().dispatchCommand(
-									PluginMain.Console,
-									"tellraw " + mp.PlayerName + " " + json);
-						}
-					}
-				} else {
-					if (AuthMe.getInstance().api.isAuthenticated(player)) {
-						if (!ispremium
-								&& !mplayer.FlairState
-										.equals(FlairStates.Accepted)
-								&& !mplayer.FlairState
-										.equals(FlairStates.Commented)) {
-							Bukkit.getScheduler().runTask(PluginMain.Instance,
-									new Runnable() {
-										@Override
-										public void run() {
-											player.kickPlayer("Please either use /premium and relog or verify your flair by commenting in the thread and using /u accept.");
-										}
-									});
-							timer.cancel();
-						}
-					}
-				}
-				mp.LoginWarningCount++;
-			}
-		};
-		tt.mp = mp;
-		int timeout = AuthMe.getInstance().getConfig()
-				.getInt("settings.restrictions.timeout");
-		timer.schedule(tt, (timeout / LoginWarningCountTotal) * 1000,
-				(timeout / LoginWarningCountTotal) * 1000);
+		/*
+		 * final Timer timer = new Timer(); mp.LoginWarningCount = 0;
+		 * PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
+		 * 
+		 * @Override public void run() { final Player player =
+		 * Bukkit.getPlayer(mp.PlayerName); if (player == null) return;
+		 * 
+		 * PlayerProfile pp = ((FastLoginBukkit) FastLoginBukkit
+		 * .getPlugin(FastLoginBukkit.class)).getStorage()
+		 * .getProfile(player.getName(), true); boolean ispremium = pp != null
+		 * && pp.isPremium(); final MaybeOfflinePlayer mplayer = mp;
+		 * 
+		 * if (mp.LoginWarningCount < LoginWarningCountTotal) { if
+		 * (AuthMe.getInstance().api.isAuthenticated(player)) { // The player
+		 * logged in in any way if (!ispremium &&
+		 * !mp.FlairState.equals(FlairStates.Accepted) &&
+		 * !mp.FlairState.equals(FlairStates.Commented)) { // The player isn't
+		 * premium, and doesn't have a // flair String json = String .format(
+		 * "[\"\",{\"text\":\"Welcome! If you are a premium Minecraft user, please do /premium and relog, otherwise please verify your /r/thebutton flair to play, \",\"color\":\"gold\"},{\"text\":\"[here].\",\"color\":\"gold\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]"
+		 * , PluginMain.FlairThreadURL);
+		 * PluginMain.Instance.getServer().dispatchCommand( PluginMain.Console,
+		 * "tellraw " + mp.PlayerName + " " + json); } } } else { if
+		 * (AuthMe.getInstance().api.isAuthenticated(player)) { if (!ispremium
+		 * && !mplayer.FlairState .equals(FlairStates.Accepted) &&
+		 * !mplayer.FlairState .equals(FlairStates.Commented)) {
+		 * Bukkit.getScheduler().runTask(PluginMain.Instance, new Runnable() {
+		 * 
+		 * @Override public void run() { player.kickPlayer(
+		 * "Please either use /premium and relog or verify your flair by commenting in the thread and using /u accept."
+		 * ); } }); timer.cancel(); } } } mp.LoginWarningCount++; } }; tt.mp =
+		 * mp; int timeout = AuthMe.getInstance().getConfig()
+		 * .getInt("settings.restrictions.timeout"); timer.schedule(tt, (timeout
+		 * / LoginWarningCountTotal) * 1000, (timeout / LoginWarningCountTotal)
+		 * * 1000);
+		 */// Login stuff
 
 		/* NICKNAME LOGIC */
 
@@ -355,17 +333,14 @@ public class PlayerListener implements Listener {
 								.getPlayer().getDisplayName(), message));
 				}
 			}
-			/*boolean tping = false;
-			boolean tphering = false;
-			if (cmd.equalsIgnoreCase("tpa") || cmd.equalsIgnoreCase("call")
-					|| cmd.equalsIgnoreCase("ecall")
-					|| cmd.equalsIgnoreCase("etpa")
-					|| cmd.equalsIgnoreCase("tpask")
-					|| cmd.equalsIgnoreCase("etpask"))
-				tping = true;
-			if (cmd.equalsIgnoreCase("tpahere")
-					|| cmd.equalsIgnoreCase("etpahere"))
-				tphering = true;*/
+			/*
+			 * boolean tping = false; boolean tphering = false; if
+			 * (cmd.equalsIgnoreCase("tpa") || cmd.equalsIgnoreCase("call") ||
+			 * cmd.equalsIgnoreCase("ecall") || cmd.equalsIgnoreCase("etpa") ||
+			 * cmd.equalsIgnoreCase("tpask") || cmd.equalsIgnoreCase("etpask"))
+			 * tping = true; if (cmd.equalsIgnoreCase("tpahere") ||
+			 * cmd.equalsIgnoreCase("etpahere")) tphering = true;
+			 */
 
 			/*
 			 * for (HelpTopic ht : PluginMain.Instance.getServer()
@@ -381,37 +356,30 @@ public class PlayerListener implements Listener {
 			 * break; }
 			 */
 
-			/*if (tphering) {
-				Player target = Bukkit.getPlayer(event.getMessage()
-						.substring(index + 1).split(" ")[0]);
-				if (target != null
-						&& BoardColl.get()
-								.getFactionAt(PS.valueOf(target.getLocation()))
-								.getId().equalsIgnoreCase("tower")) {
-					event.getPlayer()
-							.sendMessage(
-									"§cYou are not allowed to teleport players out from the Tower");
-					event.setCancelled(true);
-				}
-			}*/
+			/*
+			 * if (tphering) { Player target =
+			 * Bukkit.getPlayer(event.getMessage() .substring(index +
+			 * 1).split(" ")[0]); if (target != null && BoardColl.get()
+			 * .getFactionAt(PS.valueOf(target.getLocation()))
+			 * .getId().equalsIgnoreCase("tower")) { event.getPlayer()
+			 * .sendMessage(
+			 * "§cYou are not allowed to teleport players out from the Tower");
+			 * event.setCancelled(true); } }
+			 */
 			/*
 			 * for (String s : Bukkit.getCommandAliases().get("/tpahere")) { if
 			 * (cmd.equalsIgnoreCase(s)) { tping = true; break; } }
 			 */
-			/*if (tping) {
-				if (
-				// MPlayer.get(event.getPlayer()).getFaction().getId().equalsIgnoreCase("nomansland"))
-				// {
-				BoardColl
-						.get()
-						.getFactionAt(
-								PS.valueOf(event.getPlayer().getLocation()))
-						.getId().equalsIgnoreCase("tower")) {
-					event.getPlayer().sendMessage(
-							"§cYou are not allowed to teleport to the Tower");
-					event.setCancelled(true);
-				}
-			}*/
+			/*
+			 * if (tping) { if ( //
+			 * MPlayer.get(event.getPlayer()).getFaction().getId
+			 * ().equalsIgnoreCase("nomansland")) // { BoardColl .get()
+			 * .getFactionAt( PS.valueOf(event.getPlayer().getLocation()))
+			 * .getId().equalsIgnoreCase("tower")) {
+			 * event.getPlayer().sendMessage(
+			 * "§cYou are not allowed to teleport to the Tower");
+			 * event.setCancelled(true); } }
+			 */
 		}
 		if (cmd.equalsIgnoreCase("sethome")) {
 			TownyUniverse tu = PluginMain.Instance.TU;

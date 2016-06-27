@@ -5,6 +5,8 @@ import io.github.norbipeti.thebuttonmcchat.commands.UnlolCommand;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
@@ -72,8 +74,7 @@ public class ChatProcessing {
 			colormode = ChatFormatter.Color.Green;
 		// If greentext, ignore channel or player colors
 
-			formatters.add(new ChatFormatter(Pattern.compile(".+"), colormode,
-					""));
+		formatters.add(new ChatFormatter(Pattern.compile(".+"), colormode, ""));
 
 		String formattedmessage = message;
 		formattedmessage = formattedmessage.replace("\\", "\\\\");
@@ -98,17 +99,45 @@ public class ChatProcessing {
 		formatters.add(new ChatFormatter(Pattern
 				.compile("http[\\w:/?=$\\-_.+!*'(),]+"),
 				ChatFormatter.Format.Underlined, "", true));
-		//TODO: Only format name mentions outisde open_url
-				/*formattedmessage = formattedmessage
-						.replace(
-								item,
-								String.format(
-										"\",\"color\":\"%s\"},{\"text\":\"%s\",\"color\":\"%s\",\"underlined\":\"true\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open URL\",\"color\":\"blue\"}]}}},{\"text\":\"",
-										colormode, url, colormode, url));*/
+		// TODO: Only format name mentions outisde open_url
+		/*
+		 * formattedmessage = formattedmessage .replace( item, String.format(
+		 * "\",\"color\":\"%s\"},{\"text\":\"%s\",\"color\":\"%s\",\"underlined\":\"true\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open URL\",\"color\":\"blue\"}]}}},{\"text\":\""
+		 * , colormode, url, colormode, url));
+		 */
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("(");
+		for (Player p : PluginMain.GetPlayers())
+			sb.append(p.getName()).append("|");
+		sb.deleteCharAt(sb.length() - 1);
+		sb.append(")");
+
+		formatters.add(new ChatFormatter(Pattern.compile(sb.toString()),
+				ChatFormatter.Color.Aqua, "", (String match) -> {
+					Player p = Bukkit.getPlayer(match);
+					if (p == null) {
+						System.out.println("Error: Can't find player " + match
+								+ " but it was reported as online.");
+					}
+					MaybeOfflinePlayer mpp = MaybeOfflinePlayer
+							.AddPlayerIfNeeded(p.getUniqueId());
+					if (PlayerListener.NotificationSound == null)
+						p.playSound(p.getLocation(),
+								Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO:
+																			// Airhorn
+			else
+				p.playSound(p.getLocation(), PlayerListener.NotificationSound,
+						1.0f, (float) PlayerListener.NotificationPitch);
+			color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb
+					: mpp.GetFlairColor()));
+			return true;
+		}));
 
 		if (!hadurls) {
 			for (Player p : PluginMain.GetPlayers()) {
-				String color = ""; //TODO: Regex with all names and check for the correct JSON behind them
+				String color = ""; // TODO: Regex with all names and check for
+									// the correct JSON behind them
 				if (formattedmessage.matches("(?i).*"
 						+ Pattern.quote(p.getName()) + ".*")) {
 					if (PlayerListener.NotificationSound == null)
