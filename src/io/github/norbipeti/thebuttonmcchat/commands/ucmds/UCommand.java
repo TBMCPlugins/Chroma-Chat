@@ -1,7 +1,5 @@
 package io.github.norbipeti.thebuttonmcchat.commands.ucmds;
 
-import java.util.ArrayList;
-
 import io.github.norbipeti.thebuttonmcchat.commands.CommandCaller;
 import io.github.norbipeti.thebuttonmcchat.commands.TBMCCommandBase;
 

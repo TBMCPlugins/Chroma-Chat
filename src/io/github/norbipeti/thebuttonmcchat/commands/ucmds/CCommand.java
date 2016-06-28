@@ -1,7 +1,6 @@
 package io.github.norbipeti.thebuttonmcchat.commands.ucmds;
 
 import io.github.norbipeti.thebuttonmcchat.ChatFormatter;
-import io.github.norbipeti.thebuttonmcchat.ChatFormatter.Color;
 import io.github.norbipeti.thebuttonmcchat.MaybeOfflinePlayer;
 import io.github.norbipeti.thebuttonmcchat.PluginMain;
 

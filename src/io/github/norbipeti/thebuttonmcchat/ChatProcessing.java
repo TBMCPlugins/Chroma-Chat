@@ -2,11 +2,7 @@ package io.github.norbipeti.thebuttonmcchat;
 
 import io.github.norbipeti.thebuttonmcchat.commands.UnlolCommand;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
@@ -22,6 +18,8 @@ import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 
 public class ChatProcessing {
+	private static boolean pingedconsole = false;
+
 	// Returns e.setCancelled
 	public static boolean ProcessChat(CommandSender sender, String message) {
 		if (PlayerListener.essentials == null)
@@ -74,7 +72,7 @@ public class ChatProcessing {
 			colormode = ChatFormatter.Color.Green;
 		// If greentext, ignore channel or player colors
 
-		formatters.add(new ChatFormatter(Pattern.compile(".+"), colormode, ""));
+		formatters.add(new ChatFormatter(Pattern.compile("(.+)"), colormode,  ""));
 
 		String formattedmessage = message;
 		formattedmessage = formattedmessage.replace("\\", "\\\\");
@@ -97,8 +95,8 @@ public class ChatProcessing {
 
 		// URLs + Rainbow text
 		formatters.add(new ChatFormatter(Pattern
-				.compile("http[\\w:/?=$\\-_.+!*'(),]+"),
-				ChatFormatter.Format.Underlined, "", true));
+				.compile("(http[\\w:/?=$\\-_.+!*'(),]+)"),
+				ChatFormatter.Format.Underlined, "", "$1"));
 		// TODO: Only format name mentions outisde open_url
 		/*
 		 * formattedmessage = formattedmessage .replace( item, String.format(
@@ -193,24 +191,28 @@ public class ChatProcessing {
 							return true; // TODO
 						}));
 
+		pingedconsole = false;
 		formatters.add(new ChatFormatter(Pattern.compile("(?i)"
-				+ Pattern.quote("@console")), ChatFormatter.Color.Aqua, ""));
-
-		if (!hadurls) {
-
-			if (formattedmessage.matches("(?i).*" + Pattern.quote("@console")
-					+ ".*")) {
-				formattedmessage = formattedmessage.replaceAll(
-						"(?i)" + Pattern.quote("@console"), "§b@console§r");
-				formattedmessage = formattedmessage
-						.replaceAll(
-								"(?i)" + Pattern.quote("@console"),
-								String.format(
-										"\",\"color\":\"%s\"},{\"text\":\"§b@console§r\",\"color\":\"blue\"},{\"text\":\"",
-										colormode));
+				+ Pattern.quote("@console")), ChatFormatter.Color.Aqua, "", (
+				String match) -> {
+			if (!pingedconsole) {
 				System.out.println("\007");
+				pingedconsole = true;
 			}
-		}
+			return true;
+		}));
+
+		/*
+		 * if (!hadurls) {
+		 * 
+		 * if (formattedmessage.matches("(?i).*" + Pattern.quote("@console") +
+		 * ".*")) { formattedmessage = formattedmessage.replaceAll( "(?i)" +
+		 * Pattern.quote("@console"), "§b@console§r"); formattedmessage =
+		 * formattedmessage .replaceAll( "(?i)" + Pattern.quote("@console"),
+		 * String.format(
+		 * "\",\"color\":\"%s\"},{\"text\":\"§b@console§r\",\"color\":\"blue\"},{\"text\":\""
+		 * , colormode)); System.out.println("\007"); } }
+		 */
 
 		StringBuilder json = new StringBuilder();
 		json.append("[\"\",");
@@ -244,35 +246,29 @@ public class ChatProcessing {
 								: "")));
 		json.append("{\"text\":\"> \",\"color\":\"white\"},");
 
-		formatters.add(new ChatFormatter("#(\w+)", ChatFormatter.Color.Blue, "", "https://twitter.com/hashtag/$1"));
-		
-		/*int index = -1;
-		ArrayList<String> list = new ArrayList<String>();
-		while ((index = message.indexOf("#", index + 1)) != -1) {
-			int index2 = message.indexOf(" ", index + 1);
-			if (index2 == -1)
-				index2 = message.length();
-			int index3 = message.indexOf("#", index + 1);
-			if (index3 != -1 && index3 < index2) // A # occurs before a
-													// space
-				index2 = index3;
-			String original = message.substring(index + 1, index2);
-			list.add(original);
-		}
+		formatters
+				.add(new ChatFormatter(Pattern.compile("#(\\w+)"),
+						ChatFormatter.Color.Blue, "",
+						"https://twitter.com/hashtag/$1"));
 
-		if (!hadurls) {
-			for (String original : list)
-				// Hashtags
-				formattedmessage = formattedmessage
-						.replace(
-								"#" + original,
-								String.format(
-										"\",\"color\":\"%s\"},{\"text\":\"#%s\",\"color\":\"blue\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://twitter.com/hashtag/%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open on Twitter\",\"color\":\"blue\"}]}}},{\"text\":\"",
-										colormode, original, original));
-		}*/
+		/*
+		 * int index = -1; ArrayList<String> list = new ArrayList<String>();
+		 * while ((index = message.indexOf("#", index + 1)) != -1) { int index2
+		 * = message.indexOf(" ", index + 1); if (index2 == -1) index2 =
+		 * message.length(); int index3 = message.indexOf("#", index + 1); if
+		 * (index3 != -1 && index3 < index2) // A # occurs before a // space
+		 * index2 = index3; String original = message.substring(index + 1,
+		 * index2); list.add(original); }
+		 * 
+		 * if (!hadurls) { for (String original : list) // Hashtags
+		 * formattedmessage = formattedmessage .replace( "#" + original,
+		 * String.format(
+		 * "\",\"color\":\"%s\"},{\"text\":\"#%s\",\"color\":\"blue\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://twitter.com/hashtag/%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open on Twitter\",\"color\":\"blue\"}]}}},{\"text\":\""
+		 * , colormode, original, original)); }
+		 */
 
 		json.append(String.format("{\"text\":\"%s\",\"color\":\"%s\"}]",
-				formattedmessage, colormode));
+				ChatFormatter.Combine(formatters, formattedmessage), colormode));
 		String jsonstr = json.toString();
 		if (jsonstr.length() >= 32767) {
 			sender.sendMessage("§cError: Message too large. Try shortening it, or remove hashtags and other formatting.");
@@ -310,7 +306,7 @@ public class ChatProcessing {
 					player.sendMessage("§cYou aren't in a town or an error occured.");
 					return true;
 				}
-				index = PluginMain.Instance.Towns.indexOf(town);
+				int index = PluginMain.Instance.Towns.indexOf(town);
 				if (index < 0) {
 					PluginMain.Instance.Towns.add(town);
 					index = PluginMain.Instance.Towns.size() - 1;
@@ -365,7 +361,7 @@ public class ChatProcessing {
 					player.sendMessage("§cYour town isn't in a nation or an error occured.");
 					return true;
 				}
-				index = PluginMain.Instance.Nations.indexOf(nation);
+				int index = PluginMain.Instance.Nations.indexOf(nation);
 				if (index < 0) {
 					PluginMain.Instance.Nations.add(nation);
 					index = PluginMain.Instance.Nations.size() - 1;
