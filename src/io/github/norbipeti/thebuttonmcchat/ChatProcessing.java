@@ -107,7 +107,7 @@ public class ChatProcessing {
 		 */
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("(");
+		sb.append("(?i)(");
 		for (Player p : PluginMain.GetPlayers())
 			sb.append(p.getName()).append("|");
 		sb.deleteCharAt(sb.length() - 1);
@@ -119,6 +119,7 @@ public class ChatProcessing {
 					if (p == null) {
 						System.out.println("Error: Can't find player " + match
 								+ " but it was reported as online.");
+						return false;
 					}
 					MaybeOfflinePlayer mpp = MaybeOfflinePlayer
 							.AddPlayerIfNeeded(p.getUniqueId());
@@ -129,76 +130,73 @@ public class ChatProcessing {
 			else
 				p.playSound(p.getLocation(), PlayerListener.NotificationSound,
 						1.0f, (float) PlayerListener.NotificationPitch);
-			color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb
-					: mpp.GetFlairColor()));
-			return true;
-		}));
+			String color = String.format("§%x",
+					(mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
+			return true; // TODO
+			}));
+
+		formatters
+				.add(new ChatFormatter(
+						Pattern.compile(sb.toString()),
+						ChatFormatter.Color.Aqua,
+						"",
+						(String match) -> {
+							for (String n : PlayerListener.nicknames.keySet()) {
+								String nwithoutformatting = new String(n);
+								int index;
+								while ((index = nwithoutformatting
+										.indexOf("§k")) != -1)
+									nwithoutformatting = nwithoutformatting.replace(
+											"§k"
+													+ nwithoutformatting
+															.charAt(index + 2),
+											""); // Support
+													// for
+													// one
+													// random
+													// char
+								while ((index = nwithoutformatting.indexOf('§')) != -1)
+									nwithoutformatting = nwithoutformatting.replace(
+											"§"
+													+ nwithoutformatting
+															.charAt(index + 1),
+											"");
+								if (!match.equalsIgnoreCase(nwithoutformatting))
+									return false; // TODO
+								Player p = Bukkit
+										.getPlayer(PlayerListener.nicknames
+												.get(n));
+								if (p == null) {
+									System.out
+											.println("Error: Can't find player "
+													+ match
+													+ " but it was reported as online.");
+									return false;
+								}
+								MaybeOfflinePlayer mpp = MaybeOfflinePlayer
+										.AddPlayerIfNeeded(p.getUniqueId());
+								if (PlayerListener.NotificationSound == null)
+									p.playSound(p.getLocation(),
+											Sound.ENTITY_ARROW_HIT_PLAYER,
+											1.0f, 0.5f); // TODO:
+															// Airhorn
+								else
+									p.playSound(
+											p.getLocation(),
+											PlayerListener.NotificationSound,
+											1.0f,
+											(float) PlayerListener.NotificationPitch);
+								String color = String.format("§%x",
+										(mpp.GetFlairColor() == 0x00 ? 0xb
+												: mpp.GetFlairColor()));
+							}
+							return true; // TODO
+						}));
+
+		formatters.add(new ChatFormatter(Pattern.compile("(?i)"
+				+ Pattern.quote("@console")), ChatFormatter.Color.Aqua, ""));
 
 		if (!hadurls) {
-			for (Player p : PluginMain.GetPlayers()) {
-				String color = ""; // TODO: Regex with all names and check for
-									// the correct JSON behind them
-				if (formattedmessage.matches("(?i).*"
-						+ Pattern.quote(p.getName()) + ".*")) {
-					if (PlayerListener.NotificationSound == null)
-						p.playSound(p.getLocation(),
-								Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO:
-																			// Airhorn
-					else
-						p.playSound(p.getLocation(),
-								PlayerListener.NotificationSound, 1.0f,
-								(float) PlayerListener.NotificationPitch);
-					MaybeOfflinePlayer mpp = MaybeOfflinePlayer
-							.AddPlayerIfNeeded(p.getUniqueId());
-					color = String.format(
-							"§%x",
-							(mpp.GetFlairColor() == 0x00 ? 0xb : mpp
-									.GetFlairColor()));
-				}
-
-				formattedmessage = formattedmessage
-						.replaceAll(
-								"(?i)" + Pattern.quote(p.getName()),
-								String.format(
-										"\",\"color\":\"%s\"},{\"text\":\"%s%s%s\",\"color\":\"blue\"},{\"text\":\"",
-										colormode, color, p.getName(), "§r"));
-			}
-			for (String n : PlayerListener.nicknames.keySet()) {
-				Player p = null;
-				String nwithoutformatting = new String(n);
-				int index;
-				while ((index = nwithoutformatting.indexOf("§k")) != -1)
-					nwithoutformatting = nwithoutformatting.replace("§k"
-							+ nwithoutformatting.charAt(index + 2), ""); // Support
-																			// for
-																			// one
-																			// random
-																			// char
-				while ((index = nwithoutformatting.indexOf('§')) != -1)
-					nwithoutformatting = nwithoutformatting.replace("§"
-							+ nwithoutformatting.charAt(index + 1), "");
-				if (formattedmessage.matches("(?i).*"
-						+ Pattern.quote(nwithoutformatting) + ".*")) {
-					p = Bukkit.getPlayer(PlayerListener.nicknames.get(n));
-					if (PlayerListener.NotificationSound == null)
-						p.playSound(p.getLocation(),
-								Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // 2015.08.12.
-					else
-						p.playSound(p.getLocation(),
-								PlayerListener.NotificationSound, 1.0f,
-								(float) PlayerListener.NotificationPitch);
-					MaybeOfflinePlayer.AddPlayerIfNeeded(p.getUniqueId());
-				}
-				if (p != null) {
-
-					formattedmessage = formattedmessage
-							.replaceAll(
-									"(?i)" + Pattern.quote(nwithoutformatting),
-									String.format(
-											"\",\"color\":\"%s\"},{\"text\":\"%s%s\",\"color\":\"blue\"},{\"text\":\"",
-											colormode, n, "§r"));
-				}
-			}
 
 			if (formattedmessage.matches("(?i).*" + Pattern.quote("@console")
 					+ ".*")) {
@@ -246,7 +244,9 @@ public class ChatProcessing {
 								: "")));
 		json.append("{\"text\":\"> \",\"color\":\"white\"},");
 
-		int index = -1;
+		formatters.add(new ChatFormatter("#(\w+)", ChatFormatter.Color.Blue, "", "https://twitter.com/hashtag/$1"));
+		
+		/*int index = -1;
 		ArrayList<String> list = new ArrayList<String>();
 		while ((index = message.indexOf("#", index + 1)) != -1) {
 			int index2 = message.indexOf(" ", index + 1);
@@ -269,7 +269,7 @@ public class ChatProcessing {
 								String.format(
 										"\",\"color\":\"%s\"},{\"text\":\"#%s\",\"color\":\"blue\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://twitter.com/hashtag/%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open on Twitter\",\"color\":\"blue\"}]}}},{\"text\":\"",
 										colormode, original, original));
-		}
+		}*/
 
 		json.append(String.format("{\"text\":\"%s\",\"color\":\"%s\"}]",
 				formattedmessage, colormode));
