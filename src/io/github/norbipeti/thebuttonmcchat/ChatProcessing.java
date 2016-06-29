@@ -1,5 +1,6 @@
 package io.github.norbipeti.thebuttonmcchat;
 
+import io.github.norbipeti.thebuttonmcchat.ChatFormatter.Priority;
 import io.github.norbipeti.thebuttonmcchat.commands.UnlolCommand;
 
 import java.util.ArrayList;
@@ -72,8 +73,8 @@ public class ChatProcessing {
 			colormode = ChatFormatter.Color.Green;
 		// If greentext, ignore channel or player colors
 
-		formatters
-				.add(new ChatFormatter(Pattern.compile("(.+)"), colormode, ""));
+		formatters.add(new ChatFormatter(Pattern.compile(".+"), colormode, "",
+				Priority.Low));
 
 		String formattedmessage = message;
 		formattedmessage = formattedmessage.replace("\\", "\\\\");
@@ -132,7 +133,7 @@ public class ChatProcessing {
 			String color = String.format("§%x",
 					(mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
 			return true; // TODO
-			}));
+			}, Priority.High));
 
 		formatters
 				.add(new ChatFormatter(
@@ -189,7 +190,7 @@ public class ChatProcessing {
 												: mpp.GetFlairColor()));
 							}
 							return true; // TODO
-						}));
+						}, Priority.High));
 
 		pingedconsole = false;
 		formatters.add(new ChatFormatter(Pattern.compile("(?i)"
@@ -200,7 +201,11 @@ public class ChatProcessing {
 				pingedconsole = true;
 			}
 			return true;
-		}));
+		}, Priority.High));
+
+		formatters.add(new ChatFormatter(Pattern.compile("#(\\w+)"),
+				ChatFormatter.Color.Blue, "https://twitter.com/hashtag/$1",
+				Priority.High));
 
 		/*
 		 * if (!hadurls) {
@@ -245,11 +250,6 @@ public class ChatProcessing {
 								+ PlayerListener.AlphaDeaths
 								: "")));
 		json.append("{\"text\":\"> \",\"color\":\"white\"}");
-
-		formatters
-				.add(new ChatFormatter(Pattern.compile("#(\\w+)"),
-						ChatFormatter.Color.Blue,
-						"https://twitter.com/hashtag/$1"));
 
 		/*
 		 * int index = -1; ArrayList<String> list = new ArrayList<String>();
