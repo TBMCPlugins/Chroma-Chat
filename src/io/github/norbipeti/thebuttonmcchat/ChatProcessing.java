@@ -72,7 +72,8 @@ public class ChatProcessing {
 			colormode = ChatFormatter.Color.Green;
 		// If greentext, ignore channel or player colors
 
-		formatters.add(new ChatFormatter(Pattern.compile("(.+)"), colormode,  ""));
+		formatters
+				.add(new ChatFormatter(Pattern.compile("(.+)"), colormode, ""));
 
 		String formattedmessage = message;
 		formattedmessage = formattedmessage.replace("\\", "\\\\");
@@ -85,18 +86,18 @@ public class ChatProcessing {
 		formatters
 				.add(new ChatFormatter(
 						Pattern.compile("(?<!\\\\)\\*\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*\\*"),
-						ChatFormatter.Format.Bold, "$1$2"));
+						ChatFormatter.Format.Bold, "$1"));
 		formatters.add(new ChatFormatter(Pattern
 				.compile("(?<!\\\\)\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*"),
-				ChatFormatter.Format.Italic, "$1$2"));
+				ChatFormatter.Format.Italic, "$1"));
 		formatters.add(new ChatFormatter(Pattern
 				.compile("(?<!\\\\)\\_((?:\\\\\\_|[^\\_])+[^\\_\\\\])\\_"),
-				ChatFormatter.Format.Italic, "$1$2"));
+				ChatFormatter.Format.Italic, "$1"));
 
 		// URLs + Rainbow text
 		formatters.add(new ChatFormatter(Pattern
 				.compile("(http[\\w:/?=$\\-_.+!*'(),]+)"),
-				ChatFormatter.Format.Underlined, "", "$1"));
+				ChatFormatter.Format.Underlined, "$1"));
 		// TODO: Only format name mentions outisde open_url
 		/*
 		 * formattedmessage = formattedmessage .replace( item, String.format(
@@ -112,7 +113,7 @@ public class ChatProcessing {
 		sb.append(")");
 
 		formatters.add(new ChatFormatter(Pattern.compile(sb.toString()),
-				ChatFormatter.Color.Aqua, "", (String match) -> {
+				ChatFormatter.Color.Aqua, (String match) -> {
 					Player p = Bukkit.getPlayer(match);
 					if (p == null) {
 						System.out.println("Error: Can't find player " + match
@@ -137,7 +138,6 @@ public class ChatProcessing {
 				.add(new ChatFormatter(
 						Pattern.compile(sb.toString()),
 						ChatFormatter.Color.Aqua,
-						"",
 						(String match) -> {
 							for (String n : PlayerListener.nicknames.keySet()) {
 								String nwithoutformatting = new String(n);
@@ -193,10 +193,10 @@ public class ChatProcessing {
 
 		pingedconsole = false;
 		formatters.add(new ChatFormatter(Pattern.compile("(?i)"
-				+ Pattern.quote("@console")), ChatFormatter.Color.Aqua, "", (
+				+ Pattern.quote("@console")), ChatFormatter.Color.Aqua, (
 				String match) -> {
 			if (!pingedconsole) {
-				System.out.println("\007");
+				System.out.print("\007");
 				pingedconsole = true;
 			}
 			return true;
@@ -244,11 +244,11 @@ public class ChatProcessing {
 						(mp != null && mp.PlayerName.equals("\nAlpha_Bacca44") ? "\nDeaths: "
 								+ PlayerListener.AlphaDeaths
 								: "")));
-		json.append("{\"text\":\"> \",\"color\":\"white\"},");
+		json.append("{\"text\":\"> \",\"color\":\"white\"}");
 
 		formatters
 				.add(new ChatFormatter(Pattern.compile("#(\\w+)"),
-						ChatFormatter.Color.Blue, "",
+						ChatFormatter.Color.Blue,
 						"https://twitter.com/hashtag/$1"));
 
 		/*
@@ -267,8 +267,12 @@ public class ChatProcessing {
 		 * , colormode, original, original)); }
 		 */
 
-		json.append(String.format("{\"text\":\"%s\",\"color\":\"%s\"}]",
-				ChatFormatter.Combine(formatters, formattedmessage), colormode));
+		/*
+		 * json.append(String.format("{\"text\":\"%s\",\"color\":\"%s\"}]",
+		 * ChatFormatter.Combine(formatters, formattedmessage), colormode));
+		 */
+		json.append(ChatFormatter.Combine(formatters, formattedmessage));
+		json.append("]");
 		String jsonstr = json.toString();
 		if (jsonstr.length() >= 32767) {
 			sender.sendMessage("§cError: Message too large. Try shortening it, or remove hashtags and other formatting.");
