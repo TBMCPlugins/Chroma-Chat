@@ -104,65 +104,20 @@ public class ChatProcessing {
 		 * , colormode, url, colormode, url));
 		 */
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("(?i)(");
-		for (Player p : PluginMain.GetPlayers())
-			sb.append(p.getName()).append("|");
-		sb.deleteCharAt(sb.length() - 1);
-		sb.append(")");
+		if (PluginMain.GetPlayers().size() > 0) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("(?i)(");
+			for (Player p : PluginMain.GetPlayers())
+				sb.append(p.getName()).append("|");
+			sb.deleteCharAt(sb.length() - 1);
+			sb.append(")");
 
-		formatters.add(new ChatFormatter(Pattern.compile(sb.toString()),
-				ChatFormatter.Color.Aqua, (String match) -> {
-					Player p = Bukkit.getPlayer(match);
-					if (p == null) {
-						System.out.println("Error: Can't find player " + match
-								+ " but it was reported as online.");
-						return false;
-					}
-					MaybeOfflinePlayer mpp = MaybeOfflinePlayer
-							.AddPlayerIfNeeded(p.getUniqueId());
-					if (PlayerListener.NotificationSound == null)
-						p.playSound(p.getLocation(),
-								Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO:
-																			// Airhorn
-			else
-				p.playSound(p.getLocation(), PlayerListener.NotificationSound,
-						1.0f, (float) PlayerListener.NotificationPitch);
-			String color = String.format("§%x",
-					(mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
-			return true; // TODO
-			}, Priority.High));
-
-		formatters
-				.add(new ChatFormatter(
-						Pattern.compile(sb.toString()),
-						ChatFormatter.Color.Aqua,
-						(String match) -> {
-							for (String n : PlayerListener.nicknames.keySet()) {
-								String nwithoutformatting = new String(n);
-								int index;
-								while ((index = nwithoutformatting
-										.indexOf("§k")) != -1)
-									nwithoutformatting = nwithoutformatting.replace(
-											"§k"
-													+ nwithoutformatting
-															.charAt(index + 2),
-											""); // Support
-													// for
-													// one
-													// random
-													// char
-								while ((index = nwithoutformatting.indexOf('§')) != -1)
-									nwithoutformatting = nwithoutformatting.replace(
-											"§"
-													+ nwithoutformatting
-															.charAt(index + 1),
-											"");
-								if (!match.equalsIgnoreCase(nwithoutformatting))
-									return false; // TODO
-								Player p = Bukkit
-										.getPlayer(PlayerListener.nicknames
-												.get(n));
+			formatters
+					.add(new ChatFormatter(
+							Pattern.compile(sb.toString()),
+							ChatFormatter.Color.Aqua,
+							(String match) -> {
+								Player p = Bukkit.getPlayer(match);
 								if (p == null) {
 									System.out
 											.println("Error: Can't find player "
@@ -186,9 +141,69 @@ public class ChatProcessing {
 								String color = String.format("§%x",
 										(mpp.GetFlairColor() == 0x00 ? 0xb
 												: mpp.GetFlairColor()));
-							}
-							return true; // TODO
-						}, Priority.High));
+								return true; // TODO
+							}, Priority.High));
+
+			formatters
+					.add(new ChatFormatter(
+							Pattern.compile(sb.toString()),
+							ChatFormatter.Color.Aqua,
+							(String match) -> {
+								for (String n : PlayerListener.nicknames
+										.keySet()) {
+									String nwithoutformatting = new String(n);
+									int index;
+									while ((index = nwithoutformatting
+											.indexOf("§k")) != -1)
+										nwithoutformatting = nwithoutformatting.replace(
+												"§k"
+														+ nwithoutformatting
+																.charAt(index + 2),
+												""); // Support
+														// for
+														// one
+														// random
+														// char
+									while ((index = nwithoutformatting
+											.indexOf('§')) != -1)
+										nwithoutformatting = nwithoutformatting.replace(
+												"§"
+														+ nwithoutformatting
+																.charAt(index + 1),
+												"");
+									if (!match
+											.equalsIgnoreCase(nwithoutformatting))
+										return false; // TODO
+									Player p = Bukkit
+											.getPlayer(PlayerListener.nicknames
+													.get(n));
+									if (p == null) {
+										System.out
+												.println("Error: Can't find player "
+														+ match
+														+ " but it was reported as online.");
+										return false;
+									}
+									MaybeOfflinePlayer mpp = MaybeOfflinePlayer
+											.AddPlayerIfNeeded(p.getUniqueId());
+									if (PlayerListener.NotificationSound == null)
+										p.playSound(p.getLocation(),
+												Sound.ENTITY_ARROW_HIT_PLAYER,
+												1.0f, 0.5f); // TODO:
+																// Airhorn
+									else
+										p.playSound(
+												p.getLocation(),
+												PlayerListener.NotificationSound,
+												1.0f,
+												(float) PlayerListener.NotificationPitch);
+									String color = String.format("§%x", (mpp
+											.GetFlairColor() == 0x00 ? 0xb
+											: mpp.GetFlairColor()));
+								}
+								return true; // TODO
+							}, Priority.High));
+		}
 
 		pingedconsole = false;
 		formatters.add(new ChatFormatter(Pattern.compile("(?i)"
