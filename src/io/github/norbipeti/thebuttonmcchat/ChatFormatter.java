@@ -78,6 +78,7 @@ public final class ChatFormatter {
 			while (matcher.find()) {
 				System.out.println("Found match from " + matcher.start()
 						+ " to " + (matcher.end() - 1));
+				System.out.println("With formatter:" + formatter);
 				ArrayList<String> groups = new ArrayList<String>();
 				for (int i = 0; i < matcher.groupCount(); i++)
 					groups.add(matcher.group(i + 1));
@@ -101,15 +102,18 @@ public final class ChatFormatter {
 			if (sections.size() < 2)
 				break;
 			System.out.println("i: " + i);
-			if (sections.get(i - 1).End >= sections.get(i).Start) {
-				System.out.println("Combining sections ("
-						+ sections.get(i - 1).Start + " - "
-						+ sections.get(i - 1).End + ") and ("
-						+ sections.get(i).Start + " - " + sections.get(i).End
-						+ ")");
+			if (sections.get(i - 1).End > sections.get(i).Start
+					&& sections.get(i - 1).Start < sections.get(i).End) {
+				System.out.println("Combining sections " + sections.get(i - 1)
+						+ " and " + sections.get(i));
 				int origend = sections.get(i - 1).End;
 				sections.get(i - 1).End = sections.get(i).Start - 1;
-
+				int origend2 = sections.get(i).End;
+				if (origend2 < origend) {
+					int tmp = origend; // TODO: This is BAD
+					origend = origend2; // The third part always gets the
+					origend2 = tmp; // properties of the second one
+				}
 				FormattedSection section = sections.get(i - 1).Formatters
 						.get(0).new FormattedSection(
 						sections.get(i - 1).Formatters, sections.get(i).Start,
@@ -119,20 +123,28 @@ public final class ChatFormatter {
 				sections.add(i, section);
 				nextindex++;
 				sections.get(i + 1).Start = origend + 1;
-				System.out.println("To sections 1:("
-						+ sections.get(i - 1).Start + " - "
-						+ sections.get(i - 1).End + ")");
-				System.out.println("  2:(" + section.Start + " - "
-						+ section.End + ")");
-				System.out.println("  3:(" + sections.get(i + 1).Start + " - "
-						+ sections.get(i + 1).End + ")");
+				sections.get(i + 1).End = origend2;
+				System.out.println("To sections 1:" + sections.get(i - 1) + "");
+				System.out.println("  2:" + section + "");
+				System.out.println("  3:" + sections.get(i + 1));
 				found = true;
 			}
 			if (sections.get(i - 1).Start == sections.get(i).Start
 					&& sections.get(i - 1).End == sections.get(i).End) {
+				System.out.println("Combining sections " + sections.get(i - 1)
+						+ " and " + sections.get(i));
 				sections.get(i - 1).Formatters
 						.addAll(sections.get(i).Formatters);
 				sections.get(i - 1).Matches.addAll(sections.get(i).Matches);
+				System.out.println("To section " + sections.get(i - 1));
+				sections.remove(i);
+				found = true;
+			}
+			if (i < sections.size()
+					&& sections.get(i).End < sections.get(i).Start) {
+				System.out.println("Removing section: " + sections.get(i));
+				sections.remove(i);
+				found = true;
 			}
 			i = nextindex - 1;
 			i++;
@@ -140,25 +152,23 @@ public final class ChatFormatter {
 				if (found) {
 					i = 1;
 					found = false;
+					sections.sort((s1, s2) -> {
+						if (s1.Start == s2.Start)
+							return Integer.compare(s1.End, s2.End);
+						else
+							return Integer.compare(s1.Start, s2.Start);
+					});
 				} else
 					cont = false;
 			}
 		}
 		StringBuilder finalstring = new StringBuilder();
 		for (int i = 0; i < sections.size(); i++) {
-			if (sections.get(i).End < sections.get(i).Start) {
-				System.out.println("Removing section: " + sections.get(i).Start
-						+ " - " + sections.get(i).End);
-				sections.remove(i);
-				i--;
-				continue;
-			}
 			FormattedSection section = sections.get(i);
-			System.out.println("Applying section: " + section.Start + " - "
-					+ section.End);
+			System.out.println("Applying section: " + section);
 			String originaltext = str.substring(section.Start, section.End + 1);
 			System.out.println("Originaltext: " + originaltext);
-			finalstring.append(",{\"text\":\""); //TODO: Bool replace
+			finalstring.append(",{\"text\":\""); // TODO: Bool replace
 			finalstring.append(originaltext);
 			finalstring.append("\"");
 			Color color = null;
@@ -166,9 +176,7 @@ public final class ChatFormatter {
 			String openlink = null;
 			Priority priority = null;
 			for (ChatFormatter formatter : section.Formatters) {
-				System.out.println("Applying formatter: Color: "
-						+ formatter.color + " Format: " + formatter.format
-						+ " Openlink: " + formatter.openlink);
+				System.out.println("Applying formatter: " + formatter);
 				if (formatter.onmatch == null
 						|| formatter.onmatch.test(originaltext)) {
 					if (priority == null
@@ -206,6 +214,13 @@ public final class ChatFormatter {
 			finalstring.append("}");
 		}
 		return finalstring.toString(); // TODO
+	}
+
+	@Override
+	public String toString() {
+		return new StringBuilder("F(").append(color).append(", ")
+				.append(format).append(", ").append(openlink).append(", ")
+				.append(priority).append(")").toString();
 	}
 
 	public enum Format { // TODO: Flag?
@@ -274,6 +289,14 @@ public final class ChatFormatter {
 			End = end;
 			Formatters.addAll(formatters);
 			Matches.addAll(matches);
+		}
+
+		@Override
+		public String toString() {
+			return new StringBuilder("Section(").append(Start).append(", ")
+					.append(End).append(", formatters: ")
+					.append(Formatters.toString()).append(", matches: ")
+					.append(Matches.toString()).append(")").toString();
 		}
 	}
 }
