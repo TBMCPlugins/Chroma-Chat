@@ -80,7 +80,6 @@ public class ChatProcessing {
 		formattedmessage = formattedmessage.replace("\\", "\\\\");
 		formattedmessage = formattedmessage.replace("\"", "\\\"");
 		// ^ Tellraw support, needed for both the message and suggestmsg
-		// TODO: Only apply after the formatters, or escaping won't work
 
 		String suggestmsg = formattedmessage;
 
@@ -93,13 +92,12 @@ public class ChatProcessing {
 				ChatFormatter.Format.Italic, "$1"));
 		formatters.add(new ChatFormatter(Pattern
 				.compile("(?<!\\\\)\\_((?:\\\\\\_|[^\\_])+[^\\_\\\\])\\_"),
-				ChatFormatter.Format.Italic, "$1"));
+				ChatFormatter.Format.Underlined, "$1"));
 
 		// URLs + Rainbow text
 		formatters.add(new ChatFormatter(Pattern
 				.compile("(http[\\w:/?=$\\-_.+!*'(),]+)"),
 				ChatFormatter.Format.Underlined, "$1"));
-		// TODO: Only format name mentions outisde open_url
 		/*
 		 * formattedmessage = formattedmessage .replace( item, String.format(
 		 * "\",\"color\":\"%s\"},{\"text\":\"%s\",\"color\":\"%s\",\"underlined\":\"true\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open URL\",\"color\":\"blue\"}]}}},{\"text\":\""

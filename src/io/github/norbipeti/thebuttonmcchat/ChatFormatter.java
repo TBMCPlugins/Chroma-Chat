@@ -1,5 +1,7 @@
 package io.github.norbipeti.thebuttonmcchat;
 
+import io.github.norbipeti.thebuttonmcchat.commands.ucmds.admin.DebugCommand;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -76,14 +78,14 @@ public final class ChatFormatter {
 		for (ChatFormatter formatter : formatters) {
 			Matcher matcher = formatter.regex.matcher(str);
 			while (matcher.find()) {
-				System.out.println("Found match from " + matcher.start()
+				DebugCommand.SendDebugMessage("Found match from " + matcher.start()
 						+ " to " + (matcher.end() - 1));
-				System.out.println("With formatter:" + formatter);
+				DebugCommand.SendDebugMessage("With formatter:" + formatter);
 				ArrayList<String> groups = new ArrayList<String>();
 				for (int i = 0; i < matcher.groupCount(); i++)
 					groups.add(matcher.group(i + 1));
 				if (groups.size() > 0)
-					System.out.println("First group: " + groups.get(0));
+					DebugCommand.SendDebugMessage("First group: " + groups.get(0));
 				FormattedSection section = formatter.new FormattedSection(
 						formatter, matcher.start(), matcher.end() - 1, groups);
 				sections.add(section);
@@ -101,10 +103,10 @@ public final class ChatFormatter {
 			int nextindex = i + 1;
 			if (sections.size() < 2)
 				break;
-			System.out.println("i: " + i);
+			DebugCommand.SendDebugMessage("i: " + i);
 			if (sections.get(i - 1).End > sections.get(i).Start
 					&& sections.get(i - 1).Start < sections.get(i).End) {
-				System.out.println("Combining sections " + sections.get(i - 1)
+				DebugCommand.SendDebugMessage("Combining sections " + sections.get(i - 1)
 						+ " and " + sections.get(i));
 				int origend = sections.get(i - 1).End;
 				sections.get(i - 1).End = sections.get(i).Start - 1;
@@ -124,25 +126,25 @@ public final class ChatFormatter {
 				nextindex++;
 				sections.get(i + 1).Start = origend + 1;
 				sections.get(i + 1).End = origend2;
-				System.out.println("To sections 1:" + sections.get(i - 1) + "");
-				System.out.println("  2:" + section + "");
-				System.out.println("  3:" + sections.get(i + 1));
+				DebugCommand.SendDebugMessage("To sections 1:" + sections.get(i - 1) + "");
+				DebugCommand.SendDebugMessage("  2:" + section + "");
+				DebugCommand.SendDebugMessage("  3:" + sections.get(i + 1));
 				found = true;
 			}
 			if (sections.get(i - 1).Start == sections.get(i).Start
 					&& sections.get(i - 1).End == sections.get(i).End) {
-				System.out.println("Combining sections " + sections.get(i - 1)
+				DebugCommand.SendDebugMessage("Combining sections " + sections.get(i - 1)
 						+ " and " + sections.get(i));
 				sections.get(i - 1).Formatters
 						.addAll(sections.get(i).Formatters);
 				sections.get(i - 1).Matches.addAll(sections.get(i).Matches);
-				System.out.println("To section " + sections.get(i - 1));
+				DebugCommand.SendDebugMessage("To section " + sections.get(i - 1));
 				sections.remove(i);
 				found = true;
 			}
 			if (i < sections.size()
 					&& sections.get(i).End < sections.get(i).Start) {
-				System.out.println("Removing section: " + sections.get(i));
+				DebugCommand.SendDebugMessage("Removing section: " + sections.get(i));
 				sections.remove(i);
 				found = true;
 			}
@@ -165,9 +167,9 @@ public final class ChatFormatter {
 		StringBuilder finalstring = new StringBuilder();
 		for (int i = 0; i < sections.size(); i++) {
 			FormattedSection section = sections.get(i);
-			System.out.println("Applying section: " + section);
+			DebugCommand.SendDebugMessage("Applying section: " + section);
 			String originaltext = str.substring(section.Start, section.End + 1);
-			System.out.println("Originaltext: " + originaltext);
+			DebugCommand.SendDebugMessage("Originaltext: " + originaltext);
 			finalstring.append(",{\"text\":\""); // TODO: Bool replace
 			finalstring.append(originaltext);
 			finalstring.append("\"");
@@ -176,7 +178,7 @@ public final class ChatFormatter {
 			String openlink = null;
 			Priority priority = null;
 			for (ChatFormatter formatter : section.Formatters) {
-				System.out.println("Applying formatter: " + formatter);
+				DebugCommand.SendDebugMessage("Applying formatter: " + formatter);
 				if (formatter.onmatch == null
 						|| formatter.onmatch.test(originaltext)) {
 					if (priority == null
@@ -190,7 +192,7 @@ public final class ChatFormatter {
 						priority = formatter.priority;
 					}
 				} else
-					System.out.println("Onmatch predicate returned false.");
+					DebugCommand.SendDebugMessage("Onmatch predicate returned false.");
 			}
 			if (color != null) {
 				finalstring.append(",\"color\":\"");
