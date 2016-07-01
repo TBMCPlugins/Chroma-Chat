@@ -1,6 +1,6 @@
 package io.github.norbipeti.thebuttonmcchat.commands.ucmds.admin;
 
-import io.github.norbipeti.thebuttonmcchat.MaybeOfflinePlayer;
+import io.github.norbipeti.thebuttonmcchat.TBMCPlayer;
 import io.github.norbipeti.thebuttonmcchat.PluginMain;
 
 import org.bukkit.command.CommandSender;
@@ -25,7 +25,7 @@ public class ConfirmCommand extends AdminCommandBase {
 				PluginMain.LoadFiles(true);
 				// TODO: Add players online
 				for (Player p : PluginMain.GetPlayers())
-					MaybeOfflinePlayer.AddPlayerIfNeeded(p.getUniqueId());
+					TBMCPlayer.AddPlayerIfNeeded(p.getUniqueId());
 				if (sender != PluginMain.Console)
 					PluginMain.Console.sendMessage("§6-- Reloading done!§r");
 				sender.sendMessage("§6-- Reloading done!§r");

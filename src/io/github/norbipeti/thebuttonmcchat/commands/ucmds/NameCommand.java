@@ -1,6 +1,6 @@
 package io.github.norbipeti.thebuttonmcchat.commands.ucmds;
 
-import io.github.norbipeti.thebuttonmcchat.MaybeOfflinePlayer;
+import io.github.norbipeti.thebuttonmcchat.TBMCPlayer;
 
 import org.bukkit.command.CommandSender;
 
@@ -19,7 +19,7 @@ public class NameCommand extends UCommandBase {
 		if (args.length == 1) {
 			return false;
 		}
-		MaybeOfflinePlayer mp = MaybeOfflinePlayer.GetFromName(args[1]);
+		TBMCPlayer mp = TBMCPlayer.GetFromName(args[1]);
 		if (mp == null) {
 			sender.sendMessage("§cUnknown user (player has to be online): "
 					+ args[1]);

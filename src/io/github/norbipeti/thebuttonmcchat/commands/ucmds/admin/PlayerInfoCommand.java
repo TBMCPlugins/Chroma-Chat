@@ -1,6 +1,6 @@
 package io.github.norbipeti.thebuttonmcchat.commands.ucmds.admin;
 
-import io.github.norbipeti.thebuttonmcchat.MaybeOfflinePlayer;
+import io.github.norbipeti.thebuttonmcchat.TBMCPlayer;
 
 import org.bukkit.command.CommandSender;
 
@@ -20,7 +20,7 @@ public class PlayerInfoCommand extends AdminCommandBase {
 		if (args.length == 0) {
 			return false;
 		}
-		MaybeOfflinePlayer p = MaybeOfflinePlayer.GetFromName(args[0]);
+		TBMCPlayer p = TBMCPlayer.GetFromName(args[0]);
 		if (p == null) {
 			sender.sendMessage("§cPlayer not found: " + args[0]
 					+ " - Currently only online players can be viewed§r");

@@ -1,7 +1,7 @@
 package io.github.norbipeti.thebuttonmcchat.commands.ucmds;
 
 import io.github.norbipeti.thebuttonmcchat.FlairStates;
-import io.github.norbipeti.thebuttonmcchat.MaybeOfflinePlayer;
+import io.github.norbipeti.thebuttonmcchat.TBMCPlayer;
 import io.github.norbipeti.thebuttonmcchat.PlayerJoinTimerTask;
 import io.github.norbipeti.thebuttonmcchat.PluginMain;
 
@@ -22,7 +22,7 @@ public class AcceptCommand extends UCommandBase {
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		final Player player = (Player) sender;
-		MaybeOfflinePlayer p = MaybeOfflinePlayer.GetFromPlayer(player);
+		TBMCPlayer p = TBMCPlayer.GetFromPlayer(player);
 		if (args.length < 1 && p.UserNames.size() > 1) {
 			player.sendMessage("§9Multiple users commented your name. §bPlease pick one using /u accept <username>");
 			StringBuilder sb = new StringBuilder();

@@ -1,7 +1,7 @@
 package io.github.norbipeti.thebuttonmcchat.commands.ucmds;
 
 import io.github.norbipeti.thebuttonmcchat.ChatFormatter;
-import io.github.norbipeti.thebuttonmcchat.MaybeOfflinePlayer;
+import io.github.norbipeti.thebuttonmcchat.TBMCPlayer;
 import io.github.norbipeti.thebuttonmcchat.PluginMain;
 
 import org.bukkit.command.CommandSender;
@@ -19,7 +19,7 @@ public class CCommand extends UCommandBase {
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		Player player = (Player) sender;
-		MaybeOfflinePlayer p = MaybeOfflinePlayer.AddPlayerIfNeeded(player
+		TBMCPlayer p = TBMCPlayer.AddPlayerIfNeeded(player
 				.getUniqueId());
 		if (args.length < 1) {
 			if (PluginMain.permission.has(player, "tbmc.rainbow")) {

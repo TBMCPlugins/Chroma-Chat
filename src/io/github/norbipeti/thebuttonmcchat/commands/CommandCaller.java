@@ -33,26 +33,18 @@ public class CommandCaller implements CommandExecutor {
 
 	public static void RegisterCommands(PluginMain plugin) {
 		if (instance != null) {
-			new Exception("Only one instance of CommandCaller is allowed")
-					.printStackTrace();
+			new Exception("Only one instance of CommandCaller is allowed").printStackTrace();
 			return;
 		}
 		System.out.println("Registering commands...");
 
-		CommandCaller cc = new CommandCaller();
-		instance = cc;
+		if (instance == null)
+			instance = new CommandCaller();
 		Reflections rf = new Reflections(
-				new ConfigurationBuilder()
-						.setUrls(
-								ClasspathHelper.forClassLoader(plugin
-										.getClass().getClassLoader()))
-						.addClassLoader(plugin.getClass().getClassLoader())
-						.addScanners(new SubTypesScanner())
-						.filterInputsBy(
-								(String pkg) -> pkg
-										.contains("io.github.norbipeti.thebuttonmcchat.commands")));
-		Set<Class<? extends TBMCCommandBase>> cmds = rf
-				.getSubTypesOf(TBMCCommandBase.class);
+				new ConfigurationBuilder().setUrls(ClasspathHelper.forClassLoader(plugin.getClass().getClassLoader()))
+						.addClassLoader(plugin.getClass().getClassLoader()).addScanners(new SubTypesScanner())
+						.filterInputsBy((String pkg) -> pkg.contains("io.github.norbipeti.thebuttonmcchat.commands")));
+		Set<Class<? extends TBMCCommandBase>> cmds = rf.getSubTypesOf(TBMCCommandBase.class);
 		for (Class<? extends TBMCCommandBase> cmd : cmds) {
 			try {
 				if (Modifier.isAbstract(cmd.getModifiers()))
@@ -63,8 +55,7 @@ public class CommandCaller implements CommandExecutor {
 				{
 					PluginCommand pc = plugin.getCommand(c.GetCommandPath());
 					if (pc == null)
-						new Exception("Can't find top-level command: "
-								+ c.GetCommandPath()).printStackTrace();
+						new Exception("Can't find top-level command: " + c.GetCommandPath()).printStackTrace();
 					else
 						pc.setExecutor(cc);
 				}
@@ -76,9 +67,22 @@ public class CommandCaller implements CommandExecutor {
 		}
 	}
 
+	public static void AddCommand(Plugin plugin, TBMCCommandBase cmd) {
+		if (instance == null)
+			instance = new CommandCaller();
+		commands.put(cmd.GetCommandPath(), cmd);
+		if (!c.GetCommandPath().contains("/")) // Top-level command
+		{
+			PluginCommand pc = plugin.getCommand(cmd.GetCommandPath());
+			if (pc == null)
+				new Exception("Can't find top-level command: " + c.GetCommandPath()).printStackTrace();
+			else
+				pc.setExecutor(instance);
+		}
+	}
+
 	@Override
-	public boolean onCommand(CommandSender sender, Command command,
-			String alias, String[] args) {
+	public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
 		String path = command.getName();
 		for (String arg : args)
 			path += "/" + arg;
@@ -92,20 +96,15 @@ public class CommandCaller implements CommandExecutor {
 		if (cmd == null) {
 			sender.sendMessage("§cInternal error: Command not registered to CommandCaller");
 			if (sender != Bukkit.getConsoleSender())
-				Bukkit.getConsoleSender()
-						.sendMessage(
-								"§cInternal error: Command not registered to CommandCaller");
+				Bukkit.getConsoleSender().sendMessage("§cInternal error: Command not registered to CommandCaller");
 			return true;
 		}
 		if (cmd.GetPlayerOnly() && sender == Bukkit.getConsoleSender()) {
 			sender.sendMessage("§cOnly ingame players can use this command.");
 			return true;
 		}
-		if (!cmd.OnCommand(
-				sender,
-				alias,
-				(args.length > 0 ? Arrays.copyOfRange(args, args.length - argc,
-						args.length) : args)))
+		if (!cmd.OnCommand(sender, alias,
+				(args.length > 0 ? Arrays.copyOfRange(args, args.length - argc, args.length) : args)))
 			sender.sendMessage(cmd.GetHelpText(alias));
 		return true;
 	}
@@ -115,8 +114,7 @@ public class CommandCaller implements CommandExecutor {
 		cmds.add("§6---- Subcommands ----");
 		for (TBMCCommandBase cmd : CommandCaller.GetCommands().values()) {
 			if (cmd.GetCommandPath().startsWith(command.GetCommandPath() + "/")) {
-				int ind = cmd.GetCommandPath().indexOf('/',
-						command.GetCommandPath().length() + 2);
+				int ind = cmd.GetCommandPath().indexOf('/', command.GetCommandPath().length() + 2);
 				if (ind >= 0)
 					continue;
 				cmds.add(cmd.GetCommandPath().replace('/', ' '));

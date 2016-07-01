@@ -1,6 +1,6 @@
 package io.github.norbipeti.thebuttonmcchat.commands;
 
-import io.github.norbipeti.thebuttonmcchat.MaybeOfflinePlayer;
+import io.github.norbipeti.thebuttonmcchat.TBMCPlayer;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,12 +21,12 @@ public final class OOCCommand extends TBMCCommandBase {
 		if (args.length == 0) {
 			return false;
 		} else {
-			MaybeOfflinePlayer.AddPlayerIfNeeded(player.getUniqueId()).RPMode = false;
+			TBMCPlayer.AddPlayerIfNeeded(player.getUniqueId()).RPMode = false;
 			String message = "";
 			for (String arg : args)
 				message += arg + " ";
 			player.chat(message.substring(0, message.length() - 1));
-			MaybeOfflinePlayer.AddPlayerIfNeeded(player.getUniqueId()).RPMode = true;
+			TBMCPlayer.AddPlayerIfNeeded(player.getUniqueId()).RPMode = true;
 		}
 		return true;
 	}

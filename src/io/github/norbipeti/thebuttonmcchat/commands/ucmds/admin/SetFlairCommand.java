@@ -1,7 +1,7 @@
 package io.github.norbipeti.thebuttonmcchat.commands.ucmds.admin;
 
 import io.github.norbipeti.thebuttonmcchat.FlairStates;
-import io.github.norbipeti.thebuttonmcchat.MaybeOfflinePlayer;
+import io.github.norbipeti.thebuttonmcchat.TBMCPlayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -32,11 +32,11 @@ public class SetFlairCommand extends AdminCommandBase {
 		}
 		short flairtime = 0x00;
 		if (args[1].equalsIgnoreCase("non-presser"))
-			flairtime = MaybeOfflinePlayer.FlairTimeNonPresser;
+			flairtime = TBMCPlayer.FlairTimeNonPresser;
 		else if (args[1].equalsIgnoreCase("cant-press"))
-			flairtime = MaybeOfflinePlayer.FlairTimeCantPress;
+			flairtime = TBMCPlayer.FlairTimeCantPress;
 		else if (args[1].equalsIgnoreCase("none"))
-			flairtime = MaybeOfflinePlayer.FlairTimeNone;
+			flairtime = TBMCPlayer.FlairTimeNone;
 		else {
 			try {
 				flairtime = Short.parseShort(args[1]);
@@ -54,7 +54,7 @@ public class SetFlairCommand extends AdminCommandBase {
 			sender.sendMessage("§cUnknown value for cheater parameter. Run without args to see usage.");
 			return true;
 		}
-		MaybeOfflinePlayer mp = MaybeOfflinePlayer.AddPlayerIfNeeded(p
+		TBMCPlayer mp = TBMCPlayer.AddPlayerIfNeeded(p
 				.getUniqueId());
 		mp.SetFlair(flairtime, cheater);
 		mp.FlairState = FlairStates.Accepted;

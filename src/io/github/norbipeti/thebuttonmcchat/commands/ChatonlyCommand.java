@@ -1,6 +1,6 @@
 package io.github.norbipeti.thebuttonmcchat.commands;
 
-import io.github.norbipeti.thebuttonmcchat.MaybeOfflinePlayer;
+import io.github.norbipeti.thebuttonmcchat.TBMCPlayer;
 
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
@@ -21,7 +21,7 @@ public final class ChatonlyCommand extends TBMCCommandBase {
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		Player player=(Player)sender;
-		MaybeOfflinePlayer p = MaybeOfflinePlayer.AllPlayers.get(player
+		TBMCPlayer p = TBMCPlayer.AllPlayers.get(player
 				.getUniqueId());
 		p.ChatOnly = true;
 		player.setGameMode(GameMode.SPECTATOR);

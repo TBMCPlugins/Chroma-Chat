@@ -156,7 +156,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					else
 						ign = ign.substring(start, end);
 					ign = ign.trim();
-					MaybeOfflinePlayer mp = MaybeOfflinePlayer.GetFromName(ign);
+					TBMCPlayer mp = TBMCPlayer.GetFromName(ign);
 					if (mp == null)
 						continue;
 					if (!JoinedBefore(mp, 2015, 6, 5))
@@ -185,7 +185,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		}
 	}
 
-	public void DownloadFlair(MaybeOfflinePlayer mp)
+	public void DownloadFlair(TBMCPlayer mp)
 			throws MalformedURLException, IOException {
 		String[] flairdata = DownloadString(
 				"http://karmadecay.com/thebutton-data.php?users=" + mp.UserName)
@@ -218,7 +218,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		return body;
 	}
 
-	private void SetFlair(MaybeOfflinePlayer p, String text, String flairclass,
+	private void SetFlair(TBMCPlayer p, String text, String flairclass,
 			String username) {
 		p.UserName = username;
 		p.FlairState = FlairStates.Recognised;
@@ -233,26 +233,26 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			{
 				try {
 					if (CheckForJoinDate(p)) {
-						p.SetFlair(MaybeOfflinePlayer.FlairTimeNonPresser);
+						p.SetFlair(TBMCPlayer.FlairTimeNonPresser);
 					} else {
-						p.SetFlair(MaybeOfflinePlayer.FlairTimeCantPress);
+						p.SetFlair(TBMCPlayer.FlairTimeCantPress);
 					}
 				} catch (Exception e) {
 					p.FlairState = FlairStates.Commented; // Flair unknown
-					p.SetFlair(MaybeOfflinePlayer.FlairTimeNone);
+					p.SetFlair(TBMCPlayer.FlairTimeNone);
 					e.printStackTrace();
 				}
 			} else {
 				try {
 					if (CheckForJoinDate(p)) {
 						p.FlairState = FlairStates.Commented; // Flair unknown
-						p.SetFlair(MaybeOfflinePlayer.FlairTimeNone);
+						p.SetFlair(TBMCPlayer.FlairTimeNone);
 					} else {
-						p.SetFlair(MaybeOfflinePlayer.FlairTimeCantPress);
+						p.SetFlair(TBMCPlayer.FlairTimeCantPress);
 					}
 				} catch (Exception e) {
 					p.FlairState = FlairStates.Commented; // Flair unknown
-					p.SetFlair(MaybeOfflinePlayer.FlairTimeNone);
+					p.SetFlair(TBMCPlayer.FlairTimeNone);
 					e.printStackTrace();
 				}
 			}
@@ -263,12 +263,12 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		p.SetFlair(Short.parseShort(text));
 	}
 
-	public static boolean CheckForJoinDate(MaybeOfflinePlayer mp)
+	public static boolean CheckForJoinDate(TBMCPlayer mp)
 			throws Exception {
 		return JoinedBefore(mp, 2015, 4, 1);
 	}
 
-	public static boolean JoinedBefore(MaybeOfflinePlayer mp, int year,
+	public static boolean JoinedBefore(TBMCPlayer mp, int year,
 			int month, int day) throws Exception {
 		URL url = new URL("https://www.reddit.com/u/" + mp.UserName);
 		URLConnection con = url.openConnection();
@@ -288,7 +288,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 				.setDate(year, month, day).build().getTime());
 	}
 
-	public static void ConfirmUserMessage(MaybeOfflinePlayer mp) {
+	public static void ConfirmUserMessage(TBMCPlayer mp) {
 		Player p = Bukkit.getPlayer(mp.UUID);
 		if (mp.FlairState.equals(FlairStates.Commented) && p != null)
 			if (mp.UserNames.size() > 1)
@@ -307,7 +307,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	public static void LoadFiles(boolean reload) {
 		if (reload) {
 			System.out.println("TBMC chat plugin cleanup for reloading...");
-			MaybeOfflinePlayer.AllPlayers.clear();
+			TBMCPlayer.AllPlayers.clear();
 			AnnounceMessages.clear();
 		}
 		System.out.println("Loading files for TBMC chat plugin...");
@@ -316,7 +316,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			if (file.exists()) {
 				YamlConfiguration yc = new YamlConfiguration();
 				yc.load(file);
-				MaybeOfflinePlayer.Load(yc);
+				TBMCPlayer.Load(yc);
 				PlayerListener.NotificationSound = yc
 						.getString("notificationsound");
 				PlayerListener.NotificationPitch = yc
@@ -340,7 +340,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		try {
 			File file = new File("thebuttonmc.yml");
 			YamlConfiguration yc = new YamlConfiguration();
-			MaybeOfflinePlayer.Save(yc);
+			TBMCPlayer.Save(yc);
 			yc.set("notificationsound", PlayerListener.NotificationSound);
 			yc.set("notificationpitch", PlayerListener.NotificationPitch);
 			yc.set("announcetime", AnnounceTime);
