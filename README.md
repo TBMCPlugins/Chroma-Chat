@@ -1,11 +1,7 @@
-# The Button Minecraft server plugin
-It can download player flairs for /r/TheButtonMinecraft and do other cool things, like name mentioning.
+# The Button Minecraft server chat plugin
 
 ## How to use
 ### Players
-#### Connecting with a non-premium account
-You can connect to the server with a non-paid account as long as you confirm your flair. To do this, follow the steps below. The server will let you in if you commented in the thread.
-
 #### Obtaining the flair (/u accept)
 At first, you need to "connect" your Reddit account with your Minecraft account. This is done by writing your Minecraft name to [this thread](https://www.reddit.com/r/TheButtonMinecraft/comments/433ptk/autoflair_thread/), following the instructions in the post.
 
@@ -14,8 +10,6 @@ When you're done, connect to the server, if you aren't already on. You should se
 __Note__: You can comment your ingame name from multiple Reddit accounts. In this case, you'll need to specify the exact username you want to pair with your Minecraft account. For example:
 
     /u accept NorbiPeti
-
-__Tip__: If an admin set a custom flair for you, you may be able to reset the automatic one by doing /u accept.
 
 #### Hiding the message (/u ignore)
 You can use this command to hide the notice showing up after you log in if you don't have a flair accepted.
@@ -31,9 +25,9 @@ If nothing is known about your flair, you need to ask an admin to set the flair 
 You can see a player's username if they have a flair shown.
 
 #### Name mentioning
-If you simply say any online player's full playername or nickname, it'll highlight it and play a sound for the target player. This works only once per message per target player.
+If you simply say any online player's full playername or nickname, it'll highlight it and play a sound for the target player.
 
-If you say a nickname, it'll show it's original colors, if you say a username, then it will choose based on flair color if known.
+If you say a nickname, it'll show it's original colors, if you say a username, then it will choose based on flair color if known, otherwise it'll use the aqua color.
 
 You can also use @console to ping the console. If someone is there, they'll receive an audible bell signal.
 
@@ -43,8 +37,8 @@ You can use /ooc <message> to say something Out-of-Character. Otherwise everythi
 #### Greentext support (>message)
 Start your message with '>' to make it green.
 
-#### Hashtags (#BlameFigy)
-If you say a hashtag in global chat, it'll highlight it and makes it clickable.
+#### Hashtags (#hashtag)
+If you say a hashtag in global chat, it'll highlight it and makes it clickable, linking to the hashtag page on Twitter.
 
 #### Paying respects (F)
 If a player dies, sometimes the plugin will tell everyone "Press F to pay respects.". After a few seconds, a message will tell everyone how many people paid their respects.
@@ -54,7 +48,7 @@ If you hover over a player's name in chat, you can see how much respect they gai
 #### Copy messages
 To copy a message from chat, click the channel identifier (for example: [g] or [TC]) at the beginning of the message.
 
-#### Tableflipping (/tableflip and /unflip)
+#### Tableflipping (/tableflip and /unflip) and shrug (/shrug)
 The idea of this command came from Discord.
 
 Examples:
@@ -68,12 +62,12 @@ Examples:
 You can use this mode to protect yourself if you connect from a chat-only client. This will make you invincible, but unable to move, teleport or interact with the world in any way.
 
 #### Rainbow chat (/u c)
-Rainbow/Presser colors.
+Chat in rainbow/Presser colors.
 
 ### Admins
 Type /u admin for a list of the commands.
-#### Seeing status of flairs (/u admin playerinfo)
-You can check someone's flair status in case something goes wrong.
+#### Seeing player information (/u admin playerinfo)
+You can check someone's flair status and other infos in case something goes wrong.
 
 It outputs the player name (useful if something goes *really* wrong), the player's current ingame flair, the Reddit username, and their flair status:
 
@@ -89,9 +83,6 @@ This is useful if you want to change a file related to the plugin.
 Be careful and make sure you do /u admin save before you reload the plugin. You need to confirm your action (/u admin confirm) to make sure no setting is lost.
 
 If you want to edit a file, you need to do /u admin save, then edit the file you want, then do /u admin reload.
-
-#### Getting the last error (/u admin getlasterror)
-This command's sole purpose is to give me (or any admins, if they want) some information about the errors and if they even happened. It's not fully tested, so a full stack trace might be needed if the plugin breaks.
 
 #### Setting the flair by hand (/u admin setflair)
 This allows you to set any flair you want to any player. This will override the automatic flairs, though it's not recommended to do so. However, the player can reset the automatic flair at any time (see /u accept).
@@ -124,10 +115,7 @@ This command will not do any other thing than downloading the JAR file from here
 #### Toggle settings
 
     /u admin togglerpshow - Toggles [RP] tag shown at each message except /ooc or /nrp.
-    /u admin toggledebug - Toggles debug mode. Currently only gives a few info used to solve a specific error.
-
-#### Saving and loading a player's position (/u admin savepos|loadpos)
-This is used in my "Invisible Parkour" as a checkpoint system, using anywhere else is not recommended.
+    /u admin debug - Toggles debug mode. Currently it outputs a lot of info about the chat formatting.
 
 #### Setting the sound played on name mentioning
 You can set the sound played by editing "notificationsound" and "notificationpitch" in the config file (thebuttonmc.yml).
