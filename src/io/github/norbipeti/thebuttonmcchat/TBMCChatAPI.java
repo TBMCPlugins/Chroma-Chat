@@ -51,4 +51,9 @@ public class TBMCChatAPI {
 	public void AddPlayerInfoForHover(TBMCPlayer player, String infoline) {
 		// TODO
 	}
+	
+	public TBMCPlayer GetPlayer(Player player) //TODO: Move to the bucket
+	{ //TODO: Enable offline playerinfo
+		
+	}
 }
