@@ -4,7 +4,7 @@ import io.github.norbipeti.thebuttonmcchat.commands.CommandCaller;
 import io.github.norbipeti.thebuttonmcchat.commands.TBMCCommandBase;
 import io.github.norbipeti.thebuttonmcchat.commands.ucmds.admin.PlayerInfoCommand;
 
-public class API {
+public class TBMCChatAPI {
 
 	/**
 	 * <p>
@@ -48,5 +48,10 @@ public class API {
 	 */
 	public void AddPlayerInfoForHover(TBMCPlayer player, String infoline) {
 		// TODO
+	}
+	
+	public TBMCPlayer GetPlayer(Player player) //TODO: Move to the bucket
+	{ //TODO: Enable offline playerinfo
+		
 	}
 }
