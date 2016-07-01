@@ -1,5 +1,7 @@
 package io.github.norbipeti.thebuttonmcchat;
 
+import org.bukkit.plugin.java.JavaPlugin;
+
 import io.github.norbipeti.thebuttonmcchat.commands.CommandCaller;
 import io.github.norbipeti.thebuttonmcchat.commands.TBMCCommandBase;
 import io.github.norbipeti.thebuttonmcchat.commands.ucmds.admin.PlayerInfoCommand;
@@ -20,7 +22,7 @@ public class TBMCChatAPI {
 	 * @param cmd
 	 *            The command to add
 	 */
-	public void AddCommand(Plugin plugin, TBMCCommandBase cmd) {
+	public void AddCommand(JavaPlugin plugin, TBMCCommandBase cmd) {
 		CommandCaller.AddCommand(plugin, cmd);
 	}
 
@@ -48,10 +50,5 @@ public class TBMCChatAPI {
 	 */
 	public void AddPlayerInfoForHover(TBMCPlayer player, String infoline) {
 		// TODO
-	}
-	
-	public TBMCPlayer GetPlayer(Player player) //TODO: Move to the bucket
-	{ //TODO: Enable offline playerinfo
-		
 	}
 }

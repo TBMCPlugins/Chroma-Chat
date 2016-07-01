@@ -13,6 +13,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
@@ -57,7 +59,7 @@ public class CommandCaller implements CommandExecutor {
 					if (pc == null)
 						new Exception("Can't find top-level command: " + c.GetCommandPath()).printStackTrace();
 					else
-						pc.setExecutor(cc);
+						pc.setExecutor(instance);
 				}
 			} catch (InstantiationException e) {
 				e.printStackTrace();
@@ -67,15 +69,15 @@ public class CommandCaller implements CommandExecutor {
 		}
 	}
 
-	public static void AddCommand(Plugin plugin, TBMCCommandBase cmd) {
+	public static void AddCommand(JavaPlugin plugin, TBMCCommandBase cmd) {
 		if (instance == null)
 			instance = new CommandCaller();
 		commands.put(cmd.GetCommandPath(), cmd);
-		if (!c.GetCommandPath().contains("/")) // Top-level command
+		if (!cmd.GetCommandPath().contains("/")) // Top-level command
 		{
 			PluginCommand pc = plugin.getCommand(cmd.GetCommandPath());
 			if (pc == null)
-				new Exception("Can't find top-level command: " + c.GetCommandPath()).printStackTrace();
+				new Exception("Can't find top-level command: " + cmd.GetCommandPath()).printStackTrace();
 			else
 				pc.setExecutor(instance);
 		}

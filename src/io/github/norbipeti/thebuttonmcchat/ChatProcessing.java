@@ -24,23 +24,20 @@ public class ChatProcessing {
 	// Returns e.setCancelled
 	public static boolean ProcessChat(CommandSender sender, String message) {
 		if (PlayerListener.essentials == null)
-			PlayerListener.essentials = (Essentials) (Bukkit.getPluginManager()
-					.getPlugin("Essentials"));
+			PlayerListener.essentials = (Essentials) (Bukkit.getPluginManager().getPlugin("Essentials"));
 		Player player = (sender instanceof Player ? (Player) sender : null);
 
-		if (player != null
-				&& PlayerListener.essentials.getUser(player).isMuted())
+		if (player != null && PlayerListener.essentials.getUser(player).isMuted())
 			return true;
 
-		MaybeOfflinePlayer mp = null;
+		TBMCPlayer mp = null;
 		if (player != null) {
-			mp = MaybeOfflinePlayer.AllPlayers.get(player.getUniqueId());
+			mp = TBMCPlayer.AllPlayers.get(player.getUniqueId());
 			if (message.equalsIgnoreCase("F")) {
 				if (!mp.PressedF && PlayerListener.ActiveF) {
 					PlayerListener.FCount++;
 					mp.PressedF = true;
-					if (PlayerListener.FPlayer != null
-							&& PlayerListener.FPlayer.FCount < Integer.MAX_VALUE - 1)
+					if (PlayerListener.FPlayer != null && PlayerListener.FPlayer.FCount < Integer.MAX_VALUE - 1)
 						PlayerListener.FPlayer.FCount++;
 				}
 			}
@@ -59,8 +56,7 @@ public class ChatProcessing {
 				}
 			}
 		}
-		Channel currentchannel = (mp == null ? PlayerListener.ConsoleChannel
-				: mp.CurrentChannel);
+		Channel currentchannel = (mp == null ? PlayerListener.ConsoleChannel : mp.CurrentChannel);
 
 		ArrayList<ChatFormatter> formatters = new ArrayList<ChatFormatter>();
 
@@ -73,8 +69,7 @@ public class ChatProcessing {
 			colormode = ChatFormatter.Color.Green;
 		// If greentext, ignore channel or player colors
 
-		formatters.add(new ChatFormatter(Pattern.compile(".+"), colormode, "",
-				Priority.Low));
+		formatters.add(new ChatFormatter(Pattern.compile(".+"), colormode, "", Priority.Low));
 
 		String formattedmessage = message;
 		formattedmessage = formattedmessage.replace("\\", "\\\\");
@@ -83,20 +78,15 @@ public class ChatProcessing {
 
 		String suggestmsg = formattedmessage;
 
-		formatters
-				.add(new ChatFormatter(
-						Pattern.compile("(?<!\\\\)\\*\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*\\*"),
-						ChatFormatter.Format.Bold, "$1"));
-		formatters.add(new ChatFormatter(Pattern
-				.compile("(?<!\\\\)\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*"),
+		formatters.add(new ChatFormatter(Pattern.compile("(?<!\\\\)\\*\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*\\*"),
+				ChatFormatter.Format.Bold, "$1"));
+		formatters.add(new ChatFormatter(Pattern.compile("(?<!\\\\)\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*"),
 				ChatFormatter.Format.Italic, "$1"));
-		formatters.add(new ChatFormatter(Pattern
-				.compile("(?<!\\\\)\\_((?:\\\\\\_|[^\\_])+[^\\_\\\\])\\_"),
+		formatters.add(new ChatFormatter(Pattern.compile("(?<!\\\\)\\_((?:\\\\\\_|[^\\_])+[^\\_\\\\])\\_"),
 				ChatFormatter.Format.Underlined, "$1"));
 
 		// URLs + Rainbow text
-		formatters.add(new ChatFormatter(Pattern
-				.compile("(http[\\w:/?=$\\-_.+!*'(),]+)"),
+		formatters.add(new ChatFormatter(Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),]+)"),
 				ChatFormatter.Format.Underlined, "$1"));
 		/*
 		 * formattedmessage = formattedmessage .replace( item, String.format(
@@ -113,112 +103,72 @@ public class ChatProcessing {
 			sb.append(")");
 
 			formatters
-					.add(new ChatFormatter(
-							Pattern.compile(sb.toString()),
-							ChatFormatter.Color.Aqua,
-							(String match) -> {
-								Player p = Bukkit.getPlayer(match);
-								if (p == null) {
-									System.out
-											.println("Error: Can't find player "
-													+ match
-													+ " but it was reported as online.");
-									return false;
-								}
-								MaybeOfflinePlayer mpp = MaybeOfflinePlayer
-										.AddPlayerIfNeeded(p.getUniqueId());
-								if (PlayerListener.NotificationSound == null)
-									p.playSound(p.getLocation(),
-											Sound.ENTITY_ARROW_HIT_PLAYER,
-											1.0f, 0.5f); // TODO:
-															// Airhorn
-								else
-									p.playSound(
-											p.getLocation(),
-											PlayerListener.NotificationSound,
-											1.0f,
-											(float) PlayerListener.NotificationPitch);
-								String color = String.format("§%x",
-										(mpp.GetFlairColor() == 0x00 ? 0xb
-												: mpp.GetFlairColor()));
-								return true; // TODO
-							}, Priority.High));
+					.add(new ChatFormatter(Pattern.compile(sb.toString()), ChatFormatter.Color.Aqua, (String match) -> {
+						Player p = Bukkit.getPlayer(match);
+						if (p == null) {
+							System.out.println("Error: Can't find player " + match + " but it was reported as online.");
+							return false;
+						}
+						TBMCPlayer mpp = TBMCPlayer.AddPlayerIfNeeded(p.getUniqueId());
+						if (PlayerListener.NotificationSound == null)
+							p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO:
+																										// Airhorn
+						else
+							p.playSound(p.getLocation(), PlayerListener.NotificationSound, 1.0f,
+									(float) PlayerListener.NotificationPitch);
+						String color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
+						return true; // TODO
+					}, Priority.High));
 
 			formatters
-					.add(new ChatFormatter(
-							Pattern.compile(sb.toString()),
-							ChatFormatter.Color.Aqua,
-							(String match) -> {
-								for (String n : PlayerListener.nicknames
-										.keySet()) {
-									String nwithoutformatting = new String(n);
-									int index;
-									while ((index = nwithoutformatting
-											.indexOf("§k")) != -1)
-										nwithoutformatting = nwithoutformatting.replace(
-												"§k"
-														+ nwithoutformatting
-																.charAt(index + 2),
-												""); // Support
-														// for
-														// one
-														// random
-														// char
-									while ((index = nwithoutformatting
-											.indexOf('§')) != -1)
-										nwithoutformatting = nwithoutformatting.replace(
-												"§"
-														+ nwithoutformatting
-																.charAt(index + 1),
-												"");
-									if (!match
-											.equalsIgnoreCase(nwithoutformatting))
-										return false; // TODO
-									Player p = Bukkit
-											.getPlayer(PlayerListener.nicknames
-													.get(n));
-									if (p == null) {
-										System.out
-												.println("Error: Can't find player "
-														+ match
-														+ " but it was reported as online.");
-										return false;
-									}
-									MaybeOfflinePlayer mpp = MaybeOfflinePlayer
-											.AddPlayerIfNeeded(p.getUniqueId());
-									if (PlayerListener.NotificationSound == null)
-										p.playSound(p.getLocation(),
-												Sound.ENTITY_ARROW_HIT_PLAYER,
-												1.0f, 0.5f); // TODO:
-																// Airhorn
-									else
-										p.playSound(
-												p.getLocation(),
-												PlayerListener.NotificationSound,
-												1.0f,
-												(float) PlayerListener.NotificationPitch);
-									String color = String.format("§%x", (mpp
-											.GetFlairColor() == 0x00 ? 0xb
-											: mpp.GetFlairColor()));
-								}
-								return true; // TODO
-							}, Priority.High));
+					.add(new ChatFormatter(Pattern.compile(sb.toString()), ChatFormatter.Color.Aqua, (String match) -> {
+						for (String n : PlayerListener.nicknames.keySet()) {
+							String nwithoutformatting = new String(n);
+							int index;
+							while ((index = nwithoutformatting.indexOf("§k")) != -1)
+								nwithoutformatting = nwithoutformatting
+										.replace("§k" + nwithoutformatting.charAt(index + 2), ""); // Support
+																									// for
+																									// one
+																									// random
+																									// char
+							while ((index = nwithoutformatting.indexOf('§')) != -1)
+								nwithoutformatting = nwithoutformatting
+										.replace("§" + nwithoutformatting.charAt(index + 1), "");
+							if (!match.equalsIgnoreCase(nwithoutformatting))
+								return false; // TODO
+							Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(n));
+							if (p == null) {
+								System.out.println(
+										"Error: Can't find player " + match + " but it was reported as online.");
+								return false;
+							}
+							TBMCPlayer mpp = TBMCPlayer.AddPlayerIfNeeded(p.getUniqueId());
+							if (PlayerListener.NotificationSound == null)
+								p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO:
+																											// Airhorn
+							else
+								p.playSound(p.getLocation(), PlayerListener.NotificationSound, 1.0f,
+										(float) PlayerListener.NotificationPitch);
+							String color = String.format("§%x",
+									(mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
+						}
+						return true; // TODO
+					}, Priority.High));
 		}
 
 		pingedconsole = false;
-		formatters.add(new ChatFormatter(Pattern.compile("(?i)"
-				+ Pattern.quote("@console")), ChatFormatter.Color.Aqua, (
-				String match) -> {
-			if (!pingedconsole) {
-				System.out.print("\007");
-				pingedconsole = true;
-			}
-			return true;
-		}, Priority.High));
+		formatters.add(new ChatFormatter(Pattern.compile("(?i)" + Pattern.quote("@console")), ChatFormatter.Color.Aqua,
+				(String match) -> {
+					if (!pingedconsole) {
+						System.out.print("\007");
+						pingedconsole = true;
+					}
+					return true;
+				}, Priority.High));
 
-		formatters.add(new ChatFormatter(Pattern.compile("#(\\w+)"),
-				ChatFormatter.Color.Blue, "https://twitter.com/hashtag/$1",
-				Priority.High));
+		formatters.add(new ChatFormatter(Pattern.compile("#(\\w+)"), ChatFormatter.Color.Blue,
+				"https://twitter.com/hashtag/$1", Priority.High));
 
 		/*
 		 * if (!hadurls) {
@@ -234,34 +184,27 @@ public class ChatProcessing {
 
 		StringBuilder json = new StringBuilder();
 		json.append("[\"\",");
-		json.append(String
-				.format("%s{\"text\":\"[%s]%s\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Copy message\",\"color\":\"blue\"}},\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"%s\"}},",
-						(mp != null && mp.ChatOnly ? "{\"text\":\"[C]\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Chat only\",\"color\":\"blue\"}]}}},"
-								// (mp != null && mp.ChatOnly ?
-								// "{\"text:\":\"\"}," - I have been staring at
-								// this one line for hours... Hours...
-								: ""), currentchannel.DisplayName, (mp != null
-								&& !mp.RPMode ? "[OOC]" : ""), suggestmsg));
+		json.append(String.format(
+				"%s{\"text\":\"[%s]%s\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Copy message\",\"color\":\"blue\"}},\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"%s\"}},",
+				(mp != null && mp.ChatOnly
+						? "{\"text\":\"[C]\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Chat only\",\"color\":\"blue\"}]}}},"
+						// (mp != null && mp.ChatOnly ?
+						// "{\"text:\":\"\"}," - I have been staring at
+						// this one line for hours... Hours...
+						: ""),
+				currentchannel.DisplayName, (mp != null && !mp.RPMode ? "[OOC]" : ""), suggestmsg));
 		json.append("{\"text\":\" <\"},");
-		json.append(String.format("{\"text\":\"%s%s\",",
-				(player != null ? player.getDisplayName() : sender.getName()),
+		json.append(String.format("{\"text\":\"%s%s\",", (player != null ? player.getDisplayName() : sender.getName()),
 				(mp != null ? mp.GetFormattedFlair() : "")));
 		json.append("\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[");
-		json.append(String.format("{\"text\":\"%s\n\",",
-				(player != null ? player.getName() : sender.getName())));
-		json.append(String
-				.format("\"color\":\"aqua\"},{\"text\":\"World: %s\n\",\"color\":\"white\"},",
-						(player != null ? player.getWorld().getName() : "-")));
-		json.append(String
-				.format("{\"text\":\"Respect: %s%s%s\",\"color\":\"white\"}]}}},",
-						(mp != null ? (mp.FCount / (double) mp.FDeaths)
-								: "Infinite"),
-						(mp != null && mp.UserName != null
-								&& !mp.UserName.isEmpty() ? "\nUserName: "
-								+ mp.UserName : ""),
-						(mp != null && mp.PlayerName.equals("\nAlpha_Bacca44") ? "\nDeaths: "
-								+ PlayerListener.AlphaDeaths
-								: "")));
+		json.append(String.format("{\"text\":\"%s\n\",", (player != null ? player.getName() : sender.getName())));
+		json.append(String.format("\"color\":\"aqua\"},{\"text\":\"World: %s\n\",\"color\":\"white\"},",
+				(player != null ? player.getWorld().getName() : "-")));
+		json.append(String.format("{\"text\":\"Respect: %s%s%s\",\"color\":\"white\"}]}}},",
+				(mp != null ? (mp.FCount / (double) mp.FDeaths) : "Infinite"),
+				(mp != null && mp.UserName != null && !mp.UserName.isEmpty() ? "\nUserName: " + mp.UserName : ""),
+				(mp != null && mp.PlayerName.equals("\nAlpha_Bacca44") ? "\nDeaths: " + PlayerListener.AlphaDeaths
+						: "")));
 		json.append("{\"text\":\"> \",\"color\":\"white\"}");
 
 		/*
@@ -288,25 +231,21 @@ public class ChatProcessing {
 		json.append("]");
 		String jsonstr = json.toString();
 		if (jsonstr.length() >= 32767) {
-			sender.sendMessage("§cError: Message too large. Try shortening it, or remove hashtags and other formatting.");
+			sender.sendMessage(
+					"§cError: Message too large. Try shortening it, or remove hashtags and other formatting.");
 			return true;
 		}
-		if (currentchannel.equals(Channel.TownChat)
-				|| currentchannel.equals(Channel.NationChat)) {
+		if (currentchannel.equals(Channel.TownChat) || currentchannel.equals(Channel.NationChat)) {
 			if (player == null) {
 				sender.sendMessage("§cYou are not a player!");
 				return true;
 			}
 			for (Player p : PluginMain.GetPlayers()) {
 				try {
-					Resident resident = PluginMain.Instance.TU.getResidentMap()
-							.get(p.getName().toLowerCase());
-					if (!resident.getName().equals(player.getName())
-							&& resident.getModes().contains("spy"))
-						Bukkit.getPlayer(resident.getName()).sendMessage(
-								String.format("[SPY-%s] - %s: %s",
-										currentchannel.DisplayName,
-										player.getDisplayName(), message));
+					Resident resident = PluginMain.Instance.TU.getResidentMap().get(p.getName().toLowerCase());
+					if (!resident.getName().equals(player.getName()) && resident.getModes().contains("spy"))
+						Bukkit.getPlayer(resident.getName()).sendMessage(String.format("[SPY-%s] - %s: %s",
+								currentchannel.DisplayName, player.getDisplayName(), message));
 				} catch (Exception e) {
 				}
 			}
@@ -315,8 +254,7 @@ public class ChatProcessing {
 			try {
 				Town town = null;
 				try {
-					town = PluginMain.Instance.TU.getResidentMap()
-							.get(player.getName().toLowerCase()).getTown();
+					town = PluginMain.Instance.TU.getResidentMap().get(player.getName().toLowerCase()).getTown();
 				} catch (NotRegisteredException e) {
 				}
 				if (town == null) {
@@ -331,9 +269,8 @@ public class ChatProcessing {
 				Objective obj = PluginMain.SB.getObjective("town");
 				for (Player p : PluginMain.GetPlayers()) {
 					try {
-						if (PluginMain.Instance.TU.getResidentMap()
-								.get(p.getName().toLowerCase()).getTown()
-								.getName().equals(town.getName()))
+						if (PluginMain.Instance.TU.getResidentMap().get(p.getName().toLowerCase()).getTown().getName()
+								.equals(town.getName()))
 							obj.getScore(p.getName()).setScore(index);
 						else
 							obj.getScore(p.getName()).setScore(-1);
@@ -341,13 +278,8 @@ public class ChatProcessing {
 						obj.getScore(p.getName()).setScore(-1);
 					}
 				}
-				PluginMain.Instance
-						.getServer()
-						.dispatchCommand(
-								PluginMain.Console,
-								String.format(
-										"tellraw @a[score_town=%d,score_town_min=%d] %s",
-										index, index, json.toString()));
+				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
+						String.format("tellraw @a[score_town=%d,score_town_min=%d] %s", index, index, json.toString()));
 			} catch (IllegalStateException e) {
 				e.printStackTrace();
 				player.sendMessage("§cAn error occured while sending the message. (IllegalStateException)");
@@ -361,8 +293,7 @@ public class ChatProcessing {
 			try {
 				Town town = null;
 				try {
-					town = PluginMain.Instance.TU.getResidentMap()
-							.get(player.getName().toLowerCase()).getTown();
+					town = PluginMain.Instance.TU.getResidentMap().get(player.getName().toLowerCase()).getTown();
 				} catch (NotRegisteredException e) {
 				}
 				if (town == null) {
@@ -386,22 +317,16 @@ public class ChatProcessing {
 				Objective obj = PluginMain.SB.getObjective("nation");
 				for (Player p : PluginMain.GetPlayers()) {
 					try {
-						if (PluginMain.Instance.TU.getResidentMap()
-								.get(p.getName().toLowerCase()).getTown()
-								.getNation().getName().equals(nation.getName()))
+						if (PluginMain.Instance.TU.getResidentMap().get(p.getName().toLowerCase()).getTown().getNation()
+								.getName().equals(nation.getName()))
 							obj.getScore(p.getName()).setScore(index);
 						else
 							obj.getScore(p.getName()).setScore(-1);
 					} catch (Exception e) {
 					}
 				}
-				PluginMain.Instance
-						.getServer()
-						.dispatchCommand(
-								PluginMain.Console,
-								String.format(
-										"tellraw @a[score_nation=%d,score_nation_min=%d] %s",
-										index, index, json.toString()));
+				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console, String
+						.format("tellraw @a[score_nation=%d,score_nation_min=%d] %s", index, index, json.toString()));
 			} catch (IllegalStateException e) {
 				e.printStackTrace();
 				player.sendMessage("§cAn error occured while sending the message. (IllegalStateException)");
@@ -424,13 +349,8 @@ public class ChatProcessing {
 					else
 						obj.getScore(p.getName()).setScore(0);
 				}
-				PluginMain.Instance
-						.getServer()
-						.dispatchCommand(
-								PluginMain.Console,
-								String.format(
-										"tellraw @a[score_admin=%d,score_admin_min=%d] %s",
-										1, 1, json.toString()));
+				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
+						String.format("tellraw @a[score_admin=%d,score_admin_min=%d] %s", 1, 1, json.toString()));
 			} catch (IllegalStateException e) {
 				e.printStackTrace();
 				player.sendMessage("§cAn error occured while sending the message. (IllegalStateException)");
@@ -442,8 +362,7 @@ public class ChatProcessing {
 			}
 		} else if (currentchannel.equals(Channel.ModChat)) {
 			try {
-				if (player != null
-						&& !PluginMain.permission.playerInGroup(player, "mod")) {
+				if (player != null && !PluginMain.permission.playerInGroup(player, "mod")) {
 					player.sendMessage("§cYou need to be a mod to use this channel.");
 					return true;
 				}
@@ -454,11 +373,8 @@ public class ChatProcessing {
 					else
 						obj.getScore(p.getName()).setScore(0);
 				}
-				PluginMain.Instance.getServer().dispatchCommand(
-						PluginMain.Console,
-						String.format(
-								"tellraw @a[score_mod=%d,score_mod_min=%d] %s",
-								1, 1, json.toString()));
+				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
+						String.format("tellraw @a[score_mod=%d,score_mod_min=%d] %s", 1, 1, json.toString()));
 			} catch (IllegalStateException e) {
 				e.printStackTrace();
 				player.sendMessage("§cAn error occured while sending the message. (IllegalStateException)");
@@ -471,16 +387,10 @@ public class ChatProcessing {
 		} else
 			PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 					String.format("tellraw @a %s", json.toString()));
-		PluginMain.Instance
-				.getServer()
-				.getConsoleSender()
-				.sendMessage(
-						String.format("[%s] <%s%s> %s",
-								currentchannel.DisplayName,
-								(player != null ? player.getDisplayName()
-										: sender.getName()),
-								(mp != null ? mp.GetFormattedFlair() : ""),
-								message));
+		PluginMain.Instance.getServer().getConsoleSender()
+				.sendMessage(String.format("[%s] <%s%s> %s", currentchannel.DisplayName,
+						(player != null ? player.getDisplayName() : sender.getName()),
+						(mp != null ? mp.GetFormattedFlair() : ""), message));
 		return true;
 	}
 }
