@@ -1,8 +1,8 @@
-package io.github.norbipeti.thebuttonmcchat.commands.ucmds;
-
-import io.github.norbipeti.thebuttonmcchat.TBMCPlayer;
+package buttondevteam.thebuttonmcchat.commands.ucmds;
 
 import org.bukkit.command.CommandSender;
+
+import buttondevteam.thebuttonmcchat.TBMCPlayer;
 
 public class NameCommand extends UCommandBase {
 

@@ -1,4 +1,4 @@
-package io.github.norbipeti.thebuttonmcchat;
+package buttondevteam.thebuttonmcchat;
 
 import java.util.EnumSet;
 import java.util.List;

@@ -1,6 +1,6 @@
-package io.github.norbipeti.thebuttonmcchat.commands.ucmds.admin;
+package buttondevteam.thebuttonmcchat.commands.ucmds.admin;
 
-import io.github.norbipeti.thebuttonmcchat.commands.ucmds.UCommandBase;
+import buttondevteam.thebuttonmcchat.commands.ucmds.UCommandBase;
 
 public abstract class AdminCommandBase extends UCommandBase {
 

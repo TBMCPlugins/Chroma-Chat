@@ -1,9 +1,9 @@
-package io.github.norbipeti.thebuttonmcchat.commands;
-
-import io.github.norbipeti.thebuttonmcchat.TBMCPlayer;
+package buttondevteam.thebuttonmcchat.commands;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import buttondevteam.thebuttonmcchat.TBMCPlayer;
 
 public final class OOCCommand extends TBMCCommandBase {
 

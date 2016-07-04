@@ -1,14 +1,14 @@
-package io.github.norbipeti.thebuttonmcchat.commands.ucmds;
-
-import io.github.norbipeti.thebuttonmcchat.FlairStates;
-import io.github.norbipeti.thebuttonmcchat.TBMCPlayer;
-import io.github.norbipeti.thebuttonmcchat.PlayerJoinTimerTask;
-import io.github.norbipeti.thebuttonmcchat.PluginMain;
+package buttondevteam.thebuttonmcchat.commands.ucmds;
 
 import java.util.Timer;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import buttondevteam.thebuttonmcchat.FlairStates;
+import buttondevteam.thebuttonmcchat.PlayerJoinTimerTask;
+import buttondevteam.thebuttonmcchat.PluginMain;
+import buttondevteam.thebuttonmcchat.TBMCPlayer;
 
 public class AcceptCommand extends UCommandBase {
 

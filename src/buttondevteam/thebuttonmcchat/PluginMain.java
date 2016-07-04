@@ -1,4 +1,4 @@
-package io.github.norbipeti.thebuttonmcchat;
+package buttondevteam.thebuttonmcchat;
 
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
@@ -19,13 +19,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import au.com.mineauz.minigames.mechanics.GameMechanics;
+import buttondevteam.thebuttonmcchat.commands.CommandCaller;
 
 import com.palmergames.bukkit.towny.Towny;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
 
-import io.github.norbipeti.thebuttonmcchat.commands.CommandCaller;
 import java.io.*;
 import java.lang.String;
 import java.lang.reflect.Method;

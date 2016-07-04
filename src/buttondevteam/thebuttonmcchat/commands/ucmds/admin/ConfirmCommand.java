@@ -1,10 +1,10 @@
-package io.github.norbipeti.thebuttonmcchat.commands.ucmds.admin;
-
-import io.github.norbipeti.thebuttonmcchat.TBMCPlayer;
-import io.github.norbipeti.thebuttonmcchat.PluginMain;
+package buttondevteam.thebuttonmcchat.commands.ucmds.admin;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import buttondevteam.thebuttonmcchat.PluginMain;
+import buttondevteam.thebuttonmcchat.TBMCPlayer;
 
 public class ConfirmCommand extends AdminCommandBase {
 

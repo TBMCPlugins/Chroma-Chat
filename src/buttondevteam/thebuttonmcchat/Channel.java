@@ -1,4 +1,4 @@
-package io.github.norbipeti.thebuttonmcchat;
+package buttondevteam.thebuttonmcchat;
 
 public class Channel {
 	public final String DisplayName;

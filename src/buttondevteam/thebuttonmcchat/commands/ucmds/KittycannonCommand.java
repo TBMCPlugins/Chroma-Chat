@@ -1,6 +1,4 @@
-package io.github.norbipeti.thebuttonmcchat.commands.ucmds;
-
-import io.github.norbipeti.thebuttonmcchat.PluginMain;
+package buttondevteam.thebuttonmcchat.commands.ucmds;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -18,6 +16,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import au.com.mineauz.minigames.MinigamePlayer;
 import au.com.mineauz.minigames.Minigames;
+import buttondevteam.thebuttonmcchat.PluginMain;
 
 import com.earth2me.essentials.Mob;
 import com.earth2me.essentials.Mob.MobException;

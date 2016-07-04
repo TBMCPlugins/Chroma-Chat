@@ -1,4 +1,4 @@
-package io.github.norbipeti.thebuttonmcchat.commands;
+package buttondevteam.thebuttonmcchat.commands;
 
 import org.bukkit.command.CommandSender;
 

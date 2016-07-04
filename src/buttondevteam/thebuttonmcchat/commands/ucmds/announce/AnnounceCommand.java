@@ -1,9 +1,9 @@
-package io.github.norbipeti.thebuttonmcchat.commands.ucmds.announce;
-
-import io.github.norbipeti.thebuttonmcchat.commands.CommandCaller;
-import io.github.norbipeti.thebuttonmcchat.commands.ucmds.UCommandBase;
+package buttondevteam.thebuttonmcchat.commands.ucmds.announce;
 
 import org.bukkit.command.CommandSender;
+
+import buttondevteam.thebuttonmcchat.commands.CommandCaller;
+import buttondevteam.thebuttonmcchat.commands.ucmds.UCommandBase;
 
 public class AnnounceCommand extends UCommandBase {
 

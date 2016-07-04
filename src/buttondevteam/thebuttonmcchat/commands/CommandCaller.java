@@ -1,6 +1,4 @@
-package io.github.norbipeti.thebuttonmcchat.commands;
-
-import io.github.norbipeti.thebuttonmcchat.PluginMain;
+package buttondevteam.thebuttonmcchat.commands;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -19,6 +17,8 @@ import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+
+import buttondevteam.thebuttonmcchat.PluginMain;
 
 public class CommandCaller implements CommandExecutor {
 

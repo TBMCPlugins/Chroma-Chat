@@ -1,4 +1,4 @@
-package io.github.norbipeti.thebuttonmcchat;
+package buttondevteam.thebuttonmcchat;
 
 import org.bukkit.entity.Player;
 

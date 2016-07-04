@@ -1,10 +1,10 @@
-package io.github.norbipeti.thebuttonmcchat;
+package buttondevteam.thebuttonmcchat;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import io.github.norbipeti.thebuttonmcchat.commands.CommandCaller;
-import io.github.norbipeti.thebuttonmcchat.commands.TBMCCommandBase;
-import io.github.norbipeti.thebuttonmcchat.commands.ucmds.admin.PlayerInfoCommand;
+import buttondevteam.thebuttonmcchat.commands.CommandCaller;
+import buttondevteam.thebuttonmcchat.commands.TBMCCommandBase;
+import buttondevteam.thebuttonmcchat.commands.ucmds.admin.PlayerInfoCommand;
 
 public class TBMCChatAPI {
 

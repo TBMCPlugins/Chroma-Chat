@@ -1,8 +1,8 @@
-package io.github.norbipeti.thebuttonmcchat.commands.ucmds.admin;
-
-import io.github.norbipeti.thebuttonmcchat.TBMCPlayer;
+package buttondevteam.thebuttonmcchat.commands.ucmds.admin;
 
 import org.bukkit.command.CommandSender;
+
+import buttondevteam.thebuttonmcchat.TBMCPlayer;
 
 public class PlayerInfoCommand extends AdminCommandBase {
 

@@ -1,7 +1,4 @@
-package io.github.norbipeti.thebuttonmcchat;
-
-import io.github.norbipeti.thebuttonmcchat.ChatFormatter.Priority;
-import io.github.norbipeti.thebuttonmcchat.commands.UnlolCommand;
+package buttondevteam.thebuttonmcchat;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
@@ -17,6 +14,9 @@ import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
+
+import buttondevteam.thebuttonmcchat.ChatFormatter.Priority;
+import buttondevteam.thebuttonmcchat.commands.UnlolCommand;
 
 public class ChatProcessing {
 	private static boolean pingedconsole = false;

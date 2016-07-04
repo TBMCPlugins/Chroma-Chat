@@ -1,9 +1,9 @@
-package io.github.norbipeti.thebuttonmcchat.commands.ucmds.admin;
-
-import io.github.norbipeti.thebuttonmcchat.commands.CommandCaller;
-import io.github.norbipeti.thebuttonmcchat.commands.ucmds.UCommandBase;
+package buttondevteam.thebuttonmcchat.commands.ucmds.admin;
 
 import org.bukkit.command.CommandSender;
+
+import buttondevteam.thebuttonmcchat.commands.CommandCaller;
+import buttondevteam.thebuttonmcchat.commands.ucmds.UCommandBase;
 
 public final class AdminCommand extends UCommandBase {
 

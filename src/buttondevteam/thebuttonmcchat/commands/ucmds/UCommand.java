@@ -1,9 +1,9 @@
-package io.github.norbipeti.thebuttonmcchat.commands.ucmds;
-
-import io.github.norbipeti.thebuttonmcchat.commands.CommandCaller;
-import io.github.norbipeti.thebuttonmcchat.commands.TBMCCommandBase;
+package buttondevteam.thebuttonmcchat.commands.ucmds;
 
 import org.bukkit.command.CommandSender;
+
+import buttondevteam.thebuttonmcchat.commands.CommandCaller;
+import buttondevteam.thebuttonmcchat.commands.TBMCCommandBase;
 
 public final class UCommand extends TBMCCommandBase {
 

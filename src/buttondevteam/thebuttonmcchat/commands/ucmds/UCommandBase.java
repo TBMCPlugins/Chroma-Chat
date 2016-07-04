@@ -1,6 +1,6 @@
-package io.github.norbipeti.thebuttonmcchat.commands.ucmds;
+package buttondevteam.thebuttonmcchat.commands.ucmds;
 
-import io.github.norbipeti.thebuttonmcchat.commands.TBMCCommandBase;
+import buttondevteam.thebuttonmcchat.commands.TBMCCommandBase;
 
 public abstract class UCommandBase extends TBMCCommandBase {
 

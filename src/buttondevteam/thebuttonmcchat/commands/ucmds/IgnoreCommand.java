@@ -1,10 +1,10 @@
-package io.github.norbipeti.thebuttonmcchat.commands.ucmds;
-
-import io.github.norbipeti.thebuttonmcchat.FlairStates;
-import io.github.norbipeti.thebuttonmcchat.TBMCPlayer;
+package buttondevteam.thebuttonmcchat.commands.ucmds;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import buttondevteam.thebuttonmcchat.FlairStates;
+import buttondevteam.thebuttonmcchat.TBMCPlayer;
 
 public final class IgnoreCommand extends UCommandBase {
 

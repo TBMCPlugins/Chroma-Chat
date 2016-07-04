@@ -1,6 +1,4 @@
-package io.github.norbipeti.thebuttonmcchat;
-
-import io.github.norbipeti.thebuttonmcchat.commands.ucmds.admin.DebugCommand;
+package buttondevteam.thebuttonmcchat;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,6 +6,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import buttondevteam.thebuttonmcchat.commands.ucmds.admin.DebugCommand;
 
 public final class ChatFormatter {
 	private Pattern regex;

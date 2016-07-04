@@ -1,4 +1,4 @@
-package io.github.norbipeti.thebuttonmcchat.commands.appendtext;
+package buttondevteam.thebuttonmcchat.commands.appendtext;
 
 public final class TableflipCommand extends AppendTextCommandBase {
 

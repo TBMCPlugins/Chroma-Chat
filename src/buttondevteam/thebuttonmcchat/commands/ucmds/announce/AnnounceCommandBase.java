@@ -1,6 +1,6 @@
-package io.github.norbipeti.thebuttonmcchat.commands.ucmds.announce;
+package buttondevteam.thebuttonmcchat.commands.ucmds.announce;
 
-import io.github.norbipeti.thebuttonmcchat.commands.ucmds.UCommandBase;
+import buttondevteam.thebuttonmcchat.commands.ucmds.UCommandBase;
 
 public abstract class AnnounceCommandBase extends UCommandBase {
 

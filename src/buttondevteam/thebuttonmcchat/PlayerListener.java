@@ -1,6 +1,4 @@
-package io.github.norbipeti.thebuttonmcchat;
-
-import io.github.norbipeti.thebuttonmcchat.commands.ucmds.KittycannonCommand;
+package buttondevteam.thebuttonmcchat;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +41,7 @@ import org.bukkit.util.Vector;
 
 import au.com.mineauz.minigames.MinigamePlayer;
 import au.com.mineauz.minigames.Minigames;
+import buttondevteam.thebuttonmcchat.commands.ucmds.KittycannonCommand;
 
 import com.earth2me.essentials.Essentials;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;

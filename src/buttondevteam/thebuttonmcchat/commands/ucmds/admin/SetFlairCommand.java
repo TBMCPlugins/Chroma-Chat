@@ -1,11 +1,11 @@
-package io.github.norbipeti.thebuttonmcchat.commands.ucmds.admin;
-
-import io.github.norbipeti.thebuttonmcchat.FlairStates;
-import io.github.norbipeti.thebuttonmcchat.TBMCPlayer;
+package buttondevteam.thebuttonmcchat.commands.ucmds.admin;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import buttondevteam.thebuttonmcchat.FlairStates;
+import buttondevteam.thebuttonmcchat.TBMCPlayer;
 
 public class SetFlairCommand extends AdminCommandBase {
 

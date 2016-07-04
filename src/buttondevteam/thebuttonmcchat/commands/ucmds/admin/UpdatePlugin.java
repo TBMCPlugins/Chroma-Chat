@@ -1,6 +1,4 @@
-package io.github.norbipeti.thebuttonmcchat.commands.ucmds.admin;
-
-import io.github.norbipeti.thebuttonmcchat.PluginMain;
+package buttondevteam.thebuttonmcchat.commands.ucmds.admin;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +7,8 @@ import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.command.CommandSender;
+
+import buttondevteam.thebuttonmcchat.PluginMain;
 
 public class UpdatePlugin extends AdminCommandBase {
 

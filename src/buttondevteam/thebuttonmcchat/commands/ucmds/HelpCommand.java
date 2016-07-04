@@ -1,11 +1,11 @@
-package io.github.norbipeti.thebuttonmcchat.commands.ucmds;
+package buttondevteam.thebuttonmcchat.commands.ucmds;
 
 import java.util.ArrayList;
 
-import io.github.norbipeti.thebuttonmcchat.commands.CommandCaller;
-import io.github.norbipeti.thebuttonmcchat.commands.TBMCCommandBase;
-
 import org.bukkit.command.CommandSender;
+
+import buttondevteam.thebuttonmcchat.commands.CommandCaller;
+import buttondevteam.thebuttonmcchat.commands.TBMCCommandBase;
 
 public final class HelpCommand extends UCommandBase {
 

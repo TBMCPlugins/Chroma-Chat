@@ -1,12 +1,12 @@
-package io.github.norbipeti.thebuttonmcchat.commands;
-
-import io.github.norbipeti.thebuttonmcchat.PluginMain;
+package buttondevteam.thebuttonmcchat.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import buttondevteam.thebuttonmcchat.PluginMain;
 
 public final class UnlolCommand extends TBMCCommandBase {
 

@@ -1,9 +1,9 @@
-package io.github.norbipeti.thebuttonmcchat.commands.appendtext;
-
-import io.github.norbipeti.thebuttonmcchat.ChatProcessing;
-import io.github.norbipeti.thebuttonmcchat.commands.TBMCCommandBase;
+package buttondevteam.thebuttonmcchat.commands.appendtext;
 
 import org.bukkit.command.CommandSender;
+
+import buttondevteam.thebuttonmcchat.ChatProcessing;
+import buttondevteam.thebuttonmcchat.commands.TBMCCommandBase;
 
 public abstract class AppendTextCommandBase extends TBMCCommandBase {
 
