@@ -224,7 +224,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		p.FlairState = FlairStates.Recognised;
 		switch (flairclass) {
 		case "cheater":
-			p.SetFlair((short) 0x5, true);
+			p.SetFlair(Short.parseShort(text), true);
 			return;
 		case "unknown":
 			if (text.equals("-1")) // If true, only non-presser/can't press; if
