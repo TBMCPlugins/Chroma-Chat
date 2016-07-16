@@ -2,7 +2,7 @@ package buttondevteam.thebuttonmcchat.commands.ucmds;
 
 import org.bukkit.command.CommandSender;
 
-import buttondevteam.thebuttonmcchat.TBMCPlayer;
+import buttondevteam.thebuttonmcchat.ChatPlayer;
 
 public class NameCommand extends UCommandBase {
 
@@ -19,7 +19,7 @@ public class NameCommand extends UCommandBase {
 		if (args.length == 1) {
 			return false;
 		}
-		TBMCPlayer mp = TBMCPlayer.GetFromName(args[1]);
+		ChatPlayer mp = ChatPlayer.GetFromName(args[1]);
 		if (mp == null) {
 			sender.sendMessage("§cUnknown user (player has to be online): "
 					+ args[1]);

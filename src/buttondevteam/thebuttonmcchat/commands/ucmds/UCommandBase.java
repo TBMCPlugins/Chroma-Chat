@@ -17,4 +17,9 @@ public abstract class UCommandBase extends TBMCCommandBase {
 	public boolean GetPlayerOnly() {
 		return true;
 	}
+
+	@Override
+	public boolean GetModOnly() {
+		return false;
+	}
 }

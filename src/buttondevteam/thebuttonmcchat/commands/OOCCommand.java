@@ -3,7 +3,7 @@ package buttondevteam.thebuttonmcchat.commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import buttondevteam.thebuttonmcchat.TBMCPlayer;
+import buttondevteam.thebuttonmcchat.ChatPlayer;
 
 public final class OOCCommand extends TBMCCommandBase {
 
@@ -21,12 +21,12 @@ public final class OOCCommand extends TBMCCommandBase {
 		if (args.length == 0) {
 			return false;
 		} else {
-			TBMCPlayer.AddPlayerIfNeeded(player.getUniqueId()).RPMode = false;
+			ChatPlayer.AddPlayerIfNeeded(player.getUniqueId()).RPMode = false;
 			String message = "";
 			for (String arg : args)
 				message += arg + " ";
 			player.chat(message.substring(0, message.length() - 1));
-			TBMCPlayer.AddPlayerIfNeeded(player.getUniqueId()).RPMode = true;
+			ChatPlayer.AddPlayerIfNeeded(player.getUniqueId()).RPMode = true;
 		}
 		return true;
 	}
@@ -39,6 +39,11 @@ public final class OOCCommand extends TBMCCommandBase {
 	@Override
 	public boolean GetPlayerOnly() {
 		return true;
+	}
+
+	@Override
+	public boolean GetModOnly() {
+		return false;
 	}
 
 }

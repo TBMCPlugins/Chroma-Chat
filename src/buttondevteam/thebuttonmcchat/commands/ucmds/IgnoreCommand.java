@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import buttondevteam.thebuttonmcchat.FlairStates;
-import buttondevteam.thebuttonmcchat.TBMCPlayer;
+import buttondevteam.thebuttonmcchat.ChatPlayer;
 
 public final class IgnoreCommand extends UCommandBase {
 
@@ -19,7 +19,7 @@ public final class IgnoreCommand extends UCommandBase {
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		final Player player = (Player) sender;
-		TBMCPlayer p = TBMCPlayer.GetFromPlayer(player);
+		ChatPlayer p = ChatPlayer.GetFromPlayer(player);
 		if (p.FlairState.equals(FlairStates.Accepted)) {
 			player.sendMessage("§cYou can only ignore the \"write yoőu rname in the thread\" message.");
 			return true;
@@ -30,7 +30,7 @@ public final class IgnoreCommand extends UCommandBase {
 		}
 		if (!p.FlairState.equals(FlairStates.Ignored)) {
 			p.FlairState = FlairStates.Ignored;
-			p.SetFlair(TBMCPlayer.FlairTimeNone);
+			p.SetFlair(ChatPlayer.FlairTimeNone);
 			p.UserName = "";
 			player.sendMessage("§bYou have ignored the message. You can still use /u accept to get a flair.§r");
 		} else

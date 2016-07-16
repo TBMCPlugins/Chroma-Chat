@@ -25,4 +25,8 @@ public abstract class AppendTextCommandBase extends TBMCCommandBase {
 		return false;
 	}
 
+	@Override
+	public boolean GetModOnly() {
+		return false;
+	}
 }

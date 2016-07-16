@@ -9,10 +9,11 @@ public abstract class TBMCCommandBase {
 
 	public abstract String[] GetHelpText(String alias);
 
-	public abstract boolean OnCommand(CommandSender sender, String alias,
-			String[] args);
+	public abstract boolean OnCommand(CommandSender sender, String alias, String[] args);
 
 	public abstract String GetCommandPath();
 
 	public abstract boolean GetPlayerOnly();
+
+	public abstract boolean GetModOnly();
 }

@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 import buttondevteam.thebuttonmcchat.ChatFormatter;
 import buttondevteam.thebuttonmcchat.PluginMain;
-import buttondevteam.thebuttonmcchat.TBMCPlayer;
+import buttondevteam.thebuttonmcchat.ChatPlayer;
 
 public class CCommand extends UCommandBase {
 
@@ -19,7 +19,7 @@ public class CCommand extends UCommandBase {
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		Player player = (Player) sender;
-		TBMCPlayer p = TBMCPlayer.AddPlayerIfNeeded(player
+		ChatPlayer p = ChatPlayer.AddPlayerIfNeeded(player
 				.getUniqueId());
 		if (args.length < 1) {
 			if (PluginMain.permission.has(player, "tbmc.rainbow")) {

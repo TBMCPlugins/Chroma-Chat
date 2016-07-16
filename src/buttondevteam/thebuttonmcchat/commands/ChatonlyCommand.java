@@ -4,7 +4,7 @@ import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import buttondevteam.thebuttonmcchat.TBMCPlayer;
+import buttondevteam.thebuttonmcchat.ChatPlayer;
 
 public final class ChatonlyCommand extends TBMCCommandBase {
 
@@ -21,7 +21,7 @@ public final class ChatonlyCommand extends TBMCCommandBase {
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		Player player=(Player)sender;
-		TBMCPlayer p = TBMCPlayer.AllPlayers.get(player
+		ChatPlayer p = ChatPlayer.AllPlayers.get(player
 				.getUniqueId());
 		p.ChatOnly = true;
 		player.setGameMode(GameMode.SPECTATOR);
@@ -36,6 +36,11 @@ public final class ChatonlyCommand extends TBMCCommandBase {
 
 	@Override
 	public boolean GetPlayerOnly() {
+		return false;
+	}
+
+	@Override
+	public boolean GetModOnly() {
 		return false;
 	}
 

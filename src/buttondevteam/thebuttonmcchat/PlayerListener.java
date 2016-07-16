@@ -66,7 +66,7 @@ public class PlayerListener implements Listener {
 		if (essentials == null)
 			essentials = ((Essentials) Bukkit.getPluginManager().getPlugin("Essentials"));
 		final Player p = event.getPlayer();
-		TBMCPlayer mp = TBMCPlayer.AddPlayerIfNeeded(p.getUniqueId());
+		ChatPlayer mp = ChatPlayer.AddPlayerIfNeeded(p.getUniqueId());
 		if (!mp.FlairState.equals(FlairStates.NoComment)) {
 			PluginMain.ConfirmUserMessage(mp);
 			Timer timer = new Timer();
@@ -80,7 +80,7 @@ public class PlayerListener implements Listener {
 			timer.schedule(tt, 1000);
 		} else {
 			if (mp.GetFlairTime() == 0x00)
-				mp.SetFlair(TBMCPlayer.FlairTimeNone);
+				mp.SetFlair(ChatPlayer.FlairTimeNone);
 			Timer timer = new Timer();
 			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
 				@Override
@@ -227,7 +227,7 @@ public class PlayerListener implements Listener {
 		if (event.getMessage().length() < 2)
 			return;
 		int index = event.getMessage().indexOf(" ");
-		TBMCPlayer mp = TBMCPlayer.AllPlayers.get(event.getPlayer().getUniqueId());
+		ChatPlayer mp = ChatPlayer.AllPlayers.get(event.getPlayer().getUniqueId());
 		String cmd = "";
 		if (index == -1) {
 			cmd = event.getMessage().substring(1);
@@ -468,7 +468,7 @@ public class PlayerListener implements Listener {
 
 	static boolean ActiveF = false;
 	static int FCount = 0;
-	static TBMCPlayer FPlayer = null;
+	static ChatPlayer FPlayer = null;
 	private Timer Ftimer;
 	public static int AlphaDeaths;
 
@@ -486,10 +486,10 @@ public class PlayerListener implements Listener {
 				Ftimer.cancel();
 			ActiveF = true;
 			FCount = 0;
-			FPlayer = TBMCPlayer.AllPlayers.get(e.getEntity().getUniqueId());
+			FPlayer = ChatPlayer.AllPlayers.get(e.getEntity().getUniqueId());
 			FPlayer.FDeaths++;
 			for (Player p : PluginMain.GetPlayers()) {
-				TBMCPlayer mp = TBMCPlayer.AllPlayers.get(p.getUniqueId());
+				ChatPlayer mp = ChatPlayer.AllPlayers.get(p.getUniqueId());
 				mp.PressedF = false;
 				p.sendMessage("§bPress F to pay respects.§r");
 			}
@@ -579,7 +579,7 @@ public class PlayerListener implements Listener {
 			});
 		}
 
-		TBMCPlayer mp = TBMCPlayer.GetFromPlayer(e.getPlayer());
+		ChatPlayer mp = ChatPlayer.GetFromPlayer(e.getPlayer());
 		if (mp.ChatOnly)
 			e.setCancelled(true);
 	}
@@ -603,7 +603,7 @@ public class PlayerListener implements Listener {
 		 * "§cYou are not allowed to teleport to/from No Mans Land."); }
 		 */
 
-		if (TBMCPlayer.GetFromPlayer(e.getPlayer()).ChatOnly) {
+		if (ChatPlayer.GetFromPlayer(e.getPlayer()).ChatOnly) {
 			e.setCancelled(true);
 			e.getPlayer().sendMessage("§cYou are not allowed to teleport while in chat-only mode.");
 		}

@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import buttondevteam.thebuttonmcchat.FlairStates;
 import buttondevteam.thebuttonmcchat.PlayerJoinTimerTask;
 import buttondevteam.thebuttonmcchat.PluginMain;
-import buttondevteam.thebuttonmcchat.TBMCPlayer;
+import buttondevteam.thebuttonmcchat.ChatPlayer;
 
 public class AcceptCommand extends UCommandBase {
 
@@ -22,7 +22,7 @@ public class AcceptCommand extends UCommandBase {
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		final Player player = (Player) sender;
-		TBMCPlayer p = TBMCPlayer.GetFromPlayer(player);
+		ChatPlayer p = ChatPlayer.GetFromPlayer(player);
 		if (args.length < 1 && p.UserNames.size() > 1) {
 			player.sendMessage("§9Multiple users commented your name. §bPlease pick one using /u accept <username>");
 			StringBuilder sb = new StringBuilder();

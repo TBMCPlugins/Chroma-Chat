@@ -4,7 +4,8 @@ import buttondevteam.thebuttonmcchat.commands.ucmds.UCommandBase;
 
 public abstract class AdminCommandBase extends UCommandBase {
 
-	public abstract String[] GetHelpText(String alias); //TODO: Require permission
+	public abstract String[] GetHelpText(String alias); // TODO: Require
+														// permission
 
 	@Override
 	public String GetUCommandPath() {
@@ -18,4 +19,8 @@ public abstract class AdminCommandBase extends UCommandBase {
 
 	public abstract String GetAdminCommandPath();
 
+	@Override
+	public boolean GetModOnly() {
+		return true;
+	}
 }

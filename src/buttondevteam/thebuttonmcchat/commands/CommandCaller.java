@@ -11,6 +11,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
@@ -101,7 +102,11 @@ public class CommandCaller implements CommandExecutor {
 				Bukkit.getConsoleSender().sendMessage("§cInternal error: Command not registered to CommandCaller");
 			return true;
 		}
-		if (cmd.GetPlayerOnly() && sender == Bukkit.getConsoleSender()) {
+		if (cmd.GetModOnly() && PluginMain.permission.has(sender, "tbmc.admin")) {
+			sender.sendMessage("§cYou need to be a mod to use this command.");
+			return true;
+		}
+		if (cmd.GetPlayerOnly() && !(sender instanceof Player)) {
 			sender.sendMessage("§cOnly ingame players can use this command.");
 			return true;
 		}

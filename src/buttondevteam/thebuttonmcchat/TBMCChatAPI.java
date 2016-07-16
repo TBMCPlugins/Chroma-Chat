@@ -35,7 +35,7 @@ public class TBMCChatAPI {
 	 * @param player
 	 * @param infoline
 	 */
-	public void AddPlayerInfoForMods(TBMCPlayer player, String infoline) {
+	public void AddPlayerInfoForMods(ChatPlayer player, String infoline) {
 		// TODO
 	}
 
@@ -48,12 +48,7 @@ public class TBMCChatAPI {
 	 * @param player
 	 * @param infoline
 	 */
-	public void AddPlayerInfoForHover(TBMCPlayer player, String infoline) {
+	public void AddPlayerInfoForHover(ChatPlayer player, String infoline) {
 		// TODO
-	}
-	
-	public TBMCPlayer GetPlayer(Player player) //TODO: Move to the bucket
-	{ //TODO: Enable offline playerinfo
-		
 	}
 }

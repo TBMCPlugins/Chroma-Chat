@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import buttondevteam.thebuttonmcchat.PluginMain;
-import buttondevteam.thebuttonmcchat.TBMCPlayer;
+import buttondevteam.thebuttonmcchat.ChatPlayer;
 
 public class ConfirmCommand extends AdminCommandBase {
 
@@ -25,7 +25,7 @@ public class ConfirmCommand extends AdminCommandBase {
 				PluginMain.LoadFiles(true);
 				// TODO: Add players online
 				for (Player p : PluginMain.GetPlayers())
-					TBMCPlayer.AddPlayerIfNeeded(p.getUniqueId());
+					ChatPlayer.AddPlayerIfNeeded(p.getUniqueId());
 				if (sender != PluginMain.Console)
 					PluginMain.Console.sendMessage("§6-- Reloading done!§r");
 				sender.sendMessage("§6-- Reloading done!§r");

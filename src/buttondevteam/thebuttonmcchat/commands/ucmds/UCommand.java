@@ -27,4 +27,8 @@ public final class UCommand extends TBMCCommandBase {
 		return false;
 	}
 
+	@Override
+	public boolean GetModOnly() {
+		return false;
+	}
 }

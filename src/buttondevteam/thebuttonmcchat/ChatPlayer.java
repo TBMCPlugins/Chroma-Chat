@@ -11,7 +11,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-public class TBMCPlayer {
+public class ChatPlayer {
 	public String PlayerName;
 	public String UserName;
 	public List<String> UserNames;
@@ -37,11 +37,11 @@ public class TBMCPlayer {
 
 	public UUID UUID;
 
-	public static HashMap<UUID, TBMCPlayer> AllPlayers = new HashMap<>();
+	public static HashMap<UUID, ChatPlayer> AllPlayers = new HashMap<>();
 
-	public static TBMCPlayer AddPlayerIfNeeded(UUID uuid) {
+	public static ChatPlayer AddPlayerIfNeeded(UUID uuid) {
 		if (!AllPlayers.containsKey(uuid)) {
-			TBMCPlayer player = new TBMCPlayer();
+			ChatPlayer player = new ChatPlayer();
 			player.UUID = uuid;
 			player.FlairTime = FlairTimeNone;
 			player.FlairState = FlairStates.NoComment;
@@ -59,7 +59,7 @@ public class TBMCPlayer {
 		ConfigurationSection cs = yc.getConfigurationSection("players");
 		for (String key : cs.getKeys(false)) {
 			ConfigurationSection cs2 = cs.getConfigurationSection(key);
-			TBMCPlayer mp = AddPlayerIfNeeded(java.util.UUID
+			ChatPlayer mp = AddPlayerIfNeeded(java.util.UUID
 					.fromString(cs2.getString("uuid")));
 			mp.UserName = cs2.getString("username");
 			String tmp = cs2.getString("flairtime");
@@ -84,7 +84,7 @@ public class TBMCPlayer {
 
 	public static void Save(YamlConfiguration yc) {
 		ConfigurationSection cs = yc.createSection("players");
-		for (TBMCPlayer mp : TBMCPlayer.AllPlayers.values()) {
+		for (ChatPlayer mp : ChatPlayer.AllPlayers.values()) {
 			ConfigurationSection cs2 = cs.createSection(mp.UUID.toString());
 			cs2.set("playername", mp.PlayerName);
 			cs2.set("username", mp.UserName);
@@ -98,7 +98,7 @@ public class TBMCPlayer {
 		}
 	}
 
-	public static TBMCPlayer GetFromName(String name) {
+	public static ChatPlayer GetFromName(String name) {
 		Player p = Bukkit.getPlayer(name);
 		if (p != null)
 			return AllPlayers.get(p.getUniqueId());
@@ -162,7 +162,7 @@ public class TBMCPlayer {
 		return FlairTime;
 	}
 
-	public static TBMCPlayer GetFromPlayer(Player p) {
-		return TBMCPlayer.AllPlayers.get(p.getUniqueId());
+	public static ChatPlayer GetFromPlayer(Player p) {
+		return ChatPlayer.AllPlayers.get(p.getUniqueId());
 	}
 }

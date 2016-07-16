@@ -5,7 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import buttondevteam.thebuttonmcchat.FlairStates;
-import buttondevteam.thebuttonmcchat.TBMCPlayer;
+import buttondevteam.thebuttonmcchat.ChatPlayer;
 
 public class SetFlairCommand extends AdminCommandBase {
 
@@ -32,11 +32,11 @@ public class SetFlairCommand extends AdminCommandBase {
 		}
 		short flairtime = 0x00;
 		if (args[1].equalsIgnoreCase("non-presser"))
-			flairtime = TBMCPlayer.FlairTimeNonPresser;
+			flairtime = ChatPlayer.FlairTimeNonPresser;
 		else if (args[1].equalsIgnoreCase("cant-press"))
-			flairtime = TBMCPlayer.FlairTimeCantPress;
+			flairtime = ChatPlayer.FlairTimeCantPress;
 		else if (args[1].equalsIgnoreCase("none"))
-			flairtime = TBMCPlayer.FlairTimeNone;
+			flairtime = ChatPlayer.FlairTimeNone;
 		else {
 			try {
 				flairtime = Short.parseShort(args[1]);
@@ -54,7 +54,7 @@ public class SetFlairCommand extends AdminCommandBase {
 			sender.sendMessage("§cUnknown value for cheater parameter. Run without args to see usage.");
 			return true;
 		}
-		TBMCPlayer mp = TBMCPlayer.AddPlayerIfNeeded(p
+		ChatPlayer mp = ChatPlayer.AddPlayerIfNeeded(p
 				.getUniqueId());
 		mp.SetFlair(flairtime, cheater);
 		mp.FlairState = FlairStates.Accepted;
