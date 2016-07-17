@@ -56,21 +56,17 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	public void onEnable() {
 		try {
 			System.out.println("Extracting necessary libraries...");
-			final File[] libs = new File[] {
-					new File(getDataFolder(), "htmlcleaner-2.16.jar"),
+			final File[] libs = new File[] { new File(getDataFolder(), "htmlcleaner-2.16.jar"),
 					new File(getDataFolder(), "reflections-0.9.10.jar"),
 					new File(getDataFolder(), "javassist-3.19.0-GA.jar") };
 			for (final File lib : libs) {
 				if (!lib.exists()) {
-					JarUtils.extractFromJar(lib.getName(),
-							lib.getAbsolutePath());
+					JarUtils.extractFromJar(lib.getName(), lib.getAbsolutePath());
 				}
 			}
 			for (final File lib : libs) {
 				if (!lib.exists()) {
-					getLogger().warning(
-							"Failed to load plugin! Could not find lib: "
-									+ lib.getName());
+					getLogger().warning("Failed to load plugin! Could not find lib: " + lib.getName());
 					Bukkit.getServer().getPluginManager().disablePlugin(this);
 					return;
 				}
@@ -80,15 +76,18 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			e.printStackTrace();
 		}
 
-		getServer().getPluginManager().registerEvents(new PlayerListener(),
-				this);
+		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		CommandCaller.RegisterCommands(this);
 		Instance = this;
 		Console = this.getServer().getConsoleSender();
 		LoadFiles(false);
 
-		SB = PluginMain.Instance.getServer().getScoreboardManager()
-				.getMainScoreboard(); // Main can be detected with @a[score_...]
+		SB = PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard(); // Main
+																							// can
+																							// be
+																							// detected
+																							// with
+																							// @a[score_...]
 		if (SB.getObjective("town") == null)
 			SB.registerNewObjective("town", "dummy");
 		if (SB.getObjective("nation") == null)
@@ -97,8 +96,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			SB.registerNewObjective("admin", "dummy");
 		if (SB.getObjective("mod") == null)
 			SB.registerNewObjective("mod", "dummy");
-		TU = ((Towny) Bukkit.getPluginManager().getPlugin("Towny"))
-				.getTownyUniverse();
+		TU = ((Towny) Bukkit.getPluginManager().getPlugin("Towny")).getTownyUniverse();
 		Towns = new ArrayList<Town>(TU.getTownsMap().values());
 		Nations = new ArrayList<Nation>(TU.getNationsMap().values());
 
@@ -136,14 +134,11 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	private void ThreadMethod() {
 		while (!stop) {
 			try {
-				String body = DownloadString(FlairThreadURL
-						+ ".json?limit=1000");
-				JSONArray json = new JSONArray(body).getJSONObject(1)
-						.getJSONObject("data").getJSONArray("children");
+				String body = DownloadString(FlairThreadURL + ".json?limit=1000");
+				JSONArray json = new JSONArray(body).getJSONObject(1).getJSONObject("data").getJSONArray("children");
 				for (Object obj : json) {
 					JSONObject item = (JSONObject) obj;
-					String author = item.getJSONObject("data").getString(
-							"author");
+					String author = item.getJSONObject("data").getString("author");
 					String ign = item.getJSONObject("data").getString("body");
 					int start = ign.indexOf("IGN:") + "IGN:".length();
 					if (start == -1 + "IGN:".length()) // +length: 2015.08.10.
@@ -185,10 +180,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		}
 	}
 
-	public void DownloadFlair(ChatPlayer mp)
-			throws MalformedURLException, IOException {
-		String[] flairdata = DownloadString(
-				"http://karmadecay.com/thebutton-data.php?users=" + mp.UserName)
+	public void DownloadFlair(ChatPlayer mp) throws MalformedURLException, IOException {
+		String[] flairdata = DownloadString("http://karmadecay.com/thebutton-data.php?users=" + mp.UserName)
 				.replace("\"", "").split(":");
 		String flair;
 		if (flairdata.length > 1)
@@ -205,8 +198,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 	public static Exception LastException; // 2015.08.09.
 
-	public String DownloadString(String urlstr) throws MalformedURLException,
-			IOException {
+	public String DownloadString(String urlstr) throws MalformedURLException, IOException {
 		URL url = new URL(urlstr);
 		URLConnection con = url.openConnection();
 		con.setRequestProperty("User-Agent", "TheButtonAutoFlair");
@@ -218,8 +210,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		return body;
 	}
 
-	private void SetFlair(ChatPlayer p, String text, String flairclass,
-			String username) {
+	private void SetFlair(ChatPlayer p, String text, String flairclass, String username) {
 		p.UserName = username;
 		p.FlairState = FlairStates.Recognised;
 		switch (flairclass) {
@@ -263,13 +254,11 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		p.SetFlair(Short.parseShort(text));
 	}
 
-	public static boolean CheckForJoinDate(ChatPlayer mp)
-			throws Exception {
+	public static boolean CheckForJoinDate(ChatPlayer mp) throws Exception {
 		return JoinedBefore(mp, 2015, 4, 1);
 	}
 
-	public static boolean JoinedBefore(ChatPlayer mp, int year,
-			int month, int day) throws Exception {
+	public static boolean JoinedBefore(ChatPlayer mp, int year, int month, int day) throws Exception {
 		URL url = new URL("https://www.reddit.com/u/" + mp.UserName);
 		URLConnection con = url.openConnection();
 		con.setRequestProperty("User-Agent", "TheButtonAutoFlair");
@@ -283,16 +272,16 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		SimpleDateFormat parserSDF = new SimpleDateFormat("yyyy-MM-dd");
 		joindate = joindate.split("T")[0];
 		Date date = parserSDF.parse(joindate);
-		return date.before(new Calendar.Builder()
-				.setTimeZone(TimeZone.getTimeZone("UTC"))
-				.setDate(year, month, day).build().getTime());
+		return date.before(new Calendar.Builder().setTimeZone(TimeZone.getTimeZone("UTC")).setDate(year, month, day)
+				.build().getTime());
 	}
 
 	public static void ConfirmUserMessage(ChatPlayer mp) {
 		Player p = Bukkit.getPlayer(mp.UUID);
 		if (mp.FlairState.equals(FlairStates.Commented) && p != null)
 			if (mp.UserNames.size() > 1)
-				p.sendMessage("§9Multiple Reddit users commented your name. You can select with /u accept.§r §6Type /u accept or /u ignore§r");
+				p.sendMessage(
+						"§9Multiple Reddit users commented your name. You can select with /u accept.§r §6Type /u accept or /u ignore§r");
 			else
 				p.sendMessage("§9A Reddit user commented your name. Is that you?§r §6Type /u accept or /u ignore§r");
 	}
@@ -307,21 +296,19 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	public static void LoadFiles(boolean reload) {
 		if (reload) {
 			System.out.println("TBMC chat plugin cleanup for reloading...");
-			ChatPlayer.AllPlayers.clear();
+			ChatPlayer.OnlinePlayers.clear();
 			AnnounceMessages.clear();
 		}
 		System.out.println("Loading files for TBMC chat plugin...");
 		try {
-			File file = new File("thebuttonmc.yml");
+			File file = new File("thebuttonmc.yml"); // TODO
 			if (file.exists()) {
 				YamlConfiguration yc = new YamlConfiguration();
 				yc.load(file);
-				ChatPlayer.Load(yc);
-				PlayerListener.NotificationSound = yc
-						.getString("notificationsound");
-				PlayerListener.NotificationPitch = yc
-						.getDouble("notificationpitch");
-				AnnounceTime = yc.getInt("announcetime");
+				PlayerListener.NotificationSound = yc.getString("notificationsound");
+				PlayerListener.NotificationPitch = yc.getDouble("notificationpitch");
+				AnnounceTime = yc.getInt("announcetime"); // TODO: Move out to
+															// the core
 				AnnounceMessages.addAll(yc.getStringList("announcements"));
 				PlayerListener.AlphaDeaths = yc.getInt("alphadeaths");
 			}
@@ -340,10 +327,9 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		try {
 			File file = new File("thebuttonmc.yml");
 			YamlConfiguration yc = new YamlConfiguration();
-			ChatPlayer.Save(yc);
 			yc.set("notificationsound", PlayerListener.NotificationSound);
 			yc.set("notificationpitch", PlayerListener.NotificationPitch);
-			yc.set("announcetime", AnnounceTime);
+			yc.set("announcetime", AnnounceTime); // TODO: Move out to the core
 			yc.set("announcements", AnnounceMessages);
 			yc.set("alphadeaths", PlayerListener.AlphaDeaths);
 			yc.save(file);
@@ -355,18 +341,15 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	}
 
 	private void addClassPath(final URL url) throws IOException {
-		final URLClassLoader sysloader = (URLClassLoader) ClassLoader
-				.getSystemClassLoader();
+		final URLClassLoader sysloader = (URLClassLoader) ClassLoader.getSystemClassLoader();
 		final Class<URLClassLoader> sysclass = URLClassLoader.class;
 		try {
-			final Method method = sysclass.getDeclaredMethod("addURL",
-					new Class[] { URL.class });
+			final Method method = sysclass.getDeclaredMethod("addURL", new Class[] { URL.class });
 			method.setAccessible(true);
 			method.invoke(sysloader, new Object[] { url });
 		} catch (final Throwable t) {
 			t.printStackTrace();
-			throw new IOException("Error adding " + url
-					+ " to system classloader");
+			throw new IOException("Error adding " + url + " to system classloader");
 		}
 	}
 
@@ -375,9 +358,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	public static Chat chat = null;
 
 	private boolean setupPermissions() {
-		RegisteredServiceProvider<Permission> permissionProvider = getServer()
-				.getServicesManager().getRegistration(
-						net.milkbowl.vault.permission.Permission.class);
+		RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager()
+				.getRegistration(net.milkbowl.vault.permission.Permission.class);
 		if (permissionProvider != null) {
 			permission = permissionProvider.getProvider();
 		}
@@ -385,9 +367,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	}
 
 	private boolean setupChat() {
-		RegisteredServiceProvider<Chat> chatProvider = getServer()
-				.getServicesManager().getRegistration(
-						net.milkbowl.vault.chat.Chat.class);
+		RegisteredServiceProvider<Chat> chatProvider = getServer().getServicesManager()
+				.getRegistration(net.milkbowl.vault.chat.Chat.class);
 		if (chatProvider != null) {
 			chat = chatProvider.getProvider();
 		}
@@ -396,9 +377,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	}
 
 	private boolean setupEconomy() {
-		RegisteredServiceProvider<Economy> economyProvider = getServer()
-				.getServicesManager().getRegistration(
-						net.milkbowl.vault.economy.Economy.class);
+		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager()
+				.getRegistration(net.milkbowl.vault.economy.Economy.class);
 		if (economyProvider != null) {
 			economy = economyProvider.getProvider();
 		}

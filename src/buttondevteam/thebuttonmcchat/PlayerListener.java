@@ -2,6 +2,7 @@ package buttondevteam.thebuttonmcchat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Timer;
@@ -41,6 +42,10 @@ import org.bukkit.util.Vector;
 
 import au.com.mineauz.minigames.MinigamePlayer;
 import au.com.mineauz.minigames.Minigames;
+import buttondevteam.core.player.TBMCPlayer;
+import buttondevteam.core.player.TBMCPlayerAddEvent;
+import buttondevteam.core.player.TBMCPlayerLoadEvent;
+import buttondevteam.core.player.TBMCPlayerSaveEvent;
 import buttondevteam.thebuttonmcchat.commands.ucmds.KittycannonCommand;
 
 import com.earth2me.essentials.Essentials;
@@ -66,7 +71,7 @@ public class PlayerListener implements Listener {
 		if (essentials == null)
 			essentials = ((Essentials) Bukkit.getPluginManager().getPlugin("Essentials"));
 		final Player p = event.getPlayer();
-		ChatPlayer mp = ChatPlayer.AddPlayerIfNeeded(p.getUniqueId());
+		ChatPlayer mp = ChatPlayer.GetFromPlayer(p);
 		if (!mp.FlairState.equals(FlairStates.NoComment)) {
 			PluginMain.ConfirmUserMessage(mp);
 			Timer timer = new Timer();
@@ -194,6 +199,56 @@ public class PlayerListener implements Listener {
 	}
 
 	@EventHandler
+	public void onPlayerLoad(TBMCPlayerLoadEvent e) {
+		YamlConfiguration yc = e.GetPlayerConfig();
+		ChatPlayer cp = new ChatPlayer();
+		cp.UUID = UUID.fromString(yc.getString("uuid"));
+		cp.UserName = yc.getString("username");
+		String tcp = yc.getString("flairtime");
+		if (tcp.equals("--"))
+			cp.SetFlair(ChatPlayer.FlairTimeNonPresser);
+		else if (tcp.equals("??"))
+			cp.SetFlair(ChatPlayer.FlairTimeCantPress);
+		else if (tcp.length() > 0)
+			cp.SetFlair(Short.parseShort(tcp));
+		String flairstate = yc.getString("flairstate");
+		if (flairstate != null)
+			cp.FlairState = FlairStates.valueOf(flairstate);
+		else
+			cp.FlairState = FlairStates.NoComment;
+		cp.UserNames = yc.getStringList("usernames");
+		cp.FCount = yc.getInt("fcount");
+		cp.FDeaths = yc.getInt("fdeaths");
+		cp.FlairCheater = yc.getBoolean("flaircheater");
+		ChatPlayer.OnlinePlayers.put(cp.UUID, cp);
+	}
+
+	@EventHandler
+	public void onPlayerSave(TBMCPlayerSaveEvent e) {
+		YamlConfiguration yc = e.GetPlayerConfig();
+		ChatPlayer cp = ChatPlayer.OnlinePlayers.get(e.GetPlayer().UUID);
+		yc.set("username", cp.UserName);
+		yc.set("flairtime", cp.GetFlairTime());
+		yc.set("flairstate", cp.FlairState.toString());
+		yc.set("uuid", cp.UUID.toString());
+		yc.set("usernames", cp.UserNames);
+		yc.set("fcount", cp.FCount);
+		yc.set("fdeaths", cp.FDeaths);
+		yc.set("flaircheater", cp.FlairCheater);
+	}
+
+	@EventHandler
+	public void onPlayerAdd(TBMCPlayerAddEvent e) {
+		TBMCPlayer p = e.GetPlayer();
+		ChatPlayer player = new ChatPlayer();
+		player.UUID = p.UUID;
+		player.SetFlair(ChatPlayer.FlairTimeNone);
+		player.FlairState = FlairStates.NoComment; //TODO: NullPointerException
+		player.UserNames = new ArrayList<>(); //TODO: Move some code here from join?
+		ChatPlayer.OnlinePlayers.put(p.UUID, player);
+	}
+
+	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) {
 		String deletenick = null;
 		for (String nickname : nicknames.keySet()) {
@@ -227,7 +282,7 @@ public class PlayerListener implements Listener {
 		if (event.getMessage().length() < 2)
 			return;
 		int index = event.getMessage().indexOf(" ");
-		ChatPlayer mp = ChatPlayer.AllPlayers.get(event.getPlayer().getUniqueId());
+		ChatPlayer mp = ChatPlayer.OnlinePlayers.get(event.getPlayer().getUniqueId());
 		String cmd = "";
 		if (index == -1) {
 			cmd = event.getMessage().substring(1);
@@ -486,10 +541,10 @@ public class PlayerListener implements Listener {
 				Ftimer.cancel();
 			ActiveF = true;
 			FCount = 0;
-			FPlayer = ChatPlayer.AllPlayers.get(e.getEntity().getUniqueId());
+			FPlayer = ChatPlayer.OnlinePlayers.get(e.getEntity().getUniqueId());
 			FPlayer.FDeaths++;
 			for (Player p : PluginMain.GetPlayers()) {
-				ChatPlayer mp = ChatPlayer.AllPlayers.get(p.getUniqueId());
+				ChatPlayer mp = ChatPlayer.OnlinePlayers.get(p.getUniqueId());
 				mp.PressedF = false;
 				p.sendMessage("§bPress F to pay respects.§r");
 			}

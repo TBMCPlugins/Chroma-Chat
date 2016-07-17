@@ -25,7 +25,7 @@ public class ConfirmCommand extends AdminCommandBase {
 				PluginMain.LoadFiles(true);
 				// TODO: Add players online
 				for (Player p : PluginMain.GetPlayers())
-					ChatPlayer.AddPlayerIfNeeded(p.getUniqueId());
+					ChatPlayer.GetFromPlayer(p);
 				if (sender != PluginMain.Console)
 					PluginMain.Console.sendMessage("§6-- Reloading done!§r");
 				sender.sendMessage("§6-- Reloading done!§r");

@@ -12,7 +12,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
@@ -46,7 +45,7 @@ public class CommandCaller implements CommandExecutor {
 		Reflections rf = new Reflections(
 				new ConfigurationBuilder().setUrls(ClasspathHelper.forClassLoader(plugin.getClass().getClassLoader()))
 						.addClassLoader(plugin.getClass().getClassLoader()).addScanners(new SubTypesScanner())
-						.filterInputsBy((String pkg) -> pkg.contains("io.github.norbipeti.thebuttonmcchat.commands")));
+						.filterInputsBy((String pkg) -> pkg.contains("buttondevteam.thebuttonmcchat.commands")));
 		Set<Class<? extends TBMCCommandBase>> cmds = rf.getSubTypesOf(TBMCCommandBase.class);
 		for (Class<? extends TBMCCommandBase> cmd : cmds) {
 			try {
@@ -102,7 +101,7 @@ public class CommandCaller implements CommandExecutor {
 				Bukkit.getConsoleSender().sendMessage("§cInternal error: Command not registered to CommandCaller");
 			return true;
 		}
-		if (cmd.GetModOnly() && PluginMain.permission.has(sender, "tbmc.admin")) {
+		if (cmd.GetModOnly() && !PluginMain.permission.has(sender, "tbmc.admin")) {
 			sender.sendMessage("§cYou need to be a mod to use this command.");
 			return true;
 		}

@@ -1,5 +1,5 @@
 name: TheButtonMCChatPlugin
-main: io.github.norbipeti.thebuttonmcchat.PluginMain
+main: buttondevteam.thebuttonmcchat.PluginMain
 version: 4.0
 commands:
     u:
@@ -24,7 +24,7 @@ commands:
     yeehaw:
         description: This command makes you yeehaw.
 author: NorbiPeti
-depend: [Essentials, Towny, Minigames, Votifier, WorldGuard, WorldEdit, ProtocolLib, Vault]
+depend: [Essentials, Towny, Minigames, Votifier, WorldGuard, WorldEdit, ProtocolLib, Vault, ButtonPluginBucket]
 permissions:
   tbmc.admin:
     description: Gives access to /un- commands and /u admin commands

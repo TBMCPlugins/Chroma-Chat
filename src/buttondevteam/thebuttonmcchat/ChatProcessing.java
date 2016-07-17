@@ -32,7 +32,7 @@ public class ChatProcessing {
 
 		ChatPlayer mp = null;
 		if (player != null) {
-			mp = ChatPlayer.AllPlayers.get(player.getUniqueId());
+			mp = ChatPlayer.OnlinePlayers.get(player.getUniqueId());
 			if (message.equalsIgnoreCase("F")) {
 				if (!mp.PressedF && PlayerListener.ActiveF) {
 					PlayerListener.FCount++;
@@ -109,7 +109,7 @@ public class ChatProcessing {
 							System.out.println("Error: Can't find player " + match + " but it was reported as online.");
 							return false;
 						}
-						ChatPlayer mpp = ChatPlayer.AddPlayerIfNeeded(p.getUniqueId());
+						ChatPlayer mpp = ChatPlayer.GetFromPlayer(p);
 						if (PlayerListener.NotificationSound == null)
 							p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO:
 																										// Airhorn
@@ -143,7 +143,7 @@ public class ChatProcessing {
 										"Error: Can't find player " + match + " but it was reported as online.");
 								return false;
 							}
-							ChatPlayer mpp = ChatPlayer.AddPlayerIfNeeded(p.getUniqueId());
+							ChatPlayer mpp = ChatPlayer.GetFromPlayer(p);
 							if (PlayerListener.NotificationSound == null)
 								p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO:
 																											// Airhorn

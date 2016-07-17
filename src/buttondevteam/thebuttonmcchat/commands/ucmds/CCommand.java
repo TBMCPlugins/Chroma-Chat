@@ -11,16 +11,14 @@ public class CCommand extends UCommandBase {
 
 	@Override
 	public String[] GetHelpText(String alias) {
-		return new String[] { "§6---- Rainbow mode ----",
-				"This command allows you to talk in rainbow colors",
+		return new String[] { "§6---- Rainbow mode ----", "This command allows you to talk in rainbow colors",
 				"You need to be a donator or a mod to use this command" };
 	}
 
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		Player player = (Player) sender;
-		ChatPlayer p = ChatPlayer.AddPlayerIfNeeded(player
-				.getUniqueId());
+		ChatPlayer p = ChatPlayer.GetFromPlayer(player);
 		if (args.length < 1) {
 			if (PluginMain.permission.has(player, "tbmc.rainbow")) {
 				p.RainbowPresserColorMode = !p.RainbowPresserColorMode;
@@ -38,15 +36,13 @@ public class CCommand extends UCommandBase {
 				p.RainbowPresserColorMode = false;
 				p.OtherColorMode = null;
 				try {
-					p.OtherColorMode = ChatFormatter.Color.valueOf(args[0]
-							.toLowerCase());
+					p.OtherColorMode = ChatFormatter.Color.valueOf(args[0].toLowerCase());
 				} catch (Exception e) {
 					player.sendMessage("§cUnknown message color: " + args[0]);
 					player.sendMessage("§cUse color names, like blue, or dark_aqua");
 				}
 				if (p.OtherColorMode != null)
-					player.sendMessage(String.format(
-							"§eMessage color set to %s", p.OtherColorMode));
+					player.sendMessage(String.format("§eMessage color set to %s", p.OtherColorMode));
 				else
 					player.sendMessage("§eMessage color reset.");
 			} else {

@@ -9,8 +9,7 @@ public final class OOCCommand extends TBMCCommandBase {
 
 	@Override
 	public String[] GetHelpText(String alias) {
-		return new String[] {
-				"§6---- Out-of-character message ----",
+		return new String[] { "§6---- Out-of-character message ----",
 				"This command will put a [OCC] tag before your message indicating that you are talking out of character",
 				"Usage: /" + alias + " <message>" };
 	}
@@ -21,12 +20,12 @@ public final class OOCCommand extends TBMCCommandBase {
 		if (args.length == 0) {
 			return false;
 		} else {
-			ChatPlayer.AddPlayerIfNeeded(player.getUniqueId()).RPMode = false;
+			ChatPlayer.GetFromPlayer(player).RPMode = false;
 			String message = "";
 			for (String arg : args)
 				message += arg + " ";
 			player.chat(message.substring(0, message.length() - 1));
-			ChatPlayer.AddPlayerIfNeeded(player.getUniqueId()).RPMode = true;
+			ChatPlayer.GetFromPlayer(player).RPMode = true;
 		}
 		return true;
 	}

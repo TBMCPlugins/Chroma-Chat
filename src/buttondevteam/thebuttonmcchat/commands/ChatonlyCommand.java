@@ -21,7 +21,7 @@ public final class ChatonlyCommand extends TBMCCommandBase {
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		Player player=(Player)sender;
-		ChatPlayer p = ChatPlayer.AllPlayers.get(player
+		ChatPlayer p = ChatPlayer.OnlinePlayers.get(player
 				.getUniqueId());
 		p.ChatOnly = true;
 		player.setGameMode(GameMode.SPECTATOR);

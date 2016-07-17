@@ -7,8 +7,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 public class ChatPlayer {
@@ -37,71 +35,12 @@ public class ChatPlayer {
 
 	public UUID UUID;
 
-	public static HashMap<UUID, ChatPlayer> AllPlayers = new HashMap<>();
-
-	public static ChatPlayer AddPlayerIfNeeded(UUID uuid) {
-		if (!AllPlayers.containsKey(uuid)) {
-			ChatPlayer player = new ChatPlayer();
-			player.UUID = uuid;
-			player.FlairTime = FlairTimeNone;
-			player.FlairState = FlairStates.NoComment;
-			player.UserNames = new ArrayList<>();
-			Player p = Bukkit.getPlayer(uuid);
-			if (p != null)
-				player.PlayerName = p.getName();
-			AllPlayers.put(uuid, player);
-			return player;
-		}
-		return AllPlayers.get(uuid);
-	}
-
-	public static void Load(YamlConfiguration yc) {
-		ConfigurationSection cs = yc.getConfigurationSection("players");
-		for (String key : cs.getKeys(false)) {
-			ConfigurationSection cs2 = cs.getConfigurationSection(key);
-			ChatPlayer mp = AddPlayerIfNeeded(java.util.UUID
-					.fromString(cs2.getString("uuid")));
-			mp.UserName = cs2.getString("username");
-			String tmp = cs2.getString("flairtime");
-			if (tmp.equals("--"))
-				mp.FlairTime = FlairTimeNonPresser;
-			else if (tmp.equals("??"))
-				mp.FlairTime = FlairTimeCantPress;
-			else if (tmp.length() > 0)
-				mp.FlairTime = Short.parseShort(tmp);
-			String flairstate = cs2.getString("flairstate");
-			if (flairstate != null)
-				mp.FlairState = FlairStates.valueOf(flairstate);
-			else
-				mp.FlairState = FlairStates.NoComment;
-			mp.PlayerName = cs2.getString("playername");
-			mp.UserNames = cs2.getStringList("usernames");
-			mp.FCount = cs2.getInt("fcount");
-			mp.FDeaths = cs2.getInt("fdeaths");
-			mp.FlairCheater = cs2.getBoolean("flaircheater");
-		}
-	}
-
-	public static void Save(YamlConfiguration yc) {
-		ConfigurationSection cs = yc.createSection("players");
-		for (ChatPlayer mp : ChatPlayer.AllPlayers.values()) {
-			ConfigurationSection cs2 = cs.createSection(mp.UUID.toString());
-			cs2.set("playername", mp.PlayerName);
-			cs2.set("username", mp.UserName);
-			cs2.set("flairtime", mp.FlairTime);
-			cs2.set("flairstate", mp.FlairState.toString());
-			cs2.set("uuid", mp.UUID.toString());
-			cs2.set("usernames", mp.UserNames);
-			cs2.set("fcount", mp.FCount);
-			cs2.set("fdeaths", mp.FDeaths);
-			cs2.set("flaircheater", mp.FlairCheater);
-		}
-	}
+	public static HashMap<UUID, ChatPlayer> OnlinePlayers = new HashMap<>();
 
 	public static ChatPlayer GetFromName(String name) {
-		Player p = Bukkit.getPlayer(name);
+		Player p = Bukkit.getPlayer(name); // TODO
 		if (p != null)
-			return AllPlayers.get(p.getUniqueId());
+			return OnlinePlayers.get(p.getUniqueId());
 		else
 			return null;
 	}
@@ -132,8 +71,7 @@ public class ChatPlayer {
 		// Flairs from Command Block The Button - Teams
 		// PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard().getTeams().add()
 		Player p = Bukkit.getPlayer(UUID);
-		p.setPlayerListName(String.format("%s%s", p.getName(),
-				GetFormattedFlair()));
+		p.setPlayerListName(String.format("%s%s", p.getName(), GetFormattedFlair()));
 	}
 
 	public short GetFlairColor() {
@@ -163,6 +101,6 @@ public class ChatPlayer {
 	}
 
 	public static ChatPlayer GetFromPlayer(Player p) {
-		return ChatPlayer.AllPlayers.get(p.getUniqueId());
+		return ChatPlayer.OnlinePlayers.get(p.getUniqueId());
 	}
 }
