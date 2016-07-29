@@ -26,22 +26,7 @@ public final class ChatFormatter {
 		this.priority = Priority.High;
 	}
 
-	public ChatFormatter(Pattern regex, Format format, String openlink) { // TODO:
-																			// Openlink
-																			// won't
-																			// be
-																			// replaced,
-																			// as
-																			// the
-																			// original
-																			// string
-																			// should
-																			// be;
-																			// replace
-																			// $1
-																			// with
-																			// match
-		// TODO: Get indexes and work with those
+	public ChatFormatter(Pattern regex, Format format, String openlink) {
 		this.regex = regex;
 		this.format = format;
 		this.openlink = openlink;
@@ -72,7 +57,7 @@ public final class ChatFormatter {
 
 	public static String Combine(List<ChatFormatter> formatters, String str) {
 		/*
-		 * This method assumes that there are always a global formatter
+		 * This method assumes that there is always a global formatter
 		 */
 		ArrayList<FormattedSection> sections = new ArrayList<ChatFormatter.FormattedSection>();
 		for (ChatFormatter formatter : formatters) {
