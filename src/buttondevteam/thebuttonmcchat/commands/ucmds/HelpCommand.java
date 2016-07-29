@@ -11,25 +11,24 @@ public final class HelpCommand extends UCommandBase {
 
 	@Override
 	public String[] GetHelpText(String alias) {
-		return new String[] { "§6---- Help ----",
-				"Prints out help messages for the TBMC plugins" };
+		return new String[] { "§6---- Help ----", "Prints out help messages for the TBMC plugins" };
 	}
 
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		if (args.length == 0) {
-			sender.sendMessage(new String[] {
-					"§6---- TBMC Help ----",
-					"Do /u help <topic> for more info",
-					"Do /u help <commandname> [subcommands] for more info about a command",
-					"Topics:",
-					"newp: Info for new players",
+			sender.sendMessage(new String[] { "§6---- TBMC Help ----", "Do /u help <topic> for more info",
+					"Do /u help <commandname> [subcommands] for more info about a command", "Topics:",
 					"commands: See all the commands from this plugin",
-					"login: If you or someone else has any problems with logins, lost inventory/location, etc." });
+					"chat: Shows some info about custom chat features" });
 			return true;
 		}
-		if (args[0].equalsIgnoreCase("newp"))
-			sender.sendMessage(new String[] { "§6---- Info for new players ----", "(Under construction)" }); // TODO
+		if (args[0].equalsIgnoreCase("chat"))
+			sender.sendMessage(new String[] { "§6---- Chat features ----",
+					"- [g] Channel identifier: Click it to copy message", "-- [g]: Global chat (/g)",
+					"-- [TC] Town chat (/tc)", "-- [NC] Nation chat (/nc)",
+					"- Playernames: Hover over them to get some player info",
+					"-- Respect: This is the number of paid respects divided by eliglble deaths. This is a reference to CoD:AW's \"Press F to pay respects\"" });
 		else if (args[0].equalsIgnoreCase("commands")) {
 			ArrayList<String> text = new ArrayList<String>();
 			text.add("§6---- Command list ----");
@@ -43,8 +42,7 @@ public final class HelpCommand extends UCommandBase {
 				path += "/" + args[i];
 			TBMCCommandBase cmd = CommandCaller.GetCommands().get(path);
 			if (cmd == null)
-				sender.sendMessage(new String[] {
-						"§cError: Command not found: " + path.replace('/', ' '),
+				sender.sendMessage(new String[] { "§cError: Command not found: " + path.replace('/', ' '),
 						"Usage example: /u accept --> /u help u accept" });
 			else
 				sender.sendMessage(cmd.GetHelpText(args[0]));

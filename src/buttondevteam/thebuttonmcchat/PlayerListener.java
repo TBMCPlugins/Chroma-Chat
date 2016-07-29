@@ -42,10 +42,10 @@ import org.bukkit.util.Vector;
 
 import au.com.mineauz.minigames.MinigamePlayer;
 import au.com.mineauz.minigames.Minigames;
-import buttondevteam.core.player.TBMCPlayer;
-import buttondevteam.core.player.TBMCPlayerAddEvent;
-import buttondevteam.core.player.TBMCPlayerLoadEvent;
-import buttondevteam.core.player.TBMCPlayerSaveEvent;
+import buttondevteam.core.TBMCPlayer;
+import buttondevteam.core.TBMCPlayerAddEvent;
+import buttondevteam.core.TBMCPlayerLoadEvent;
+import buttondevteam.core.TBMCPlayerSaveEvent;
 import buttondevteam.thebuttonmcchat.commands.ucmds.KittycannonCommand;
 
 import com.earth2me.essentials.Essentials;

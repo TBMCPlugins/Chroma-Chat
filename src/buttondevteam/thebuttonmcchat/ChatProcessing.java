@@ -197,7 +197,8 @@ public class ChatProcessing {
 		json.append(String.format("{\"text\":\"%s%s\",", (player != null ? player.getDisplayName() : sender.getName()),
 				(mp != null ? mp.GetFormattedFlair() : "")));
 		json.append("\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[");
-		json.append(String.format("{\"text\":\"%s\n\",", (player != null ? player.getName() : sender.getName())));
+		json.append(String.format("{\"text\":\"Playername: %s\n\",",
+				(player != null ? player.getName() : sender.getName())));
 		json.append(String.format("\"color\":\"aqua\"},{\"text\":\"World: %s\n\",\"color\":\"white\"},",
 				(player != null ? player.getWorld().getName() : "-")));
 		json.append(String.format("{\"text\":\"Respect: %s%s%s\",\"color\":\"white\"}]}}},",
