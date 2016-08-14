@@ -31,7 +31,7 @@ public class ConfirmCommand extends AdminCommandBase {
 				sender.sendMessage("§6-- Reloading done!§r");
 				ReloadCommand.Reloader = null;
 			} catch (Exception e) {
-				System.out.println("Error!\n" + e);
+				PluginMain.Instance.getLogger().warning("Error!\n" + e);
 				if (sender != PluginMain.Console)
 					sender.sendMessage("§cAn error occured. See console for details.§r");
 				PluginMain.LastException = e;

@@ -1,6 +1,6 @@
 package buttondevteam.thebuttonmcchat;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -9,7 +9,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-public class ChatPlayer {
+public class ChatPlayer implements Serializable {
+	private static final long serialVersionUID = 208589136914849018L;
 	public String PlayerName;
 	public String UserName;
 	public List<String> UserNames;

@@ -55,7 +55,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	@Override
 	public void onEnable() {
 		try {
-			System.out.println("Extracting necessary libraries...");
+			PluginMain.Instance.getLogger().info("Extracting necessary libraries...");
 			final File[] libs = new File[] { new File(getDataFolder(), "htmlcleaner-2.16.jar"),
 					new File(getDataFolder(), "reflections-0.9.10.jar"),
 					new File(getDataFolder(), "javassist-3.19.0-GA.jar") };
@@ -77,7 +77,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		}
 
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-		CommandCaller.RegisterCommands(this);
+		CommandCaller.RegisterChatCommands(this);
 		Instance = this;
 		Console = this.getServer().getConsoleSender();
 		LoadFiles(false);
@@ -108,7 +108,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 		Runnable r = new Runnable() {
 			public void run() {
-				ThreadMethod();
+				FlairGetterThreadMethod();
 			}
 		};
 		Thread t = new Thread(r);
@@ -131,7 +131,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		stop = true;
 	}
 
-	private void ThreadMethod() {
+	private void FlairGetterThreadMethod() {
 		while (!stop) {
 			try {
 				String body = DownloadString(FlairThreadURL + ".json?limit=1000");
@@ -141,11 +141,11 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					String author = item.getJSONObject("data").getString("author");
 					String ign = item.getJSONObject("data").getString("body");
 					int start = ign.indexOf("IGN:") + "IGN:".length();
-					if (start == -1 + "IGN:".length()) // +length: 2015.08.10.
-						continue; // 2015.08.09.
+					if (start == -1 + "IGN:".length())
+						continue;
 					int end = ign.indexOf(' ', start);
 					if (end == -1 || end == start)
-						end = ign.indexOf('\n', start); // 2015.07.15.
+						end = ign.indexOf('\n', start);
 					if (end == -1 || end == start)
 						ign = ign.substring(start);
 					else
@@ -174,8 +174,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					Thread.currentThread().interrupt();
 				}
 			} catch (Exception e) {
-				// System.out.println("Error!\n" + e);
-				LastException = e; // 2015.08.09.
+				LastException = e;
 			}
 		}
 	}
@@ -196,7 +195,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		SetFlair(mp, flair, flairclass, mp.UserName);
 	}
 
-	public static Exception LastException; // 2015.08.09.
+	public static Exception LastException;
 
 	public String DownloadString(String urlstr) throws MalformedURLException, IOException {
 		URL url = new URL(urlstr);
@@ -295,11 +294,11 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 	public static void LoadFiles(boolean reload) {
 		if (reload) {
-			System.out.println("TBMC chat plugin cleanup for reloading...");
+			PluginMain.Instance.getLogger().info("Cleanup for reloading...");
 			ChatPlayer.OnlinePlayers.clear();
 			AnnounceMessages.clear();
 		}
-		System.out.println("Loading files for TBMC chat plugin...");
+		PluginMain.Instance.getLogger().info("Loading files...");
 		try {
 			File file = new File("thebuttonmc.yml"); // TODO
 			if (file.exists()) {
@@ -312,18 +311,18 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 				AnnounceMessages.addAll(yc.getStringList("announcements"));
 				PlayerListener.AlphaDeaths = yc.getInt("alphadeaths");
 			}
-			System.out.println("TBMC plugin loaded files!");
+			PluginMain.Instance.getLogger().info("Loaded files!");
 		} catch (IOException e) {
-			System.out.println("Error!\n" + e);
+			PluginMain.Instance.getLogger().warning("Error!\n" + e);
 			LastException = e;
 		} catch (InvalidConfigurationException e) {
-			System.out.println("Error!\n" + e);
+			PluginMain.Instance.getLogger().warning("Error!\n" + e);
 			LastException = e;
 		}
 	}
 
 	public static void SaveFiles() {
-		System.out.println("Saving files for The Button Minecraft plugin...");
+		PluginMain.Instance.getLogger().info("Saving files...");
 		try {
 			File file = new File("thebuttonmc.yml");
 			YamlConfiguration yc = new YamlConfiguration();
@@ -333,9 +332,9 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			yc.set("announcements", AnnounceMessages);
 			yc.set("alphadeaths", PlayerListener.AlphaDeaths);
 			yc.save(file);
-			System.out.println("The Button Minecraft plugin saved files!");
+			PluginMain.Instance.getLogger().info("Saved files!");
 		} catch (IOException e) {
-			System.out.println("Error!\n" + e);
+			PluginMain.Instance.getLogger().warning("Error!\n" + e);
 			LastException = e;
 		}
 	}

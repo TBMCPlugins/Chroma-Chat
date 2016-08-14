@@ -243,8 +243,9 @@ public class PlayerListener implements Listener {
 		ChatPlayer player = new ChatPlayer();
 		player.UUID = p.UUID;
 		player.SetFlair(ChatPlayer.FlairTimeNone);
-		player.FlairState = FlairStates.NoComment; //TODO: NullPointerException
-		player.UserNames = new ArrayList<>(); //TODO: Move some code here from join?
+		player.FlairState = FlairStates.NoComment; // TODO: NullPointerException
+		player.UserNames = new ArrayList<>(); // TODO: Move some code here from
+												// join?
 		ChatPlayer.OnlinePlayers.put(p.UUID, player);
 	}
 
@@ -603,7 +604,7 @@ public class PlayerListener implements Listener {
 	@SuppressWarnings("deprecation")
 	public void onVotifierEvent(VotifierEvent event) {
 		Vote vote = event.getVote();
-		System.out.println("Vote: " + vote);
+		PluginMain.Instance.getLogger().info("Vote: " + vote);
 		org.bukkit.OfflinePlayer op = Bukkit.getOfflinePlayer(vote.getUsername());
 		Player p = Bukkit.getPlayer(vote.getUsername());
 		if (op != null) {
@@ -676,7 +677,8 @@ public class PlayerListener implements Listener {
 			if (block.getType() == Material.ENDER_CHEST) {
 				e.setCancelled(true);
 				e.getPlayer().sendMessage("§You are not allowed to use enderchests here.");
-				System.out.println(e.getPlayer().getName() + " tried to use an enderchest in twohundred.");
+				PluginMain.Instance.getLogger()
+						.warning(e.getPlayer().getName() + " tried to use an enderchest in twohundred.");
 			}
 		}
 	}

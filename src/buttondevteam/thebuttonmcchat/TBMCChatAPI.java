@@ -10,20 +10,24 @@ public class TBMCChatAPI {
 
 	/**
 	 * <p>
-	 * This method adds a command, adding it to help for example.
+	 * This method adds a plugin's commands to help and sets their executor.
 	 * </p>
 	 * <p>
-	 * The command must be registered in the caller plugin's plugin.yml.
+	 * The <u>command must be registered</u> in the caller plugin's plugin.yml.
 	 * Otherwise the plugin will output a messsage to console.
 	 * </p>
 	 * 
 	 * @param plugin
 	 *            The caller plugin
-	 * @param cmd
-	 *            The command to add
+	 * @param acmdclass
+	 *            A command's class to get the package name for commands. The
+	 *            provided class's package and subpackages are scanned for
+	 *            commands.
 	 */
-	public void AddCommand(JavaPlugin plugin, TBMCCommandBase cmd) {
-		CommandCaller.AddCommand(plugin, cmd);
+	public void AddCommands(JavaPlugin plugin, Class<? extends TBMCCommandBase> acmdclass) {
+		CommandCaller.AddCommands(plugin, acmdclass); // TODO: Make it scan for
+														// all "buttondevteam"
+														// packages
 	}
 
 	/**

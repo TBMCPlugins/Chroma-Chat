@@ -2,6 +2,8 @@ package buttondevteam.thebuttonmcchat.commands.ucmds.admin;
 
 import org.bukkit.command.CommandSender;
 
+import buttondevteam.thebuttonmcchat.PluginMain;
+
 public class DebugCommand extends AdminCommandBase {
 	private static boolean DebugMode = false;
 
@@ -25,6 +27,6 @@ public class DebugCommand extends AdminCommandBase {
 
 	public static void SendDebugMessage(String message) {
 		if (DebugMode)
-			System.out.println(message);
+			PluginMain.Instance.getLogger().info(message);
 	}
 }

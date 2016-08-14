@@ -106,7 +106,8 @@ public class ChatProcessing {
 					.add(new ChatFormatter(Pattern.compile(sb.toString()), ChatFormatter.Color.Aqua, (String match) -> {
 						Player p = Bukkit.getPlayer(match);
 						if (p == null) {
-							System.out.println("Error: Can't find player " + match + " but it was reported as online.");
+							PluginMain.Instance.getLogger()
+									.warning("Error: Can't find player " + match + " but it was reported as online.");
 							return false;
 						}
 						ChatPlayer mpp = ChatPlayer.GetFromPlayer(p);
@@ -139,7 +140,7 @@ public class ChatProcessing {
 								return false; // TODO
 							Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(n));
 							if (p == null) {
-								System.out.println(
+								PluginMain.Instance.getLogger().warning(
 										"Error: Can't find player " + match + " but it was reported as online.");
 								return false;
 							}

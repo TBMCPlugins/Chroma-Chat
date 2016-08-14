@@ -15,26 +15,30 @@ public class UpdatePlugin extends AdminCommandBase {
 	@Override
 	public String[] GetHelpText(String alias) {
 		return new String[] { "§6---- Update plugin ----",
-				"This command downloads the latest version of the plugin from GitHub" };
+				"This command downloads the latest version of a TBMC plugin from GitHub",
+				"To update a plugin: /" + alias + " <plugin>", "To list the plugin names: /" + alias };
 	}
 
 	@Override
-	public boolean OnCommand(CommandSender sender, String alias,
-			String[] args) {
-		sender.sendMessage("Updating Auto-Flair plugin...");
-		System.out.println("Forced updating of Auto-Flair plugin.");
+	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
+		if (args.length == 0)
+		{
+			sender.sendMessage("§6---- Plugin names ----");
+			for(Plugin plugin : TBMC)
+			sender.sendMessage("");
+		}
+		sender.sendMessage("Updating plugin...");
+		PluginMain.Instance.getLogger().info("Forced updating of the plugin.");
 		URL url;
 		try {
-			url = new URL(
-					"https://github.com/NorbiPeti/thebuttonmcchat/raw/master/TheButtonMCChat.jar");
-			FileUtils.copyURLToFile(url, new File(
-					"plugins/TheButtonMCChat.jar"));
+			url = new URL("https://github.com/NorbiPeti/thebuttonmcchat/raw/master/TheButtonMCChat.jar");
+			FileUtils.copyURLToFile(url, new File("plugins/TheButtonMCChat.jar"));
 			sender.sendMessage("Updating done!");
 		} catch (MalformedURLException e) {
-			System.out.println("Error!\n" + e);
+			PluginMain.Instance.getLogger().warning("Error!\n" + e);
 			PluginMain.LastException = e;
 		} catch (IOException e) {
-			System.out.println("Error!\n" + e);
+			PluginMain.Instance.getLogger().warning("Error!\n" + e);
 			PluginMain.LastException = e;
 		}
 		return true;

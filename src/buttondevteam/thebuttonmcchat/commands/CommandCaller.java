@@ -33,19 +33,19 @@ public class CommandCaller implements CommandExecutor {
 
 	private static CommandCaller instance;
 
-	public static void RegisterCommands(PluginMain plugin) {
-		if (instance != null) {
-			new Exception("Only one instance of CommandCaller is allowed").printStackTrace();
-			return;
-		}
-		System.out.println("Registering commands...");
+	public static void RegisterChatCommands(PluginMain plugin) {
+		AddCommands(plugin, TBMCCommandBase.class);
+	}
 
+	// TODO: Move plugin updater to the core
+	public static void AddCommands(JavaPlugin plugin, Class<? extends TBMCCommandBase> acmdclass) {
+		plugin.getLogger().info("Registering commands for " + plugin.getName());
 		if (instance == null)
 			instance = new CommandCaller();
 		Reflections rf = new Reflections(
 				new ConfigurationBuilder().setUrls(ClasspathHelper.forClassLoader(plugin.getClass().getClassLoader()))
 						.addClassLoader(plugin.getClass().getClassLoader()).addScanners(new SubTypesScanner())
-						.filterInputsBy((String pkg) -> pkg.contains("buttondevteam.thebuttonmcchat.commands")));
+						.filterInputsBy((String pkg) -> pkg.contains(acmdclass.getPackage().getName())));
 		Set<Class<? extends TBMCCommandBase>> cmds = rf.getSubTypesOf(TBMCCommandBase.class);
 		for (Class<? extends TBMCCommandBase> cmd : cmds) {
 			try {
@@ -66,20 +66,6 @@ public class CommandCaller implements CommandExecutor {
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
-		}
-	}
-
-	public static void AddCommand(JavaPlugin plugin, TBMCCommandBase cmd) {
-		if (instance == null)
-			instance = new CommandCaller();
-		commands.put(cmd.GetCommandPath(), cmd);
-		if (!cmd.GetCommandPath().contains("/")) // Top-level command
-		{
-			PluginCommand pc = plugin.getCommand(cmd.GetCommandPath());
-			if (pc == null)
-				new Exception("Can't find top-level command: " + cmd.GetCommandPath()).printStackTrace();
-			else
-				pc.setExecutor(instance);
 		}
 	}
 
