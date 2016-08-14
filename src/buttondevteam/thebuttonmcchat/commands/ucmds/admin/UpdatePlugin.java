@@ -7,7 +7,9 @@ import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 
+import buttondevteam.core.TBMCCoreAPI;
 import buttondevteam.thebuttonmcchat.PluginMain;
 
 public class UpdatePlugin extends AdminCommandBase {
@@ -21,26 +23,17 @@ public class UpdatePlugin extends AdminCommandBase {
 
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
-		if (args.length == 0)
-		{
+		if (args.length == 0) {
 			sender.sendMessage("§6---- Plugin names ----");
-			for(Plugin plugin : TBMC)
-			sender.sendMessage("");
+			for (String plugin : TBMCCoreAPI.GetPluginNames()) {
+				sender.sendMessage("- " + plugin);
+			}
 		}
 		sender.sendMessage("Updating plugin...");
-		PluginMain.Instance.getLogger().info("Forced updating of the plugin.");
-		URL url;
-		try {
-			url = new URL("https://github.com/NorbiPeti/thebuttonmcchat/raw/master/TheButtonMCChat.jar");
-			FileUtils.copyURLToFile(url, new File("plugins/TheButtonMCChat.jar"));
+		String ret = "";
+		if ((ret = TBMCCoreAPI.UpdatePlugin(args[0])).length() > 0)
+
 			sender.sendMessage("Updating done!");
-		} catch (MalformedURLException e) {
-			PluginMain.Instance.getLogger().warning("Error!\n" + e);
-			PluginMain.LastException = e;
-		} catch (IOException e) {
-			PluginMain.Instance.getLogger().warning("Error!\n" + e);
-			PluginMain.LastException = e;
-		}
 		return true;
 	}
 

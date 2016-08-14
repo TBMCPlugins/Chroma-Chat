@@ -19,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import au.com.mineauz.minigames.mechanics.GameMechanics;
+import buttondevteam.core.TBMCCoreAPI;
 import buttondevteam.thebuttonmcchat.commands.CommandCaller;
 
 import com.palmergames.bukkit.towny.Towny;
@@ -134,7 +135,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	private void FlairGetterThreadMethod() {
 		while (!stop) {
 			try {
-				String body = DownloadString(FlairThreadURL + ".json?limit=1000");
+				String body = TBMCCoreAPI.DownloadString(FlairThreadURL + ".json?limit=1000");
 				JSONArray json = new JSONArray(body).getJSONObject(1).getJSONObject("data").getJSONArray("children");
 				for (Object obj : json) {
 					JSONObject item = (JSONObject) obj;
@@ -180,7 +181,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	}
 
 	public void DownloadFlair(ChatPlayer mp) throws MalformedURLException, IOException {
-		String[] flairdata = DownloadString("http://karmadecay.com/thebutton-data.php?users=" + mp.UserName)
+		String[] flairdata = TBMCCoreAPI.DownloadString("http://karmadecay.com/thebutton-data.php?users=" + mp.UserName)
 				.replace("\"", "").split(":");
 		String flair;
 		if (flairdata.length > 1)
@@ -196,18 +197,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	}
 
 	public static Exception LastException;
-
-	public String DownloadString(String urlstr) throws MalformedURLException, IOException {
-		URL url = new URL(urlstr);
-		URLConnection con = url.openConnection();
-		con.setRequestProperty("User-Agent", "TheButtonAutoFlair");
-		InputStream in = con.getInputStream();
-		String encoding = con.getContentEncoding();
-		encoding = encoding == null ? "UTF-8" : encoding;
-		String body = IOUtils.toString(in, encoding);
-		in.close();
-		return body;
-	}
 
 	private void SetFlair(ChatPlayer p, String text, String flairclass, String username) {
 		p.UserName = username;
