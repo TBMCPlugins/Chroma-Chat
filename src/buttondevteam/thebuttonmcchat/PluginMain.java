@@ -39,6 +39,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.TimeZone;
 
 public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
@@ -51,6 +53,15 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	public TownyUniverse TU;
 	public ArrayList<Town> Towns;
 	public ArrayList<Nation> Nations;
+	/**
+	 * <p>
+	 * This variable is used as a cache for flair state checking when reading the flair thread.
+	 * </p>
+	 * <p>
+	 * It's used because normally it has to load all associated player files everytime to read the filename
+	 * </p>
+	 */
+	private Set<String> PlayersWithFlairs = new HashSet<>();
 
 	// Fired when plugin is first enabled
 	@Override
@@ -152,17 +163,21 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					else
 						ign = ign.substring(start, end);
 					ign = ign.trim();
-					ChatPlayer mp = ChatPlayer.GetFromName(ign);
+					if (PlayersWithFlairs.contains(ign))
+						continue;
+					ChatPlayer mp = ChatPlayer.GetFromName(ign); // Loads player file
 					if (mp == null)
 						continue;
-					if (!JoinedBefore(mp, 2015, 6, 5))
-						continue;
+					/*
+					 * if (!JoinedBefore(mp, 2015, 6, 5)) continue;
+					 */
 					if (!mp.UserNames.contains(author))
 						mp.UserNames.add(author);
 					if (mp.FlairState.equals(FlairStates.NoComment)) {
 						mp.FlairState = FlairStates.Commented;
 						ConfirmUserMessage(mp);
-					}
+					} else
+						PlayersWithFlairs.add(ign);
 					try {
 						Thread.sleep(10);
 					} catch (InterruptedException ex) {
@@ -289,14 +304,13 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		}
 		PluginMain.Instance.getLogger().info("Loading files...");
 		try {
-			File file = new File("thebuttonmc.yml"); // TODO
+			File file = new File("TBMC/chatsettings.yml"); // TODO
 			if (file.exists()) {
 				YamlConfiguration yc = new YamlConfiguration();
 				yc.load(file);
 				PlayerListener.NotificationSound = yc.getString("notificationsound");
 				PlayerListener.NotificationPitch = yc.getDouble("notificationpitch");
-				AnnounceTime = yc.getInt("announcetime"); // TODO: Move out to
-															// the core
+				AnnounceTime = yc.getInt("announcetime");
 				AnnounceMessages.addAll(yc.getStringList("announcements"));
 				PlayerListener.AlphaDeaths = yc.getInt("alphadeaths");
 			}
@@ -313,7 +327,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	public static void SaveFiles() {
 		PluginMain.Instance.getLogger().info("Saving files...");
 		try {
-			File file = new File("thebuttonmc.yml");
+			File file = new File("TBMC/chatsettings.yml");
 			YamlConfiguration yc = new YamlConfiguration();
 			yc.set("notificationsound", PlayerListener.NotificationSound);
 			yc.set("notificationpitch", PlayerListener.NotificationPitch);
