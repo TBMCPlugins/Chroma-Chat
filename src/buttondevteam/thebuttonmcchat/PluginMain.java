@@ -55,6 +55,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	// Fired when plugin is first enabled
 	@Override
 	public void onEnable() {
+		Instance = this;
 		try {
 			PluginMain.Instance.getLogger().info("Extracting necessary libraries...");
 			final File[] libs = new File[] { new File(getDataFolder(), "htmlcleaner-2.16.jar"),
@@ -79,7 +80,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		CommandCaller.RegisterChatCommands(this);
-		Instance = this;
 		Console = this.getServer().getConsoleSender();
 		LoadFiles(false);
 

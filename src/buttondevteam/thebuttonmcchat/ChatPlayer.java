@@ -1,17 +1,17 @@
 package buttondevteam.thebuttonmcchat;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-public class ChatPlayer implements Serializable {
-	private static final long serialVersionUID = 208589136914849018L;
-	public String PlayerName;
+import buttondevteam.core.TBMCPlayer;
+
+public class ChatPlayer extends TBMCPlayer {
 	public String UserName;
 	public List<String> UserNames;
 	private short FlairTime;
@@ -34,12 +34,11 @@ public class ChatPlayer implements Serializable {
 	public static final short FlairTimeCantPress = -2;
 	public static final short FlairTimeNone = -3;
 
-	public UUID UUID;
-
 	public static HashMap<UUID, ChatPlayer> OnlinePlayers = new HashMap<>();
 
+	@SuppressWarnings("deprecation")
 	public static ChatPlayer GetFromName(String name) {
-		Player p = Bukkit.getPlayer(name); // TODO
+		OfflinePlayer p = Bukkit.getOfflinePlayer(name);
 		if (p != null)
 			return OnlinePlayers.get(p.getUniqueId());
 		else

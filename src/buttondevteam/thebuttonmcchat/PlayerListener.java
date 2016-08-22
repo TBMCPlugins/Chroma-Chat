@@ -1,7 +1,5 @@
 package buttondevteam.thebuttonmcchat;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -16,7 +14,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -70,10 +67,30 @@ public class PlayerListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if (essentials == null)
 			essentials = ((Essentials) Bukkit.getPluginManager().getPlugin("Essentials"));
-		final Player p = event.getPlayer();
-		ChatPlayer mp = ChatPlayer.GetFromPlayer(p);
-		if (!mp.FlairState.equals(FlairStates.NoComment)) {
-			PluginMain.ConfirmUserMessage(mp);
+	}
+
+	@EventHandler
+	public void onPlayerLoad(TBMCPlayerLoadEvent e) {
+		YamlConfiguration yc = e.GetPlayerConfig();
+		ChatPlayer cp = e.GetPlayer().AsPluginPlayer(ChatPlayer.class);
+		cp.UserName = yc.getString("username");
+		short tcp = (short) yc.getInt("flairtime");
+		cp.SetFlair(tcp);
+		String flairstate = yc.getString("flairstate");
+		if (flairstate != null)
+			cp.FlairState = FlairStates.valueOf(flairstate);
+		else
+			cp.FlairState = FlairStates.NoComment;
+		cp.UserNames = yc.getStringList("usernames");
+		cp.FCount = yc.getInt("fcount");
+		cp.FDeaths = yc.getInt("fdeaths");
+		cp.FlairCheater = yc.getBoolean("flaircheater");
+		ChatPlayer.OnlinePlayers.put(cp.UUID, cp);
+
+		Player p = Bukkit.getPlayer(cp.UUID);
+
+		if (!cp.FlairState.equals(FlairStates.NoComment)) {
+			PluginMain.ConfirmUserMessage(cp);
 			Timer timer = new Timer();
 			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
 				@Override
@@ -81,11 +98,11 @@ public class PlayerListener implements Listener {
 					p.setPlayerListName(p.getName() + mp.GetFormattedFlair());
 				}
 			};
-			tt.mp = mp;
+			tt.mp = cp;
 			timer.schedule(tt, 1000);
 		} else {
-			if (mp.GetFlairTime() == 0x00)
-				mp.SetFlair(ChatPlayer.FlairTimeNone);
+			if (cp.GetFlairTime() == 0x00)
+				cp.SetFlair(ChatPlayer.FlairTimeNone);
 			Timer timer = new Timer();
 			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
 				@Override
@@ -94,17 +111,7 @@ public class PlayerListener implements Listener {
 					if (player == null)
 						return;
 
-					/*
-					 * PlayerProfile pp = ((FastLoginBukkit) FastLoginBukkit
-					 * .getPlugin(FastLoginBukkit.class)).getStorage()
-					 * .getProfile(player.getName(), true); boolean ispremium =
-					 * pp != null && pp.isPremium();
-					 */// Login stuff
-
-					if (/*
-						 * ispremium &&
-						 */// Login stuff
-					mp.FlairState.equals(FlairStates.NoComment)) {
+					if (mp.FlairState.equals(FlairStates.NoComment)) {
 						String json = String.format(
 								"[\"\",{\"text\":\"If you're from Reddit and you'd like your /r/TheButton flair displayed ingame, write your Minecraft name to \",\"color\":\"aqua\"},{\"text\":\"[this thread].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
 								PluginMain.FlairThreadURL);
@@ -116,111 +123,20 @@ public class PlayerListener implements Listener {
 					}
 				}
 			};
-			tt.mp = mp;
-			;
+			tt.mp = cp;
 			timer.schedule(tt, 15 * 1000);
 		}
 
-		/*
-		 * final Timer timer = new Timer(); mp.LoginWarningCount = 0;
-		 * PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
-		 * 
-		 * @Override public void run() { final Player player =
-		 * Bukkit.getPlayer(mp.PlayerName); if (player == null) return;
-		 * 
-		 * PlayerProfile pp = ((FastLoginBukkit) FastLoginBukkit
-		 * .getPlugin(FastLoginBukkit.class)).getStorage()
-		 * .getProfile(player.getName(), true); boolean ispremium = pp != null
-		 * && pp.isPremium(); final MaybeOfflinePlayer mplayer = mp;
-		 * 
-		 * if (mp.LoginWarningCount < LoginWarningCountTotal) { if
-		 * (AuthMe.getInstance().api.isAuthenticated(player)) { // The player
-		 * logged in in any way if (!ispremium &&
-		 * !mp.FlairState.equals(FlairStates.Accepted) &&
-		 * !mp.FlairState.equals(FlairStates.Commented)) { // The player isn't
-		 * premium, and doesn't have a // flair String json = String .format(
-		 * "[\"\",{\"text\":\"Welcome! If you are a premium Minecraft user, please do /premium and relog, otherwise please verify your /r/thebutton flair to play, \",\"color\":\"gold\"},{\"text\":\"[here].\",\"color\":\"gold\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]"
-		 * , PluginMain.FlairThreadURL);
-		 * PluginMain.Instance.getServer().dispatchCommand( PluginMain.Console,
-		 * "tellraw " + mp.PlayerName + " " + json); } } } else { if
-		 * (AuthMe.getInstance().api.isAuthenticated(player)) { if (!ispremium
-		 * && !mplayer.FlairState .equals(FlairStates.Accepted) &&
-		 * !mplayer.FlairState .equals(FlairStates.Commented)) {
-		 * Bukkit.getScheduler().runTask(PluginMain.Instance, new Runnable() {
-		 * 
-		 * @Override public void run() { player.kickPlayer(
-		 * "Please either use /premium and relog or verify your flair by commenting in the thread and using /u accept."
-		 * ); } }); timer.cancel(); } } } mp.LoginWarningCount++; } }; tt.mp =
-		 * mp; int timeout = AuthMe.getInstance().getConfig()
-		 * .getInt("settings.restrictions.timeout"); timer.schedule(tt, (timeout
-		 * / LoginWarningCountTotal) * 1000, (timeout / LoginWarningCountTotal)
-		 * * 1000);
-		 */// Login stuff
+		nicknames.put(essentials.getUser(p).getNickname(), p.getUniqueId());
 
-		/* NICKNAME LOGIC */
+		cp.RPMode = true;
 
-		UUID id = p.getUniqueId();
+		cp.FlairUpdate(); // Update display
 
-		File f = new File("plugins/Essentials/userdata/" + id + ".yml");
-		if (f.exists()) {
-			YamlConfiguration yc = new YamlConfiguration();
-			try {
-				yc.load(f);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InvalidConfigurationException e) {
-				e.printStackTrace();
-			}
-			String nickname = yc.getString("nickname");
-			if (nickname != null) {
-				nicknames.put(nickname, id);
-
-				if (Enable) {
-					if (!p.getName().equals("NorbiPeti")) {
-						for (Player player : PluginMain.GetPlayers()) {
-							if (player.getName().equals("NorbiPeti")) {
-								player.chat("Hey, " + nickname + "!");
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		mp.RPMode = true;
-
-		mp.FlairUpdate(); // Update display
-
-		if (mp.ChatOnly || p.getGameMode().equals(GameMode.SPECTATOR)) {
-			mp.ChatOnly = false;
+		if (cp.ChatOnly || p.getGameMode().equals(GameMode.SPECTATOR)) {
+			cp.ChatOnly = false;
 			p.setGameMode(GameMode.SURVIVAL);
 		}
-	}
-
-	@EventHandler
-	public void onPlayerLoad(TBMCPlayerLoadEvent e) {
-		YamlConfiguration yc = e.GetPlayerConfig();
-		ChatPlayer cp = new ChatPlayer();
-		cp.UUID = UUID.fromString(yc.getString("uuid"));
-		cp.UserName = yc.getString("username");
-		String tcp = yc.getString("flairtime");
-		if (tcp.equals("--"))
-			cp.SetFlair(ChatPlayer.FlairTimeNonPresser);
-		else if (tcp.equals("??"))
-			cp.SetFlair(ChatPlayer.FlairTimeCantPress);
-		else if (tcp.length() > 0)
-			cp.SetFlair(Short.parseShort(tcp));
-		String flairstate = yc.getString("flairstate");
-		if (flairstate != null)
-			cp.FlairState = FlairStates.valueOf(flairstate);
-		else
-			cp.FlairState = FlairStates.NoComment;
-		cp.UserNames = yc.getStringList("usernames");
-		cp.FCount = yc.getInt("fcount");
-		cp.FDeaths = yc.getInt("fdeaths");
-		cp.FlairCheater = yc.getBoolean("flaircheater");
-		ChatPlayer.OnlinePlayers.put(cp.UUID, cp);
 	}
 
 	@EventHandler
@@ -230,7 +146,6 @@ public class PlayerListener implements Listener {
 		yc.set("username", cp.UserName);
 		yc.set("flairtime", cp.GetFlairTime());
 		yc.set("flairstate", cp.FlairState.toString());
-		yc.set("uuid", cp.UUID.toString());
 		yc.set("usernames", cp.UserNames);
 		yc.set("fcount", cp.FCount);
 		yc.set("fdeaths", cp.FDeaths);
@@ -238,15 +153,15 @@ public class PlayerListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerAdd(TBMCPlayerAddEvent e) {
-		TBMCPlayer p = e.GetPlayer();
-		ChatPlayer player = new ChatPlayer();
-		player.UUID = p.UUID;
-		player.SetFlair(ChatPlayer.FlairTimeNone);
-		player.FlairState = FlairStates.NoComment; // TODO: NullPointerException
-		player.UserNames = new ArrayList<>(); // TODO: Move some code here from
-												// join?
-		ChatPlayer.OnlinePlayers.put(p.UUID, player);
+	public void onPlayerAdd(TBMCPlayerAddEvent event) {
+		TBMCPlayer tp = event.GetPlayer();
+		ChatPlayer cp = new ChatPlayer();
+		cp.UUID = tp.UUID;
+		cp.SetFlair(ChatPlayer.FlairTimeNone);
+		cp.FlairState = FlairStates.NoComment; // TODO: NullPointerException
+		cp.UserNames = new ArrayList<>(); // TODO: Move some code here from
+											// join?
+		ChatPlayer.OnlinePlayers.put(cp.UUID, cp);
 	}
 
 	@EventHandler

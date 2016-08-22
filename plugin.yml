@@ -1,4 +1,4 @@
-name: TheButtonMCChatPlugin
+name: ButtonChat
 main: buttondevteam.thebuttonmcchat.PluginMain
 version: 4.0
 commands:

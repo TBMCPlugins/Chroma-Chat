@@ -24,17 +24,26 @@ public class UpdatePlugin extends AdminCommandBase {
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		if (args.length == 0) {
-			sender.sendMessage("§6---- Plugin names ----");
+			sender.sendMessage("Downloading plugin names...");
+			boolean first = true;
 			for (String plugin : TBMCCoreAPI.GetPluginNames()) {
+				if (first) {
+					sender.sendMessage("§6---- Plugin names ----");
+					first = false;
+				}
 				sender.sendMessage("- " + plugin);
 			}
-		}
-		sender.sendMessage("Updating plugin...");
-		String ret = "";
-		if ((ret = TBMCCoreAPI.UpdatePlugin(args[0])).length() > 0)
-
+			return true;
+		} else {
+			sender.sendMessage("Updating plugin...");
+			String ret = "";
+			if ((ret = TBMCCoreAPI.UpdatePlugin(args[0])).length() > 0) {
+				sender.sendMessage("Internal error: " + ret);
+				return true;
+			}
 			sender.sendMessage("Updating done!");
-		return true;
+			return true;
+		}
 	}
 
 	@Override

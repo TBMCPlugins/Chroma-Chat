@@ -189,9 +189,6 @@ public class ChatProcessing {
 				"%s{\"text\":\"[%s]%s\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Copy message\",\"color\":\"blue\"}},\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"%s\"}},",
 				(mp != null && mp.ChatOnly
 						? "{\"text\":\"[C]\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Chat only\",\"color\":\"blue\"}]}}},"
-						// (mp != null && mp.ChatOnly ?
-						// "{\"text:\":\"\"}," - I have been staring at
-						// this one line for hours... Hours...
 						: ""),
 				currentchannel.DisplayName, (mp != null && !mp.RPMode ? "[OOC]" : ""), suggestmsg));
 		json.append("{\"text\":\" <\"},");
