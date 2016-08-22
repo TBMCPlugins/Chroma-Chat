@@ -19,7 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import au.com.mineauz.minigames.mechanics.GameMechanics;
-import buttondevteam.core.TBMCCoreAPI;
+import buttondevteam.bucket.core.TBMCCoreAPI;
 import buttondevteam.thebuttonmcchat.commands.CommandCaller;
 
 import com.palmergames.bukkit.towny.Towny;

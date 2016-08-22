@@ -39,11 +39,11 @@ import org.bukkit.util.Vector;
 
 import au.com.mineauz.minigames.MinigamePlayer;
 import au.com.mineauz.minigames.Minigames;
-import buttondevteam.core.TBMCPlayer;
-import buttondevteam.core.TBMCPlayerAddEvent;
-import buttondevteam.core.TBMCPlayerJoinEvent;
-import buttondevteam.core.TBMCPlayerLoadEvent;
-import buttondevteam.core.TBMCPlayerSaveEvent;
+import buttondevteam.bucket.core.TBMCPlayer;
+import buttondevteam.bucket.core.TBMCPlayerAddEvent;
+import buttondevteam.bucket.core.TBMCPlayerJoinEvent;
+import buttondevteam.bucket.core.TBMCPlayerLoadEvent;
+import buttondevteam.bucket.core.TBMCPlayerSaveEvent;
 import buttondevteam.thebuttonmcchat.commands.ucmds.KittycannonCommand;
 
 import com.earth2me.essentials.Essentials;

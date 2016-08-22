@@ -9,7 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import buttondevteam.core.TBMCPlayer;
+import buttondevteam.bucket.core.TBMCPlayer;
 
 public class ChatPlayer extends TBMCPlayer {
 	public String UserName;
