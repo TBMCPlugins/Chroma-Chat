@@ -39,9 +39,18 @@ public class ChatPlayer extends TBMCPlayer {
 	@SuppressWarnings("deprecation")
 	public static ChatPlayer GetFromName(String name) {
 		OfflinePlayer p = Bukkit.getOfflinePlayer(name);
-		if (p != null)
-			return OnlinePlayers.get(p.getUniqueId());
-		else
+		if (p != null) {
+			if (!ChatPlayer.OnlinePlayers.containsKey(p.getUniqueId())) {
+				TBMCPlayer player = TBMCPlayer.LoadPlayer(p);
+				if (player == null) {
+					Bukkit.getServer().getLogger()
+							.warning("Can't load player " + p.getUniqueId() + " - " + p.getName());
+					return null;
+				}
+				ChatPlayer.OnlinePlayers.get(player.UUID);
+			}
+			return ChatPlayer.OnlinePlayers.get(p.getUniqueId());
+		} else
 			return null;
 	}
 
@@ -71,7 +80,8 @@ public class ChatPlayer extends TBMCPlayer {
 		// Flairs from Command Block The Button - Teams
 		// PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard().getTeams().add()
 		Player p = Bukkit.getPlayer(UUID);
-		p.setPlayerListName(String.format("%s%s", p.getName(), GetFormattedFlair()));
+		if (p != null)
+			p.setPlayerListName(String.format("%s%s", p.getName(), GetFormattedFlair()));
 	}
 
 	public short GetFlairColor() {

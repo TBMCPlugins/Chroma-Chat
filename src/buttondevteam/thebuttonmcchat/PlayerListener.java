@@ -41,6 +41,7 @@ import au.com.mineauz.minigames.MinigamePlayer;
 import au.com.mineauz.minigames.Minigames;
 import buttondevteam.core.TBMCPlayer;
 import buttondevteam.core.TBMCPlayerAddEvent;
+import buttondevteam.core.TBMCPlayerJoinEvent;
 import buttondevteam.core.TBMCPlayerLoadEvent;
 import buttondevteam.core.TBMCPlayerSaveEvent;
 import buttondevteam.thebuttonmcchat.commands.ucmds.KittycannonCommand;
@@ -64,12 +65,6 @@ public class PlayerListener implements Listener {
 	public static int LoginWarningCountTotal = 5;
 
 	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		if (essentials == null)
-			essentials = ((Essentials) Bukkit.getPluginManager().getPlugin("Essentials"));
-	}
-
-	@EventHandler
 	public void onPlayerLoad(TBMCPlayerLoadEvent e) {
 		YamlConfiguration yc = e.GetPlayerConfig();
 		ChatPlayer cp = e.GetPlayer().AsPluginPlayer(ChatPlayer.class);
@@ -86,7 +81,13 @@ public class PlayerListener implements Listener {
 		cp.FDeaths = yc.getInt("fdeaths");
 		cp.FlairCheater = yc.getBoolean("flaircheater");
 		ChatPlayer.OnlinePlayers.put(cp.UUID, cp);
+	}
 
+	@EventHandler
+	public void onPlayerTBMCJoin(TBMCPlayerJoinEvent e) {
+		if (essentials == null)
+			essentials = ((Essentials) Bukkit.getPluginManager().getPlugin("Essentials"));
+		ChatPlayer cp = ChatPlayer.OnlinePlayers.get(e.GetPlayer().UUID);
 		Player p = Bukkit.getPlayer(cp.UUID);
 
 		if (!cp.FlairState.equals(FlairStates.NoComment)) {
@@ -283,50 +284,29 @@ public class PlayerListener implements Listener {
 				}
 			}
 			/*
-			 * boolean tping = false; boolean tphering = false; if
-			 * (cmd.equalsIgnoreCase("tpa") || cmd.equalsIgnoreCase("call") ||
-			 * cmd.equalsIgnoreCase("ecall") || cmd.equalsIgnoreCase("etpa") ||
-			 * cmd.equalsIgnoreCase("tpask") || cmd.equalsIgnoreCase("etpask"))
-			 * tping = true; if (cmd.equalsIgnoreCase("tpahere") ||
-			 * cmd.equalsIgnoreCase("etpahere")) tphering = true;
+			 * boolean tping = false; boolean tphering = false; if (cmd.equalsIgnoreCase("tpa") || cmd.equalsIgnoreCase("call") || cmd.equalsIgnoreCase("ecall") || cmd.equalsIgnoreCase("etpa") ||
+			 * cmd.equalsIgnoreCase("tpask") || cmd.equalsIgnoreCase("etpask")) tping = true; if (cmd.equalsIgnoreCase("tpahere") || cmd.equalsIgnoreCase("etpahere")) tphering = true;
 			 */
 
 			/*
-			 * for (HelpTopic ht : PluginMain.Instance.getServer()
-			 * .getHelpMap().getHelpTopics()) { if
-			 * (ht.getName().equalsIgnoreCase("/tpa")) { tping = true; break; }
-			 * }
+			 * for (HelpTopic ht : PluginMain.Instance.getServer() .getHelpMap().getHelpTopics()) { if (ht.getName().equalsIgnoreCase("/tpa")) { tping = true; break; } }
 			 */
 
 			/*
-			 * for (HelpTopic ht : PluginMain.Instance.getServer()
-			 * .getHelpMap().getHelpTopics()) { if
-			 * (ht.getName().equalsIgnoreCase("/tpahere")) tphering = true;
-			 * break; }
+			 * for (HelpTopic ht : PluginMain.Instance.getServer() .getHelpMap().getHelpTopics()) { if (ht.getName().equalsIgnoreCase("/tpahere")) tphering = true; break; }
 			 */
 
 			/*
-			 * if (tphering) { Player target =
-			 * Bukkit.getPlayer(event.getMessage() .substring(index +
-			 * 1).split(" ")[0]); if (target != null && BoardColl.get()
-			 * .getFactionAt(PS.valueOf(target.getLocation()))
-			 * .getId().equalsIgnoreCase("tower")) { event.getPlayer()
-			 * .sendMessage(
-			 * "§cYou are not allowed to teleport players out from the Tower");
+			 * if (tphering) { Player target = Bukkit.getPlayer(event.getMessage() .substring(index + 1).split(" ")[0]); if (target != null && BoardColl.get()
+			 * .getFactionAt(PS.valueOf(target.getLocation())) .getId().equalsIgnoreCase("tower")) { event.getPlayer() .sendMessage( "§cYou are not allowed to teleport players out from the Tower");
 			 * event.setCancelled(true); } }
 			 */
 			/*
-			 * for (String s : Bukkit.getCommandAliases().get("/tpahere")) { if
-			 * (cmd.equalsIgnoreCase(s)) { tping = true; break; } }
+			 * for (String s : Bukkit.getCommandAliases().get("/tpahere")) { if (cmd.equalsIgnoreCase(s)) { tping = true; break; } }
 			 */
 			/*
-			 * if (tping) { if ( //
-			 * MPlayer.get(event.getPlayer()).getFaction().getId
-			 * ().equalsIgnoreCase("nomansland")) // { BoardColl .get()
-			 * .getFactionAt( PS.valueOf(event.getPlayer().getLocation()))
-			 * .getId().equalsIgnoreCase("tower")) {
-			 * event.getPlayer().sendMessage(
-			 * "§cYou are not allowed to teleport to the Tower");
+			 * if (tping) { if ( // MPlayer.get(event.getPlayer()).getFaction().getId ().equalsIgnoreCase("nomansland")) // { BoardColl .get() .getFactionAt(
+			 * PS.valueOf(event.getPlayer().getLocation())) .getId().equalsIgnoreCase("tower")) { event.getPlayer().sendMessage( "§cYou are not allowed to teleport to the Tower");
 			 * event.setCancelled(true); } }
 			 */
 		}
@@ -488,9 +468,7 @@ public class PlayerListener implements Listener {
 		// System.out.println("B");
 
 		/*
-		 * if (!e.getPlayer().isOp() && (!mp.isInMinigame() ||
-		 * mp.getMinigame().getName(false)
-		 * .equalsIgnoreCase(Commands.KittyCannonMinigame))) return;
+		 * if (!e.getPlayer().isOp() && (!mp.isInMinigame() || mp.getMinigame().getName(false) .equalsIgnoreCase(Commands.KittyCannonMinigame))) return;
 		 */
 		if (!(mp.isInMinigame()
 				&& mp.getMinigame().getName(false).equalsIgnoreCase(KittycannonCommand.KittyCannonMinigame)))
@@ -558,20 +536,16 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerTeleport(PlayerTeleportEvent e) {
 		/*
-		 * if (BoardColl.get().getFactionAt(PS.valueOf(e.getFrom())).getId()
-		 * .equalsIgnoreCase("nomansland") ||
-		 * BoardColl.get().getFactionAt(PS.valueOf(e.getTo())).getId()
+		 * if (BoardColl.get().getFactionAt(PS.valueOf(e.getFrom())).getId() .equalsIgnoreCase("nomansland") || BoardColl.get().getFactionAt(PS.valueOf(e.getTo())).getId()
 		 * .equalsIgnoreCase("nomansland")) {
 		 */
 		// e.setTo(e.getFrom());
 		// e.setCancelled(true); // Relative coordinates mess it up
 		/*
-		 * System.out.println("From: " + e.getFrom()); System.out.println("To: "
-		 * + e.getTo()); System.out.println("Cause: "+e.getCause());
+		 * System.out.println("From: " + e.getFrom()); System.out.println("To: " + e.getTo()); System.out.println("Cause: "+e.getCause());
 		 */
 		/*
-		 * e.getPlayer().sendMessage(
-		 * "§cYou are not allowed to teleport to/from No Mans Land."); }
+		 * e.getPlayer().sendMessage( "§cYou are not allowed to teleport to/from No Mans Land."); }
 		 */
 
 		if (ChatPlayer.GetFromPlayer(e.getPlayer()).ChatOnly) {
