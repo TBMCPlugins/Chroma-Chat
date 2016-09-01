@@ -510,24 +510,6 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e) {
-		// minecraft:tp @a[x=190,y=-80,z=45,dx=5,dy=50,dz=5] 190 1 45
-		if (e.getPlayer().getWorld().getName().equals("wilds") && e.getTo().getBlockX() > 100
-				&& e.getTo().getBlockX() < 250 && e.getTo().getBlockZ() > 0 && e.getTo().getBlockZ() < 200
-				&& e.getTo().getBlockY() < -64) {
-			final Player p = e.getPlayer();
-			p.setVelocity(new Vector(0, 0, 0));
-			p.setFallDistance(0);
-			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(PluginMain.Instance, new Runnable() {
-				public void run() {
-					p.setVelocity(new Vector(0, 0, 0));
-					p.setFallDistance(0);
-					p.teleport(new Location(Bukkit.getWorld("wilds"), 190, 1, 50));
-					p.setVelocity(new Vector(0, 0, 0));
-					p.setFallDistance(0);
-				}
-			});
-		}
-
 		ChatPlayer mp = ChatPlayer.GetFromPlayer(e.getPlayer());
 		if (mp.ChatOnly)
 			e.setCancelled(true);
@@ -535,19 +517,6 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerTeleport(PlayerTeleportEvent e) {
-		/*
-		 * if (BoardColl.get().getFactionAt(PS.valueOf(e.getFrom())).getId() .equalsIgnoreCase("nomansland") || BoardColl.get().getFactionAt(PS.valueOf(e.getTo())).getId()
-		 * .equalsIgnoreCase("nomansland")) {
-		 */
-		// e.setTo(e.getFrom());
-		// e.setCancelled(true); // Relative coordinates mess it up
-		/*
-		 * System.out.println("From: " + e.getFrom()); System.out.println("To: " + e.getTo()); System.out.println("Cause: "+e.getCause());
-		 */
-		/*
-		 * e.getPlayer().sendMessage( "§cYou are not allowed to teleport to/from No Mans Land."); }
-		 */
-
 		if (ChatPlayer.GetFromPlayer(e.getPlayer()).ChatOnly) {
 			e.setCancelled(true);
 			e.getPlayer().sendMessage("§cYou are not allowed to teleport while in chat-only mode.");
