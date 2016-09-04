@@ -132,16 +132,12 @@ public class ChatProcessing {
 							int index;
 							while ((index = nwithoutformatting.indexOf("§k")) != -1)
 								nwithoutformatting = nwithoutformatting
-										.replace("§k" + nwithoutformatting.charAt(index + 2), ""); // Support
-																									// for
-																									// one
-																									// random
-																									// char
+										.replace("§k" + nwithoutformatting.charAt(index + 2), ""); // Support for one random char
 							while ((index = nwithoutformatting.indexOf('§')) != -1)
 								nwithoutformatting = nwithoutformatting
 										.replace("§" + nwithoutformatting.charAt(index + 1), "");
 							if (!match.equalsIgnoreCase(nwithoutformatting))
-								return false; // TODO
+								continue; // TODO
 							Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(n));
 							if (p == null) {
 								PluginMain.Instance.getLogger().warning(
