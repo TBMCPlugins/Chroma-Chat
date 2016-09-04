@@ -69,7 +69,8 @@ public class ChatProcessing {
 			colormode = ChatFormatter.Color.Green;
 		// If greentext, ignore channel or player colors
 
-		formatters.add(new ChatFormatter(Pattern.compile(".+"), colormode, "", Priority.Low));
+		formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(".+")).setColor(colormode)
+				.setPriority(Priority.Low).build());
 
 		String formattedmessage = message;
 		formattedmessage = formattedmessage.replace("\\", "\\\\");
@@ -78,16 +79,19 @@ public class ChatProcessing {
 
 		String suggestmsg = formattedmessage;
 
-		formatters.add(new ChatFormatter(Pattern.compile("(?<!\\\\)\\*\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*\\*"),
-				ChatFormatter.Format.Bold, "$1"));
-		formatters.add(new ChatFormatter(Pattern.compile("(?<!\\\\)\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*"),
-				ChatFormatter.Format.Italic, "$1"));
-		formatters.add(new ChatFormatter(Pattern.compile("(?<!\\\\)\\_((?:\\\\\\_|[^\\_])+[^\\_\\\\])\\_"),
-				ChatFormatter.Format.Underlined, "$1"));
+		formatters.add(new ChatFormatterBuilder()
+				.setRegex(Pattern.compile("(?<!\\\\)\\*\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*\\*"))
+				.setFormat(ChatFormatter.Format.Bold).setReplacewith("$1").build());
+		formatters.add(
+				new ChatFormatterBuilder().setRegex(Pattern.compile("(?<!\\\\)\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*"))
+						.setFormat(ChatFormatter.Format.Italic).setReplacewith("$1").build());
+		formatters.add(
+				new ChatFormatterBuilder().setRegex(Pattern.compile("(?<!\\\\)\\_((?:\\\\\\_|[^\\_])+[^\\_\\\\])\\_"))
+						.setFormat(ChatFormatter.Format.Underlined).setReplacewith("$1").build());
 
 		// URLs + Rainbow text
-		formatters.add(new ChatFormatter(Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),]+)"),
-				ChatFormatter.Format.Underlined, "$1"));
+		formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),]+)"))
+				.setFormat(ChatFormatter.Format.Underlined).setReplacewith("$1").build());
 		/*
 		 * formattedmessage = formattedmessage .replace( item, String.format(
 		 * "\",\"color\":\"%s\"},{\"text\":\"%s\",\"color\":\"%s\",\"underlined\":\"true\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open URL\",\"color\":\"blue\"}]}}},{\"text\":\""
@@ -102,8 +106,8 @@ public class ChatProcessing {
 			sb.deleteCharAt(sb.length() - 1);
 			sb.append(")");
 
-			formatters
-					.add(new ChatFormatter(Pattern.compile(sb.toString()), ChatFormatter.Color.Aqua, (String match) -> {
+			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(sb.toString()))
+					.setColor(ChatFormatter.Color.Aqua).setOnmatch((String match) -> {
 						Player p = Bukkit.getPlayer(match);
 						if (p == null) {
 							PluginMain.Instance.getLogger()
@@ -119,10 +123,10 @@ public class ChatProcessing {
 									(float) PlayerListener.NotificationPitch);
 						String color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
 						return true; // TODO
-					}, Priority.High));
+					}).setPriority(Priority.High).build());
 
-			formatters
-					.add(new ChatFormatter(Pattern.compile(sb.toString()), ChatFormatter.Color.Aqua, (String match) -> {
+			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(sb.toString()))
+					.setColor(ChatFormatter.Color.Aqua).setOnmatch((String match) -> {
 						for (String n : PlayerListener.nicknames.keySet()) {
 							String nwithoutformatting = new String(n);
 							int index;
@@ -155,32 +159,27 @@ public class ChatProcessing {
 									(mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
 						}
 						return true; // TODO
-					}, Priority.High));
+					}).setPriority(Priority.High).build());
 		}
 
 		pingedconsole = false;
-		formatters.add(new ChatFormatter(Pattern.compile("(?i)" + Pattern.quote("@console")), ChatFormatter.Color.Aqua,
-				(String match) -> {
+		formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile("(?i)" + Pattern.quote("@console")))
+				.setColor(ChatFormatter.Color.Aqua).setOnmatch((String match) -> {
 					if (!pingedconsole) {
 						System.out.print("\007");
 						pingedconsole = true;
 					}
 					return true;
-				}, Priority.High));
+				}).setPriority(Priority.High).build());
 
-		formatters.add(new ChatFormatter(Pattern.compile("#(\\w+)"), ChatFormatter.Color.Blue,
-				"https://twitter.com/hashtag/$1", Priority.High));
+		formatters
+				.add(new ChatFormatterBuilder().setRegex(Pattern.compile("#(\\w+)")).setColor(ChatFormatter.Color.Blue)
+						.setOpenlink("https://twitter.com/hashtag/$1").setPriority(Priority.High).build());
 
 		/*
-		 * if (!hadurls) {
-		 * 
-		 * if (formattedmessage.matches("(?i).*" + Pattern.quote("@console") +
-		 * ".*")) { formattedmessage = formattedmessage.replaceAll( "(?i)" +
-		 * Pattern.quote("@console"), "§b@console§r"); formattedmessage =
-		 * formattedmessage .replaceAll( "(?i)" + Pattern.quote("@console"),
-		 * String.format(
-		 * "\",\"color\":\"%s\"},{\"text\":\"§b@console§r\",\"color\":\"blue\"},{\"text\":\""
-		 * , colormode)); System.out.println("\007"); } }
+		 * if (!hadurls) { if (formattedmessage.matches("(?i).*" + Pattern.quote("@console") + ".*")) { formattedmessage = formattedmessage.replaceAll( "(?i)" + Pattern.quote("@console"),
+		 * "§b@console§r"); formattedmessage = formattedmessage .replaceAll( "(?i)" + Pattern.quote("@console"), String.format(
+		 * "\",\"color\":\"%s\"},{\"text\":\"§b@console§r\",\"color\":\"blue\"},{\"text\":\"" , colormode)); System.out.println("\007"); } }
 		 */
 
 		StringBuilder json = new StringBuilder();
@@ -207,24 +206,16 @@ public class ChatProcessing {
 		json.append("{\"text\":\"> \",\"color\":\"white\"}");
 
 		/*
-		 * int index = -1; ArrayList<String> list = new ArrayList<String>();
-		 * while ((index = message.indexOf("#", index + 1)) != -1) { int index2
-		 * = message.indexOf(" ", index + 1); if (index2 == -1) index2 =
-		 * message.length(); int index3 = message.indexOf("#", index + 1); if
-		 * (index3 != -1 && index3 < index2) // A # occurs before a // space
-		 * index2 = index3; String original = message.substring(index + 1,
-		 * index2); list.add(original); }
-		 * 
-		 * if (!hadurls) { for (String original : list) // Hashtags
-		 * formattedmessage = formattedmessage .replace( "#" + original,
+		 * int index = -1; ArrayList<String> list = new ArrayList<String>(); while ((index = message.indexOf("#", index + 1)) != -1) { int index2 = message.indexOf(" ", index + 1); if (index2 == -1)
+		 * index2 = message.length(); int index3 = message.indexOf("#", index + 1); if (index3 != -1 && index3 < index2) // A # occurs before a // space index2 = index3; String original =
+		 * message.substring(index + 1, index2); list.add(original); } if (!hadurls) { for (String original : list) // Hashtags formattedmessage = formattedmessage .replace( "#" + original,
 		 * String.format(
 		 * "\",\"color\":\"%s\"},{\"text\":\"#%s\",\"color\":\"blue\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://twitter.com/hashtag/%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open on Twitter\",\"color\":\"blue\"}]}}},{\"text\":\""
 		 * , colormode, original, original)); }
 		 */
 
 		/*
-		 * json.append(String.format("{\"text\":\"%s\",\"color\":\"%s\"}]",
-		 * ChatFormatter.Combine(formatters, formattedmessage), colormode));
+		 * json.append(String.format("{\"text\":\"%s\",\"color\":\"%s\"}]", ChatFormatter.Combine(formatters, formattedmessage), colormode));
 		 */
 		json.append(ChatFormatter.Combine(formatters, formattedmessage));
 		json.append("]");

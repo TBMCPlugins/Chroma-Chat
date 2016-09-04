@@ -1,16 +1,7 @@
 package buttondevteam.thebuttonmcchat.commands.ucmds.admin;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import org.apache.commons.io.FileUtils;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
-
 import buttondevteam.bucket.core.TBMCCoreAPI;
-import buttondevteam.thebuttonmcchat.PluginMain;
 
 public class UpdatePlugin extends AdminCommandBase {
 

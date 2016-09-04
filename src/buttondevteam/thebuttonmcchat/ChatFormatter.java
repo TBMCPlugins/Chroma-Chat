@@ -15,41 +15,20 @@ public final class ChatFormatter {
 	private Predicate<String> onmatch;
 	private String openlink;
 	private Priority priority;
+	private String replacewith;
 
 	private static final String[] RainbowPresserColors = new String[] { "red", "gold", "yellow", "green", "blue",
-			"dark_purple" };
+			"dark_purple" }; // TODO
 
-	public ChatFormatter(Pattern regex, Format format) {
+	public ChatFormatter(Pattern regex, Format format, Color color, Predicate<String> onmatch, String openlink,
+			Priority priority, String replacewith) {
 		this.regex = regex;
 		this.format = format;
-		this.priority = Priority.High;
-	}
-
-	public ChatFormatter(Pattern regex, Format format, String openlink) {
-		this.regex = regex;
-		this.format = format;
-		this.openlink = openlink;
-		this.priority = Priority.High;
-	}
-
-	public ChatFormatter(Pattern regex, Color color, String openlink, Priority priority) {
-		this.regex = regex;
-		this.color = color;
-		this.openlink = openlink;
-		this.priority = priority;
-	}
-
-	public ChatFormatter(Pattern regex, Color color, Priority priority) {
-		this.regex = regex;
-		this.color = color;
-		this.priority = priority;
-	}
-
-	public ChatFormatter(Pattern regex, Color color, Predicate<String> onmatch, Priority priority) {
-		this.regex = regex;
 		this.color = color;
 		this.onmatch = onmatch;
-		this.priority = priority;
+		this.openlink = openlink;
+		this.priority = Priority.High;
+		this.replacewith = replacewith;
 	}
 
 	public static String Combine(List<ChatFormatter> formatters, String str) {
@@ -67,8 +46,7 @@ public final class ChatFormatter {
 					groups.add(matcher.group(i + 1));
 				if (groups.size() > 0)
 					DebugCommand.SendDebugMessage("First group: " + groups.get(0));
-				FormattedSection section = new FormattedSection(formatter, matcher.start(), matcher.end() - 1,
-						groups);
+				FormattedSection section = new FormattedSection(formatter, matcher.start(), matcher.end() - 1, groups);
 				sections.add(section);
 			}
 		}
@@ -96,8 +74,8 @@ public final class ChatFormatter {
 					origend = origend2;
 					origend2 = tmp;
 				}
-				FormattedSection section = new FormattedSection(
-						sections.get(i - 1).Formatters, sections.get(i).Start, origend, sections.get(i - 1).Matches);
+				FormattedSection section = new FormattedSection(sections.get(i - 1).Formatters, sections.get(i).Start,
+						origend, sections.get(i - 1).Matches);
 				section.Formatters.addAll(sections.get(i).Formatters);
 				section.Matches.addAll(sections.get(i).Matches);
 				sections.add(i, section);
@@ -124,10 +102,12 @@ public final class ChatFormatter {
 				sections.remove(i);
 				found = true;
 			}
-			if (i < sections.size() && sections.get(i).End < sections.get(i).Start) {
-				DebugCommand.SendDebugMessage("Removing section: " + sections.get(i));
-				sections.remove(i);
-				found = true;
+			for (int j = i - 1; j <= i + 1; j++) {
+				if (j < sections.size() && sections.get(j).End < sections.get(j).Start) {
+					DebugCommand.SendDebugMessage("Removing section: " + sections.get(j));
+					sections.remove(j);
+					found = true;
+				}
 			}
 			i = nextindex - 1;
 			i++;
@@ -151,27 +131,31 @@ public final class ChatFormatter {
 			DebugCommand.SendDebugMessage("Applying section: " + section);
 			String originaltext = str.substring(section.Start, section.End + 1);
 			DebugCommand.SendDebugMessage("Originaltext: " + originaltext);
-			finalstring.append(",{\"text\":\""); // TODO: Bool replace - Replace with match $1?
-			finalstring.append(originaltext);
-			finalstring.append("\"");
 			Color color = null;
 			Format format = null;
 			String openlink = null;
-			Priority priority = null;
+			String replacewith = null;
+			section.Formatters.sort((cf1, cf2) -> cf1.priority.compareTo(cf2.priority));
 			for (ChatFormatter formatter : section.Formatters) {
 				DebugCommand.SendDebugMessage("Applying formatter: " + formatter);
 				if (formatter.onmatch == null || formatter.onmatch.test(originaltext)) {
-					if (priority == null || priority.GetValue() < formatter.priority.GetValue()) {
+					if (formatter.color != null)
 						color = formatter.color;
-						format = formatter.format; // TODO: Don't overwrite
-													// parts, and work until all
-													// of them are combined
+					if (formatter.format != null)
+						format = formatter.format;
+					if (formatter.openlink != null)
 						openlink = formatter.openlink;
-						priority = formatter.priority;
-					}
+					if (formatter.replacewith != null)
+						replacewith = formatter.replacewith;
 				} else
 					DebugCommand.SendDebugMessage("Onmatch predicate returned false.");
 			}
+			finalstring.append(",{\"text\":\"");
+			if (replacewith != null)
+				finalstring.append(replacewith.replace("$1", section.Matches.get(0)));
+			else
+				finalstring.append(originaltext);
+			finalstring.append("\"");
 			if (color != null) {
 				finalstring.append(",\"color\":\"");
 				finalstring.append(color.name);
@@ -190,7 +174,8 @@ public final class ChatFormatter {
 			finalstring.append("}");
 		}
 		DebugCommand.SendDebugMessage("Finalstring: " + finalstring);
-		return finalstring.toString(); // TODO
+		return finalstring.toString();
+
 	}
 
 	@Override
