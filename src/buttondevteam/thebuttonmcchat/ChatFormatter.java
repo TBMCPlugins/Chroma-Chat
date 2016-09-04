@@ -1,7 +1,6 @@
 package buttondevteam.thebuttonmcchat;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -17,8 +16,8 @@ public final class ChatFormatter {
 	private String openlink;
 	private Priority priority;
 
-	private static final String[] RainbowPresserColors = new String[] { "red",
-			"gold", "yellow", "green", "blue", "dark_purple" };
+	private static final String[] RainbowPresserColors = new String[] { "red", "gold", "yellow", "green", "blue",
+			"dark_purple" };
 
 	public ChatFormatter(Pattern regex, Format format) {
 		this.regex = regex;
@@ -33,8 +32,7 @@ public final class ChatFormatter {
 		this.priority = Priority.High;
 	}
 
-	public ChatFormatter(Pattern regex, Color color, String openlink,
-			Priority priority) {
+	public ChatFormatter(Pattern regex, Color color, String openlink, Priority priority) {
 		this.regex = regex;
 		this.color = color;
 		this.openlink = openlink;
@@ -47,8 +45,7 @@ public final class ChatFormatter {
 		this.priority = priority;
 	}
 
-	public ChatFormatter(Pattern regex, Color color, Predicate<String> onmatch,
-			Priority priority) {
+	public ChatFormatter(Pattern regex, Color color, Predicate<String> onmatch, Priority priority) {
 		this.regex = regex;
 		this.color = color;
 		this.onmatch = onmatch;
@@ -59,20 +56,19 @@ public final class ChatFormatter {
 		/*
 		 * This method assumes that there is always a global formatter
 		 */
-		ArrayList<FormattedSection> sections = new ArrayList<ChatFormatter.FormattedSection>();
+		ArrayList<FormattedSection> sections = new ArrayList<FormattedSection>();
 		for (ChatFormatter formatter : formatters) {
 			Matcher matcher = formatter.regex.matcher(str);
 			while (matcher.find()) {
-				DebugCommand.SendDebugMessage("Found match from " + matcher.start()
-						+ " to " + (matcher.end() - 1));
+				DebugCommand.SendDebugMessage("Found match from " + matcher.start() + " to " + (matcher.end() - 1));
 				DebugCommand.SendDebugMessage("With formatter:" + formatter);
 				ArrayList<String> groups = new ArrayList<String>();
 				for (int i = 0; i < matcher.groupCount(); i++)
 					groups.add(matcher.group(i + 1));
 				if (groups.size() > 0)
 					DebugCommand.SendDebugMessage("First group: " + groups.get(0));
-				FormattedSection section = formatter.new FormattedSection(
-						formatter, matcher.start(), matcher.end() - 1, groups);
+				FormattedSection section = new FormattedSection(formatter, matcher.start(), matcher.end() - 1,
+						groups);
 				sections.add(section);
 			}
 		}
@@ -89,46 +85,46 @@ public final class ChatFormatter {
 			if (sections.size() < 2)
 				break;
 			DebugCommand.SendDebugMessage("i: " + i);
-			if (sections.get(i - 1).End > sections.get(i).Start
-					&& sections.get(i - 1).Start < sections.get(i).End) {
-				DebugCommand.SendDebugMessage("Combining sections " + sections.get(i - 1)
-						+ " and " + sections.get(i));
+			if (sections.get(i - 1).End > sections.get(i).Start && sections.get(i - 1).Start < sections.get(i).End) {
+				DebugCommand.SendDebugMessage("Combining sections " + sections.get(i - 1) + " and " + sections.get(i));
 				int origend = sections.get(i - 1).End;
 				sections.get(i - 1).End = sections.get(i).Start - 1;
 				int origend2 = sections.get(i).End;
-				if (origend2 < origend) {
-					int tmp = origend; // TODO: This is BAD
-					origend = origend2; // The third part always gets the
-					origend2 = tmp; // properties of the second one
+				boolean switchends;
+				if (switchends = origend2 < origend) {
+					int tmp = origend;
+					origend = origend2;
+					origend2 = tmp;
 				}
-				FormattedSection section = sections.get(i - 1).Formatters
-						.get(0).new FormattedSection(
-						sections.get(i - 1).Formatters, sections.get(i).Start,
-						origend, sections.get(i - 1).Matches);
+				FormattedSection section = new FormattedSection(
+						sections.get(i - 1).Formatters, sections.get(i).Start, origend, sections.get(i - 1).Matches);
 				section.Formatters.addAll(sections.get(i).Formatters);
 				section.Matches.addAll(sections.get(i).Matches);
 				sections.add(i, section);
 				nextindex++;
-				sections.get(i + 1).Start = origend + 1;
-				sections.get(i + 1).End = origend2;
+				FormattedSection thirdFormattedSection = sections.get(i + 1);
+				if (switchends) { // Use the properties of the first section not the second one
+					thirdFormattedSection.Formatters.clear();
+					thirdFormattedSection.Formatters.addAll(sections.get(i - 1).Formatters);
+					thirdFormattedSection.Matches.clear();
+					thirdFormattedSection.Matches.addAll(sections.get(i - 1).Matches);
+				}
+				thirdFormattedSection.Start = origend + 1;
+				thirdFormattedSection.End = origend2;
 				DebugCommand.SendDebugMessage("To sections 1:" + sections.get(i - 1) + "");
 				DebugCommand.SendDebugMessage("  2:" + section + "");
-				DebugCommand.SendDebugMessage("  3:" + sections.get(i + 1));
+				DebugCommand.SendDebugMessage("  3:" + thirdFormattedSection);
 				found = true;
 			}
-			if (sections.get(i - 1).Start == sections.get(i).Start
-					&& sections.get(i - 1).End == sections.get(i).End) {
-				DebugCommand.SendDebugMessage("Combining sections " + sections.get(i - 1)
-						+ " and " + sections.get(i));
-				sections.get(i - 1).Formatters
-						.addAll(sections.get(i).Formatters);
+			if (sections.get(i - 1).Start == sections.get(i).Start && sections.get(i - 1).End == sections.get(i).End) {
+				DebugCommand.SendDebugMessage("Combining sections " + sections.get(i - 1) + " and " + sections.get(i));
+				sections.get(i - 1).Formatters.addAll(sections.get(i).Formatters);
 				sections.get(i - 1).Matches.addAll(sections.get(i).Matches);
 				DebugCommand.SendDebugMessage("To section " + sections.get(i - 1));
 				sections.remove(i);
 				found = true;
 			}
-			if (i < sections.size()
-					&& sections.get(i).End < sections.get(i).Start) {
+			if (i < sections.size() && sections.get(i).End < sections.get(i).Start) {
 				DebugCommand.SendDebugMessage("Removing section: " + sections.get(i));
 				sections.remove(i);
 				found = true;
@@ -155,7 +151,7 @@ public final class ChatFormatter {
 			DebugCommand.SendDebugMessage("Applying section: " + section);
 			String originaltext = str.substring(section.Start, section.End + 1);
 			DebugCommand.SendDebugMessage("Originaltext: " + originaltext);
-			finalstring.append(",{\"text\":\""); // TODO: Bool replace
+			finalstring.append(",{\"text\":\""); // TODO: Bool replace - Replace with match $1?
 			finalstring.append(originaltext);
 			finalstring.append("\"");
 			Color color = null;
@@ -164,11 +160,8 @@ public final class ChatFormatter {
 			Priority priority = null;
 			for (ChatFormatter formatter : section.Formatters) {
 				DebugCommand.SendDebugMessage("Applying formatter: " + formatter);
-				if (formatter.onmatch == null
-						|| formatter.onmatch.test(originaltext)) {
-					if (priority == null
-							|| priority.GetValue() < formatter.priority
-									.GetValue()) {
+				if (formatter.onmatch == null || formatter.onmatch.test(originaltext)) {
+					if (priority == null || priority.GetValue() < formatter.priority.GetValue()) {
 						color = formatter.color;
 						format = formatter.format; // TODO: Don't overwrite
 													// parts, and work until all
@@ -190,29 +183,25 @@ public final class ChatFormatter {
 				finalstring.append("\":\"true\"");
 			}
 			if (openlink != null && openlink.length() > 0) {
-				finalstring
-						.append(String
-								.format(",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click to open\",\"color\":\"blue\"}]}}",
-										(section.Matches.size() > 0 ? openlink
-												.replace("$1",
-														section.Matches.get(0))
-												: openlink)));
+				finalstring.append(String.format(
+						",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click to open\",\"color\":\"blue\"}]}}",
+						(section.Matches.size() > 0 ? openlink.replace("$1", section.Matches.get(0)) : openlink)));
 			}
 			finalstring.append("}");
 		}
+		DebugCommand.SendDebugMessage("Finalstring: " + finalstring);
 		return finalstring.toString(); // TODO
 	}
 
 	@Override
 	public String toString() {
-		return new StringBuilder("F(").append(color).append(", ")
-				.append(format).append(", ").append(openlink).append(", ")
-				.append(priority).append(")").toString();
+		return new StringBuilder("F(").append(color).append(", ").append(format).append(", ").append(openlink)
+				.append(", ").append(priority).append(")").toString();
 	}
 
 	public enum Format { // TODO: Flag?
-		Bold("bold"), Underlined("underlined"), Italic("italic"), Strikethrough(
-				"strikethrough"), Obfuscated("obfuscated");
+		Bold("bold"), Underlined("underlined"), Italic("italic"), Strikethrough("strikethrough"), Obfuscated(
+				"obfuscated");
 		// TODO: Add format codes to /u c <mode>
 		private String name;
 
@@ -226,11 +215,10 @@ public final class ChatFormatter {
 	}
 
 	public enum Color {
-		Black("black"), DarkBlue("dark_blue"), DarkGreen("dark_green"), DarkAqua(
-				"dark_aqua"), DarkRed("dark_red"), DarkPurple("dark_purple"), Gold(
-				"gold"), Gray("gray"), DarkGray("dark_gray"), Blue("blue"), Green(
-				"green"), Aqua("aqua"), Red("red"), LightPurple("light_purple"), Yellow(
-				"yellow"), White("white"), RPC("rpc");
+		Black("black"), DarkBlue("dark_blue"), DarkGreen("dark_green"), DarkAqua("dark_aqua"), DarkRed(
+				"dark_red"), DarkPurple("dark_purple"), Gold("gold"), Gray("gray"), DarkGray("dark_gray"), Blue(
+						"blue"), Green("green"), Aqua("aqua"), Red(
+								"red"), LightPurple("light_purple"), Yellow("yellow"), White("white"), RPC("rpc");
 
 		private String name;
 
@@ -253,37 +241,6 @@ public final class ChatFormatter {
 
 		public int GetValue() {
 			return val;
-		}
-	}
-
-	private class FormattedSection {
-		public int Start;
-		public int End;
-		public ArrayList<ChatFormatter> Formatters = new ArrayList<ChatFormatter>();
-		public ArrayList<String> Matches = new ArrayList<String>();
-
-		public FormattedSection(ChatFormatter formatter, int start, int end,
-				ArrayList<String> matches) {
-			Start = start;
-			End = end;
-			Formatters.add(formatter);
-			Matches.addAll(matches);
-		}
-
-		public FormattedSection(Collection<ChatFormatter> formatters,
-				int start, int end, ArrayList<String> matches) {
-			Start = start;
-			End = end;
-			Formatters.addAll(formatters);
-			Matches.addAll(matches);
-		}
-
-		@Override
-		public String toString() {
-			return new StringBuilder("Section(").append(Start).append(", ")
-					.append(End).append(", formatters: ")
-					.append(Formatters.toString()).append(", matches: ")
-					.append(Matches.toString()).append(")").toString();
 		}
 	}
 }
