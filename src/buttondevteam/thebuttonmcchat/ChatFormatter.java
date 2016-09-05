@@ -2,7 +2,7 @@ package buttondevteam.thebuttonmcchat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,15 +12,15 @@ public final class ChatFormatter {
 	private Pattern regex;
 	private Format format;
 	private Color color;
-	private Predicate<String> onmatch;
+	private Function<String, String> onmatch;
 	private String openlink;
 	private Priority priority;
 	private String replacewith;
 
 	private static final String[] RainbowPresserColors = new String[] { "red", "gold", "yellow", "green", "blue",
-			"dark_purple" }; // TODO
+			"dark_purple" }; // TODO: Move out to ChatProcessing
 
-	public ChatFormatter(Pattern regex, Format format, Color color, Predicate<String> onmatch, String openlink,
+	public ChatFormatter(Pattern regex, Format format, Color color, Function<String, String> onmatch, String openlink,
 			Priority priority, String replacewith) {
 		this.regex = regex;
 		this.format = format;
@@ -138,17 +138,16 @@ public final class ChatFormatter {
 			section.Formatters.sort((cf1, cf2) -> cf1.priority.compareTo(cf2.priority));
 			for (ChatFormatter formatter : section.Formatters) {
 				DebugCommand.SendDebugMessage("Applying formatter: " + formatter);
-				if (formatter.onmatch == null || formatter.onmatch.test(originaltext)) {
-					if (formatter.color != null)
-						color = formatter.color;
-					if (formatter.format != null)
-						format = formatter.format;
-					if (formatter.openlink != null)
-						openlink = formatter.openlink;
-					if (formatter.replacewith != null)
-						replacewith = formatter.replacewith;
-				} else
-					DebugCommand.SendDebugMessage("Onmatch predicate returned false.");
+				if (formatter.onmatch != null)
+					originaltext = formatter.onmatch.apply(originaltext);
+				if (formatter.color != null)
+					color = formatter.color;
+				if (formatter.format != null)
+					format = formatter.format;
+				if (formatter.openlink != null)
+					openlink = formatter.openlink;
+				if (formatter.replacewith != null)
+					replacewith = formatter.replacewith;
 			}
 			finalstring.append(",{\"text\":\"");
 			if (replacewith != null)

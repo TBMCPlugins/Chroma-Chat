@@ -19,6 +19,13 @@ import buttondevteam.thebuttonmcchat.ChatFormatter.Priority;
 import buttondevteam.thebuttonmcchat.commands.UnlolCommand;
 
 public class ChatProcessing {
+	private static final Pattern CONSOLE_PING_PATTERN = Pattern.compile("(?i)" + Pattern.quote("@console"));
+	private static final Pattern HASHTAG_PATTERN = Pattern.compile("#(\\w+)");
+	private static final Pattern URL_PATTERN = Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),]+)");
+	private static final Pattern ENTIRE_MESSAGE_PATTERN = Pattern.compile(".+");
+	private static final Pattern UNDERLINED_PATTERN = Pattern.compile("(?<!\\\\)\\_((?:\\\\\\_|[^\\_])+[^\\_\\\\])\\_");
+	private static final Pattern ITALIC_PATTERN = Pattern.compile("(?<!\\\\)\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*");
+	private static final Pattern BOLD_PATTERN = Pattern.compile("(?<!\\\\)\\*\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*\\*");
 	private static boolean pingedconsole = false;
 
 	// Returns e.setCancelled
@@ -69,7 +76,7 @@ public class ChatProcessing {
 			colormode = ChatFormatter.Color.Green;
 		// If greentext, ignore channel or player colors
 
-		formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(".+")).setColor(colormode)
+		formatters.add(new ChatFormatterBuilder().setRegex(ENTIRE_MESSAGE_PATTERN).setColor(colormode)
 				.setPriority(Priority.Low).build());
 
 		String formattedmessage = message;
@@ -79,19 +86,16 @@ public class ChatProcessing {
 
 		String suggestmsg = formattedmessage;
 
-		formatters.add(new ChatFormatterBuilder()
-				.setRegex(Pattern.compile("(?<!\\\\)\\*\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*\\*"))
-				.setFormat(ChatFormatter.Format.Bold).setReplacewith("$1").build());
-		formatters.add(
-				new ChatFormatterBuilder().setRegex(Pattern.compile("(?<!\\\\)\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*"))
-						.setFormat(ChatFormatter.Format.Italic).setReplacewith("$1").build());
-		formatters.add(
-				new ChatFormatterBuilder().setRegex(Pattern.compile("(?<!\\\\)\\_((?:\\\\\\_|[^\\_])+[^\\_\\\\])\\_"))
-						.setFormat(ChatFormatter.Format.Underlined).setReplacewith("$1").build());
+		formatters.add(new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setFormat(ChatFormatter.Format.Bold)
+				.setReplacewith("$1").build());
+		formatters.add(new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setFormat(ChatFormatter.Format.Italic)
+				.setReplacewith("$1").build());
+		formatters.add(new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN)
+				.setFormat(ChatFormatter.Format.Underlined).setReplacewith("$1").build());
 
 		// URLs + Rainbow text
-		formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),]+)"))
-				.setFormat(ChatFormatter.Format.Underlined).setReplacewith("$1").build());
+		formatters.add(new ChatFormatterBuilder().setRegex(URL_PATTERN).setFormat(ChatFormatter.Format.Underlined)
+				.setReplacewith("$1").build());
 		/*
 		 * formattedmessage = formattedmessage .replace( item, String.format(
 		 * "\",\"color\":\"%s\"},{\"text\":\"%s\",\"color\":\"%s\",\"underlined\":\"true\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open URL\",\"color\":\"blue\"}]}}},{\"text\":\""
@@ -99,20 +103,26 @@ public class ChatProcessing {
 		 */
 
 		if (PluginMain.GetPlayers().size() > 0) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("(?i)(");
+			StringBuilder namesb = new StringBuilder();
+			namesb.append("(?i)(");
 			for (Player p : PluginMain.GetPlayers())
-				sb.append(p.getName()).append("|");
-			sb.deleteCharAt(sb.length() - 1);
-			sb.append(")");
+				namesb.append(p.getName()).append("|");
+			namesb.deleteCharAt(namesb.length() - 1);
+			namesb.append(")");
+			StringBuilder nicksb = new StringBuilder();
+			nicksb.append("(?i)(");
+			for (Player p : PluginMain.GetPlayers())
+				nicksb.append(PlayerListener.nicknames.inverse().get(p.getUniqueId())).append("|");
+			nicksb.deleteCharAt(nicksb.length() - 1);
+			nicksb.append(")");
 
-			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(sb.toString()))
+			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(namesb.toString()))
 					.setColor(ChatFormatter.Color.Aqua).setOnmatch((String match) -> {
 						Player p = Bukkit.getPlayer(match);
 						if (p == null) {
 							PluginMain.Instance.getLogger()
 									.warning("Error: Can't find player " + match + " but it was reported as online.");
-							return false;
+							return "§c" + match + "§r";
 						}
 						ChatPlayer mpp = ChatPlayer.GetFromPlayer(p);
 						if (PlayerListener.NotificationSound == null)
@@ -122,55 +132,44 @@ public class ChatProcessing {
 							p.playSound(p.getLocation(), PlayerListener.NotificationSound, 1.0f,
 									(float) PlayerListener.NotificationPitch);
 						String color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
-						return true; // TODO
+						return color + p.getName() + "§r";
 					}).setPriority(Priority.High).build());
 
-			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(sb.toString()))
+			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(nicksb.toString()))
 					.setColor(ChatFormatter.Color.Aqua).setOnmatch((String match) -> {
-						for (String n : PlayerListener.nicknames.keySet()) {
-							String nwithoutformatting = new String(n);
-							int index;
-							while ((index = nwithoutformatting.indexOf("§k")) != -1)
-								nwithoutformatting = nwithoutformatting
-										.replace("§k" + nwithoutformatting.charAt(index + 2), ""); // Support for one random char
-							while ((index = nwithoutformatting.indexOf('§')) != -1)
-								nwithoutformatting = nwithoutformatting
-										.replace("§" + nwithoutformatting.charAt(index + 1), "");
-							if (!match.equalsIgnoreCase(nwithoutformatting))
-								continue; // TODO
-							Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(n));
+						if (PlayerListener.nicknames.containsKey(match)) {
+							Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(match));
 							if (p == null) {
-								PluginMain.Instance.getLogger().warning(
-										"Error: Can't find player " + match + " but it was reported as online.");
-								return false;
+								PluginMain.Instance.getLogger().warning("Error: Can't find player nicknamed " + match
+										+ " but it was reported as online.");
+								return "§c" + match + "§r";
 							}
-							ChatPlayer mpp = ChatPlayer.GetFromPlayer(p);
 							if (PlayerListener.NotificationSound == null)
 								p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO:
 																											// Airhorn
 							else
 								p.playSound(p.getLocation(), PlayerListener.NotificationSound, 1.0f,
 										(float) PlayerListener.NotificationPitch);
-							String color = String.format("§%x",
-									(mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
+							return PlayerListener.essentials.getUser(p).getNickname();
 						}
-						return true; // TODO
+						Bukkit.getServer().getLogger().warning(
+								"Player nicknamed " + match + " not found in nickname map but was reported as online.");
+						return "§c" + match + "§r";
 					}).setPriority(Priority.High).build());
 		}
 
 		pingedconsole = false;
-		formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile("(?i)" + Pattern.quote("@console")))
-				.setColor(ChatFormatter.Color.Aqua).setOnmatch((String match) -> {
+		formatters.add(new ChatFormatterBuilder().setRegex(CONSOLE_PING_PATTERN).setColor(ChatFormatter.Color.Aqua)
+				.setOnmatch((String match) -> {
 					if (!pingedconsole) {
 						System.out.print("\007");
 						pingedconsole = true;
 					}
-					return true;
+					return match;
 				}).setPriority(Priority.High).build());
 
-		formatters
-				.add(new ChatFormatterBuilder().setRegex(Pattern.compile("#(\\w+)")).setColor(ChatFormatter.Color.Blue)
-						.setOpenlink("https://twitter.com/hashtag/$1").setPriority(Priority.High).build());
+		formatters.add(new ChatFormatterBuilder().setRegex(HASHTAG_PATTERN).setColor(ChatFormatter.Color.Blue)
+				.setOpenlink("https://twitter.com/hashtag/$1").setPriority(Priority.High).build());
 
 		/*
 		 * if (!hadurls) { if (formattedmessage.matches("(?i).*" + Pattern.quote("@console") + ".*")) { formattedmessage = formattedmessage.replaceAll( "(?i)" + Pattern.quote("@console"),

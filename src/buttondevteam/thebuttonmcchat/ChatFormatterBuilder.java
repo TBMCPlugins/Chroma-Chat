@@ -1,6 +1,6 @@
 package buttondevteam.thebuttonmcchat;
 
-import java.util.function.Predicate;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import buttondevteam.thebuttonmcchat.ChatFormatter.Color;
@@ -11,7 +11,7 @@ public class ChatFormatterBuilder {
 	private Pattern regex;
 	private Format format;
 	private Color color;
-	private Predicate<String> onmatch;
+	private Function<String, String> onmatch;
 	private String openlink;
 	private Priority priority;
 	private String replacewith;
@@ -47,11 +47,11 @@ public class ChatFormatterBuilder {
 		return this;
 	}
 
-	public Predicate<String> getOnmatch() {
+	public Function<String, String> getOnmatch() {
 		return onmatch;
 	}
 
-	public ChatFormatterBuilder setOnmatch(Predicate<String> onmatch) {
+	public ChatFormatterBuilder setOnmatch(Function<String, String> onmatch) {
 		this.onmatch = onmatch;
 		return this;
 	}

@@ -1,7 +1,6 @@
 package buttondevteam.thebuttonmcchat;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -44,6 +43,8 @@ import buttondevteam.bucket.core.TBMCPlayerSaveEvent;
 import buttondevteam.thebuttonmcchat.commands.ucmds.KittycannonCommand;
 
 import com.earth2me.essentials.Essentials;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
@@ -55,7 +56,10 @@ import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
 
 public class PlayerListener implements Listener {
-	public static HashMap<String, UUID> nicknames = new HashMap<>();
+	/**
+	 * Does not contain format codes
+	 */
+	public static BiMap<String, UUID> nicknames = HashBiMap.create();
 
 	public static boolean Enable = false;
 
@@ -125,7 +129,17 @@ public class PlayerListener implements Listener {
 			timer.schedule(tt, 15 * 1000);
 		}
 
-		nicknames.put(essentials.getUser(p).getNickname(), p.getUniqueId());
+		String nwithoutformatting = essentials.getUser(p).getNickname();
+		int index;
+		while ((index = nwithoutformatting.indexOf("§k")) != -1)
+			nwithoutformatting = nwithoutformatting.replace("§k" + nwithoutformatting.charAt(index + 2), ""); // Support
+																												// for
+																												// one
+																												// random
+																												// char
+		while ((index = nwithoutformatting.indexOf('§')) != -1)
+			nwithoutformatting = nwithoutformatting.replace("§" + nwithoutformatting.charAt(index + 1), "");
+		nicknames.put(nwithoutformatting, p.getUniqueId());
 
 		cp.RPMode = true;
 
@@ -385,19 +399,9 @@ public class PlayerListener implements Listener {
 	public void onTabComplete(PlayerChatTabCompleteEvent e) {
 		String name = e.getLastToken();
 		for (String nickname : nicknames.keySet()) {
-			String nwithoutformatting = nickname;
-			int index;
-			while ((index = nwithoutformatting.indexOf("§k")) != -1)
-				nwithoutformatting = nwithoutformatting.replace("§k" + nwithoutformatting.charAt(index + 2), ""); // Support
-																													// for
-																													// one
-																													// random
-																													// char
-			while ((index = nwithoutformatting.indexOf('§')) != -1)
-				nwithoutformatting = nwithoutformatting.replace("§" + nwithoutformatting.charAt(index + 1), "");
-			if (nwithoutformatting.startsWith(name)
-					&& !nwithoutformatting.equals(Bukkit.getPlayer(nicknames.get(nickname)).getName()))
-				e.getTabCompletions().add(nwithoutformatting);
+			if (nickname.startsWith(name)
+					&& !nickname.equals(Bukkit.getPlayer(nicknames.get(nickname)).getName()))
+				e.getTabCompletions().add(nickname);
 		}
 	}
 
