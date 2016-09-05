@@ -10,13 +10,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
 
 import com.earth2me.essentials.Essentials;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 
+import buttondevteam.thebuttonmcchat.ChatFormatter.Color;
 import buttondevteam.thebuttonmcchat.ChatFormatter.Priority;
 import buttondevteam.thebuttonmcchat.commands.UnlolCommand;
+import buttondevteam.thebuttonmcchat.commands.ucmds.admin.DebugCommand;
 
 public class ChatProcessing {
 	private static final Pattern CONSOLE_PING_PATTERN = Pattern.compile("(?i)" + Pattern.quote("@console"));
@@ -26,6 +32,8 @@ public class ChatProcessing {
 	private static final Pattern UNDERLINED_PATTERN = Pattern.compile("(?<!\\\\)\\_((?:\\\\\\_|[^\\_])+[^\\_\\\\])\\_");
 	private static final Pattern ITALIC_PATTERN = Pattern.compile("(?<!\\\\)\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*");
 	private static final Pattern BOLD_PATTERN = Pattern.compile("(?<!\\\\)\\*\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*\\*");
+	private static final String[] RainbowPresserColors = new String[] { "red", "gold", "yellow", "green", "blue",
+			"dark_purple" }; // TODO
 	private static boolean pingedconsole = false;
 
 	// Returns e.setCancelled
@@ -80,9 +88,6 @@ public class ChatProcessing {
 				.setPriority(Priority.Low).build());
 
 		String formattedmessage = message;
-		formattedmessage = formattedmessage.replace("\\", "\\\\");
-		formattedmessage = formattedmessage.replace("\"", "\\\"");
-		// ^ Tellraw support, needed for both the message and suggestmsg
 
 		String suggestmsg = formattedmessage;
 
@@ -92,6 +97,8 @@ public class ChatProcessing {
 				.setReplacewith("$1").build());
 		formatters.add(new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN)
 				.setFormat(ChatFormatter.Format.Underlined).setReplacewith("$1").build());
+		formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile("\\\\([\\*\\_\\\\])")).setReplacewith("$1")
+				.build());
 
 		// URLs + Rainbow text
 		formatters.add(new ChatFormatterBuilder().setRegex(URL_PATTERN).setFormat(ChatFormatter.Format.Underlined)
@@ -121,7 +128,7 @@ public class ChatProcessing {
 						Player p = Bukkit.getPlayer(match);
 						if (p == null) {
 							PluginMain.Instance.getLogger()
-									.warning("Error: Can't find player " + match + " but it was reported as online.");
+									.warning("Error: Can't find player " + match + " but was reported as online.");
 							return "§c" + match + "§r";
 						}
 						ChatPlayer mpp = ChatPlayer.GetFromPlayer(p);
@@ -140,8 +147,8 @@ public class ChatProcessing {
 						if (PlayerListener.nicknames.containsKey(match)) {
 							Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(match));
 							if (p == null) {
-								PluginMain.Instance.getLogger().warning("Error: Can't find player nicknamed " + match
-										+ " but it was reported as online.");
+								PluginMain.Instance.getLogger().warning(
+										"Error: Can't find player nicknamed " + match + " but was reported as online.");
 								return "§c" + match + "§r";
 							}
 							if (PlayerListener.NotificationSound == null)
@@ -177,49 +184,53 @@ public class ChatProcessing {
 		 * "\",\"color\":\"%s\"},{\"text\":\"§b@console§r\",\"color\":\"blue\"},{\"text\":\"" , colormode)); System.out.println("\007"); } }
 		 */
 
-		StringBuilder json = new StringBuilder();
-		json.append("[\"\",");
-		json.append(String.format(
-				"%s{\"text\":\"[%s]%s\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"Copy message\",\"color\":\"blue\"}},\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"%s\"}},",
-				(mp != null && mp.ChatOnly
-						? "{\"text\":\"[C]\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Chat only\",\"color\":\"blue\"}]}}},"
-						: ""),
-				currentchannel.DisplayName, (mp != null && !mp.RPMode ? "[OOC]" : ""), suggestmsg));
-		json.append("{\"text\":\" <\"},");
-		json.append(String.format("{\"text\":\"%s%s\",", (player != null ? player.getDisplayName() : sender.getName()),
-				(mp != null ? mp.GetFormattedFlair() : "")));
-		json.append("\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[");
-		json.append(String.format("{\"text\":\"Playername: %s\n\",",
-				(player != null ? player.getName() : sender.getName())));
-		json.append(String.format("\"color\":\"aqua\"},{\"text\":\"World: %s\n\",\"color\":\"white\"},",
-				(player != null ? player.getWorld().getName() : "-")));
-		json.append(String.format("{\"text\":\"Respect: %s%s%s\",\"color\":\"white\"}]}}},",
-				(mp != null ? (mp.FCount / (double) mp.FDeaths) : "Infinite"),
-				(mp != null && mp.UserName != null && !mp.UserName.isEmpty() ? "\nUserName: " + mp.UserName : ""),
-				(mp != null && mp.PlayerName.equals("\nAlpha_Bacca44") ? "\nDeaths: " + PlayerListener.AlphaDeaths
-						: "")));
-		json.append("{\"text\":\"> \",\"color\":\"white\"}");
-
-		/*
-		 * int index = -1; ArrayList<String> list = new ArrayList<String>(); while ((index = message.indexOf("#", index + 1)) != -1) { int index2 = message.indexOf(" ", index + 1); if (index2 == -1)
-		 * index2 = message.length(); int index3 = message.indexOf("#", index + 1); if (index3 != -1 && index3 < index2) // A # occurs before a // space index2 = index3; String original =
-		 * message.substring(index + 1, index2); list.add(original); } if (!hadurls) { for (String original : list) // Hashtags formattedmessage = formattedmessage .replace( "#" + original,
-		 * String.format(
-		 * "\",\"color\":\"%s\"},{\"text\":\"#%s\",\"color\":\"blue\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"https://twitter.com/hashtag/%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open on Twitter\",\"color\":\"blue\"}]}}},{\"text\":\""
-		 * , colormode, original, original)); }
-		 */
-
-		/*
-		 * json.append(String.format("{\"text\":\"%s\",\"color\":\"%s\"}]", ChatFormatter.Combine(formatters, formattedmessage), colormode));
-		 */
-		json.append(ChatFormatter.Combine(formatters, formattedmessage));
-		json.append("]");
-		String jsonstr = json.toString();
+		TellrawPart json = new TellrawPart(""); // TODO: Put flair into hovertext
+		if (mp != null && mp.ChatOnly) {
+			json.addExtra(new TellrawPart("[C]").setHoverEvent(
+					TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT, "Chat only")));
+		}
+		json.addExtra(new TellrawPart((currentchannel.DisplayName) + (mp != null && !mp.RPMode ? "[OOC]" : ""))
+				.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
+						new TellrawPart("Copy message").setColor(Color.Blue)))
+				.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAC, TellrawEvent.ClickAction.SUGGEST_COMMAND,
+						suggestmsg)));
+		json.addExtra(new TellrawPart(" <"));
+		json.addExtra(
+				new TellrawPart(
+						(player != null ? player.getDisplayName() : sender.getName()))
+								.setHoverEvent(
+										TellrawEvent
+												.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
+														new TellrawPart("")
+																.addExtra(new TellrawPart(
+																		String.format("Playername: %s\n",
+																				(player != null ? player.getName()
+																						: sender.getName())))
+																								.setColor(Color.Aqua))
+																.addExtra(new TellrawPart(String.format("World: %s\n",
+																		(player != null ? player.getWorld().getName()
+																				: "-"))))
+																.addExtra(new TellrawPart(String.format(
+																		"Respect: %s%s%s",
+																		(mp != null ? (mp.FCount / (double) mp.FDeaths)
+																				: "Infinite"),
+																		(mp != null && mp.UserName != null
+																				&& !mp.UserName.isEmpty()
+																						? "\nUserName: " + mp.UserName
+																						: ""),
+																		(mp != null && mp.PlayerName.equals(
+																				"\nAlpha_Bacca44") ? "\nDeaths: "
+																						+ PlayerListener.AlphaDeaths
+																						: "")))))));
+		json.addExtra(new TellrawPart("> "));
+		ChatFormatter.Combine(formatters, formattedmessage, json);
+		String jsonstr = new Gson().toJson(json);
 		if (jsonstr.length() >= 32767) {
 			sender.sendMessage(
 					"§cError: Message too large. Try shortening it, or remove hashtags and other formatting.");
 			return true;
 		}
+		DebugCommand.SendDebugMessage(jsonstr);
 		if (currentchannel.equals(Channel.TownChat) || currentchannel.equals(Channel.NationChat)) {
 			if (player == null) {
 				sender.sendMessage("§cYou are not a player!");

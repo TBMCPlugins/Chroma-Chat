@@ -17,9 +17,6 @@ public final class ChatFormatter {
 	private Priority priority;
 	private String replacewith;
 
-	private static final String[] RainbowPresserColors = new String[] { "red", "gold", "yellow", "green", "blue",
-			"dark_purple" }; // TODO: Move out to ChatProcessing
-
 	public ChatFormatter(Pattern regex, Format format, Color color, Function<String, String> onmatch, String openlink,
 			Priority priority, String replacewith) {
 		this.regex = regex;
@@ -31,7 +28,7 @@ public final class ChatFormatter {
 		this.replacewith = replacewith;
 	}
 
-	public static String Combine(List<ChatFormatter> formatters, String str) {
+	public static void Combine(List<ChatFormatter> formatters, String str, TellrawPart tp) {
 		/*
 		 * This method assumes that there is always a global formatter
 		 */
@@ -125,7 +122,6 @@ public final class ChatFormatter {
 					cont = false;
 			}
 		}
-		StringBuilder finalstring = new StringBuilder();
 		for (int i = 0; i < sections.size(); i++) {
 			FormattedSection section = sections.get(i);
 			DebugCommand.SendDebugMessage("Applying section: " + section);
@@ -135,7 +131,7 @@ public final class ChatFormatter {
 			Format format = null;
 			String openlink = null;
 			String replacewith = null;
-			section.Formatters.sort((cf1, cf2) -> cf1.priority.compareTo(cf2.priority));
+			section.Formatters.sort((cf2, cf1) -> cf1.priority.compareTo(cf2.priority));
 			for (ChatFormatter formatter : section.Formatters) {
 				DebugCommand.SendDebugMessage("Applying formatter: " + formatter);
 				if (formatter.onmatch != null)
@@ -149,32 +145,23 @@ public final class ChatFormatter {
 				if (formatter.replacewith != null)
 					replacewith = formatter.replacewith;
 			}
-			finalstring.append(",{\"text\":\"");
+			TellrawPart newtp = new TellrawPart("");
 			if (replacewith != null)
-				finalstring.append(replacewith.replace("$1", section.Matches.get(0)));
+				newtp.setText(replacewith.replace("$1", section.Matches.get(0)));
 			else
-				finalstring.append(originaltext);
-			finalstring.append("\"");
-			if (color != null) {
-				finalstring.append(",\"color\":\"");
-				finalstring.append(color.name);
-				finalstring.append("\"");
-			}
-			if (format != null) {
-				finalstring.append(",\"");
-				finalstring.append(format.name);
-				finalstring.append("\":\"true\"");
-			}
+				newtp.setText(originaltext);
+			if (color != null)
+				newtp.setColor(color);
+			if (format != null)
+				newtp.setFormat(format);
 			if (openlink != null && openlink.length() > 0) {
-				finalstring.append(String.format(
-						",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click to open\",\"color\":\"blue\"}]}}",
-						(section.Matches.size() > 0 ? openlink.replace("$1", section.Matches.get(0)) : openlink)));
+				newtp.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAC, TellrawEvent.ClickAction.OPEN_URL,
+						(section.Matches.size() > 0 ? openlink.replace("$1", section.Matches.get(0)) : openlink)))
+						.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
+								new TellrawPart("Click to open").setColor(Color.Blue)));
 			}
-			finalstring.append("}");
+			tp.addExtra(newtp);
 		}
-		DebugCommand.SendDebugMessage("Finalstring: " + finalstring);
-		return finalstring.toString();
-
 	}
 
 	@Override
@@ -183,7 +170,7 @@ public final class ChatFormatter {
 				.append(", ").append(priority).append(")").toString();
 	}
 
-	public enum Format { // TODO: Flag?
+	public enum Format implements TellrawSerializableEnum { // TODO: Flag?
 		Bold("bold"), Underlined("underlined"), Italic("italic"), Strikethrough("strikethrough"), Obfuscated(
 				"obfuscated");
 		// TODO: Add format codes to /u c <mode>
@@ -193,12 +180,13 @@ public final class ChatFormatter {
 			this.name = name;
 		}
 
-		public String GetName() {
+		@Override
+		public String getName() {
 			return name;
 		}
 	}
 
-	public enum Color {
+	public enum Color implements TellrawSerializableEnum {
 		Black("black"), DarkBlue("dark_blue"), DarkGreen("dark_green"), DarkAqua("dark_aqua"), DarkRed(
 				"dark_red"), DarkPurple("dark_purple"), Gold("gold"), Gray("gray"), DarkGray("dark_gray"), Blue(
 						"blue"), Green("green"), Aqua("aqua"), Red(
@@ -210,7 +198,8 @@ public final class ChatFormatter {
 			this.name = name;
 		}
 
-		public String GetName() {
+		@Override
+		public String getName() {
 			return name;
 		}
 	}
