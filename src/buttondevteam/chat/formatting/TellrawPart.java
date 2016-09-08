@@ -7,7 +7,12 @@ import java.util.List;
 public final class TellrawPart implements Serializable {
 	private static final long serialVersionUID = 4125357644462144024L;
 	private ChatFormatter.Color color;
-	private ChatFormatter.Format format;
+	private transient ChatFormatter.Format format;
+	private boolean italics;
+	private boolean bold;
+	private boolean underlined;
+	private boolean strikethrough;
+	private boolean obfuscated;
 	private List<TellrawPart> extra = new ArrayList<>();
 	private String text;
 	private TellrawEvent<TellrawEvent.HoverAction> hoverEvent;
@@ -32,6 +37,23 @@ public final class TellrawPart implements Serializable {
 
 	public TellrawPart setFormat(ChatFormatter.Format format) {
 		this.format = format;
+		this.italics = false;
+		this.bold = false;
+		this.underlined = false;
+		this.strikethrough = false;
+		this.obfuscated = false;
+		if (format.equals(ChatFormatter.Format.Italic))
+			this.italics = true;
+		else if (format.equals(ChatFormatter.Format.Bold))
+			this.bold = true;
+		else if (format.equals(ChatFormatter.Format.Underlined))
+			this.underlined = true;
+		else if (format.equals(ChatFormatter.Format.Strikethrough))
+			this.strikethrough = true;
+		else if (format.equals(ChatFormatter.Format.Obfuscated))
+			this.obfuscated = true;
+		else // TODO: Don't serialize false values, find out why is it bugging
+			throw new UnsupportedOperationException("Trying to set to an unknown format!");
 		return this;
 	}
 

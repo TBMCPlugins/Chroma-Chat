@@ -6,8 +6,7 @@ public final class TellrawEvent<T extends TellrawEvent.Action> implements Serial
 	private static final long serialVersionUID = -1681364161210561505L;
 	private boolean hoverEvent;
 	private T action;
-	private String value;
-	private TellrawPart valueobj; // TODO: FIx serializer, actually add own serializer, etc.
+	private Object value;
 
 	private TellrawEvent(Class<T> cl, T action, String value) {
 		this.hoverEvent = HoverAction.class.equals(cl);
@@ -18,7 +17,7 @@ public final class TellrawEvent<T extends TellrawEvent.Action> implements Serial
 	private TellrawEvent(Class<T> cl, T action, TellrawPart value) {
 		this.hoverEvent = HoverAction.class.equals(cl);
 		this.action = action;
-		this.valueobj = value;
+		this.value = value;
 	}
 
 	public static final Class<HoverAction> HoverAC = HoverAction.class;
@@ -40,7 +39,7 @@ public final class TellrawEvent<T extends TellrawEvent.Action> implements Serial
 		return action;
 	}
 
-	public String getValue() {
+	public Object getValue() {
 		return value;
 	}
 

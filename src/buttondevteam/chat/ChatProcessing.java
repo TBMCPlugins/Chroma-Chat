@@ -1,6 +1,7 @@
 package buttondevteam.chat;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
@@ -11,9 +12,7 @@ import org.bukkit.scoreboard.Objective;
 
 import com.earth2me.essentials.Essentials;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.GsonBuilder;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -25,6 +24,8 @@ import buttondevteam.chat.formatting.ChatFormatter;
 import buttondevteam.chat.formatting.ChatFormatterBuilder;
 import buttondevteam.chat.formatting.TellrawEvent;
 import buttondevteam.chat.formatting.TellrawPart;
+import buttondevteam.chat.formatting.TellrawSerializableEnum;
+import buttondevteam.chat.formatting.TellrawSerializer;
 import buttondevteam.chat.formatting.ChatFormatter.Color;
 import buttondevteam.chat.formatting.ChatFormatter.Priority;
 
@@ -193,29 +194,49 @@ public class ChatProcessing {
 			json.addExtra(new TellrawPart("[C]").setHoverEvent(
 					TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT, "Chat only")));
 		}
-		json.addExtra(new TellrawPart((currentchannel.DisplayName) + (mp != null && !mp.RPMode ? "[OOC]" : ""))
-				.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
-						new TellrawPart("Copy message").setColor(Color.Blue)))
-				.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAC, TellrawEvent.ClickAction.SUGGEST_COMMAND,
-						suggestmsg)));
+		json.addExtra(
+				new TellrawPart(("[" + currentchannel.DisplayName) + "]" + (mp != null && !mp.RPMode ? "[OOC]" : ""))
+						.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
+								new TellrawPart("Copy message").setColor(Color.Blue)))
+						.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAC,
+								TellrawEvent.ClickAction.SUGGEST_COMMAND, suggestmsg)));
 		json.addExtra(new TellrawPart(" <"));
-		json.addExtra(new TellrawPart((player != null ? player.getDisplayName() : sender.getName())).setHoverEvent(
-				TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT, new TellrawPart("")
-						.addExtra(new TellrawPart(String.format("Flair: %s", mp.GetFormattedFlair())))
-						.addExtra(new TellrawPart(String.format("Playername: %s\n",
-								(player != null ? player.getName() : sender.getName()))).setColor(Color.Aqua))
-						.addExtra(new TellrawPart(
-								String.format("World: %s\n", (player != null ? player.getWorld().getName() : "-"))))
-						.addExtra(new TellrawPart(String.format("Respect: %s%s%s",
-								(mp != null ? (mp.FCount / (double) mp.FDeaths) : "Infinite"),
-								(mp != null && mp.UserName != null && !mp.UserName.isEmpty()
-										? "\nUserName: " + mp.UserName : ""),
-								(mp != null && mp.PlayerName.equals("\nAlpha_Bacca44")
-										? "\nDeaths: " + PlayerListener.AlphaDeaths
-										: "")))))));
+		json.addExtra(
+				new TellrawPart(
+						(player != null ? player.getDisplayName() : sender.getName()))
+								.setHoverEvent(
+										TellrawEvent
+												.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
+														new TellrawPart("")
+																.addExtra(new TellrawPart(String.format("Flair: %s",
+																		(mp != null ? mp.GetFormattedFlair() : "-"))))
+																.addExtra(new TellrawPart(
+																		String.format("\nPlayername: %s\n",
+																				(player != null ? player.getName()
+																						: sender.getName())))
+																								.setColor(Color.Aqua))
+																.addExtra(new TellrawPart(String.format("World: %s\n",
+																		(player != null ? player.getWorld().getName()
+																				: "-"))))
+																.addExtra(new TellrawPart(String.format(
+																		"Respect: %s%s%s",
+																		(mp != null ? (mp.FCount / (double) mp.FDeaths)
+																				: "Infinite"),
+																		(mp != null && mp.UserName != null
+																				&& !mp.UserName.isEmpty()
+																						? "\nUserName: " + mp.UserName
+																						: ""),
+																		(mp != null && mp.PlayerName.equals(
+																				"\nAlpha_Bacca44") ? "\nDeaths: "
+																						+ PlayerListener.AlphaDeaths
+																						: "")))))));
 		json.addExtra(new TellrawPart("> "));
 		ChatFormatter.Combine(formatters, formattedmessage, json);
-		String jsonstr = new Gson().toJson(json);
+		Gson gson = new GsonBuilder()
+				.registerTypeHierarchyAdapter(TellrawSerializableEnum.class, new TellrawSerializer.TwEnum())
+				.registerTypeHierarchyAdapter(Collection.class, new TellrawSerializer.TwCollection())
+				.disableHtmlEscaping().create();
+		String jsonstr = gson.toJson(json);
 		if (jsonstr.length() >= 32767) {
 			sender.sendMessage(
 					"§cError: Message too long. Try shortening it, or remove hashtags and other formatting.");
@@ -266,7 +287,7 @@ public class ChatProcessing {
 					}
 				}
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-						String.format("tellraw @a[score_town=%d,score_town_min=%d] %s", index, index, json.toString()));
+						String.format("tellraw @a[score_town=%d,score_town_min=%d] %s", index, index, jsonstr));
 			} catch (IllegalStateException e) {
 				e.printStackTrace();
 				player.sendMessage("§cAn error occured while sending the message. (IllegalStateException)");
@@ -312,8 +333,8 @@ public class ChatProcessing {
 					} catch (Exception e) {
 					}
 				}
-				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console, String
-						.format("tellraw @a[score_nation=%d,score_nation_min=%d] %s", index, index, json.toString()));
+				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
+						String.format("tellraw @a[score_nation=%d,score_nation_min=%d] %s", index, index, jsonstr));
 			} catch (IllegalStateException e) {
 				e.printStackTrace();
 				player.sendMessage("§cAn error occured while sending the message. (IllegalStateException)");
@@ -337,7 +358,7 @@ public class ChatProcessing {
 						obj.getScore(p.getName()).setScore(0);
 				}
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-						String.format("tellraw @a[score_admin=%d,score_admin_min=%d] %s", 1, 1, json.toString()));
+						String.format("tellraw @a[score_admin=%d,score_admin_min=%d] %s", 1, 1, jsonstr));
 			} catch (IllegalStateException e) {
 				e.printStackTrace();
 				player.sendMessage("§cAn error occured while sending the message. (IllegalStateException)");
@@ -361,7 +382,7 @@ public class ChatProcessing {
 						obj.getScore(p.getName()).setScore(0);
 				}
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-						String.format("tellraw @a[score_mod=%d,score_mod_min=%d] %s", 1, 1, json.toString()));
+						String.format("tellraw @a[score_mod=%d,score_mod_min=%d] %s", 1, 1, jsonstr));
 			} catch (IllegalStateException e) {
 				e.printStackTrace();
 				player.sendMessage("§cAn error occured while sending the message. (IllegalStateException)");
@@ -373,7 +394,7 @@ public class ChatProcessing {
 			}
 		} else
 			PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-					String.format("tellraw @a %s", json.toString()));
+					String.format("tellraw @a %s", jsonstr));
 		PluginMain.Instance.getServer().getConsoleSender()
 				.sendMessage(String.format("[%s] <%s%s> %s", currentchannel.DisplayName,
 						(player != null ? player.getDisplayName() : sender.getName()),
