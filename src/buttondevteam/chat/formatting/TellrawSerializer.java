@@ -39,4 +39,19 @@ public abstract class TellrawSerializer {
 			return array;
 		}
 	}
+
+	public static class TwBool extends TypeAdapter<Boolean> {
+		@Override
+		public Boolean read(JsonReader reader) throws IOException {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void write(JsonWriter writer, Boolean val) throws IOException {
+			if (val)
+				writer.value(val);
+			else
+				writer.nullValue();
+		}
+	}
 }

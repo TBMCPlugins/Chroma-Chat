@@ -146,7 +146,7 @@ public final class ChatFormatter {
 					replacewith = formatter.replacewith;
 			}
 			TellrawPart newtp = new TellrawPart("");
-			if (replacewith != null)
+			if (replacewith != null) // TODO: The ranges may change when formattings are nested, and this can't handle that
 				newtp.setText(replacewith.replace("$1", section.Matches.get(0)));
 			else
 				newtp.setText(originaltext);

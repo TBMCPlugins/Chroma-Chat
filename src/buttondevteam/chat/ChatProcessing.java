@@ -27,7 +27,12 @@ import buttondevteam.chat.formatting.TellrawPart;
 import buttondevteam.chat.formatting.TellrawSerializableEnum;
 import buttondevteam.chat.formatting.TellrawSerializer;
 import buttondevteam.chat.formatting.ChatFormatter.Color;
+import buttondevteam.chat.formatting.ChatFormatter.Format;
 import buttondevteam.chat.formatting.ChatFormatter.Priority;
+import buttondevteam.chat.formatting.TellrawEvent.ClickAction;
+import buttondevteam.chat.formatting.TellrawEvent.HoverAction;
+import buttondevteam.chat.formatting.TellrawSerializer.TwCollection;
+import buttondevteam.chat.formatting.TellrawSerializer.TwEnum;
 
 public class ChatProcessing {
 	private static final Pattern CONSOLE_PING_PATTERN = Pattern.compile("(?i)" + Pattern.quote("@console"));
@@ -35,7 +40,8 @@ public class ChatProcessing {
 	private static final Pattern URL_PATTERN = Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),]+)");
 	private static final Pattern ENTIRE_MESSAGE_PATTERN = Pattern.compile(".+");
 	private static final Pattern UNDERLINED_PATTERN = Pattern.compile("(?<!\\\\)\\_((?:\\\\\\_|[^\\_])+[^\\_\\\\])\\_");
-	private static final Pattern ITALIC_PATTERN = Pattern.compile("(?<!\\\\)\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*");
+	private static final Pattern ITALIC_PATTERN = Pattern
+			.compile("(?<![\\\\\\*])\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*(?!\\*)");
 	private static final Pattern BOLD_PATTERN = Pattern.compile("(?<!\\\\)\\*\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*\\*");
 	private static final String[] RainbowPresserColors = new String[] { "red", "gold", "yellow", "green", "blue",
 			"dark_purple" }; // TODO
@@ -235,7 +241,8 @@ public class ChatProcessing {
 		Gson gson = new GsonBuilder()
 				.registerTypeHierarchyAdapter(TellrawSerializableEnum.class, new TellrawSerializer.TwEnum())
 				.registerTypeHierarchyAdapter(Collection.class, new TellrawSerializer.TwCollection())
-				.disableHtmlEscaping().create();
+				.registerTypeAdapter(Boolean.class, new TellrawSerializer.TwBool())
+				.registerTypeAdapter(boolean.class, new TellrawSerializer.TwBool()).disableHtmlEscaping().create();
 		String jsonstr = gson.toJson(json);
 		if (jsonstr.length() >= 32767) {
 			sender.sendMessage(

@@ -4,11 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public final class TellrawPart implements Serializable {
 	private static final long serialVersionUID = 4125357644462144024L;
 	private ChatFormatter.Color color;
 	private transient ChatFormatter.Format format;
-	private boolean italics;
+	private boolean italic;
 	private boolean bold;
 	private boolean underlined;
 	private boolean strikethrough;
@@ -37,13 +38,13 @@ public final class TellrawPart implements Serializable {
 
 	public TellrawPart setFormat(ChatFormatter.Format format) {
 		this.format = format;
-		this.italics = false;
+		this.italic = false;
 		this.bold = false;
 		this.underlined = false;
 		this.strikethrough = false;
 		this.obfuscated = false;
 		if (format.equals(ChatFormatter.Format.Italic))
-			this.italics = true;
+			this.italic = true;
 		else if (format.equals(ChatFormatter.Format.Bold))
 			this.bold = true;
 		else if (format.equals(ChatFormatter.Format.Underlined))
@@ -52,7 +53,7 @@ public final class TellrawPart implements Serializable {
 			this.strikethrough = true;
 		else if (format.equals(ChatFormatter.Format.Obfuscated))
 			this.obfuscated = true;
-		else // TODO: Don't serialize false values, find out why is it bugging
+		else
 			throw new UnsupportedOperationException("Trying to set to an unknown format!");
 		return this;
 	}

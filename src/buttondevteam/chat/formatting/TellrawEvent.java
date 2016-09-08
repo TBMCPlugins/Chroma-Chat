@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public final class TellrawEvent<T extends TellrawEvent.Action> implements Serializable {
 	private static final long serialVersionUID = -1681364161210561505L;
-	private boolean hoverEvent;
+	private transient boolean hoverEvent;
 	private T action;
 	private Object value;
 
