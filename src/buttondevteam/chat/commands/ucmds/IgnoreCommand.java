@@ -32,7 +32,7 @@ public final class IgnoreCommand extends UCommandBase {
 			p.FlairState = FlairStates.Ignored;
 			p.SetFlair(ChatPlayer.FlairTimeNone);
 			p.UserName = "";
-			player.sendMessage("§bYou have ignored the message. You can still use /u accept to get a flair.§r");
+			player.sendMessage("§bYou have ignored the message.§r");
 		} else
 			player.sendMessage("§cYou already ignored the message.§r");
 		return true;

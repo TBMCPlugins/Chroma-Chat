@@ -199,39 +199,26 @@ public class ChatProcessing {
 				.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAC, TellrawEvent.ClickAction.SUGGEST_COMMAND,
 						suggestmsg)));
 		json.addExtra(new TellrawPart(" <"));
-		json.addExtra(
-				new TellrawPart(
-						(player != null ? player.getDisplayName() : sender.getName()))
-								.setHoverEvent(
-										TellrawEvent
-												.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
-														new TellrawPart("")
-																.addExtra(new TellrawPart(
-																		String.format("Playername: %s\n",
-																				(player != null ? player.getName()
-																						: sender.getName())))
-																								.setColor(Color.Aqua))
-																.addExtra(new TellrawPart(String.format("World: %s\n",
-																		(player != null ? player.getWorld().getName()
-																				: "-"))))
-																.addExtra(new TellrawPart(String.format(
-																		"Respect: %s%s%s",
-																		(mp != null ? (mp.FCount / (double) mp.FDeaths)
-																				: "Infinite"),
-																		(mp != null && mp.UserName != null
-																				&& !mp.UserName.isEmpty()
-																						? "\nUserName: " + mp.UserName
-																						: ""),
-																		(mp != null && mp.PlayerName.equals(
-																				"\nAlpha_Bacca44") ? "\nDeaths: "
-																						+ PlayerListener.AlphaDeaths
-																						: "")))))));
+		json.addExtra(new TellrawPart((player != null ? player.getDisplayName() : sender.getName())).setHoverEvent(
+				TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT, new TellrawPart("")
+						.addExtra(new TellrawPart(String.format("Flair: %s", mp.GetFormattedFlair())))
+						.addExtra(new TellrawPart(String.format("Playername: %s\n",
+								(player != null ? player.getName() : sender.getName()))).setColor(Color.Aqua))
+						.addExtra(new TellrawPart(
+								String.format("World: %s\n", (player != null ? player.getWorld().getName() : "-"))))
+						.addExtra(new TellrawPart(String.format("Respect: %s%s%s",
+								(mp != null ? (mp.FCount / (double) mp.FDeaths) : "Infinite"),
+								(mp != null && mp.UserName != null && !mp.UserName.isEmpty()
+										? "\nUserName: " + mp.UserName : ""),
+								(mp != null && mp.PlayerName.equals("\nAlpha_Bacca44")
+										? "\nDeaths: " + PlayerListener.AlphaDeaths
+										: "")))))));
 		json.addExtra(new TellrawPart("> "));
 		ChatFormatter.Combine(formatters, formattedmessage, json);
 		String jsonstr = new Gson().toJson(json);
 		if (jsonstr.length() >= 32767) {
 			sender.sendMessage(
-					"§cError: Message too large. Try shortening it, or remove hashtags and other formatting.");
+					"§cError: Message too long. Try shortening it, or remove hashtags and other formatting.");
 			return true;
 		}
 		DebugCommand.SendDebugMessage(jsonstr);
