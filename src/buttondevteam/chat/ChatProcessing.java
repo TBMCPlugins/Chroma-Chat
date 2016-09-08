@@ -19,10 +19,14 @@ import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 
-import buttondevteam.chat.ChatFormatter.Color;
-import buttondevteam.chat.ChatFormatter.Priority;
 import buttondevteam.chat.commands.UnlolCommand;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
+import buttondevteam.chat.formatting.ChatFormatter;
+import buttondevteam.chat.formatting.ChatFormatterBuilder;
+import buttondevteam.chat.formatting.TellrawEvent;
+import buttondevteam.chat.formatting.TellrawPart;
+import buttondevteam.chat.formatting.ChatFormatter.Color;
+import buttondevteam.chat.formatting.ChatFormatter.Priority;
 
 public class ChatProcessing {
 	private static final Pattern CONSOLE_PING_PATTERN = Pattern.compile("(?i)" + Pattern.quote("@console"));

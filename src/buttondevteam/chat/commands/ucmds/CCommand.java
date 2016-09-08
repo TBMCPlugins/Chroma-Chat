@@ -3,9 +3,9 @@ package buttondevteam.chat.commands.ucmds;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import buttondevteam.chat.ChatFormatter;
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
+import buttondevteam.chat.formatting.ChatFormatter;
 
 public class CCommand extends UCommandBase {
 

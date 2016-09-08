@@ -1,4 +1,4 @@
-package buttondevteam.chat;
+package buttondevteam.chat.formatting;
 
 import java.io.IOException;
 

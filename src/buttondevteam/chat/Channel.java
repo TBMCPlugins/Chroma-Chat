@@ -1,5 +1,7 @@
 package buttondevteam.chat;
 
+import buttondevteam.chat.formatting.ChatFormatter;
+
 public class Channel {
 	public final String DisplayName;
 	public final ChatFormatter.Color Color;
