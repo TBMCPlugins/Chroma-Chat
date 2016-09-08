@@ -1,5 +1,5 @@
 name: ButtonChat
-main: buttondevteam.thebuttonmcchat.PluginMain
+main: buttondevteam.chat.PluginMain
 version: 4.0
 commands:
     u:
