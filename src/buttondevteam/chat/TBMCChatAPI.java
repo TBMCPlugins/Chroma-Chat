@@ -25,9 +25,7 @@ public class TBMCChatAPI {
 	 *            commands.
 	 */
 	public void AddCommands(JavaPlugin plugin, Class<? extends TBMCCommandBase> acmdclass) {
-		CommandCaller.AddCommands(plugin, acmdclass); // TODO: Make it scan for
-														// all "buttondevteam"
-														// packages
+		CommandCaller.AddCommands(plugin, acmdclass); // TODO: Make it scan for all "buttondevteam" packages
 	}
 
 	/**

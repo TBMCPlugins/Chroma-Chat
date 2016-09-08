@@ -303,7 +303,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		}
 		PluginMain.Instance.getLogger().info("Loading files...");
 		try {
-			File file = new File("TBMC/chatsettings.yml"); // TODO
+			File file = new File("TBMC/chatsettings.yml");
 			if (file.exists()) {
 				YamlConfiguration yc = new YamlConfiguration();
 				yc.load(file);
@@ -330,7 +330,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			YamlConfiguration yc = new YamlConfiguration();
 			yc.set("notificationsound", PlayerListener.NotificationSound);
 			yc.set("notificationpitch", PlayerListener.NotificationPitch);
-			yc.set("announcetime", AnnounceTime); // TODO: Move out to the core
+			yc.set("announcetime", AnnounceTime);
 			yc.set("announcements", AnnounceMessages);
 			yc.set("alphadeaths", PlayerListener.AlphaDeaths);
 			yc.save(file);

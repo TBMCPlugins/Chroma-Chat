@@ -170,9 +170,8 @@ public class PlayerListener implements Listener {
 		ChatPlayer cp = new ChatPlayer();
 		cp.UUID = tp.UUID;
 		cp.SetFlair(ChatPlayer.FlairTimeNone);
-		cp.FlairState = FlairStates.NoComment; // TODO: NullPointerException
-		cp.UserNames = new ArrayList<>(); // TODO: Move some code here from
-											// join?
+		cp.FlairState = FlairStates.NoComment;
+		cp.UserNames = new ArrayList<>();
 		ChatPlayer.OnlinePlayers.put(cp.UUID, cp);
 	}
 

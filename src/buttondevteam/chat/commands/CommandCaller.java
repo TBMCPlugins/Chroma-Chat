@@ -37,7 +37,6 @@ public class CommandCaller implements CommandExecutor {
 		AddCommands(plugin, TBMCCommandBase.class);
 	}
 
-	// TODO: Move plugin updater to the core
 	public static void AddCommands(JavaPlugin plugin, Class<? extends TBMCCommandBase> acmdclass) {
 		plugin.getLogger().info("Registering commands for " + plugin.getName());
 		if (instance == null)

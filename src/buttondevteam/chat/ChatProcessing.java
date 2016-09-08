@@ -144,8 +144,7 @@ public class ChatProcessing {
 						}
 						ChatPlayer mpp = ChatPlayer.GetFromPlayer(p);
 						if (PlayerListener.NotificationSound == null)
-							p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO:
-																										// Airhorn
+							p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
 						else
 							p.playSound(p.getLocation(), PlayerListener.NotificationSound, 1.0f,
 									(float) PlayerListener.NotificationPitch);
@@ -163,8 +162,7 @@ public class ChatProcessing {
 								return "§c" + match + "§r";
 							}
 							if (PlayerListener.NotificationSound == null)
-								p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO:
-																											// Airhorn
+								p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f);
 							else
 								p.playSound(p.getLocation(), PlayerListener.NotificationSound, 1.0f,
 										(float) PlayerListener.NotificationPitch);
@@ -195,7 +193,7 @@ public class ChatProcessing {
 		 * "\",\"color\":\"%s\"},{\"text\":\"§b@console§r\",\"color\":\"blue\"},{\"text\":\"" , colormode)); System.out.println("\007"); } }
 		 */
 
-		TellrawPart json = new TellrawPart(""); // TODO: Put flair into hovertext
+		TellrawPart json = new TellrawPart("");
 		if (mp != null && mp.ChatOnly) {
 			json.addExtra(new TellrawPart("[C]").setHoverEvent(
 					TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT, "Chat only")));
@@ -352,7 +350,7 @@ public class ChatProcessing {
 				return true;
 			}
 		} else if (currentchannel.equals(Channel.AdminChat)) {
-			try { // TODO: Put message JSON into it's structure
+			try {
 				if (player != null && !player.isOp()) {
 					player.sendMessage("§cYou need to be an OP to use this channel.");
 					return true;

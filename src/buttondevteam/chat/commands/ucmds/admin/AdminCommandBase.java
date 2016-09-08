@@ -4,8 +4,7 @@ import buttondevteam.chat.commands.ucmds.UCommandBase;
 
 public abstract class AdminCommandBase extends UCommandBase {
 
-	public abstract String[] GetHelpText(String alias); // TODO: Require
-														// permission
+	public abstract String[] GetHelpText(String alias);
 
 	@Override
 	public String GetUCommandPath() {

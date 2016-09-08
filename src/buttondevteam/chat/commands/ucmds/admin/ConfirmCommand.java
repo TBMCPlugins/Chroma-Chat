@@ -10,8 +10,7 @@ public class ConfirmCommand extends AdminCommandBase {
 
 	@Override
 	public String[] GetHelpText(String alias) {
-		return new String[] { "§6--- Confirm reload ----",
-				"Use this after using /u admin reload and /u admin save" };
+		return new String[] { "§6--- Confirm reload ----", "Use this after using /u admin reload and /u admin save" };
 	}
 
 	@Override
@@ -19,13 +18,12 @@ public class ConfirmCommand extends AdminCommandBase {
 		if (ReloadCommand.Reloader == sender) {
 			try {
 				if (sender != PluginMain.Console)
-					PluginMain.Console
-							.sendMessage("§6-- Reloading The Button Minecraft plugin...§r");
+					PluginMain.Console.sendMessage("§6-- Reloading The Button Minecraft plugin...§r");
 				sender.sendMessage("§6-- Reloading The Button Minecraft plugin...§r");
 				PluginMain.LoadFiles(true);
 				// TODO: Add players online
 				for (Player p : PluginMain.GetPlayers())
-					ChatPlayer.GetFromPlayer(p);
+					ChatPlayer.GetFromPlayer(p); // TODO: Reload other TBMC plugin data?
 				if (sender != PluginMain.Console)
 					PluginMain.Console.sendMessage("§6-- Reloading done!§r");
 				sender.sendMessage("§6-- Reloading done!§r");

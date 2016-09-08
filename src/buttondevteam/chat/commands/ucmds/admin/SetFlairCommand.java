@@ -42,7 +42,7 @@ public class SetFlairCommand extends AdminCommandBase {
 						"§cFlairtime must be a number, \"non-presser\", \"cant-press\" or \"none\". Run without args to see usage.");
 				return true;
 			}
-		} // TODO: Split config to per-player
+		}
 		boolean cheater = false;
 		if (args[2].equalsIgnoreCase("true"))
 			cheater = true;
