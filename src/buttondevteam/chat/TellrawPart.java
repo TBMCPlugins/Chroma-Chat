@@ -1,4 +1,4 @@
-package buttondevteam.thebuttonmcchat;
+package buttondevteam.chat;
 
 import java.io.Serializable;
 import java.util.ArrayList;

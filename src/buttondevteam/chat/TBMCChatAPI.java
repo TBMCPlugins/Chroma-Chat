@@ -1,10 +1,10 @@
-package buttondevteam.thebuttonmcchat;
+package buttondevteam.chat;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import buttondevteam.thebuttonmcchat.commands.CommandCaller;
-import buttondevteam.thebuttonmcchat.commands.TBMCCommandBase;
-import buttondevteam.thebuttonmcchat.commands.ucmds.admin.PlayerInfoCommand;
+import buttondevteam.chat.commands.CommandCaller;
+import buttondevteam.chat.commands.TBMCCommandBase;
+import buttondevteam.chat.commands.ucmds.admin.PlayerInfoCommand;
 
 public class TBMCChatAPI {
 

@@ -1,6 +1,6 @@
-package buttondevteam.thebuttonmcchat.commands.ucmds.announce;
+package buttondevteam.chat.commands.ucmds.announce;
 
-import buttondevteam.thebuttonmcchat.commands.ucmds.UCommandBase;
+import buttondevteam.chat.commands.ucmds.UCommandBase;
 
 public abstract class AnnounceCommandBase extends UCommandBase {
 

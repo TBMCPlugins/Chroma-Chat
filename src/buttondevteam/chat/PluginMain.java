@@ -1,4 +1,4 @@
-package buttondevteam.thebuttonmcchat;
+package buttondevteam.chat;
 
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
@@ -19,7 +19,7 @@ import org.json.JSONObject;
 
 import au.com.mineauz.minigames.mechanics.GameMechanics;
 import buttondevteam.bucket.core.TBMCCoreAPI;
-import buttondevteam.thebuttonmcchat.commands.CommandCaller;
+import buttondevteam.chat.commands.CommandCaller;
 
 import com.palmergames.bukkit.towny.Towny;
 import com.palmergames.bukkit.towny.object.Nation;

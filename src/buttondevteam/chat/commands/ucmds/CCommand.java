@@ -1,11 +1,11 @@
-package buttondevteam.thebuttonmcchat.commands.ucmds;
+package buttondevteam.chat.commands.ucmds;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import buttondevteam.thebuttonmcchat.ChatFormatter;
-import buttondevteam.thebuttonmcchat.PluginMain;
-import buttondevteam.thebuttonmcchat.ChatPlayer;
+import buttondevteam.chat.ChatFormatter;
+import buttondevteam.chat.ChatPlayer;
+import buttondevteam.chat.PluginMain;
 
 public class CCommand extends UCommandBase {
 

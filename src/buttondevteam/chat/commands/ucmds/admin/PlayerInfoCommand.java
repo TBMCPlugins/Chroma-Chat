@@ -1,8 +1,8 @@
-package buttondevteam.thebuttonmcchat.commands.ucmds.admin;
+package buttondevteam.chat.commands.ucmds.admin;
 
 import org.bukkit.command.CommandSender;
 
-import buttondevteam.thebuttonmcchat.ChatPlayer;
+import buttondevteam.chat.ChatPlayer;
 
 public class PlayerInfoCommand extends AdminCommandBase {
 

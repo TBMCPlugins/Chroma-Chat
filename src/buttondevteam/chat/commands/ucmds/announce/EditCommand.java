@@ -1,9 +1,9 @@
-package buttondevteam.thebuttonmcchat.commands.ucmds.announce;
+package buttondevteam.chat.commands.ucmds.announce;
 
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 
-import buttondevteam.thebuttonmcchat.PluginMain;
+import buttondevteam.chat.PluginMain;
 
 public class EditCommand extends AnnounceCommandBase {
 

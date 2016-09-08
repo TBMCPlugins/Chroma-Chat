@@ -1,6 +1,6 @@
-package buttondevteam.thebuttonmcchat.commands.ucmds;
+package buttondevteam.chat.commands.ucmds;
 
-import buttondevteam.thebuttonmcchat.commands.TBMCCommandBase;
+import buttondevteam.chat.commands.TBMCCommandBase;
 
 public abstract class UCommandBase extends TBMCCommandBase {
 

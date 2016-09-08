@@ -1,4 +1,4 @@
-package buttondevteam.thebuttonmcchat;
+package buttondevteam.chat;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -40,7 +40,7 @@ import buttondevteam.bucket.core.TBMCPlayerAddEvent;
 import buttondevteam.bucket.core.TBMCPlayerJoinEvent;
 import buttondevteam.bucket.core.TBMCPlayerLoadEvent;
 import buttondevteam.bucket.core.TBMCPlayerSaveEvent;
-import buttondevteam.thebuttonmcchat.commands.ucmds.KittycannonCommand;
+import buttondevteam.chat.commands.ucmds.KittycannonCommand;
 
 import com.earth2me.essentials.Essentials;
 import com.google.common.collect.BiMap;

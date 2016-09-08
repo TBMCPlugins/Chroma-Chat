@@ -1,9 +1,9 @@
-package buttondevteam.thebuttonmcchat.commands.appendtext;
+package buttondevteam.chat.commands.appendtext;
 
 import org.bukkit.command.CommandSender;
 
-import buttondevteam.thebuttonmcchat.ChatProcessing;
-import buttondevteam.thebuttonmcchat.commands.TBMCCommandBase;
+import buttondevteam.chat.ChatProcessing;
+import buttondevteam.chat.commands.TBMCCommandBase;
 
 public abstract class AppendTextCommandBase extends TBMCCommandBase {
 

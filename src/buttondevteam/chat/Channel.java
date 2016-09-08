@@ -1,4 +1,4 @@
-package buttondevteam.thebuttonmcchat;
+package buttondevteam.chat;
 
 public class Channel {
 	public final String DisplayName;

@@ -1,9 +1,9 @@
-package buttondevteam.thebuttonmcchat.commands.ucmds;
+package buttondevteam.chat.commands.ucmds;
 
 import org.bukkit.command.CommandSender;
 
-import buttondevteam.thebuttonmcchat.commands.CommandCaller;
-import buttondevteam.thebuttonmcchat.commands.TBMCCommandBase;
+import buttondevteam.chat.commands.CommandCaller;
+import buttondevteam.chat.commands.TBMCCommandBase;
 
 public final class UCommand extends TBMCCommandBase {
 

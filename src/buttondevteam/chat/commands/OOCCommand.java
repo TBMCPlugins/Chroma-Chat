@@ -1,9 +1,9 @@
-package buttondevteam.thebuttonmcchat.commands;
+package buttondevteam.chat.commands;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import buttondevteam.thebuttonmcchat.ChatPlayer;
+import buttondevteam.chat.ChatPlayer;
 
 public final class OOCCommand extends TBMCCommandBase {
 

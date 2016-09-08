@@ -1,4 +1,4 @@
-package buttondevteam.thebuttonmcchat;
+package buttondevteam.chat;
 
 import java.util.HashMap;
 import java.util.List;

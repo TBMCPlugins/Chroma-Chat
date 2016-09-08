@@ -1,14 +1,14 @@
-package buttondevteam.thebuttonmcchat.commands.ucmds;
+package buttondevteam.chat.commands.ucmds;
 
 import java.util.Timer;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import buttondevteam.thebuttonmcchat.FlairStates;
-import buttondevteam.thebuttonmcchat.PlayerJoinTimerTask;
-import buttondevteam.thebuttonmcchat.PluginMain;
-import buttondevteam.thebuttonmcchat.ChatPlayer;
+import buttondevteam.chat.ChatPlayer;
+import buttondevteam.chat.FlairStates;
+import buttondevteam.chat.PlayerJoinTimerTask;
+import buttondevteam.chat.PluginMain;
 
 public class AcceptCommand extends UCommandBase {
 

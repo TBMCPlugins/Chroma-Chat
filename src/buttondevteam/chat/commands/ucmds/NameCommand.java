@@ -1,8 +1,8 @@
-package buttondevteam.thebuttonmcchat.commands.ucmds;
+package buttondevteam.chat.commands.ucmds;
 
 import org.bukkit.command.CommandSender;
 
-import buttondevteam.thebuttonmcchat.ChatPlayer;
+import buttondevteam.chat.ChatPlayer;
 
 public class NameCommand extends UCommandBase {
 

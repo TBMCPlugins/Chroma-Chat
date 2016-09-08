@@ -1,8 +1,8 @@
-package buttondevteam.thebuttonmcchat.commands.ucmds.admin;
+package buttondevteam.chat.commands.ucmds.admin;
 
 import org.bukkit.command.CommandSender;
 
-import buttondevteam.thebuttonmcchat.PluginMain;
+import buttondevteam.chat.PluginMain;
 
 public class GetLastErrorCommand extends AdminCommandBase {
 

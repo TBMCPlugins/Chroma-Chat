@@ -1,4 +1,4 @@
-package buttondevteam.thebuttonmcchat;
+package buttondevteam.chat;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
@@ -19,10 +19,10 @@ import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 
-import buttondevteam.thebuttonmcchat.ChatFormatter.Color;
-import buttondevteam.thebuttonmcchat.ChatFormatter.Priority;
-import buttondevteam.thebuttonmcchat.commands.UnlolCommand;
-import buttondevteam.thebuttonmcchat.commands.ucmds.admin.DebugCommand;
+import buttondevteam.chat.ChatFormatter.Color;
+import buttondevteam.chat.ChatFormatter.Priority;
+import buttondevteam.chat.commands.UnlolCommand;
+import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 
 public class ChatProcessing {
 	private static final Pattern CONSOLE_PING_PATTERN = Pattern.compile("(?i)" + Pattern.quote("@console"));

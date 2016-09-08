@@ -1,4 +1,4 @@
-package buttondevteam.thebuttonmcchat.commands;
+package buttondevteam.chat.commands;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
-import buttondevteam.thebuttonmcchat.PluginMain;
+import buttondevteam.chat.PluginMain;
 
 public class CommandCaller implements CommandExecutor {
 

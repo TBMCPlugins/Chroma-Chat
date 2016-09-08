@@ -1,4 +1,4 @@
-package buttondevteam.thebuttonmcchat.commands.appendtext;
+package buttondevteam.chat.commands.appendtext;
 
 public final class UnflipCommand extends AppendTextCommandBase {
 

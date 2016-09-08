@@ -1,6 +1,6 @@
-package buttondevteam.thebuttonmcchat.commands.ucmds.admin;
+package buttondevteam.chat.commands.ucmds.admin;
 
-import buttondevteam.thebuttonmcchat.commands.ucmds.UCommandBase;
+import buttondevteam.chat.commands.ucmds.UCommandBase;
 
 public abstract class AdminCommandBase extends UCommandBase {
 

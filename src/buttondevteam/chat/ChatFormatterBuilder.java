@@ -1,11 +1,11 @@
-package buttondevteam.thebuttonmcchat;
+package buttondevteam.chat;
 
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import buttondevteam.thebuttonmcchat.ChatFormatter.Color;
-import buttondevteam.thebuttonmcchat.ChatFormatter.Format;
-import buttondevteam.thebuttonmcchat.ChatFormatter.Priority;
+import buttondevteam.chat.ChatFormatter.Color;
+import buttondevteam.chat.ChatFormatter.Format;
+import buttondevteam.chat.ChatFormatter.Priority;
 
 public class ChatFormatterBuilder {
 	private Pattern regex;

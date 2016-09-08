@@ -1,4 +1,4 @@
-package buttondevteam.thebuttonmcchat;
+package buttondevteam.chat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import buttondevteam.thebuttonmcchat.commands.ucmds.admin.DebugCommand;
+import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 
 public final class ChatFormatter {
 	private Pattern regex;

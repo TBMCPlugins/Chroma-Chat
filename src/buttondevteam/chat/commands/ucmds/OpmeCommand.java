@@ -1,4 +1,4 @@
-package buttondevteam.thebuttonmcchat.commands.ucmds;
+package buttondevteam.chat.commands.ucmds;
 
 import org.bukkit.command.CommandSender;
 
