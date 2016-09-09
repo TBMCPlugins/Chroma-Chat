@@ -46,9 +46,9 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	// A user, which flair isn't obtainable:
 	// https://www.reddit.com/r/thebutton/comments/31c32v/i_pressed_the_button_without_really_thinking/
 	public static PluginMain Instance;
-	public static ConsoleCommandSender Console; // 2015.08.12.
+	public static ConsoleCommandSender Console;
 	public static Scoreboard SB;
-	public final static String FlairThreadURL = "https://www.reddit.com/r/TheButtonMinecraft/comments/433ptk/autoflair_thread/";
+	public final static String FlairThreadURL = "https://www.reddit.com/r/Chromagamers/comments/51ys94/flair_thread_for_the_mc_server/";
 	public TownyUniverse TU;
 	public ArrayList<Town> Towns;
 	public ArrayList<Nation> Nations;
@@ -57,7 +57,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	 * This variable is used as a cache for flair state checking when reading the flair thread.
 	 * </p>
 	 * <p>
-	 * It's used because normally it has to load all associated player files everytime to read the filename
+	 * It's used because normally it has to load all associated player files every time to read the filename
 	 * </p>
 	 */
 	private Set<String> PlayersWithFlairs = new HashSet<>();
