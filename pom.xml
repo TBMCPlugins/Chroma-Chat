@@ -14,6 +14,7 @@
 				</excludes>
 			</resource>
 		</resources>
+   <finalName>ButtonChat</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -74,6 +75,7 @@
 					</includes>
 					<repositoryName>mvn-repo</repositoryName>      <!-- github repo name -->
 					<repositoryOwner>TBMCPlugins</repositoryOwner>    <!-- github username -->
+					<!-- <path></path> -->
 				</configuration>
 				<executions>
 					<!-- run site-maven-plugin's 'site' target as part of the build's normal 
@@ -102,6 +104,16 @@
 			<version>0.9.10</version>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>1.9.2-R0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>1.9.2-R0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	<artifactId>ButtonChat</artifactId>
 	<organization>
@@ -112,11 +124,11 @@
 		<repository>
 			<id>internal.repo</id>
 			<name>Temporary Staging Repository</name>
-			<url>file://${project.build.directory}/mvn-repo</url>
+			<url>file://${project.build.directory}/mvn-repo/${project.name}</url>
 		</repository>
 	</distributionManagement>
 	<properties>
 		<!-- github server corresponds to entry in ~/.m2/settings.xml -->
-		<github.global.server>github</github.global.server>
+		<github.global.server>githubo</github.global.server>
 	</properties>
 </project>

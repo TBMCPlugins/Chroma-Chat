@@ -1,0 +1,1 @@
+apache-maven-3.2.5/bin/mvn install:install-file -Dfile=Towny.jar -DgroupId=com.palmergames -DartifactId=Towny -Dversion=0.90.0.0 -Dpackaging=jar

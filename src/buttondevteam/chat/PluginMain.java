@@ -115,8 +115,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		setupEconomy();
 		setupPermissions();
 
-		GameMechanics.addGameMechanic(new CreativeGlobalMechanic());
-
 		Runnable r = new Runnable() {
 			public void run() {
 				FlairGetterThreadMethod();
