@@ -80,9 +80,9 @@
 			<version>1.9.2-R0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>com.github.TBMCPlugins</groupId>
-			<artifactId>ButtonPluginBucket</artifactId>
-			<version>v1.0</version>
+			<groupId>com.github.TBMCPlugins.ButtonCore</groupId>
+			<artifactId>ButtonCore</artifactId>
+			<version>master-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<artifactId>ButtonChat</artifactId>

@@ -14,13 +14,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-import au.com.mineauz.minigames.mechanics.GameMechanics;
 import buttondevteam.bucket.core.TBMCCoreAPI;
 import buttondevteam.chat.commands.CommandCaller;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.palmergames.bukkit.towny.Towny;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
@@ -144,11 +144,12 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		while (!stop) {
 			try {
 				String body = TBMCCoreAPI.DownloadString(FlairThreadURL + ".json?limit=1000");
-				JSONArray json = new JSONArray(body).getJSONObject(1).getJSONObject("data").getJSONArray("children");
+				JsonArray json = new JsonParser().parse(body).getAsJsonArray().get(1).getAsJsonObject().get("data")
+						.getAsJsonObject().get("children").getAsJsonArray();
 				for (Object obj : json) {
-					JSONObject item = (JSONObject) obj;
-					String author = item.getJSONObject("data").getString("author");
-					String ign = item.getJSONObject("data").getString("body");
+					JsonObject item = (JsonObject) obj;
+					String author = item.get("data").getAsJsonObject().get("author").getAsString();
+					String ign = item.get("data").getAsJsonObject().get("body").getAsString();
 					int start = ign.indexOf("IGN:") + "IGN:".length();
 					if (start == -1 + "IGN:".length())
 						continue;
