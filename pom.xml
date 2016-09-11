@@ -47,8 +47,8 @@
 						<configuration>
 							<artifactSet>
 								<includes>
-									<include>htmlcleaner</include>
-									<include>reflections</include>
+									<include>net.sourceforge.htmlcleaner:htmlcleaner</include>
+									<include>org.reflections:reflections</include>
 								</includes>
 							</artifactSet>
 							<pluginExecution>
