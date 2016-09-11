@@ -38,8 +38,6 @@
 							<artifactSet>
 								<includes>
 									<include>htmlcleaner</include>
-								</includes>
-								<includes>
 									<include>reflections</include>
 								</includes>
 							</artifactSet>
