@@ -3,7 +3,7 @@
 ## How to use
 ### Players
 #### Obtaining the flair (/u accept)
-At first, you need to "connect" your Reddit account with your Minecraft account. This is done by writing your Minecraft name to [this thread](https://www.reddit.com/r/TheButtonMinecraft/comments/433ptk/autoflair_thread/), following the instructions in the post.
+At first, you need to connect your Reddit account with your Minecraft account. This is done by writing your Minecraft name to [this thread](https://www.reddit.com/r/Chromagamers/comments/51ys94/flair_thread_for_the_mc_server/), following the instructions in the post.
 
 When you're done, connect to the server, if you aren't already on. You should see a message after a while (max. 10 seconds) asking if you're the correct Reddit user. Type /u accept to confirm it and accept your flair.
 
