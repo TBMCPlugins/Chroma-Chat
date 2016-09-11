@@ -49,6 +49,7 @@
 								<includes>
 									<include>net.sourceforge.htmlcleaner:htmlcleaner</include>
 									<include>org.reflections:reflections</include>
+									<include>org.javassist:javassist</include>
 								</includes>
 							</artifactSet>
 							<pluginExecution>
@@ -167,6 +168,12 @@
 			<artifactId>VaultAPI</artifactId>
 			<version>1.6</version>
 			<scope>provided</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.javassist/javassist -->
+		<dependency>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.20.0-GA</version>
 		</dependency>
 	</dependencies>
 	<artifactId>ButtonChat</artifactId>
