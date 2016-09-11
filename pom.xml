@@ -13,6 +13,16 @@
 					<exclude>**/*.java</exclude>
 				</excludes>
 			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>*.properties</include>
+					<include>*.yml</include>
+					<include>*.csv</include>
+					<include>*.txt</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
 		</resources>
 		<finalName>ButtonChat</finalName>
 		<plugins>
