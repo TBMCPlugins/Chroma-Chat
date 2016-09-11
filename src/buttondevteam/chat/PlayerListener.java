@@ -344,13 +344,10 @@ public class PlayerListener implements Listener {
 				return;
 			}
 		} else if (cmd.equalsIgnoreCase("home") || cmd.equalsIgnoreCase("tpa") || cmd.equalsIgnoreCase("tp")) {
-			MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(event.getPlayer());
 			String currentWorld = event.getPlayer().getLocation().getWorld().getName();
 			Location currentLocation = event.getPlayer().getLocation();
 			TownyUniverse universe = Towny.getPlugin(Towny.class).getTownyUniverse();
-			if (mgp.isInMinigame() && mgp.getMinigame().getMechanic().getMechanic().equals("creativeglobal")) {
-				mgp.setAllowTeleport(true);
-			} else if (TownyUniverse.isWarTime()) {
+			if (TownyUniverse.isWarTime()) {
 				War war = universe.getWarEvent();
 				if (war.isWarZone(
 						new WorldCoord(currentWorld, currentLocation.getBlockX(), currentLocation.getBlockZ()))) {

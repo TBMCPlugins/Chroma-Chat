@@ -36,14 +36,12 @@
 						</goals>
 						<configuration>
 							<artifactSet>
-								<excludes>
-									<exclude>classworlds:classworlds</exclude>
-									<exclude>junit:junit</exclude>
-									<exclude>jmock:*</exclude>
-									<exclude>*:xml-apis</exclude>
-									<exclude>org.apache.maven:lib:tests</exclude>
-									<exclude>log4j:log4j:jar:</exclude>
-								</excludes>
+								<includes>
+									<include>htmlcleaner</include>
+								</includes>
+								<includes>
+									<include>reflections</include>
+								</includes>
 							</artifactSet>
 							<pluginExecution>
 								<action>
@@ -66,6 +64,24 @@
 			<id>jitpack.io</id>
 			<url>https://jitpack.io/</url>
 		</repository>
+		<repository>
+			<id>Essentials</id>
+			<url>http://repo.ess3.net/</url>
+		</repository>
+		<repository>
+			<id>Votifier</id>
+			<url>http://repo.howaner.de/</url>
+		</repository>
+		<repository>
+			<id>Minigames</id>
+			<url>http://maven.addstar.com.au/artifactory/release</url>
+		</repository>
+		<repository>
+			<id>vault-repo</id>
+			<url>http://nexus.hc.to/content/repositories/pub_releases</url>
+		</repository>
+		<!-- <repository> <id>WorldEdit</id> <url>http://maven.sk89q.com/artifactory/repo</url> 
+			</repository> -->
 	</repositories>
 	<dependencies>
 		<dependency>
@@ -83,6 +99,44 @@
 			<groupId>com.github.TBMCPlugins.ButtonCore</groupId>
 			<artifactId>ButtonCore</artifactId>
 			<version>master-SNAPSHOT</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.sourceforge.htmlcleaner/htmlcleaner -->
+		<dependency>
+			<groupId>net.sourceforge.htmlcleaner</groupId>
+			<artifactId>htmlcleaner</artifactId>
+			<version>2.16</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.10</version>
+		</dependency>
+		<dependency>
+			<groupId>net.ess3</groupId>
+			<artifactId>Essentials</artifactId>
+			<version>2.13.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.TBMCPlugins.ButtonCore</groupId>
+			<artifactId>Towny</artifactId>
+			<version>master-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.vexsoftware</groupId>
+			<artifactId>votifier</artifactId>
+			<version>1.9</version>
+		</dependency>
+		<dependency>
+			<groupId>au.com.mineauz</groupId>
+			<artifactId>Minigames</artifactId>
+			<version>1.8.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.milkbowl.vault</groupId>
+			<artifactId>VaultAPI</artifactId>
+			<version>1.6</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<artifactId>ButtonChat</artifactId>

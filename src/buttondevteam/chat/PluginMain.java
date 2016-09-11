@@ -66,7 +66,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	@Override
 	public void onEnable() {
 		Instance = this;
-		try {
+		/*try {
 			PluginMain.Instance.getLogger().info("Extracting necessary libraries...");
 			final File[] libs = new File[] { new File(getDataFolder(), "htmlcleaner-2.16.jar"),
 					new File(getDataFolder(), "reflections-0.9.10.jar"),
@@ -86,7 +86,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			}
 		} catch (final Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		CommandCaller.RegisterChatCommands(this);
