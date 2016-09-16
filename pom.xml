@@ -5,7 +5,7 @@
 	<name>The Button Minecraft Chat Plugin</name>
 	<description>The Button Minecraft Chat Plugin</description>
 	<build>
-		<sourceDirectory>src</sourceDirectory>
+		<sourceDirectory>src/main/java</sourceDirectory>
 		<resources>
 			<resource>
 				<directory>src</directory>
