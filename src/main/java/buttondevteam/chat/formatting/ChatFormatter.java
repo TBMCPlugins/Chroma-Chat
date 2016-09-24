@@ -49,8 +49,8 @@ public final class ChatFormatter {
 				FormattedSection section = new FormattedSection(formatter, matcher.start(), matcher.end() - 1, groups);
 				sections.add(section);
 				if (formatter.removecharcount != 0) {
-					removecharpositions.add(section.Start + formatter.removecharcount);
-					removecharpositions.add(section.End - formatter.removecharcount);
+					removecharpositions.add(section.Start + formatter.removecharcount - 1);
+					removecharpositions.add(section.End - formatter.removecharcount - 1);
 				}
 				if (formatter.removecharpos != -1)
 					removecharpositions.add(section.Start + (int) formatter.removecharpos);
@@ -133,6 +133,7 @@ public final class ChatFormatter {
 			}
 		}
 		int nextremcharpospos = 0;
+		DebugCommand.SendDebugMessage("RemoveCharPositions size: " + removecharpositions.size());
 		for (int i = 0; i < sections.size(); i++) {
 			FormattedSection section = sections.get(i);
 			DebugCommand.SendDebugMessage("Applying section: " + section);
@@ -141,12 +142,18 @@ public final class ChatFormatter {
 				nextremcharpos = removecharpositions.get(nextremcharpospos);
 			String originaltext;
 			int start = section.Start, end = section.End + 1;
-			if (nextremcharpos == section.Start)
+			DebugCommand.SendDebugMessage("Next remove char pos: " + nextremcharpos);
+			if (nextremcharpos == section.Start) {
 				start++;
-			if (nextremcharpos == section.End)
+				nextremcharpospos++;
+				if (removecharpositions.size() > nextremcharpospos)
+					nextremcharpos = removecharpositions.get(nextremcharpospos); //TODO: Section.RemoveCharCountStart/End
+			}
+			if (nextremcharpos == section.End) {
 				end--;
+				nextremcharpospos++;
+			}
 			originaltext = str.substring(start, end);
-			nextremcharpospos++;
 			DebugCommand.SendDebugMessage("Originaltext: " + originaltext);
 			Color color = null;
 			Format format = null;
