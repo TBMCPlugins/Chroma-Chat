@@ -28,10 +28,8 @@ import com.palmergames.bukkit.towny.object.TownyUniverse;
 
 import java.io.*;
 import java.lang.String;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -337,19 +335,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		} catch (IOException e) {
 			PluginMain.Instance.getLogger().warning("Error!\n" + e);
 			LastException = e;
-		}
-	}
-
-	private void addClassPath(final URL url) throws IOException {
-		final URLClassLoader sysloader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-		final Class<URLClassLoader> sysclass = URLClassLoader.class;
-		try {
-			final Method method = sysclass.getDeclaredMethod("addURL", new Class[] { URL.class });
-			method.setAccessible(true);
-			method.invoke(sysloader, new Object[] { url });
-		} catch (final Throwable t) {
-			t.printStackTrace();
-			throw new IOException("Error adding " + url + " to system classloader");
 		}
 	}
 

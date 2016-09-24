@@ -15,17 +15,19 @@ public final class ChatFormatter {
 	private Function<String, String> onmatch;
 	private String openlink;
 	private Priority priority;
-	private String replacewith;
+	private short removecharcount = 0;
+	private short removecharpos = -1;
 
 	public ChatFormatter(Pattern regex, Format format, Color color, Function<String, String> onmatch, String openlink,
-			Priority priority, String replacewith) {
+			Priority priority, short removecharcount, short removecharpos) {
 		this.regex = regex;
 		this.format = format;
 		this.color = color;
 		this.onmatch = onmatch;
 		this.openlink = openlink;
 		this.priority = Priority.High;
-		this.replacewith = replacewith;
+		this.removecharcount = removecharcount;
+		this.removecharpos = removecharpos;
 	}
 
 	public static void Combine(List<ChatFormatter> formatters, String str, TellrawPart tp) {
@@ -130,7 +132,7 @@ public final class ChatFormatter {
 			Color color = null;
 			Format format = null;
 			String openlink = null;
-			String replacewith = null;
+			List<Integer> removecharpositions = new ArrayList<Integer>();
 			section.Formatters.sort((cf2, cf1) -> cf1.priority.compareTo(cf2.priority));
 			for (ChatFormatter formatter : section.Formatters) {
 				DebugCommand.SendDebugMessage("Applying formatter: " + formatter);
@@ -142,14 +144,16 @@ public final class ChatFormatter {
 					format = formatter.format;
 				if (formatter.openlink != null)
 					openlink = formatter.openlink;
-				if (formatter.replacewith != null)
-					replacewith = formatter.replacewith;
+				if (formatter.removecharcount != 0) {
+					removecharpositions.add(section.Start + formatter.removecharcount); // TODO
+					removecharpositions.add(section.End - formatter.removecharcount);
+				}
+				if (formatter.removecharpos != -1)
+					removecharpositions.add((int) formatter.removecharpos);
 			}
 			TellrawPart newtp = new TellrawPart("");
-			if (replacewith != null) // TODO: The ranges may change when formattings are nested, and this can't handle that
-				newtp.setText(replacewith.replace("$1", section.Matches.get(0)));
-			else
-				newtp.setText(originaltext);
+			StringBuilder origtextsb = new StringBuilder(originaltext);
+			newtp.setText(origtextsb.toString());
 			if (color != null)
 				newtp.setColor(color);
 			if (format != null)

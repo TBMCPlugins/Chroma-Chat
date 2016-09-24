@@ -14,10 +14,11 @@ public class ChatFormatterBuilder {
 	private Function<String, String> onmatch;
 	private String openlink;
 	private Priority priority;
-	private String replacewith;
+	private short removecharcount = 0;
+	private short removecharpos = -1;
 
 	public ChatFormatter build() {
-		return new ChatFormatter(regex, format, color, onmatch, openlink, priority, replacewith);
+		return new ChatFormatter(regex, format, color, onmatch, openlink, priority, removecharcount, removecharpos);
 	}
 
 	public Pattern getRegex() {
@@ -74,12 +75,31 @@ public class ChatFormatterBuilder {
 		return this;
 	}
 
-	public String getReplacewith() {
-		return replacewith;
+	public short getRemoveCharCount() {
+		return removecharcount;
 	}
 
-	public ChatFormatterBuilder setReplacewith(String replacewith) {
-		this.replacewith = replacewith;
+	/**
+	 * Sets the amount of characters to be removed from the start and the end of the match.
+	 * 
+	 * @return This instance
+	 */
+	public ChatFormatterBuilder setRemoveCharCount(short removecharcount) {
+		this.removecharcount = removecharcount;
+		return this;
+	}
+
+	public short getRemoveCharPos() {
+		return removecharpos;
+	}
+
+	/**
+	 * Sets the position where a single character should be removed. Setting -1 will disable it.
+	 * 
+	 * @return This instance
+	 */
+	public ChatFormatterBuilder setRemoveCharPos(short removecharpos) {
+		this.removecharpos = removecharpos;
 		return this;
 	}
 }

@@ -27,14 +27,10 @@ import buttondevteam.chat.formatting.TellrawPart;
 import buttondevteam.chat.formatting.TellrawSerializableEnum;
 import buttondevteam.chat.formatting.TellrawSerializer;
 import buttondevteam.chat.formatting.ChatFormatter.Color;
-import buttondevteam.chat.formatting.ChatFormatter.Format;
 import buttondevteam.chat.formatting.ChatFormatter.Priority;
-import buttondevteam.chat.formatting.TellrawEvent.ClickAction;
-import buttondevteam.chat.formatting.TellrawEvent.HoverAction;
-import buttondevteam.chat.formatting.TellrawSerializer.TwCollection;
-import buttondevteam.chat.formatting.TellrawSerializer.TwEnum;
 
 public class ChatProcessing {
+	private static final Pattern ESCAPE_PATTERN = Pattern.compile("\\\\([\\*\\_\\\\])");
 	private static final Pattern CONSOLE_PING_PATTERN = Pattern.compile("(?i)" + Pattern.quote("@console"));
 	private static final Pattern HASHTAG_PATTERN = Pattern.compile("#(\\w+)");
 	private static final Pattern URL_PATTERN = Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),]+)");
@@ -103,17 +99,16 @@ public class ChatProcessing {
 		String suggestmsg = formattedmessage;
 
 		formatters.add(new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setFormat(ChatFormatter.Format.Bold)
-				.setReplacewith("$1").build());
+				.setRemoveCharCount((short) 2).build());
 		formatters.add(new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setFormat(ChatFormatter.Format.Italic)
-				.setReplacewith("$1").build());
+				.setRemoveCharCount((short) 1).build());
 		formatters.add(new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN)
-				.setFormat(ChatFormatter.Format.Underlined).setReplacewith("$1").build());
-		formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile("\\\\([\\*\\_\\\\])")).setReplacewith("$1")
-				.build());
+				.setFormat(ChatFormatter.Format.Underlined).setRemoveCharCount((short) 1).build());
+		formatters.add(new ChatFormatterBuilder().setRegex(ESCAPE_PATTERN).setRemoveCharPos((short) 0).build());
 
 		// URLs + Rainbow text
 		formatters.add(new ChatFormatterBuilder().setRegex(URL_PATTERN).setFormat(ChatFormatter.Format.Underlined)
-				.setReplacewith("$1").build());
+				.setOpenlink("$1").build());
 		/*
 		 * formattedmessage = formattedmessage .replace( item, String.format(
 		 * "\",\"color\":\"%s\"},{\"text\":\"%s\",\"color\":\"%s\",\"underlined\":\"true\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open URL\",\"color\":\"blue\"}]}}},{\"text\":\""
