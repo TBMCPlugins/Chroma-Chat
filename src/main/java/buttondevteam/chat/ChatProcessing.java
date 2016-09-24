@@ -402,8 +402,9 @@ public class ChatProcessing {
 				.sendMessage(String.format("[%s] <%s%s> %s", currentchannel.DisplayName,
 						(player != null ? player.getDisplayName() : sender.getName()),
 						(mp != null ? mp.GetFormattedFlair() : ""), message));
-		DebugCommand.SendDebugMessage("-- Full ChatProcessing time: " + (System.nanoTime() - processstart));
-		DebugCommand.SendDebugMessage("-- ChatFormatter.Combine time: " + combinetime);
+		DebugCommand.SendDebugMessage(
+				"-- Full ChatProcessing time: " + (System.nanoTime() - processstart) / 1000000f + " ms");
+		DebugCommand.SendDebugMessage("-- ChatFormatter.Combine time: " + combinetime / 1000000f + " ms");
 		return true;
 	}
 }
