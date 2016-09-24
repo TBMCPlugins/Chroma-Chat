@@ -35,6 +35,7 @@ public final class ChatFormatter {
 		 * This method assumes that there is always a global formatter
 		 */
 		ArrayList<FormattedSection> sections = new ArrayList<FormattedSection>();
+		List<Integer> removecharpositions = new ArrayList<Integer>();
 		for (ChatFormatter formatter : formatters) {
 			Matcher matcher = formatter.regex.matcher(str);
 			while (matcher.find()) {
@@ -47,6 +48,12 @@ public final class ChatFormatter {
 					DebugCommand.SendDebugMessage("First group: " + groups.get(0));
 				FormattedSection section = new FormattedSection(formatter, matcher.start(), matcher.end() - 1, groups);
 				sections.add(section);
+				if (formatter.removecharcount != 0) {
+					removecharpositions.add(section.Start + formatter.removecharcount);
+					removecharpositions.add(section.End - formatter.removecharcount);
+				}
+				if (formatter.removecharpos != -1)
+					removecharpositions.add(section.Start + (int) formatter.removecharpos);
 			}
 		}
 		sections.sort((s1, s2) -> {
@@ -55,6 +62,7 @@ public final class ChatFormatter {
 			else
 				return Integer.compare(s1.Start, s2.Start);
 		});
+		removecharpositions.sort(null);
 		boolean cont = true;
 		boolean found = false;
 		for (int i = 1; cont;) {
@@ -124,15 +132,25 @@ public final class ChatFormatter {
 					cont = false;
 			}
 		}
+		int nextremcharpospos = 0;
 		for (int i = 0; i < sections.size(); i++) {
 			FormattedSection section = sections.get(i);
 			DebugCommand.SendDebugMessage("Applying section: " + section);
-			String originaltext = str.substring(section.Start, section.End + 1);
+			int nextremcharpos = -1;
+			if (removecharpositions.size() > nextremcharpospos)
+				nextremcharpos = removecharpositions.get(nextremcharpospos);
+			String originaltext;
+			int start = section.Start, end = section.End + 1;
+			if (nextremcharpos == section.Start)
+				start++;
+			if (nextremcharpos == section.End)
+				end--;
+			originaltext = str.substring(start, end);
+			nextremcharpospos++;
 			DebugCommand.SendDebugMessage("Originaltext: " + originaltext);
 			Color color = null;
 			Format format = null;
 			String openlink = null;
-			List<Integer> removecharpositions = new ArrayList<Integer>();
 			section.Formatters.sort((cf2, cf1) -> cf1.priority.compareTo(cf2.priority));
 			for (ChatFormatter formatter : section.Formatters) {
 				DebugCommand.SendDebugMessage("Applying formatter: " + formatter);
@@ -144,16 +162,9 @@ public final class ChatFormatter {
 					format = formatter.format;
 				if (formatter.openlink != null)
 					openlink = formatter.openlink;
-				if (formatter.removecharcount != 0) {
-					removecharpositions.add(section.Start + formatter.removecharcount); // TODO: Do this before combining the sections
-					removecharpositions.add(section.End - formatter.removecharcount);
-				}
-				if (formatter.removecharpos != -1)
-					removecharpositions.add((int) formatter.removecharpos);
 			}
 			TellrawPart newtp = new TellrawPart("");
-			StringBuilder origtextsb = new StringBuilder(originaltext); // TODO
-			newtp.setText(origtextsb.toString());
+			newtp.setText(originaltext);
 			if (color != null)
 				newtp.setColor(color);
 			if (format != null)

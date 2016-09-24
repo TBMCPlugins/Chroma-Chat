@@ -45,6 +45,7 @@ public class ChatProcessing {
 
 	// Returns e.setCancelled
 	public static boolean ProcessChat(CommandSender sender, String message) {
+		long processstart = System.nanoTime();
 		if (PlayerListener.essentials == null)
 			PlayerListener.essentials = (Essentials) (Bukkit.getPluginManager().getPlugin("Essentials"));
 		Player player = (sender instanceof Player ? (Player) sender : null);
@@ -230,7 +231,9 @@ public class ChatProcessing {
 																						+ PlayerListener.AlphaDeaths
 																						: "")))))));
 		json.addExtra(new TellrawPart("> "));
+		long combinetime = System.nanoTime();
 		ChatFormatter.Combine(formatters, formattedmessage, json);
+		combinetime = System.nanoTime() - combinetime;
 		Gson gson = new GsonBuilder()
 				.registerTypeHierarchyAdapter(TellrawSerializableEnum.class, new TellrawSerializer.TwEnum())
 				.registerTypeHierarchyAdapter(Collection.class, new TellrawSerializer.TwCollection())
@@ -399,6 +402,8 @@ public class ChatProcessing {
 				.sendMessage(String.format("[%s] <%s%s> %s", currentchannel.DisplayName,
 						(player != null ? player.getDisplayName() : sender.getName()),
 						(mp != null ? mp.GetFormattedFlair() : ""), message));
+		DebugCommand.SendDebugMessage("-- Full ChatProcessing time: " + (System.nanoTime() - processstart));
+		DebugCommand.SendDebugMessage("-- ChatFormatter.Combine time: " + combinetime);
 		return true;
 	}
 }
