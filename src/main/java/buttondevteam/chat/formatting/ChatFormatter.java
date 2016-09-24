@@ -145,14 +145,14 @@ public final class ChatFormatter {
 				if (formatter.openlink != null)
 					openlink = formatter.openlink;
 				if (formatter.removecharcount != 0) {
-					removecharpositions.add(section.Start + formatter.removecharcount); // TODO
+					removecharpositions.add(section.Start + formatter.removecharcount); // TODO: Do this before combining the sections
 					removecharpositions.add(section.End - formatter.removecharcount);
 				}
 				if (formatter.removecharpos != -1)
 					removecharpositions.add((int) formatter.removecharpos);
 			}
 			TellrawPart newtp = new TellrawPart("");
-			StringBuilder origtextsb = new StringBuilder(originaltext);
+			StringBuilder origtextsb = new StringBuilder(originaltext); // TODO
 			newtp.setText(origtextsb.toString());
 			if (color != null)
 				newtp.setColor(color);
