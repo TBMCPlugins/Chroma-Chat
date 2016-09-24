@@ -26,7 +26,6 @@ class FormattedSection {
 	@Override
 	public String toString() {
 		return new StringBuilder("Section(").append(Start).append(", ").append(End).append(", formatters: ")
-				.append(Formatters.toString()).append(", matches: ").append(Matches.toString()).append(")")
-				.toString();
+				.append(Formatters.toString()).append(", matches: ").append(Matches.toString()).append(")").toString();
 	}
 }

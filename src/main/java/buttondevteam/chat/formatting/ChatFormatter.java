@@ -35,7 +35,6 @@ public final class ChatFormatter {
 		 * This method assumes that there is always a global formatter
 		 */
 		ArrayList<FormattedSection> sections = new ArrayList<FormattedSection>();
-		List<Integer> removecharpositions = new ArrayList<Integer>();
 		for (ChatFormatter formatter : formatters) {
 			Matcher matcher = formatter.regex.matcher(str);
 			while (matcher.find()) {
@@ -48,12 +47,6 @@ public final class ChatFormatter {
 					DebugCommand.SendDebugMessage("First group: " + groups.get(0));
 				FormattedSection section = new FormattedSection(formatter, matcher.start(), matcher.end() - 1, groups);
 				sections.add(section);
-				if (formatter.removecharcount != 0) {
-					removecharpositions.add(section.Start + formatter.removecharcount - 1);
-					removecharpositions.add(section.End - formatter.removecharcount - 1);
-				}
-				if (formatter.removecharpos != -1)
-					removecharpositions.add(section.Start + (int) formatter.removecharpos);
 			}
 		}
 		sections.sort((s1, s2) -> {
@@ -62,7 +55,6 @@ public final class ChatFormatter {
 			else
 				return Integer.compare(s1.Start, s2.Start);
 		});
-		removecharpositions.sort(null);
 		boolean cont = true;
 		boolean found = false;
 		for (int i = 1; cont;) {
@@ -83,7 +75,7 @@ public final class ChatFormatter {
 				}
 				FormattedSection section = new FormattedSection(sections.get(i - 1).Formatters, sections.get(i).Start,
 						origend, sections.get(i - 1).Matches);
-				section.Formatters.addAll(sections.get(i).Formatters);
+				section.Formatters.addAll(sections.get(i).Formatters); // TODO: Process remove positions here
 				section.Matches.addAll(sections.get(i).Matches);
 				sections.add(i, section);
 				nextindex++;
@@ -133,7 +125,6 @@ public final class ChatFormatter {
 			}
 		}
 		int nextremcharpospos = 0;
-		DebugCommand.SendDebugMessage("RemoveCharPositions size: " + removecharpositions.size());
 		for (int i = 0; i < sections.size(); i++) {
 			FormattedSection section = sections.get(i);
 			DebugCommand.SendDebugMessage("Applying section: " + section);
@@ -147,7 +138,7 @@ public final class ChatFormatter {
 				start++;
 				nextremcharpospos++;
 				if (removecharpositions.size() > nextremcharpospos)
-					nextremcharpos = removecharpositions.get(nextremcharpospos); //TODO: Section.RemoveCharCountStart/End
+					nextremcharpos = removecharpositions.get(nextremcharpospos); // TODO: Section.RemoveCharCountStart/End
 			}
 			if (nextremcharpos == section.End) {
 				end--;

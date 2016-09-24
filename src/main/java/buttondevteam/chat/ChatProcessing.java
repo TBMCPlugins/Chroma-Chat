@@ -110,12 +110,6 @@ public class ChatProcessing {
 		// URLs + Rainbow text
 		formatters.add(new ChatFormatterBuilder().setRegex(URL_PATTERN).setFormat(ChatFormatter.Format.Underlined)
 				.setOpenlink("$1").build());
-		/*
-		 * formattedmessage = formattedmessage .replace( item, String.format(
-		 * "\",\"color\":\"%s\"},{\"text\":\"%s\",\"color\":\"%s\",\"underlined\":\"true\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Open URL\",\"color\":\"blue\"}]}}},{\"text\":\""
-		 * , colormode, url, colormode, url));
-		 */
-
 		if (PluginMain.GetPlayers().size() > 0) {
 			StringBuilder namesb = new StringBuilder();
 			namesb.append("(?i)(");
