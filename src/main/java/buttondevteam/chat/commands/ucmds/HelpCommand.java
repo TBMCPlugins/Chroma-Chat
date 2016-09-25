@@ -20,7 +20,7 @@ public final class HelpCommand extends UCommandBase {
 			sender.sendMessage(new String[] { "§6---- TBMC Help ----", "Do /u help <topic> for more info",
 					"Do /u help <commandname> [subcommands] for more info about a command", "Topics:",
 					"commands: See all the commands from this plugin",
-					"chat: Shows some info about custom chat features" });
+					"chat: Shows some info about custom chat features", "colors: Shows Minecraft color codes" });
 			return true;
 		}
 		if (args[0].equalsIgnoreCase("chat"))
@@ -36,6 +36,19 @@ public final class HelpCommand extends UCommandBase {
 				if (!cmd.GetCommandPath().contains("/"))
 					text.add("/" + cmd.GetCommandPath());
 			sender.sendMessage(text.toArray(new String[text.size()]));
+		} else if (args[0].equalsIgnoreCase("colors")) {
+			sender.sendMessage(new String[] { "§6---- Chat colors ----", //
+					"Tellraw name   - Code | Tellraw name   - Code", //
+					"§0black        - &0   | §1dark_blue    - &1", //
+					"§2dark_green   - &2   | §3dark_aqua    - &3", //
+					"§4dark_red     - &4   | §5dark_purple  - &5", //
+					"§6gold         - &6   | §7gray         - &7", //
+					"§8dark_gray    - &8   | §9blue         - &9", //
+					"§agreen        - &a   | §baqua         - &b", //
+					"§cred          - &c   | §dlight_purple - &d", //
+					"§eyellow       - &e   | §fwhite        - &f", //
+					"§rreset        - &r", //TODO: Add format codes
+					"" }); //
 		} else {
 			String path = args[0];
 			for (int i = 1; i < args.length; i++)
@@ -48,6 +61,7 @@ public final class HelpCommand extends UCommandBase {
 				sender.sendMessage(cmd.GetHelpText(args[0]));
 		}
 		return true;
+
 	}
 
 	@Override
