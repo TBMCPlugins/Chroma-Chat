@@ -48,7 +48,7 @@ public class ChatPlayer extends TBMCPlayer {
 							.warning("Can't load player " + p.getUniqueId() + " - " + p.getName());
 					return null;
 				}
-				ChatPlayer.OnlinePlayers.get(player.UUID);
+				return ChatPlayer.OnlinePlayers.get(player.UUID);
 			}
 			return ChatPlayer.OnlinePlayers.get(p.getUniqueId());
 		} else

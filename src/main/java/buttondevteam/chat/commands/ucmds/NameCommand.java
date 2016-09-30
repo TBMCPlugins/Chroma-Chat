@@ -16,16 +16,16 @@ public class NameCommand extends UCommandBase {
 
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
-		if (args.length == 1) {
+		if (args.length == 0) {
 			return false;
 		}
-		ChatPlayer mp = ChatPlayer.GetFromName(args[1]);
+		ChatPlayer mp = ChatPlayer.GetFromName(args[0]);
 		if (mp == null) {
-			sender.sendMessage("§cUnknown user (player has to be online): "
-					+ args[1]);
+			sender.sendMessage("§cUnknown user: "
+					+ args[0]);
 			return true;
 		}
-		sender.sendMessage("§bUsername of " + args[1] + ": " + mp.UserName);
+		sender.sendMessage("§bUsername of " + args[0] + ": " + mp.UserName);
 		return true;
 	}
 
