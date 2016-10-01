@@ -37,18 +37,20 @@ public final class HelpCommand extends UCommandBase {
 					text.add("/" + cmd.GetCommandPath());
 			sender.sendMessage(text.toArray(new String[text.size()]));
 		} else if (args[0].equalsIgnoreCase("colors")) {
-			sender.sendMessage(new String[] { "§6---- Chat colors ----", //
-					"Tellraw name   - Code | Tellraw name   - Code", //
-					"§0black        - &0   | §1dark_blue    - &1", //
-					"§2dark_green   - &2   | §3dark_aqua    - &3", //
-					"§4dark_red     - &4   | §5dark_purple  - &5", //
-					"§6gold         - &6   | §7gray         - &7", //
-					"§8dark_gray    - &8   | §9blue         - &9", //
-					"§agreen        - &a   | §baqua         - &b", //
-					"§cred          - &c   | §dlight_purple - &d", //
-					"§eyellow       - &e   | §fwhite        - &f", //
-					"§rreset        - &r", //TODO: Add format codes
-					"" }); //
+			sender.sendMessage(new String[] { "§6---- Chat colors/formats ----", //
+					"Tellraw name   - Code | Tellraw name    - Code", //
+					"§0black        - &0   | §1dark_blue     - &1", //
+					"§2dark_green   - &2   | §3dark_aqua     - &3", //
+					"§4dark_red     - &4   | §5dark_purple   - &5", //
+					"§6gold         - &6   | §7gray          - &7", //
+					"§8dark_gray    - &8   | §9blue          - &9", //
+					"§agreen        - &a   | §baqua          - &b", //
+					"§cred          - &c   | §dlight_purple  - &d", //
+					"§eyellow       - &e   | §fwhite         - &f", //
+					"§rreset        - &r   | §kk§robfuscated - &k", //
+					"§lbold         - &l   | §mstrikethrough - &m", //
+					"§nunderline    - &n   | §oitalic        - &o", //
+					"The format codes in tellraw should be used like \"italic\":\"true\"" }); //
 		} else {
 			String path = args[0];
 			for (int i = 1; i < args.length; i++)
