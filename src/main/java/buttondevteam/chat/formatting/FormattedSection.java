@@ -37,7 +37,7 @@ class FormattedSection {
 	@Override
 	public String toString() {
 		return new StringBuilder("Section(").append(Start).append(", ").append(End).append(", formatters: ")
-				.append(Formatters.toString()).append(", matches: ").append(Matches.toString()).append("RemChars: ")
+				.append(Formatters.toString()).append(", matches: ").append(Matches.toString()).append(", RemChars: ")
 				.append(RemCharFromStart).append(", ").append(RemCharFromEnd).append(", ").append(RemCharPos)
 				.append(")").toString();
 	}

@@ -63,7 +63,19 @@ public final class ChatFormatter {
 			if (sections.size() < 2)
 				break;
 			DebugCommand.SendDebugMessage("i: " + i);
-			if (sections.get(i - 1).End > sections.get(i).Start && sections.get(i - 1).Start < sections.get(i).End) {
+			if (sections.get(i - 1).Start == sections.get(i).Start && sections.get(i - 1).End == sections.get(i).End) {
+				DebugCommand.SendDebugMessage("Combining sections " + sections.get(i - 1) + " and " + sections.get(i));
+				sections.get(i - 1).Formatters.addAll(sections.get(i).Formatters);
+				sections.get(i - 1).Matches.addAll(sections.get(i).Matches);
+				if (sections.get(i - 1).RemCharFromStart < sections.get(i).RemCharFromStart)
+					sections.get(i - 1).RemCharFromStart = sections.get(i).RemCharFromStart;
+				if (sections.get(i - 1).RemCharFromEnd < sections.get(i).RemCharFromEnd)
+					sections.get(i - 1).RemCharFromEnd = sections.get(i).RemCharFromEnd;
+				DebugCommand.SendDebugMessage("To section " + sections.get(i - 1));
+				sections.remove(i);
+				found = true;
+			} else if (sections.get(i - 1).End > sections.get(i).Start
+					&& sections.get(i - 1).Start < sections.get(i).End) {
 				DebugCommand.SendDebugMessage("Combining sections " + sections.get(i - 1) + " and " + sections.get(i));
 				int origend = sections.get(i - 1).End;
 				sections.get(i - 1).End = sections.get(i).Start - 1;
@@ -75,7 +87,7 @@ public final class ChatFormatter {
 					origend2 = tmp;
 				}
 				FormattedSection section = new FormattedSection(sections.get(i - 1).Formatters, sections.get(i).Start,
-						origend, sections.get(i - 1).Matches, sections.get(i - 1).RemCharFromStart,
+						origend, sections.get(i - 1).Matches, sections.get(i).RemCharFromStart,
 						sections.get(i - 1).RemCharFromEnd, sections.get(i - 1).RemCharPos); // TODO: RemCharPos
 				section.Formatters.addAll(sections.get(i).Formatters); // TODO: Add remove counts to every part, then check if they have duplicates
 				section.Matches.addAll(sections.get(i).Matches); // TODO: Clean
@@ -87,25 +99,17 @@ public final class ChatFormatter {
 					thirdFormattedSection.Formatters.addAll(sections.get(i - 1).Formatters);
 					thirdFormattedSection.Matches.clear();
 					thirdFormattedSection.Matches.addAll(sections.get(i - 1).Matches);
-					thirdFormattedSection.RemCharFromEnd = sections.get(i - 1).RemCharFromEnd;
+					short remchar = section.RemCharFromEnd;
+					section.RemCharFromEnd = thirdFormattedSection.RemCharFromEnd;
+					thirdFormattedSection.RemCharFromEnd = remchar;
 				}
+				sections.get(i - 1).RemCharFromEnd = 0;
+				thirdFormattedSection.RemCharFromStart = 0;
 				thirdFormattedSection.Start = origend + 1;
 				thirdFormattedSection.End = origend2;
 				DebugCommand.SendDebugMessage("To sections 1:" + sections.get(i - 1) + "");
 				DebugCommand.SendDebugMessage("  2:" + section + "");
 				DebugCommand.SendDebugMessage("  3:" + thirdFormattedSection);
-				found = true;
-			}
-			if (sections.get(i - 1).Start == sections.get(i).Start && sections.get(i - 1).End == sections.get(i).End) {
-				DebugCommand.SendDebugMessage("Combining sections " + sections.get(i - 1) + " and " + sections.get(i));
-				sections.get(i - 1).Formatters.addAll(sections.get(i).Formatters);
-				sections.get(i - 1).Matches.addAll(sections.get(i).Matches);
-				DebugCommand.SendDebugMessage("To section " + sections.get(i - 1));
-				sections.remove(i);
-				if (sections.get(i - 1).RemCharFromStart < sections.get(i).RemCharFromStart)
-					sections.get(i - 1).RemCharFromStart = sections.get(i).RemCharFromStart;
-				if (sections.get(i - 1).RemCharFromEnd < sections.get(i).RemCharFromEnd)
-					sections.get(i - 1).RemCharFromEnd = sections.get(i).RemCharFromEnd;
 				found = true;
 			}
 			for (int j = i - 1; j <= i + 1; j++) {
@@ -135,7 +139,7 @@ public final class ChatFormatter {
 			FormattedSection section = sections.get(i);
 			DebugCommand.SendDebugMessage("Applying section: " + section);
 			String originaltext;
-			int start = section.Start - section.RemCharFromStart, end = section.End + 1 - section.RemCharFromEnd; // TODO: RemCharPos
+			int start = section.Start + section.RemCharFromStart, end = section.End + 1 - section.RemCharFromEnd; // TODO: RemCharPos
 			originaltext = str.substring(start, end);
 			DebugCommand.SendDebugMessage("Originaltext: " + originaltext);
 			Color color = null;
