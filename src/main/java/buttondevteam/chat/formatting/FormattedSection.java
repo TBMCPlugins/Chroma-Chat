@@ -10,7 +10,7 @@ class FormattedSection {
 	ArrayList<String> Matches = new ArrayList<String>();
 	short RemCharFromStart;
 	short RemCharFromEnd;
-	int RemCharPos;
+	ArrayList<Integer> RemCharPos = new ArrayList<Integer>();
 
 	FormattedSection(ChatFormatter formatter, int start, int end, ArrayList<String> matches, short remcharfromstart,
 			short remcharfromend, int remcharpos) {
@@ -20,18 +20,18 @@ class FormattedSection {
 		Matches.addAll(matches);
 		RemCharFromStart = remcharfromstart;
 		RemCharFromEnd = remcharfromend;
-		RemCharPos = remcharpos;
+		RemCharPos.add(remcharpos);
 	}
 
 	FormattedSection(Collection<ChatFormatter> formatters, int start, int end, ArrayList<String> matches,
-			short remcharfromstart, short remcharfromend, int remcharpos) {
+			short remcharfromstart, short remcharfromend, Collection<Integer> remcharpos) {
 		Start = start;
 		End = end;
 		Formatters.addAll(formatters);
 		Matches.addAll(matches);
 		RemCharFromStart = remcharfromstart;
 		RemCharFromEnd = remcharfromend;
-		RemCharPos = remcharpos;
+		RemCharPos.addAll(remcharpos);
 	}
 
 	@Override
