@@ -169,6 +169,11 @@
 			<artifactId>javassist</artifactId>
 			<version>3.20.0-GA</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.TBMCPlugins</groupId>
+			<artifactId>DiscordPlugin</artifactId>
+			<version>master-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	<artifactId>ButtonChat</artifactId>
 	<organization>

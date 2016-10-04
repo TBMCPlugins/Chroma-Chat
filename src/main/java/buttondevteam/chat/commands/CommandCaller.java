@@ -19,6 +19,7 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
 import buttondevteam.chat.PluginMain;
+import buttondevteam.discordplugin.TBMCDiscordAPI;
 
 public class CommandCaller implements CommandExecutor {
 
@@ -94,9 +95,13 @@ public class CommandCaller implements CommandExecutor {
 			sender.sendMessage("§cOnly ingame players can use this command.");
 			return true;
 		}
-		if (!cmd.OnCommand(sender, alias,
-				(args.length > 0 ? Arrays.copyOfRange(args, args.length - argc, args.length) : args)))
-			sender.sendMessage(cmd.GetHelpText(alias));
+		try {
+			if (!cmd.OnCommand(sender, alias,
+					(args.length > 0 ? Arrays.copyOfRange(args, args.length - argc, args.length) : args)))
+				sender.sendMessage(cmd.GetHelpText(alias));
+		} catch (Exception e) {
+			TBMCDiscordAPI.SendException(e, "Failed to execute command " + cmd.GetCommandPath() + " with arguments ");
+		}
 		return true;
 	}
 

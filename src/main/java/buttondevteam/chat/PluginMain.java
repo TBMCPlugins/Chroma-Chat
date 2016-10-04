@@ -64,39 +64,13 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	@Override
 	public void onEnable() {
 		Instance = this;
-		/*try {
-			PluginMain.Instance.getLogger().info("Extracting necessary libraries...");
-			final File[] libs = new File[] { new File(getDataFolder(), "htmlcleaner-2.16.jar"),
-					new File(getDataFolder(), "reflections-0.9.10.jar"),
-					new File(getDataFolder(), "javassist-3.19.0-GA.jar") };
-			for (final File lib : libs) {
-				if (!lib.exists()) {
-					JarUtils.extractFromJar(lib.getName(), lib.getAbsolutePath());
-				}
-			}
-			for (final File lib : libs) {
-				if (!lib.exists()) {
-					getLogger().warning("Failed to load plugin! Could not find lib: " + lib.getName());
-					Bukkit.getServer().getPluginManager().disablePlugin(this);
-					return;
-				}
-				addClassPath(JarUtils.getJarUrl(lib));
-			}
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}*/
 
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		CommandCaller.RegisterChatCommands(this);
 		Console = this.getServer().getConsoleSender();
 		LoadFiles(false);
 
-		SB = PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard(); // Main
-																							// can
-																							// be
-																							// detected
-																							// with
-																							// @a[score_...]
+		SB = PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard(); // Main can be detected with @a[score_...]
 		if (SB.getObjective("town") == null)
 			SB.registerNewObjective("town", "dummy");
 		if (SB.getObjective("nation") == null)
@@ -134,7 +108,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	// Fired when plugin is disabled
 	@Override
 	public void onDisable() {
-		SaveFiles(); // 2015.08.09.
+		SaveFiles();
 		stop = true;
 	}
 
