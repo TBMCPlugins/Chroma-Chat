@@ -29,7 +29,7 @@ public class UpdatePlugin extends AdminCommandBase {
 			sender.sendMessage("Updating plugin...");
 			String ret = "";
 			if ((ret = TBMCCoreAPI.UpdatePlugin(args[0])).length() > 0) {
-				sender.sendMessage("Internal error: " + ret);
+				sender.sendMessage(ret);
 				return true;
 			}
 			sender.sendMessage("Updating done!");

@@ -95,12 +95,13 @@ public class CommandCaller implements CommandExecutor {
 			sender.sendMessage("§cOnly ingame players can use this command.");
 			return true;
 		}
+		final String[] cmdargs = args.length > 0 ? Arrays.copyOfRange(args, args.length - argc, args.length) : args;
 		try {
-			if (!cmd.OnCommand(sender, alias,
-					(args.length > 0 ? Arrays.copyOfRange(args, args.length - argc, args.length) : args)))
+			if (!cmd.OnCommand(sender, alias, cmdargs))
 				sender.sendMessage(cmd.GetHelpText(alias));
 		} catch (Exception e) {
-			TBMCDiscordAPI.SendException(e, "Failed to execute command " + cmd.GetCommandPath() + " with arguments ");
+			TBMCDiscordAPI.SendException(e,
+					"Failed to execute command " + cmd.GetCommandPath() + " with arguments " + cmdargs);
 		}
 		return true;
 	}
