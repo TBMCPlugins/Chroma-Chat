@@ -1,7 +1,9 @@
 package buttondevteam.chat.commands.ucmds.admin;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import buttondevteam.bucket.core.TBMCCoreAPI;
+import buttondevteam.chat.PluginMain;
 
 public class UpdatePlugin extends AdminCommandBase {
 
@@ -27,12 +29,13 @@ public class UpdatePlugin extends AdminCommandBase {
 			return true;
 		} else {
 			sender.sendMessage("Updating plugin...");
-			String ret = "";
-			if ((ret = TBMCCoreAPI.UpdatePlugin(args[0])).length() > 0) {
-				sender.sendMessage(ret);
-				return true;
-			}
-			sender.sendMessage("Updating done!");
+			Bukkit.getScheduler().runTaskAsynchronously(PluginMain.Instance, () -> {
+				String ret = "";
+				if ((ret = TBMCCoreAPI.UpdatePlugin(args[0])).length() > 0) {
+					sender.sendMessage(ret);
+				} else
+					sender.sendMessage("Updating done!");
+			});
 			return true;
 		}
 	}
