@@ -143,7 +143,7 @@ public class PlayerListener implements Listener {
 
 		cp.RPMode = true;
 
-		cp.FlairUpdate(); // Update display
+		cp.FlairUpdate();
 
 		if (cp.ChatOnly || p.getGameMode().equals(GameMode.SPECTATOR)) {
 			cp.ChatOnly = false;
@@ -213,7 +213,6 @@ public class PlayerListener implements Listener {
 		String cmd = "";
 		if (index == -1) {
 			cmd = event.getMessage().substring(1);
-			// System.out.println("cmd: " + cmd);
 			if (cmd.equalsIgnoreCase(Channel.GlobalChat.Command)) {
 				mp.CurrentChannel = Channel.GlobalChat;
 				event.getPlayer().sendMessage("§6You are now talking in: §b" + mp.CurrentChannel.DisplayName);
@@ -249,7 +248,6 @@ public class PlayerListener implements Listener {
 			}
 		} else {
 			cmd = event.getMessage().substring(1, index);
-			// System.out.println("cmd: " + cmd);
 			if (cmd.equalsIgnoreCase(Channel.GlobalChat.Command)) {
 				event.setCancelled(true);
 				Channel c = mp.CurrentChannel;
@@ -293,32 +291,6 @@ public class PlayerListener implements Listener {
 						p.sendMessage(String.format("* %s %s", event.getPlayer().getDisplayName(), message));
 				}
 			}
-			/*
-			 * boolean tping = false; boolean tphering = false; if (cmd.equalsIgnoreCase("tpa") || cmd.equalsIgnoreCase("call") || cmd.equalsIgnoreCase("ecall") || cmd.equalsIgnoreCase("etpa") ||
-			 * cmd.equalsIgnoreCase("tpask") || cmd.equalsIgnoreCase("etpask")) tping = true; if (cmd.equalsIgnoreCase("tpahere") || cmd.equalsIgnoreCase("etpahere")) tphering = true;
-			 */
-
-			/*
-			 * for (HelpTopic ht : PluginMain.Instance.getServer() .getHelpMap().getHelpTopics()) { if (ht.getName().equalsIgnoreCase("/tpa")) { tping = true; break; } }
-			 */
-
-			/*
-			 * for (HelpTopic ht : PluginMain.Instance.getServer() .getHelpMap().getHelpTopics()) { if (ht.getName().equalsIgnoreCase("/tpahere")) tphering = true; break; }
-			 */
-
-			/*
-			 * if (tphering) { Player target = Bukkit.getPlayer(event.getMessage() .substring(index + 1).split(" ")[0]); if (target != null && BoardColl.get()
-			 * .getFactionAt(PS.valueOf(target.getLocation())) .getId().equalsIgnoreCase("tower")) { event.getPlayer() .sendMessage( "§cYou are not allowed to teleport players out from the Tower");
-			 * event.setCancelled(true); } }
-			 */
-			/*
-			 * for (String s : Bukkit.getCommandAliases().get("/tpahere")) { if (cmd.equalsIgnoreCase(s)) { tping = true; break; } }
-			 */
-			/*
-			 * if (tping) { if ( // MPlayer.get(event.getPlayer()).getFaction().getId ().equalsIgnoreCase("nomansland")) // { BoardColl .get() .getFactionAt(
-			 * PS.valueOf(event.getPlayer().getLocation())) .getId().equalsIgnoreCase("tower")) { event.getPlayer().sendMessage( "§cYou are not allowed to teleport to the Tower");
-			 * event.setCancelled(true); } }
-			 */
 		}
 		if (cmd.equalsIgnoreCase("sethome")) {
 			TownyUniverse tu = PluginMain.Instance.TU;
@@ -357,7 +329,6 @@ public class PlayerListener implements Listener {
 			}
 		} else if (cmd.toLowerCase().startsWith("un")) {
 			for (HelpTopic ht : PluginMain.Instance.getServer().getHelpMap().getHelpTopics()) {
-				// event.getPlayer().sendMessage("HT: " + ht.getName());
 				if (ht.getName().equalsIgnoreCase("/" + cmd))
 					return;
 			}
@@ -395,8 +366,7 @@ public class PlayerListener implements Listener {
 	public void onTabComplete(PlayerChatTabCompleteEvent e) {
 		String name = e.getLastToken();
 		for (String nickname : nicknames.keySet()) {
-			if (nickname.startsWith(name)
-					&& !nickname.equals(Bukkit.getPlayer(nicknames.get(nickname)).getName()))
+			if (nickname.startsWith(name) && !nickname.equals(Bukkit.getPlayer(nicknames.get(nickname)).getName()))
 				e.getTabCompletions().add(nickname);
 		}
 	}
@@ -425,11 +395,7 @@ public class PlayerListener implements Listener {
 		if (e.getEntity().getName().equals("Alpha_Bacca44"))
 			AlphaDeaths++;
 		MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(e.getEntity());
-		if ((mgp != null && !mgp.isInMinigame()) && new Random().nextBoolean()) { // Don't
-																					// store
-																					// Fs
-																					// for
-																					// NPCs
+		if ((mgp != null && !mgp.isInMinigame()) && new Random().nextBoolean()) { // Don't store Fs for NPCs
 			if (Ftimer != null)
 				Ftimer.cancel();
 			ActiveF = true;
@@ -460,28 +426,19 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerItemPickup(PlayerPickupItemEvent e) {
-		// System.out.println("A");
 		MinigamePlayer mp = Minigames.plugin.pdata.getMinigamePlayer(e.getPlayer());
-		// System.out.println("B");
 
-		/*
-		 * if (!e.getPlayer().isOp() && (!mp.isInMinigame() || mp.getMinigame().getName(false) .equalsIgnoreCase(Commands.KittyCannonMinigame))) return;
-		 */
 		if (!(mp.isInMinigame()
 				&& mp.getMinigame().getName(false).equalsIgnoreCase(KittycannonCommand.KittyCannonMinigame)))
 			return;
-		// System.out.println("C");
 		ItemStack item = e.getItem().getItemStack();
 		if (!item.getType().equals(Material.SKULL_ITEM) && !item.getType().equals(Material.SKULL))
 			return;
-		// System.out.println("D");
 		SkullMeta meta = (SkullMeta) item.getItemMeta();
 		if (!meta.getDisplayName().equals("§rOcelot Head") || !meta.getOwner().equals("MHF_Ocelot"))
 			return;
-		// System.out.println("E");
 		if (meta.getLore() == null || meta.getLore().size() == 0)
 			return;
-		// System.out.println("F");
 		ItemStack hat = e.getPlayer().getInventory().getHelmet();
 		if (!(hat != null && (hat.getType().equals(Material.SKULL) || hat.getType().equals(Material.SKULL_ITEM))
 				&& ((SkullMeta) hat.getItemMeta()).getDisplayName().equals("§rWolf Head")))
@@ -608,7 +565,6 @@ public class PlayerListener implements Listener {
 		}
 		if (cmd.toLowerCase().startsWith("un")) {
 			for (HelpTopic ht : PluginMain.Instance.getServer().getHelpMap().getHelpTopics()) {
-				// event.getSender().sendMessage("HT: " + ht.getName());
 				if (ht.getName().equalsIgnoreCase("/" + cmd))
 					return;
 			}

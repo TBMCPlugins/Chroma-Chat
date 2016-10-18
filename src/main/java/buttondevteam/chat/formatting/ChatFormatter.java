@@ -194,7 +194,7 @@ public final class ChatFormatter {
 				.append(", ").append(priority).append(")").toString();
 	}
 
-	public enum Format implements TellrawSerializableEnum { // TODO: Flag!
+	public enum Format implements TellrawSerializableEnum {
 		Bold("bold"), Underlined("underlined"), Italic("italic"), Strikethrough("strikethrough"), Obfuscated(
 				"obfuscated");
 		// TODO: Add format codes to /u c <mode>
