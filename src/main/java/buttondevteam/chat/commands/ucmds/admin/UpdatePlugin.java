@@ -2,8 +2,9 @@ package buttondevteam.chat.commands.ucmds.admin;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import buttondevteam.bucket.core.TBMCCoreAPI;
+
 import buttondevteam.chat.PluginMain;
+import buttondevteam.core.TBMCCoreAPI;
 
 public class UpdatePlugin extends AdminCommandBase {
 

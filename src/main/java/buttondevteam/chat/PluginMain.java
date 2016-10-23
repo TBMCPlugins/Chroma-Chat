@@ -15,8 +15,8 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 
-import buttondevteam.bucket.core.TBMCCoreAPI;
 import buttondevteam.chat.commands.CommandCaller;
+import buttondevteam.core.TBMCCoreAPI;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
