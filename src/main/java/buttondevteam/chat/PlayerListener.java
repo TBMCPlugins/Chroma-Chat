@@ -36,11 +36,11 @@ import org.bukkit.potion.PotionEffectType;
 import au.com.mineauz.minigames.MinigamePlayer;
 import au.com.mineauz.minigames.Minigames;
 import buttondevteam.chat.commands.ucmds.KittycannonCommand;
-import buttondevteam.core.TBMCPlayer;
-import buttondevteam.core.TBMCPlayerAddEvent;
-import buttondevteam.core.TBMCPlayerJoinEvent;
-import buttondevteam.core.TBMCPlayerLoadEvent;
-import buttondevteam.core.TBMCPlayerSaveEvent;
+import buttondevteam.lib.TBMCPlayer;
+import buttondevteam.lib.TBMCPlayerAddEvent;
+import buttondevteam.lib.TBMCPlayerJoinEvent;
+import buttondevteam.lib.TBMCPlayerLoadEvent;
+import buttondevteam.lib.TBMCPlayerSaveEvent;
 
 import com.earth2me.essentials.Essentials;
 import com.google.common.collect.BiMap;

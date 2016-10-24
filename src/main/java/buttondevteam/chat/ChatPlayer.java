@@ -10,7 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import buttondevteam.chat.formatting.ChatFormatter;
-import buttondevteam.core.TBMCPlayer;
+import buttondevteam.lib.TBMCPlayer;
 
 public class ChatPlayer extends TBMCPlayer {
 	public String UserName;

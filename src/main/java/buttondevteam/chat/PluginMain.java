@@ -16,7 +16,7 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 
 import buttondevteam.chat.commands.CommandCaller;
-import buttondevteam.core.TBMCCoreAPI;
+import buttondevteam.lib.TBMCCoreAPI;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

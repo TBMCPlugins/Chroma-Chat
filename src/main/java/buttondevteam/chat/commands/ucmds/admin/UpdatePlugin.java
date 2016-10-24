@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import buttondevteam.chat.PluginMain;
-import buttondevteam.core.TBMCCoreAPI;
+import buttondevteam.lib.TBMCCoreAPI;
 
 public class UpdatePlugin extends AdminCommandBase {
 
