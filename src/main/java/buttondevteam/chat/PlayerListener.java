@@ -1,6 +1,7 @@
 package buttondevteam.chat;
 
 import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -107,6 +108,7 @@ public class PlayerListener implements Listener {
 				cp.SetFlair(ChatPlayer.FlairTimeNone);
 			Timer timer = new Timer();
 			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
+
 				@Override
 				public void run() {
 					Player player = Bukkit.getPlayer(mp.PlayerName);
@@ -131,14 +133,13 @@ public class PlayerListener implements Listener {
 
 		String nwithoutformatting = essentials.getUser(p).getNickname();
 		int index;
-		while ((index = nwithoutformatting.indexOf("§k")) != -1)
-			nwithoutformatting = nwithoutformatting.replace("§k" + nwithoutformatting.charAt(index + 2), ""); // Support
-																												// for
-																												// one
-																												// random
-																												// char
-		while ((index = nwithoutformatting.indexOf('§')) != -1)
-			nwithoutformatting = nwithoutformatting.replace("§" + nwithoutformatting.charAt(index + 1), "");
+		if (nwithoutformatting != null) {
+			while ((index = nwithoutformatting.indexOf("§k")) != -1)
+				nwithoutformatting = nwithoutformatting.replace("§k" + nwithoutformatting.charAt(index + 2), ""); // Support for one random char
+			while ((index = nwithoutformatting.indexOf('§')) != -1)
+				nwithoutformatting = nwithoutformatting.replace("§" + nwithoutformatting.charAt(index + 1), "");
+		} else
+			nwithoutformatting = p.getName();
 		nicknames.put(nwithoutformatting, p.getUniqueId());
 
 		cp.RPMode = true;
@@ -365,22 +366,10 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onTabComplete(PlayerChatTabCompleteEvent e) {
 		String name = e.getLastToken();
-		for (String nickname : nicknames.keySet()) {
-			if (nickname.startsWith(name) && !nickname.equals(Bukkit.getPlayer(nicknames.get(nickname)).getName()))
-				e.getTabCompletions().add(nickname);
-		}
-	}
-
-	public static boolean DebugMode = false;
-
-	public void SendForDebug(String message) {
-		if (DebugMode) {
-			for (Player player : PluginMain.GetPlayers()) {
-				if (player.getName().equals("NorbiPeti")) {
-					player.sendMessage("[DEBUG] " + message);
-					break;
-				}
-			}
+		for (Entry<String, UUID> nicknamekv : nicknames.entrySet()) {
+			if (nicknamekv.getKey().startsWith(name)
+					&& !nicknamekv.getKey().equals(Bukkit.getPlayer(nicknamekv.getValue()).getName()))
+				e.getTabCompletions().add(nicknamekv.getKey());
 		}
 	}
 
