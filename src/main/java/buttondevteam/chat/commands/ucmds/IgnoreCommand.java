@@ -21,7 +21,7 @@ public final class IgnoreCommand extends UCommandBase {
 		final Player player = (Player) sender;
 		ChatPlayer p = ChatPlayer.GetFromPlayer(player);
 		if (p.FlairState.equals(FlairStates.Accepted)) {
-			player.sendMessage("§cYou can only ignore the \"write yoőu rname in the thread\" message.");
+			player.sendMessage("§cYou can only ignore the \"write your name in the thread\" message.");
 			return true;
 		}
 		if (p.FlairState.equals(FlairStates.Commented)) {
