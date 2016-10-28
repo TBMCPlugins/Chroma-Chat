@@ -3,7 +3,7 @@ package buttondevteam.chat.commands.ucmds;
 import org.bukkit.command.CommandSender;
 
 import buttondevteam.chat.commands.CommandCaller;
-import buttondevteam.chat.commands.TBMCCommandBase;
+import buttondevteam.lib.chat.TBMCCommandBase;
 
 public final class UCommand extends TBMCCommandBase {
 

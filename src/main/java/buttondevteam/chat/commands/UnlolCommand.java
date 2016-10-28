@@ -7,6 +7,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import buttondevteam.chat.PluginMain;
+import buttondevteam.lib.chat.TBMCCommandBase;
 
 public final class UnlolCommand extends TBMCCommandBase {
 

@@ -2,8 +2,8 @@ package buttondevteam.chat.commands.ucmds.announce;
 
 import org.bukkit.command.CommandSender;
 
-import buttondevteam.chat.commands.CommandCaller;
 import buttondevteam.chat.commands.ucmds.UCommandBase;
+import buttondevteam.chat.commands.CommandCaller;
 
 public class AnnounceCommand extends UCommandBase {
 

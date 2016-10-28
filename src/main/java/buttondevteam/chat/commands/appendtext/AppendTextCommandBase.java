@@ -3,7 +3,7 @@ package buttondevteam.chat.commands.appendtext;
 import org.bukkit.command.CommandSender;
 
 import buttondevteam.chat.ChatProcessing;
-import buttondevteam.chat.commands.TBMCCommandBase;
+import buttondevteam.lib.chat.TBMCCommandBase;
 
 public abstract class AppendTextCommandBase extends TBMCCommandBase {
 

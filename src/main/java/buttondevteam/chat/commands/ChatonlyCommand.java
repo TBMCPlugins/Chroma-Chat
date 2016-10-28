@@ -5,6 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import buttondevteam.chat.ChatPlayer;
+import buttondevteam.lib.chat.TBMCCommandBase;
 
 public final class ChatonlyCommand extends TBMCCommandBase {
 

@@ -2,6 +2,8 @@ package buttondevteam.chat.commands;
 
 import org.bukkit.command.CommandSender;
 
+import buttondevteam.lib.chat.TBMCCommandBase;
+
 public class MWikiCommand extends TBMCCommandBase {
 
 	@Override

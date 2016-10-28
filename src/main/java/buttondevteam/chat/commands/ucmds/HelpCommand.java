@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import org.bukkit.command.CommandSender;
 
-import buttondevteam.chat.commands.CommandCaller;
-import buttondevteam.chat.commands.TBMCCommandBase;
+import buttondevteam.lib.chat.TBMCChatAPI;
+import buttondevteam.lib.chat.TBMCCommandBase;
 
 public final class HelpCommand extends UCommandBase {
 
@@ -32,7 +32,7 @@ public final class HelpCommand extends UCommandBase {
 		else if (args[0].equalsIgnoreCase("commands")) {
 			ArrayList<String> text = new ArrayList<String>();
 			text.add("§6---- Command list ----");
-			for (TBMCCommandBase cmd : CommandCaller.GetCommands().values())
+			for (TBMCCommandBase cmd : TBMCChatAPI.GetCommands().values())
 				if (!cmd.GetCommandPath().contains("/"))
 					text.add("/" + cmd.GetCommandPath());
 			sender.sendMessage(text.toArray(new String[text.size()]));
@@ -55,7 +55,7 @@ public final class HelpCommand extends UCommandBase {
 			String path = args[0];
 			for (int i = 1; i < args.length; i++)
 				path += "/" + args[i];
-			TBMCCommandBase cmd = CommandCaller.GetCommands().get(path);
+			TBMCCommandBase cmd = TBMCChatAPI.GetCommands().get(path);
 			if (cmd == null)
 				sender.sendMessage(new String[] { "§cError: Command not found: " + path.replace('/', ' '),
 						"Usage example: /u accept --> /u help u accept" });

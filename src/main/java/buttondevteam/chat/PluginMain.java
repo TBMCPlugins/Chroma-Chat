@@ -16,7 +16,9 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 
 import buttondevteam.chat.commands.CommandCaller;
+import buttondevteam.chat.commands.YeehawCommand;
 import buttondevteam.lib.TBMCCoreAPI;
+import buttondevteam.lib.chat.TBMCChatAPI;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -66,7 +68,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		Instance = this;
 
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-		CommandCaller.RegisterChatCommands(this);
+		TBMCChatAPI.AddCommands(this, YeehawCommand.class);
 		Console = this.getServer().getConsoleSender();
 		LoadFiles(false);
 
@@ -101,6 +103,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		};
 		t = new Thread(r);
 		t.start();
+		Bukkit.getScheduler().runTaskLater(this, () -> CommandCaller.RegisterCommands(), 0);
 	}
 
 	public Boolean stop = false;
