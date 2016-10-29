@@ -2,14 +2,14 @@ package buttondevteam.chat.commands.ucmds;
 
 import org.bukkit.command.CommandSender;
 
-import buttondevteam.chat.commands.CommandCaller;
+import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.chat.TBMCCommandBase;
 
 public final class UCommand extends TBMCCommandBase {
 
 	@Override
 	public String[] GetHelpText(String alias) {
-		return CommandCaller.GetSubCommands(this);
+		return TBMCChatAPI.GetSubCommands(this);
 	}
 
 	@Override

@@ -72,18 +72,4 @@ public class CommandCaller implements CommandExecutor {
 		}
 		return true;
 	}
-
-	public static String[] GetSubCommands(TBMCCommandBase command) {
-		ArrayList<String> cmds = new ArrayList<String>();
-		cmds.add("§6---- Subcommands ----");
-		for (TBMCCommandBase cmd : TBMCChatAPI.GetCommands().values()) {
-			if (cmd.GetCommandPath().startsWith(command.GetCommandPath() + "/")) {
-				int ind = cmd.GetCommandPath().indexOf('/', command.GetCommandPath().length() + 2);
-				if (ind >= 0)
-					continue;
-				cmds.add(cmd.GetCommandPath().replace('/', ' '));
-			}
-		}
-		return cmds.toArray(new String[cmds.size()]);
-	}
 }

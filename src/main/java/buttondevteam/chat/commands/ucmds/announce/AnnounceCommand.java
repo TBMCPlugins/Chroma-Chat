@@ -3,13 +3,13 @@ package buttondevteam.chat.commands.ucmds.announce;
 import org.bukkit.command.CommandSender;
 
 import buttondevteam.chat.commands.ucmds.UCommandBase;
-import buttondevteam.chat.commands.CommandCaller;
+import buttondevteam.lib.chat.TBMCChatAPI;
 
 public class AnnounceCommand extends UCommandBase {
 
 	@Override
 	public String[] GetHelpText(String alias) {
-		return CommandCaller.GetSubCommands(this);
+		return TBMCChatAPI.GetSubCommands(this);
 	}
 
 	@Override
