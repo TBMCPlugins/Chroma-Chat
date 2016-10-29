@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.formatting.ChatFormatter;
+import buttondevteam.lib.TBMCPlayer;
 
 public class CCommand extends UCommandBase {
 
@@ -18,7 +19,7 @@ public class CCommand extends UCommandBase {
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		Player player = (Player) sender;
-		ChatPlayer p = ChatPlayer.GetFromPlayer(player);
+		ChatPlayer p = TBMCPlayer.getPlayerAs(player, ChatPlayer.class);
 		if (args.length < 1) {
 			if (PluginMain.permission.has(player, "tbmc.rainbow")) {
 				p.RainbowPresserColorMode = !p.RainbowPresserColorMode;

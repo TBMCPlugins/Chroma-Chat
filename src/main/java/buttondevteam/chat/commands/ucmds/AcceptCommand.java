@@ -9,35 +9,36 @@ import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.FlairStates;
 import buttondevteam.chat.PlayerJoinTimerTask;
 import buttondevteam.chat.PluginMain;
+import buttondevteam.lib.TBMCPlayer;
 
 public class AcceptCommand extends UCommandBase {
 
 	@Override
 	public String[] GetHelpText(String alias) {
-		return new String[] { "§6---- Accept flair ----",
-				"Accepts a flair from Reddit",
-				"Use /u accept <username> if you commented from multiple accounts" };
+		return new String[] { "§6---- Accept flair ----", //
+				"Accepts a flair from Reddit", //
+				"Use /u accept <username> if you commented from multiple accounts" //
+		};
 	}
 
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		final Player player = (Player) sender;
-		ChatPlayer p = ChatPlayer.GetFromPlayer(player);
-		if (args.length < 1 && p.UserNames.size() > 1) {
+		ChatPlayer p = TBMCPlayer.getPlayerAs(player, ChatPlayer.class);
+		if (args.length < 1 && p.getUserNames().size() > 1) {
 			player.sendMessage("§9Multiple users commented your name. §bPlease pick one using /u accept <username>");
 			StringBuilder sb = new StringBuilder();
 			sb.append("§6Usernames:");
-			for (String username : p.UserNames)
+			for (String username : p.getUserNames())
 				sb.append(" ").append(username);
 			player.sendMessage(sb.toString());
 			return true;
 		}
-		if (p.FlairState.equals(FlairStates.NoComment)
-				|| p.UserNames.size() == 0) {
-			player.sendMessage("§cError: You need to write your username to the reddit thread at /r/TheButtonMinecraft§r");
+		if (p.getFlairState().equals(FlairStates.NoComment) || p.getUserNames().size() == 0) {
+			player.sendMessage("§cError: You need to write your username to the reddit thread at /r/ChromaGamers§r");
 			return true;
 		}
-		if (args.length > 0 && !p.UserNames.contains(args[0])) {
+		if (args.length > 0 && !p.getUserNames().contains(args[0])) {
 			player.sendMessage("§cError: Unknown name: " + args[0] + "§r");
 			return true;
 		}
@@ -46,14 +47,14 @@ public class AcceptCommand extends UCommandBase {
 			return true;
 		}
 
-		if ((args.length > 0 ? args[0] : p.UserNames.get(0)).equals(p.UserName)) {
+		if ((args.length > 0 ? args[0] : p.getUserNames().get(0)).equals(p.getUserName())) {
 			player.sendMessage("§cYou already have this user's flair.§r");
 			return true;
 		}
 		if (args.length > 0)
-			p.UserName = args[0];
+			p.setUserName(args[0]);
 		else
-			p.UserName = p.UserNames.get(0);
+			p.setUserName(p.getUserNames().get(0));
 
 		player.sendMessage("§bObtaining flair...");
 		p.Working = true;
@@ -65,18 +66,20 @@ public class AcceptCommand extends UCommandBase {
 					PluginMain.Instance.DownloadFlair(mp);
 				} catch (Exception e) {
 					e.printStackTrace();
-					player.sendMessage("Sorry, but an error occured while trying to get your flair. Please contact a mod.");
+					player.sendMessage(
+							"Sorry, but an error occured while trying to get your flair. Please contact a mod.");
 					mp.Working = false;
 					return;
 				}
 
-				if (mp.FlairState.equals(FlairStates.Commented)) {
-					player.sendMessage("Sorry, but your flair isn't recorded. Please ask an admin to set it for you. Also, prepare a comment on /r/thebutton, if possible.");
+				if (mp.getFlairState().equals(FlairStates.Commented)) {
+					player.sendMessage(
+							"Sorry, but your flair isn't recorded. Please ask an admin to set it for you. Also, prepare a comment on /r/thebutton, if possible.");
 					mp.Working = false;
 					return;
 				}
 				String flair = mp.GetFormattedFlair();
-				mp.FlairState = FlairStates.Accepted;
+				mp.setFlairState(FlairStates.Accepted);
 				PluginMain.ConfirmUserMessage(mp);
 				player.sendMessage("§bYour flair has been set:§r " + flair);
 				mp.Working = false;

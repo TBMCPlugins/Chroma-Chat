@@ -18,6 +18,7 @@ import org.htmlcleaner.TagNode;
 import buttondevteam.chat.commands.CommandCaller;
 import buttondevteam.chat.commands.YeehawCommand;
 import buttondevteam.lib.TBMCCoreAPI;
+import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.TBMCChatAPI;
 
 import com.google.gson.JsonArray;
@@ -70,7 +71,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		TBMCChatAPI.AddCommands(this, YeehawCommand.class);
 		Console = this.getServer().getConsoleSender();
-		LoadFiles(false);
+		LoadFiles();
 
 		SB = PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard(); // Main can be detected with @a[score_...]
 		if (SB.getObjective("town") == null)
@@ -138,19 +139,20 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					ign = ign.trim();
 					if (PlayersWithFlairs.contains(ign))
 						continue;
-					ChatPlayer mp = ChatPlayer.getFromName(ign); // Loads player file
-					if (mp == null)
-						continue;
-					/*
-					 * if (!JoinedBefore(mp, 2015, 6, 5)) continue;
-					 */
-					if (!mp.UserNames.contains(author))
-						mp.UserNames.add(author);
-					if (mp.FlairState.equals(FlairStates.NoComment)) {
-						mp.FlairState = FlairStates.Commented;
-						ConfirmUserMessage(mp);
-					} else
-						PlayersWithFlairs.add(ign);
+					try (ChatPlayer mp = TBMCPlayer.getFromName(ign).asPluginPlayer(ChatPlayer.class)) { // Loads player file
+						if (mp == null)
+							continue;
+						/*
+						 * if (!JoinedBefore(mp, 2015, 6, 5)) continue;
+						 */
+						if (!mp.getUserNames().contains(author))
+							mp.getUserNames().add(author);
+						if (mp.getFlairState().equals(FlairStates.NoComment)) {
+							mp.setFlairState(FlairStates.Commented);
+							ConfirmUserMessage(mp);
+						} else
+							PlayersWithFlairs.add(ign);
+					}
 					try {
 						Thread.sleep(10);
 					} catch (InterruptedException ex) {
@@ -169,8 +171,9 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	}
 
 	public void DownloadFlair(ChatPlayer mp) throws MalformedURLException, IOException {
-		String[] flairdata = TBMCCoreAPI.DownloadString("http://karmadecay.com/thebutton-data.php?users=" + mp.UserName)
-				.replace("\"", "").split(":");
+		String[] flairdata = TBMCCoreAPI
+				.DownloadString("http://karmadecay.com/thebutton-data.php?users=" + mp.getUserName()).replace("\"", "")
+				.split(":");
 		String flair;
 		if (flairdata.length > 1)
 			flair = flairdata[1];
@@ -181,14 +184,14 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			flairclass = flairdata[2];
 		else
 			flairclass = "unknown";
-		SetFlair(mp, flair, flairclass, mp.UserName);
+		SetFlair(mp, flair, flairclass, mp.getUserName());
 	}
 
 	public static Exception LastException;
 
 	private void SetFlair(ChatPlayer p, String text, String flairclass, String username) {
-		p.UserName = username;
-		p.FlairState = FlairStates.Recognised;
+		p.setUserName(username);
+		p.setFlairState(FlairStates.Recognised);
 		switch (flairclass) {
 		case "cheater":
 			p.SetFlair(Short.parseShort(text), true);
@@ -205,20 +208,20 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 						p.SetFlair(ChatPlayer.FlairTimeCantPress);
 					}
 				} catch (Exception e) {
-					p.FlairState = FlairStates.Commented; // Flair unknown
+					p.setFlairState(FlairStates.Commented); // Flair unknown
 					p.SetFlair(ChatPlayer.FlairTimeNone);
 					e.printStackTrace();
 				}
 			} else {
 				try {
 					if (CheckForJoinDate(p)) {
-						p.FlairState = FlairStates.Commented; // Flair unknown
+						p.setFlairState(FlairStates.Commented); // Flair unknown
 						p.SetFlair(ChatPlayer.FlairTimeNone);
 					} else {
 						p.SetFlair(ChatPlayer.FlairTimeCantPress);
 					}
 				} catch (Exception e) {
-					p.FlairState = FlairStates.Commented; // Flair unknown
+					p.setFlairState(FlairStates.Commented); // Flair unknown
 					p.SetFlair(ChatPlayer.FlairTimeNone);
 					e.printStackTrace();
 				}
@@ -235,7 +238,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	}
 
 	public static boolean JoinedBefore(ChatPlayer mp, int year, int month, int day) throws Exception {
-		URL url = new URL("https://www.reddit.com/u/" + mp.UserName);
+		URL url = new URL("https://www.reddit.com/u/" + mp.getUserName());
 		URLConnection con = url.openConnection();
 		con.setRequestProperty("User-Agent", "TheButtonAutoFlair");
 		InputStream in = con.getInputStream();
@@ -253,9 +256,9 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	}
 
 	public static void ConfirmUserMessage(ChatPlayer mp) {
-		Player p = Bukkit.getPlayer(mp.UUID);
-		if (mp.FlairState.equals(FlairStates.Commented) && p != null)
-			if (mp.UserNames.size() > 1)
+		Player p = Bukkit.getPlayer(mp.getUuid());
+		if (mp.getFlairState().equals(FlairStates.Commented) && p != null)
+			if (mp.getUserNames().size() > 1)
 				p.sendMessage(
 						"§9Multiple Reddit users commented your name. You can select with /u accept.§r §6Type /u accept or /u ignore§r");
 			else
@@ -269,12 +272,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	public static ArrayList<String> AnnounceMessages = new ArrayList<>();
 	public static int AnnounceTime = 15 * 60 * 1000;
 
-	public static void LoadFiles(boolean reload) {
-		if (reload) {
-			PluginMain.Instance.getLogger().info("Cleanup for reloading...");
-			ChatPlayer.OnlinePlayers.clear();
-			AnnounceMessages.clear();
-		}
+	public static void LoadFiles() {
 		PluginMain.Instance.getLogger().info("Loading files...");
 		try {
 			File file = new File("TBMC/chatsettings.yml");

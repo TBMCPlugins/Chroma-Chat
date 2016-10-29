@@ -14,7 +14,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -68,9 +67,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerLoad(TBMCPlayerLoadEvent e) {
-		YamlConfiguration yc = e.GetPlayerConfig();
 		ChatPlayer cp = e.GetPlayer().asPluginPlayer(ChatPlayer.class);
-		short tcp = (short) yc.getInt("flairtime");
 		cp.FlairUpdate();
 	}
 
@@ -187,7 +184,7 @@ public class PlayerListener implements Listener {
 		if (event.getMessage().length() < 2)
 			return;
 		int index = event.getMessage().indexOf(" ");
-		ChatPlayer mp = ChatPlayer.OnlinePlayers.get(event.getPlayer().getUniqueId());
+		ChatPlayer mp = TBMCPlayer.getPlayer(event.getPlayer()).asPluginPlayer(ChatPlayer.class);
 		String cmd = "";
 		if (index == -1) {
 			cmd = event.getMessage().substring(1);
@@ -366,10 +363,10 @@ public class PlayerListener implements Listener {
 				Ftimer.cancel();
 			ActiveF = true;
 			FCount = 0;
-			FPlayer = ChatPlayer.OnlinePlayers.get(e.getEntity().getUniqueId());
-			FPlayer.FDeaths++;
+			FPlayer = TBMCPlayer.getPlayer(e.getEntity().getUniqueId()).asPluginPlayer(ChatPlayer.class);
+			FPlayer.setFDeaths(FPlayer.getFDeaths() + 1);
 			for (Player p : PluginMain.GetPlayers()) {
-				ChatPlayer mp = ChatPlayer.OnlinePlayers.get(p.getUniqueId());
+				ChatPlayer mp = TBMCPlayer.getPlayerAs(p.getUniqueId(), ChatPlayer.class);
 				mp.PressedF = false;
 				p.sendMessage("§bPress F to pay respects.§r");
 			}
@@ -430,14 +427,14 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e) {
-		ChatPlayer mp = ChatPlayer.GetFromPlayer(e.getPlayer());
+		ChatPlayer mp = TBMCPlayer.getPlayerAs(e.getPlayer(), ChatPlayer.class);
 		if (mp.ChatOnly)
 			e.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerTeleport(PlayerTeleportEvent e) {
-		if (ChatPlayer.GetFromPlayer(e.getPlayer()).ChatOnly) {
+		if (TBMCPlayer.getPlayerAs(e.getPlayer(), ChatPlayer.class).ChatOnly) {
 			e.setCancelled(true);
 			e.getPlayer().sendMessage("§cYou are not allowed to teleport while in chat-only mode.");
 		}
