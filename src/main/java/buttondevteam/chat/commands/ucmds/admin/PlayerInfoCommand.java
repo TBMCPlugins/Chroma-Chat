@@ -18,7 +18,7 @@ public class PlayerInfoCommand extends AdminCommandBase {
 		if (args.length == 0) {
 			return false;
 		}
-		ChatPlayer p = ChatPlayer.GetFromName(args[0]);
+		ChatPlayer p = ChatPlayer.getFromName(args[0]);
 		if (p == null) {
 			sender.sendMessage("§cPlayer not found: " + args[0] + "§r");
 			return true;

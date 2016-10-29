@@ -19,7 +19,7 @@ public class NameCommand extends UCommandBase {
 		if (args.length == 0) {
 			return false;
 		}
-		ChatPlayer mp = ChatPlayer.GetFromName(args[0]);
+		ChatPlayer mp = ChatPlayer.getFromName(args[0]);
 		if (mp == null) {
 			sender.sendMessage("§cUnknown user: "
 					+ args[0]);

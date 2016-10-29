@@ -26,6 +26,7 @@ import buttondevteam.chat.formatting.TellrawEvent;
 import buttondevteam.chat.formatting.TellrawPart;
 import buttondevteam.chat.formatting.TellrawSerializableEnum;
 import buttondevteam.chat.formatting.TellrawSerializer;
+import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.chat.formatting.ChatFormatter.Color;
 import buttondevteam.chat.formatting.ChatFormatter.Priority;
 
@@ -55,13 +56,13 @@ public class ChatProcessing {
 
 		ChatPlayer mp = null;
 		if (player != null) {
-			mp = ChatPlayer.OnlinePlayers.get(player.getUniqueId());
+			mp = TBMCPlayer.getPlayer(player).asPluginPlayer(ChatPlayer.class);
 			if (message.equalsIgnoreCase("F")) {
 				if (!mp.PressedF && PlayerListener.ActiveF) {
 					PlayerListener.FCount++;
 					mp.PressedF = true;
-					if (PlayerListener.FPlayer != null && PlayerListener.FPlayer.FCount < Integer.MAX_VALUE - 1)
-						PlayerListener.FPlayer.FCount++;
+					if (PlayerListener.FPlayer != null && PlayerListener.FPlayer.getFCount() < Integer.MAX_VALUE - 1)
+						PlayerListener.FPlayer.setFCount(PlayerListener.FPlayer.getFCount() + 1);
 				}
 			}
 		}
@@ -132,7 +133,7 @@ public class ChatProcessing {
 									.warning("Error: Can't find player " + match + " but was reported as online.");
 							return "§c" + match + "§r";
 						}
-						ChatPlayer mpp = ChatPlayer.GetFromPlayer(p);
+						ChatPlayer mpp = TBMCPlayer.getPlayer(p).asPluginPlayer(ChatPlayer.class);
 						if (PlayerListener.NotificationSound == null)
 							p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
 						else
@@ -212,18 +213,21 @@ public class ChatProcessing {
 																.addExtra(new TellrawPart(String.format("World: %s\n",
 																		(player != null ? player.getWorld().getName()
 																				: "-"))))
-																.addExtra(new TellrawPart(String.format(
-																		"Respect: %s%s%s",
-																		(mp != null ? (mp.FCount / (double) mp.FDeaths)
-																				: "Infinite"),
-																		(mp != null && mp.UserName != null
-																				&& !mp.UserName.isEmpty()
-																						? "\nUserName: " + mp.UserName
-																						: ""),
-																		(mp != null && mp.PlayerName.equals(
-																				"\nAlpha_Bacca44") ? "\nDeaths: "
-																						+ PlayerListener.AlphaDeaths
-																						: "")))))));
+																.addExtra(
+																		new TellrawPart(String.format("Respect: %s%s%s",
+																				(mp != null ? (mp.getFCount()
+																						/ (double) mp.getFDeaths())
+																						: "Infinite"),
+																				(mp != null && mp.getUserName() != null
+																						&& !mp.getUserName().isEmpty()
+																								? "\nUserName: "
+																										+ mp.getUserName()
+																								: ""),
+																				(mp != null && mp.getPlayerName()
+																						.equals("\nAlpha_Bacca44")
+																								? "\nDeaths: "
+																										+ PlayerListener.AlphaDeaths
+																								: "")))))));
 		json.addExtra(new TellrawPart("> "));
 		long combinetime = System.nanoTime();
 		ChatFormatter.Combine(formatters, formattedmessage, json);

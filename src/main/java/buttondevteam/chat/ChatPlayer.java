@@ -1,78 +1,104 @@
 package buttondevteam.chat;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import buttondevteam.chat.formatting.ChatFormatter;
 import buttondevteam.lib.TBMCPlayer;
 
 public class ChatPlayer extends TBMCPlayer {
-	public String UserName;
-	public List<String> UserNames;
-	private short FlairTime;
-	public FlairStates FlairState;
+	public String getUserName() {
+		return getData();
+	}
+
+	public void setUserName(String name) {
+		setData(name);
+	}
+
+	public List<String> getUserNames() {
+		return getData();
+	}
+
+	public void setUserNames(List<String> names) {
+		setData(names);
+	}
+
+	public short getFlairTime() {
+		return getData();
+	}
+
+	private void setFlairTime(short time) {
+		setData(time);
+	}
+
+	public FlairStates getFlairState() {
+		return getData();
+	}
+
+	public void setFlairState(FlairStates state) {
+		setData(state);
+	}
+
+	public int getFCount() {
+		return getData();
+	}
+
+	public void setFCount(int count) {
+		setData(count);
+	}
+
+	public int getFDeaths() {
+		return getData();
+	}
+
+	public void setFDeaths(int count) {
+		setData(count);
+	}
+
+	public boolean getFlairCheater() {
+		return getData();
+	}
+
+	private void setFlairCheater(boolean cheater) {
+		setData(cheater);
+	}
+
 	public boolean RPMode = true;
 	public boolean PressedF;
 	public Location SavedLocation;
 	public boolean Working;
 	// public int Tables = 10;
 	public Channel CurrentChannel = Channel.GlobalChat;
-	public int FCount;
 	public boolean SendingLink = false;
-	public int FDeaths;
 	public boolean RainbowPresserColorMode = false;
 	public ChatFormatter.Color OtherColorMode = null;
 	public boolean ChatOnly = false;
-	public boolean FlairCheater = false;
 	public int LoginWarningCount = 0;
+
 	public static final short FlairTimeNonPresser = -1;
 	public static final short FlairTimeCantPress = -2;
 	public static final short FlairTimeNone = -3;
 
-	public static HashMap<UUID, ChatPlayer> OnlinePlayers = new HashMap<>();
-
-	@SuppressWarnings("deprecation")
-	public static ChatPlayer GetFromName(String name) {
-		OfflinePlayer p = Bukkit.getOfflinePlayer(name);
-		if (p != null) {
-			if (!ChatPlayer.OnlinePlayers.containsKey(p.getUniqueId())) {
-				TBMCPlayer player = TBMCPlayer.LoadPlayer(p);
-				if (player == null) {
-					Bukkit.getServer().getLogger()
-							.warning("Can't load player " + p.getUniqueId() + " - " + p.getName());
-					return null;
-				}
-				return ChatPlayer.OnlinePlayers.get(player.UUID);
-			}
-			return ChatPlayer.OnlinePlayers.get(p.getUniqueId());
-		} else
-			return null;
-	}
-
 	public String GetFormattedFlair() {
-		if (FlairTime == FlairTimeCantPress)
+		if (getFlairTime() == FlairTimeCantPress)
 			return String.format("§r(--s)§r");
-		if (FlairTime == FlairTimeNonPresser)
+		if (getFlairTime() == FlairTimeNonPresser)
 			return String.format("§7(--s)§r");
-		if (FlairTime == FlairTimeNone)
+		if (getFlairTime() == FlairTimeNone)
 			return "";
-		return String.format("§%x(%ss)§r", GetFlairColor(), FlairTime);
+		return String.format("§%x(%ss)§r", GetFlairColor(), getFlairTime());
 	}
 
 	public void SetFlair(short time) {
-		FlairTime = time;
+		setFlairTime(time);
 		FlairUpdate();
 	}
 
 	public void SetFlair(short time, boolean cheater) {
-		FlairTime = time;
-		FlairCheater = cheater;
+		setFlairTime(time);
+		setFlairCheater(cheater);
 		FlairUpdate();
 	}
 
@@ -80,38 +106,30 @@ public class ChatPlayer extends TBMCPlayer {
 
 		// Flairs from Command Block The Button - Teams
 		// PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard().getTeams().add()
-		Player p = Bukkit.getPlayer(UUID);
+		Player p = Bukkit.getPlayer(getUuid());
 		if (p != null)
 			p.setPlayerListName(String.format("%s%s", p.getName(), GetFormattedFlair()));
 	}
 
 	public short GetFlairColor() {
-		if (FlairCheater)
+		if (getFlairCheater())
 			return 0x5;
-		if (FlairTime == -1)
+		if (getFlairTime() == -1)
 			return 0x7;
-		else if (FlairTime == -2)
+		else if (getFlairTime() == -2)
 			return 0xf;
-		else if (FlairTime <= 60 && FlairTime >= 52)
+		else if (getFlairTime() <= 60 && getFlairTime() >= 52)
 			return 0x5;
-		else if (FlairTime <= 51 && FlairTime >= 42)
+		else if (getFlairTime() <= 51 && getFlairTime() >= 42)
 			return 0x9;
-		else if (FlairTime <= 41 && FlairTime >= 32)
+		else if (getFlairTime() <= 41 && getFlairTime() >= 32)
 			return 0xa;
-		else if (FlairTime <= 31 && FlairTime >= 22)
+		else if (getFlairTime() <= 31 && getFlairTime() >= 22)
 			return 0xe;
-		else if (FlairTime <= 21 && FlairTime >= 11)
+		else if (getFlairTime() <= 21 && getFlairTime() >= 11)
 			return 0x6;
-		else if (FlairTime <= 11 && FlairTime >= 0)
+		else if (getFlairTime() <= 11 && getFlairTime() >= 0)
 			return 0xc;
 		return 0xf;
-	}
-
-	public short GetFlairTime() {
-		return FlairTime;
-	}
-
-	public static ChatPlayer GetFromPlayer(Player p) {
-		return ChatPlayer.OnlinePlayers.get(p.getUniqueId());
 	}
 }

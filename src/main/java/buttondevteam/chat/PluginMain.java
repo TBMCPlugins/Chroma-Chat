@@ -138,7 +138,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					ign = ign.trim();
 					if (PlayersWithFlairs.contains(ign))
 						continue;
-					ChatPlayer mp = ChatPlayer.GetFromName(ign); // Loads player file
+					ChatPlayer mp = ChatPlayer.getFromName(ign); // Loads player file
 					if (mp == null)
 						continue;
 					/*

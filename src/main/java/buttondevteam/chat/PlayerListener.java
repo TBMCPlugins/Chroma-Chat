@@ -69,30 +69,19 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerLoad(TBMCPlayerLoadEvent e) {
 		YamlConfiguration yc = e.GetPlayerConfig();
-		ChatPlayer cp = e.GetPlayer().AsPluginPlayer(ChatPlayer.class);
-		cp.UserName = yc.getString("username");
+		ChatPlayer cp = e.GetPlayer().asPluginPlayer(ChatPlayer.class);
 		short tcp = (short) yc.getInt("flairtime");
-		cp.SetFlair(tcp);
-		String flairstate = yc.getString("flairstate");
-		if (flairstate != null)
-			cp.FlairState = FlairStates.valueOf(flairstate);
-		else
-			cp.FlairState = FlairStates.NoComment;
-		cp.UserNames = yc.getStringList("usernames");
-		cp.FCount = yc.getInt("fcount");
-		cp.FDeaths = yc.getInt("fdeaths");
-		cp.FlairCheater = yc.getBoolean("flaircheater");
-		ChatPlayer.OnlinePlayers.put(cp.UUID, cp);
+		cp.FlairUpdate();
 	}
 
 	@EventHandler
 	public void onPlayerTBMCJoin(TBMCPlayerJoinEvent e) {
 		if (essentials == null)
 			essentials = ((Essentials) Bukkit.getPluginManager().getPlugin("Essentials"));
-		ChatPlayer cp = ChatPlayer.OnlinePlayers.get(e.GetPlayer().UUID);
-		Player p = Bukkit.getPlayer(cp.UUID);
+		ChatPlayer cp = e.GetPlayer().asPluginPlayer(ChatPlayer.class);
+		Player p = Bukkit.getPlayer(cp.getUuid());
 
-		if (!cp.FlairState.equals(FlairStates.NoComment)) {
+		if (!cp.getFlairState().equals(FlairStates.NoComment)) {
 			PluginMain.ConfirmUserMessage(cp);
 			Timer timer = new Timer();
 			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
@@ -104,26 +93,26 @@ public class PlayerListener implements Listener {
 			tt.mp = cp;
 			timer.schedule(tt, 1000);
 		} else {
-			if (cp.GetFlairTime() == 0x00)
+			if (cp.getFlairTime() == 0x00)
 				cp.SetFlair(ChatPlayer.FlairTimeNone);
 			Timer timer = new Timer();
 			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
 
 				@Override
 				public void run() {
-					Player player = Bukkit.getPlayer(mp.PlayerName);
+					Player player = Bukkit.getPlayer(mp.getPlayerName());
 					if (player == null)
 						return;
 
-					if (mp.FlairState.equals(FlairStates.NoComment)) {
+					if (mp.getFlairState().equals(FlairStates.NoComment)) {
 						String json = String.format(
 								"[\"\",{\"text\":\"If you're from Reddit and you'd like your /r/TheButton flair displayed ingame, write your Minecraft name to \",\"color\":\"aqua\"},{\"text\":\"[this thread].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
 								PluginMain.FlairThreadURL);
 						PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-								"tellraw " + mp.PlayerName + " " + json);
+								"tellraw " + mp.getPlayerName() + " " + json);
 						json = "[\"\",{\"text\":\"If you aren't from Reddit or don't want the flair, type /u ignore to prevent this message after next login.\",\"color\":\"aqua\"}]";
 						PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-								"tellraw " + mp.PlayerName + " " + json);
+								"tellraw " + mp.getPlayerName() + " " + json);
 					}
 				}
 			};
@@ -154,26 +143,14 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerSave(TBMCPlayerSaveEvent e) {
-		YamlConfiguration yc = e.GetPlayerConfig();
-		ChatPlayer cp = ChatPlayer.OnlinePlayers.get(e.GetPlayer().UUID);
-		yc.set("username", cp.UserName);
-		yc.set("flairtime", cp.GetFlairTime());
-		yc.set("flairstate", cp.FlairState.toString());
-		yc.set("usernames", cp.UserNames);
-		yc.set("fcount", cp.FCount);
-		yc.set("fdeaths", cp.FDeaths);
-		yc.set("flaircheater", cp.FlairCheater);
 	}
 
 	@EventHandler
 	public void onPlayerAdd(TBMCPlayerAddEvent event) {
-		TBMCPlayer tp = event.GetPlayer();
-		ChatPlayer cp = new ChatPlayer();
-		cp.UUID = tp.UUID;
+		ChatPlayer cp = event.GetPlayer().asPluginPlayer(ChatPlayer.class);
 		cp.SetFlair(ChatPlayer.FlairTimeNone);
-		cp.FlairState = FlairStates.NoComment;
-		cp.UserNames = new ArrayList<>();
-		ChatPlayer.OnlinePlayers.put(cp.UUID, cp);
+		cp.setFlairState(FlairStates.NoComment);
+		cp.setUserNames(new ArrayList<>());
 	}
 
 	@EventHandler
