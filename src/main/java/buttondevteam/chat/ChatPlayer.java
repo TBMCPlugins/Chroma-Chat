@@ -26,11 +26,11 @@ public class ChatPlayer extends TBMCPlayer {
 	}
 
 	public short getFlairTime() {
-		return getData();
+		return getIntData(Short.class);
 	}
 
 	private void setFlairTime(short time) {
-		setData(time);
+		setIntData(time);
 	}
 
 	public FlairStates getFlairState() {
@@ -42,19 +42,19 @@ public class ChatPlayer extends TBMCPlayer {
 	}
 
 	public int getFCount() {
-		return getData();
+		return getIntData(Integer.class);
 	}
 
 	public void setFCount(int count) {
-		setData(count);
+		setIntData(count);
 	}
 
 	public int getFDeaths() {
-		return getData();
+		return getIntData(Integer.class);
 	}
 
 	public void setFDeaths(int count) {
-		setData(count);
+		setIntData(count);
 	}
 
 	public boolean getFlairCheater() {
