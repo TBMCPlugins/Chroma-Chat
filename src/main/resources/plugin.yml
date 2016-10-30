@@ -24,7 +24,7 @@ commands:
     yeehaw:
         description: This command makes you yeehaw.
 author: NorbiPeti
-depend: [Essentials, Towny, Minigames, Votifier, WorldGuard, WorldEdit, ProtocolLib, Vault, ButtonPluginBucket]
+depend: [Essentials, Towny, Minigames, Votifier, WorldGuard, WorldEdit, ProtocolLib, Vault, ButtonCore]
 permissions:
   tbmc.admin:
     description: Gives access to /un- commands and /u admin commands

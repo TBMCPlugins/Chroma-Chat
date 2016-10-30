@@ -34,11 +34,11 @@ public class ChatPlayer extends TBMCPlayer {
 	}
 
 	public FlairStates getFlairState() {
-		return getData();
+		return getEnumData(FlairStates.class);
 	}
 
 	public void setFlairState(FlairStates state) {
-		setData(state);
+		setEnumData(state);
 	}
 
 	public int getFCount() {
