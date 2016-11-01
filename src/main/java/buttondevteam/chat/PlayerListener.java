@@ -37,7 +37,9 @@ import au.com.mineauz.minigames.MinigamePlayer;
 import au.com.mineauz.minigames.Minigames;
 import buttondevteam.chat.commands.ucmds.KittycannonCommand;
 import buttondevteam.lib.TBMCPlayer;
+import buttondevteam.lib.TBMCPlayer.InfoTarget;
 import buttondevteam.lib.TBMCPlayerAddEvent;
+import buttondevteam.lib.TBMCPlayerGetInfoEvent;
 import buttondevteam.lib.TBMCPlayerJoinEvent;
 import buttondevteam.lib.TBMCPlayerLoadEvent;
 import buttondevteam.lib.TBMCPlayerSaveEvent;
@@ -547,5 +549,17 @@ public class PlayerListener implements Listener {
 				event.setCommand("dontrunthiscmd");
 			}
 		}
+	}
+
+	@EventHandler
+	public void onGetInfo(TBMCPlayerGetInfoEvent e) {
+		ChatPlayer cp = e.getPlayer().asPluginPlayer(ChatPlayer.class);
+		e.addInfo("Minecraft name: " + cp.getPlayerName());
+		e.addInfo("Reddit name: " + cp.getUserName());
+		if (e.getTarget() == InfoTarget.MCCommand)
+			e.addInfo("/r/TheButton flair: " + cp.GetFormattedFlair());
+		else
+			e.addInfo("/r/TheButton flair: (" + cp.getFlairTime() + "s)");
+		e.addInfo("Respect: " + cp.getFCount() / cp.getFDeaths());
 	}
 }
