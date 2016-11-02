@@ -121,8 +121,8 @@
 			<version>1.9.2-R0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>com.github.TBMCPlugins.ButtonLib</groupId>
-			<artifactId>ButtonLib</artifactId>
+			<groupId>com.github.TBMCPlugins.ButtonCore</groupId>
+			<artifactId>ButtonCore</artifactId>
 			<version>master-SNAPSHOT</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/net.sourceforge.htmlcleaner/htmlcleaner -->
@@ -143,7 +143,7 @@
 			<version>2.13.1</version>
 		</dependency>
 		<dependency>
-			<groupId>com.github.TBMCPlugins.ButtonLib</groupId>
+			<groupId>com.github.TBMCPlugins.ButtonCore</groupId>
 			<artifactId>Towny</artifactId>
 			<version>master-SNAPSHOT</version>
 		</dependency>
@@ -168,11 +168,6 @@
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
 			<version>3.20.0-GA</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.TBMCPlugins</groupId>
-			<artifactId>DiscordPlugin</artifactId>
-			<version>master-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<artifactId>ButtonChat</artifactId>

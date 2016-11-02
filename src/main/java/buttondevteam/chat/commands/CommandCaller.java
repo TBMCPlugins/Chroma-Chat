@@ -1,6 +1,5 @@
 package buttondevteam.chat.commands;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -10,7 +9,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import buttondevteam.chat.PluginMain;
-import buttondevteam.discordplugin.TBMCDiscordAPI;
+import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.chat.TBMCCommandBase;
 
@@ -67,8 +66,8 @@ public class CommandCaller implements CommandExecutor {
 			if (!cmd.OnCommand(sender, alias, cmdargs))
 				sender.sendMessage(cmd.GetHelpText(alias));
 		} catch (Exception e) {
-			TBMCDiscordAPI.SendException(e,
-					"Failed to execute command " + cmd.GetCommandPath() + " with arguments " + cmdargs);
+			TBMCCoreAPI.SendException(
+					"Failed to execute command " + cmd.GetCommandPath() + " with arguments " + cmdargs, e);
 		}
 		return true;
 	}
