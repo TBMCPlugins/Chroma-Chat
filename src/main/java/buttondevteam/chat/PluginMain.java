@@ -68,7 +68,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	public void onEnable() {
 		Instance = this;
 
-		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerListener(), this);
 		TBMCChatAPI.AddCommands(this, YeehawCommand.class);
 		Console = this.getServer().getConsoleSender();
 		LoadFiles();
