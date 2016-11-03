@@ -59,11 +59,11 @@ public class CommandCaller implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
 		String path = command.getName();
 		for (String arg : args)
-			path += "/" + arg;
+			path += " " + arg;
 		TBMCCommandBase cmd = TBMCChatAPI.GetCommands().get(path);
 		int argc = 0;
-		while (cmd == null && path.contains("/")) {
-			path = path.substring(0, path.lastIndexOf('/'));
+		while (cmd == null && path.contains(" ")) {
+			path = path.substring(0, path.lastIndexOf(' '));
 			argc++;
 			cmd = TBMCChatAPI.GetCommands().get(path);
 		}
