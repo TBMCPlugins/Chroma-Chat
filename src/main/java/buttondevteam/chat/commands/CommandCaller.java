@@ -32,6 +32,10 @@ public class CommandCaller implements CommandExecutor {
 						new Exception("Null command found at " + entry.getKey() + "!"));
 				continue;
 			}
+			if (c.GetCommandPath() == null) {
+				TBMCCoreAPI.SendException("An error occured while registering commands",
+						new Exception("Command " + entry.getKey() + " has no command path!"));
+			}
 			if (!c.GetCommandPath().contains(" ")) // Top-level command
 			{
 				PluginCommand pc = ((JavaPlugin) c.getPlugin()).getCommand(c.GetCommandPath());
