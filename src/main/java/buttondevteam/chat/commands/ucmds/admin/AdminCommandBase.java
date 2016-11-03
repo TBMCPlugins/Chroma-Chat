@@ -8,7 +8,7 @@ public abstract class AdminCommandBase extends UCommandBase {
 
 	@Override
 	public String GetUCommandPath() {
-		return "admin/" + GetAdminCommandPath();
+		return "admin " + GetAdminCommandPath();
 	}
 
 	@Override

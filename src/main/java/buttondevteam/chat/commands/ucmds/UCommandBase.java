@@ -8,7 +8,7 @@ public abstract class UCommandBase extends TBMCCommandBase {
 
 	@Override
 	public String GetCommandPath() {
-		return "u/" + GetUCommandPath();
+		return "u " + GetUCommandPath();
 	}
 
 	public abstract String GetUCommandPath();

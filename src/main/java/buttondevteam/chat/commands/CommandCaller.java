@@ -1,6 +1,8 @@
 package buttondevteam.chat.commands;
 
 import java.util.Arrays;
+import java.util.Map.Entry;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -23,13 +25,20 @@ public class CommandCaller implements CommandExecutor {
 	public static void RegisterCommands() {
 		if (instance == null)
 			instance = new CommandCaller();
-		for (TBMCCommandBase c : TBMCChatAPI.GetCommands().values()) {
-			if (!c.GetCommandPath().contains("/")) // Top-level command
+		for (Entry<String, TBMCCommandBase> entry : TBMCChatAPI.GetCommands().entrySet()) {
+			TBMCCommandBase c = entry.getValue();
+			if (c == null) {
+				TBMCCoreAPI.SendException("An error occured while registering commands",
+						new Exception("Null command found at " + entry.getKey() + "!"));
+				continue;
+			}
+			if (!c.GetCommandPath().contains(" ")) // Top-level command
 			{
 				PluginCommand pc = ((JavaPlugin) c.getPlugin()).getCommand(c.GetCommandPath());
 				if (pc == null)
-					new Exception("Can't find top-level command: " + c.GetCommandPath() + " for plugin: "
-							+ c.getPlugin().getName()).printStackTrace();
+					TBMCCoreAPI.SendException("An error occured while registering commands",
+							new Exception("Can't find top-level command: " + c.GetCommandPath() + " for plugin: "
+									+ c.getPlugin().getName()));
 				else
 					pc.setExecutor(instance);
 			}

@@ -33,7 +33,7 @@ public final class HelpCommand extends UCommandBase {
 			ArrayList<String> text = new ArrayList<String>();
 			text.add("§6---- Command list ----");
 			for (TBMCCommandBase cmd : TBMCChatAPI.GetCommands().values())
-				if (!cmd.GetCommandPath().contains("/"))
+				if (!cmd.GetCommandPath().contains(" "))
 					text.add("/" + cmd.GetCommandPath());
 			sender.sendMessage(text.toArray(new String[text.size()]));
 		} else if (args[0].equalsIgnoreCase("colors")) {

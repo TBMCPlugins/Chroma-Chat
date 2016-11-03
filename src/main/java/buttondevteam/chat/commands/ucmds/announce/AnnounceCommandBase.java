@@ -8,7 +8,7 @@ public abstract class AnnounceCommandBase extends UCommandBase {
 
 	@Override
 	public String GetUCommandPath() {
-		return "announce/" + GetAnnounceCommandPath();
+		return "announce " + GetAnnounceCommandPath();
 	}
 
 	public abstract String GetAnnounceCommandPath();
