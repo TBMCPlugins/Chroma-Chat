@@ -28,7 +28,8 @@ public class CommandCaller implements CommandExecutor {
 			{
 				PluginCommand pc = ((JavaPlugin) c.getPlugin()).getCommand(c.GetCommandPath());
 				if (pc == null)
-					new Exception("Can't find top-level command: " + c.GetCommandPath()).printStackTrace();
+					new Exception("Can't find top-level command: " + c.GetCommandPath() + " for plugin: "
+							+ c.getPlugin().getName()).printStackTrace();
 				else
 					pc.setExecutor(instance);
 			}
@@ -66,8 +67,8 @@ public class CommandCaller implements CommandExecutor {
 			if (!cmd.OnCommand(sender, alias, cmdargs))
 				sender.sendMessage(cmd.GetHelpText(alias));
 		} catch (Exception e) {
-			TBMCCoreAPI.SendException(
-					"Failed to execute command " + cmd.GetCommandPath() + " with arguments " + cmdargs, e);
+			TBMCCoreAPI.SendException("Failed to execute command /" + cmd.GetCommandPath() + " with arguments "
+					+ Arrays.toString(cmdargs), e);
 		}
 		return true;
 	}
