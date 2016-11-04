@@ -17,10 +17,12 @@ import org.htmlcleaner.TagNode;
 
 import buttondevteam.chat.commands.CommandCaller;
 import buttondevteam.chat.commands.YeehawCommand;
+import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.TBMCChatAPI;
 
+import com.earth2me.essentials.Essentials;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -108,6 +110,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	}
 
 	public Boolean stop = false;
+	public static Essentials essentials = null;
 
 	// Fired when plugin is disabled
 	@Override

@@ -29,6 +29,7 @@ import buttondevteam.chat.formatting.TellrawSerializer;
 import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.chat.formatting.ChatFormatter.Color;
 import buttondevteam.chat.formatting.ChatFormatter.Priority;
+import buttondevteam.chat.listener.PlayerListener;
 
 public class ChatProcessing {
 	private static final Pattern ESCAPE_PATTERN = Pattern.compile("\\\\([\\*\\_\\\\])");
@@ -47,11 +48,11 @@ public class ChatProcessing {
 	// Returns e.setCancelled
 	public static boolean ProcessChat(CommandSender sender, String message) {
 		long processstart = System.nanoTime();
-		if (PlayerListener.essentials == null)
-			PlayerListener.essentials = (Essentials) (Bukkit.getPluginManager().getPlugin("Essentials"));
+		if (PluginMain.essentials == null)
+			PluginMain.essentials = (Essentials) (Bukkit.getPluginManager().getPlugin("Essentials"));
 		Player player = (sender instanceof Player ? (Player) sender : null);
 
-		if (player != null && PlayerListener.essentials.getUser(player).isMuted())
+		if (player != null && PluginMain.essentials.getUser(player).isMuted())
 			return true;
 
 		ChatPlayer mp = null;
@@ -157,7 +158,7 @@ public class ChatProcessing {
 							else
 								p.playSound(p.getLocation(), PlayerListener.NotificationSound, 1.0f,
 										(float) PlayerListener.NotificationPitch);
-							return PlayerListener.essentials.getUser(p).getNickname();
+							return PluginMain.essentials.getUser(p).getNickname();
 						}
 						Bukkit.getServer().getLogger().warning(
 								"Player nicknamed " + match + " not found in nickname map but was reported as online.");
