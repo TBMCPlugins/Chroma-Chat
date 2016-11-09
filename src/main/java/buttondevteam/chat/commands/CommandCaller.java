@@ -83,8 +83,14 @@ public class CommandCaller implements CommandExecutor {
 		}
 		final String[] cmdargs = args.length > 0 ? Arrays.copyOfRange(args, args.length - argc, args.length) : args;
 		try {
-			if (!cmd.OnCommand(sender, alias, cmdargs))
-				sender.sendMessage(cmd.GetHelpText(alias));
+			if (!cmd.OnCommand(sender, alias, cmdargs)) {
+				if(cmd.GetHelpText()==null) {
+					sender.sendMessage("Wrong usage, but there's no help text! Error is being reported to devs.");
+					throw new NullPointerException("GetHelpText is null for comand /" + cmd.GetCommandPath());
+				}
+				else
+					sender.sendMessage(cmd.GetHelpText(alias));
+			}
 		} catch (Exception e) {
 			TBMCCoreAPI.SendException("Failed to execute command /" + cmd.GetCommandPath() + " with arguments "
 					+ Arrays.toString(cmdargs), e);
