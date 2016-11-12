@@ -31,11 +31,7 @@ public class UpdatePlugin extends AdminCommandBase {
 		} else {
 			sender.sendMessage("Updating plugin...");
 			Bukkit.getScheduler().runTaskAsynchronously(PluginMain.Instance, () -> {
-				String ret = "";
-				if ((ret = TBMCCoreAPI.UpdatePlugin(args[0])).length() > 0)
-					sender.sendMessage(ret);
-				else
-					sender.sendMessage("Updating done!");
+				TBMCCoreAPI.UpdatePlugin(args[0], sender);
 			});
 			return true;
 		}
