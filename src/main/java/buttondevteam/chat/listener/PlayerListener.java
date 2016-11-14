@@ -321,62 +321,28 @@ public class PlayerListener implements Listener {
 		String cmd = "";
 		if (index == -1) {
 			cmd = event.getCommand();
-			if (cmd.equalsIgnoreCase(Channel.GlobalChat.Command)) {
-				ConsoleChannel = Channel.GlobalChat;
-				event.getSender().sendMessage("§6You are now talking in: §b" + ConsoleChannel.DisplayName);
-				event.setCommand("dontrunthiscmd");
-			} else if (cmd.equalsIgnoreCase(Channel.AdminChat.Command)) {
-				if (ConsoleChannel.equals(Channel.AdminChat))
-					ConsoleChannel = Channel.GlobalChat;
-				else
-					ConsoleChannel = Channel.AdminChat;
-				event.getSender().sendMessage("§6You are now talking in: §b" + ConsoleChannel.DisplayName);
-				event.setCommand("dontrunthiscmd");
-			} else if (cmd.equalsIgnoreCase(Channel.ModChat.Command)) {
-				if (ConsoleChannel.equals(Channel.ModChat))
-					ConsoleChannel = Channel.GlobalChat;
-				else
-					ConsoleChannel = Channel.ModChat;
-				event.getSender().sendMessage("§6You are now talking in: §b" + ConsoleChannel.DisplayName);
-				event.setCommand("dontrunthiscmd");
+			for (Channel channel : Channel.getChannels()) {
+				if (cmd.equalsIgnoreCase(channel.Command)) {
+					if (ConsoleChannel.equals(channel))
+						ConsoleChannel = Channel.GlobalChat;
+					else
+						ConsoleChannel = channel;
+					event.getSender().sendMessage("§6You are now talking in: §b" + ConsoleChannel.DisplayName);
+					event.setCommand("dontrunthiscmd");
+					break;
+				}
 			}
 		} else {
 			cmd = event.getCommand().substring(0, index);
-			if (cmd.equalsIgnoreCase(Channel.GlobalChat.Command)) {
-				Channel c = ConsoleChannel;
-				ConsoleChannel = Channel.GlobalChat;
-				ChatProcessing.ProcessChat(Bukkit.getServer().getConsoleSender(),
-						event.getCommand().substring(index + 1));
-				ConsoleChannel = c;
-				event.setCommand("dontrunthiscmd");
-			} else if (cmd.equalsIgnoreCase(Channel.TownChat.Command)) {
-				Channel c = ConsoleChannel;
-				ConsoleChannel = Channel.TownChat;
-				ChatProcessing.ProcessChat(Bukkit.getServer().getConsoleSender(),
-						event.getCommand().substring(index + 1));
-				ConsoleChannel = c;
-				event.setCommand("dontrunthiscmd");
-			} else if (cmd.equalsIgnoreCase(Channel.NationChat.Command)) {
-				Channel c = ConsoleChannel;
-				ConsoleChannel = Channel.NationChat;
-				ChatProcessing.ProcessChat(Bukkit.getServer().getConsoleSender(),
-						event.getCommand().substring(index + 1));
-				ConsoleChannel = c;
-				event.setCommand("dontrunthiscmd");
-			} else if (cmd.equalsIgnoreCase(Channel.AdminChat.Command)) {
-				Channel c = ConsoleChannel;
-				ConsoleChannel = Channel.AdminChat;
-				ChatProcessing.ProcessChat(Bukkit.getServer().getConsoleSender(),
-						event.getCommand().substring(index + 1));
-				ConsoleChannel = c;
-				event.setCommand("dontrunthiscmd");
-			} else if (cmd.equalsIgnoreCase(Channel.ModChat.Command)) {
-				Channel c = ConsoleChannel;
-				ConsoleChannel = Channel.ModChat;
-				ChatProcessing.ProcessChat(Bukkit.getServer().getConsoleSender(),
-						event.getCommand().substring(index + 1));
-				ConsoleChannel = c;
-				event.setCommand("dontrunthiscmd");
+			for (Channel channel : Channel.getChannels()) {
+				if (cmd.equalsIgnoreCase(channel.Command)) {
+					Channel c = ConsoleChannel;
+					ConsoleChannel = channel;
+					ChatProcessing.ProcessChat(Bukkit.getServer().getConsoleSender(),
+							event.getCommand().substring(index + 1));
+					ConsoleChannel = c;
+					event.setCommand("dontrunthiscmd");
+				}
 			}
 		}
 		if (cmd.toLowerCase().startsWith("un")) {
@@ -409,8 +375,11 @@ public class PlayerListener implements Listener {
 		e.addInfo("Reddit name: " + cp.getUserName());
 		if (e.getTarget() == InfoTarget.MCCommand)
 			e.addInfo("/r/TheButton flair: " + cp.GetFormattedFlair());
-		else
-			e.addInfo("/r/TheButton flair: (" + cp.getFlairTime() + "s)");
-		e.addInfo("Respect: " + cp.getFCount() / cp.getFDeaths());
+		else {
+			final String flair = cp.GetFormattedFlair(true);
+			if (flair.length() > 0)
+				e.addInfo("/r/TheButton flair: " + flair);
+		}
+		e.addInfo("Respect: " + (double) cp.getFCount() / (double) cp.getFDeaths());
 	}
 }

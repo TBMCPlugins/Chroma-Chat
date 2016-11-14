@@ -81,14 +81,31 @@ public class ChatPlayer extends TBMCPlayer {
 	public static final short FlairTimeCantPress = -2;
 	public static final short FlairTimeNone = -3;
 
-	public String GetFormattedFlair() {
+	/**
+	 * Gets the player's flair, optionally formatting for Minecraft.
+	 * 
+	 * @param noformats
+	 *            The MC formatting codes will be only applied if false
+	 * @return The flair
+	 */
+	public String GetFormattedFlair(boolean noformats) {
 		if (getFlairTime() == FlairTimeCantPress)
-			return String.format("§r(--s)§r");
+			return String.format(noformats ? "(can't press)" : "§r(--s)§r");
 		if (getFlairTime() == FlairTimeNonPresser)
-			return String.format("§7(--s)§r");
+			return String.format(noformats ? "(non-presser)" : "§7(--s)§r");
 		if (getFlairTime() == FlairTimeNone)
 			return "";
-		return String.format("§%x(%ss)§r", GetFlairColor(), getFlairTime());
+		return noformats ? String.format("(%ss)", getFlairTime())
+				: String.format("§%x(%ss)§r", GetFlairColor(), getFlairTime());
+	}
+
+	/**
+	 * Gets the player's flair, formatted for Minecraft.
+	 * 
+	 * @return The flair
+	 */
+	public String GetFormattedFlair() {
+		return GetFormattedFlair(false);
 	}
 
 	public void SetFlair(short time) {
