@@ -2,6 +2,8 @@ package buttondevteam.chat.formatting;
 
 import java.io.Serializable;
 
+import buttondevteam.lib.chat.TellrawSerializableEnum;
+
 public final class TellrawEvent<T extends TellrawEvent.Action> implements Serializable {
 	private static final long serialVersionUID = -1681364161210561505L;
 	private transient boolean hoverEvent;

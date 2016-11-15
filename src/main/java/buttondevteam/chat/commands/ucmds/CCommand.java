@@ -5,8 +5,8 @@ import org.bukkit.entity.Player;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
-import buttondevteam.chat.formatting.ChatFormatter;
 import buttondevteam.lib.TBMCPlayer;
+import buttondevteam.lib.chat.*;
 
 public class CCommand extends UCommandBase {
 
@@ -37,7 +37,7 @@ public class CCommand extends UCommandBase {
 				p.RainbowPresserColorMode = false;
 				p.OtherColorMode = null;
 				try {
-					p.OtherColorMode = ChatFormatter.Color.valueOf(args[0].toLowerCase());
+					p.OtherColorMode = Color.valueOf(args[0].toLowerCase());
 				} catch (Exception e) {
 					player.sendMessage("§cUnknown message color: " + args[0]);
 					player.sendMessage("§cUse color names, like blue, or dark_aqua");

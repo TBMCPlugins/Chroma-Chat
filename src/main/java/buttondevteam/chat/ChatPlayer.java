@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import buttondevteam.chat.formatting.ChatFormatter;
 import buttondevteam.lib.TBMCPlayer;
+import buttondevteam.lib.chat.*;
 
 public class ChatPlayer extends TBMCPlayer {
 	public String getUserName() {
@@ -73,7 +74,7 @@ public class ChatPlayer extends TBMCPlayer {
 	public Channel CurrentChannel = Channel.GlobalChat;
 	public boolean SendingLink = false;
 	public boolean RainbowPresserColorMode = false;
-	public ChatFormatter.Color OtherColorMode = null;
+	public Color OtherColorMode = null;
 	public boolean ChatOnly = false;
 	public int LoginWarningCount = 0;
 

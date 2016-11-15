@@ -7,6 +7,8 @@ import java.util.Collection;
 import com.google.gson.*;
 import com.google.gson.stream.*;
 
+import buttondevteam.lib.chat.TellrawSerializableEnum;
+
 public abstract class TellrawSerializer {
 	public static class TwEnum extends TypeAdapter<TellrawSerializableEnum> {
 		@Override

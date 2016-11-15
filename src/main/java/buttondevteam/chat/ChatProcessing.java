@@ -24,12 +24,12 @@ import buttondevteam.chat.formatting.ChatFormatter;
 import buttondevteam.chat.formatting.ChatFormatterBuilder;
 import buttondevteam.chat.formatting.TellrawEvent;
 import buttondevteam.chat.formatting.TellrawPart;
-import buttondevteam.chat.formatting.TellrawSerializableEnum;
 import buttondevteam.chat.formatting.TellrawSerializer;
 import buttondevteam.lib.TBMCPlayer;
-import buttondevteam.chat.formatting.ChatFormatter.Color;
-import buttondevteam.chat.formatting.ChatFormatter.Priority;
+import buttondevteam.lib.chat.Channel;
+import buttondevteam.lib.chat.TellrawSerializableEnum;
 import buttondevteam.chat.listener.PlayerListener;
+import buttondevteam.lib.chat.*;
 
 public class ChatProcessing {
 	private static final Pattern ESCAPE_PATTERN = Pattern.compile("\\\\([\\*\\_\\\\])");
@@ -85,13 +85,13 @@ public class ChatProcessing {
 
 		ArrayList<ChatFormatter> formatters = new ArrayList<ChatFormatter>();
 
-		ChatFormatter.Color colormode = currentchannel.Color;
+		Color colormode = currentchannel.color;
 		if (mp != null && mp.OtherColorMode != null)
 			colormode = mp.OtherColorMode;
 		if (mp != null && mp.RainbowPresserColorMode)
-			colormode = ChatFormatter.Color.RPC;
+			colormode = Color.RPC;
 		if (message.startsWith(">"))
-			colormode = ChatFormatter.Color.Green;
+			colormode = Color.Green;
 		// If greentext, ignore channel or player colors
 
 		formatters.add(new ChatFormatterBuilder().setRegex(ENTIRE_MESSAGE_PATTERN).setColor(colormode)
@@ -101,17 +101,17 @@ public class ChatProcessing {
 
 		String suggestmsg = formattedmessage;
 
-		formatters.add(new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setFormat(ChatFormatter.Format.Bold)
+		formatters.add(new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setFormat(Format.Bold)
 				.setRemoveCharCount((short) 2).build());
-		formatters.add(new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setFormat(ChatFormatter.Format.Italic)
+		formatters.add(new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setFormat(Format.Italic)
 				.setRemoveCharCount((short) 1).build());
-		formatters.add(new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN)
-				.setFormat(ChatFormatter.Format.Underlined).setRemoveCharCount((short) 1).build());
+		formatters.add(new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN).setFormat(Format.Underlined)
+				.setRemoveCharCount((short) 1).build());
 		formatters.add(new ChatFormatterBuilder().setRegex(ESCAPE_PATTERN).setRemoveCharPos((short) 0).build());
 
 		// URLs + Rainbow text
-		formatters.add(new ChatFormatterBuilder().setRegex(URL_PATTERN).setFormat(ChatFormatter.Format.Underlined)
-				.setOpenlink("$1").build());
+		formatters.add(new ChatFormatterBuilder().setRegex(URL_PATTERN).setFormat(Format.Underlined).setOpenlink("$1")
+				.build());
 		if (PluginMain.GetPlayers().size() > 0) {
 			StringBuilder namesb = new StringBuilder();
 			namesb.append("(?i)(");
@@ -126,8 +126,8 @@ public class ChatProcessing {
 			nicksb.deleteCharAt(nicksb.length() - 1);
 			nicksb.append(")");
 
-			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(namesb.toString()))
-					.setColor(ChatFormatter.Color.Aqua).setOnmatch((String match) -> {
+			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(namesb.toString())).setColor(Color.Aqua)
+					.setOnmatch((String match) -> {
 						Player p = Bukkit.getPlayer(match);
 						if (p == null) {
 							PluginMain.Instance.getLogger()
@@ -144,8 +144,8 @@ public class ChatProcessing {
 						return color + p.getName() + "§r";
 					}).setPriority(Priority.High).build());
 
-			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(nicksb.toString()))
-					.setColor(ChatFormatter.Color.Aqua).setOnmatch((String match) -> {
+			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(nicksb.toString())).setColor(Color.Aqua)
+					.setOnmatch((String match) -> {
 						if (PlayerListener.nicknames.containsKey(match)) {
 							Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(match));
 							if (p == null) {
@@ -167,7 +167,7 @@ public class ChatProcessing {
 		}
 
 		pingedconsole = false;
-		formatters.add(new ChatFormatterBuilder().setRegex(CONSOLE_PING_PATTERN).setColor(ChatFormatter.Color.Aqua)
+		formatters.add(new ChatFormatterBuilder().setRegex(CONSOLE_PING_PATTERN).setColor(Color.Aqua)
 				.setOnmatch((String match) -> {
 					if (!pingedconsole) {
 						System.out.print("\007");
@@ -176,7 +176,7 @@ public class ChatProcessing {
 					return match;
 				}).setPriority(Priority.High).build());
 
-		formatters.add(new ChatFormatterBuilder().setRegex(HASHTAG_PATTERN).setColor(ChatFormatter.Color.Blue)
+		formatters.add(new ChatFormatterBuilder().setRegex(HASHTAG_PATTERN).setColor(Color.Blue)
 				.setOpenlink("https://twitter.com/hashtag/$1").setPriority(Priority.High).build());
 
 		/*

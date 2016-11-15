@@ -4,10 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import buttondevteam.lib.chat.*;
+
 @SuppressWarnings("unused")
 public final class TellrawPart implements Serializable {
 	private static final long serialVersionUID = 4125357644462144024L;
-	private ChatFormatter.Color color;
+	private Color color;
 	private transient int format;
 	private boolean italic;
 	private boolean bold;
@@ -23,11 +25,11 @@ public final class TellrawPart implements Serializable {
 		this.text = text;
 	}
 
-	public ChatFormatter.Color getColor() {
+	public Color getColor() {
 		return color;
 	}
 
-	public TellrawPart setColor(ChatFormatter.Color color) {
+	public TellrawPart setColor(Color color) {
 		this.color = color;
 		return this;
 	}
@@ -43,15 +45,15 @@ public final class TellrawPart implements Serializable {
 		this.underlined = false;
 		this.strikethrough = false;
 		this.obfuscated = false;
-		if ((format & ChatFormatter.Format.Italic.getFlag()) != 0)
+		if ((format & Format.Italic.getFlag()) != 0)
 			this.italic = true;
-		else if ((format & ChatFormatter.Format.Bold.getFlag()) != 0)
+		else if ((format & Format.Bold.getFlag()) != 0)
 			this.bold = true;
-		else if ((format & ChatFormatter.Format.Underlined.getFlag()) != 0)
+		else if ((format & Format.Underlined.getFlag()) != 0)
 			this.underlined = true;
-		else if ((format & ChatFormatter.Format.Strikethrough.getFlag()) != 0)
+		else if ((format & Format.Strikethrough.getFlag()) != 0)
 			this.strikethrough = true;
-		else if ((format & ChatFormatter.Format.Obfuscated.getFlag()) != 0)
+		else if ((format & Format.Obfuscated.getFlag()) != 0)
 			this.obfuscated = true;
 		else
 			throw new UnsupportedOperationException("Trying to set to an unknown format!");

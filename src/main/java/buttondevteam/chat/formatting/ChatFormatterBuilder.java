@@ -3,9 +3,7 @@ package buttondevteam.chat.formatting;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import buttondevteam.chat.formatting.ChatFormatter.Color;
-import buttondevteam.chat.formatting.ChatFormatter.Format;
-import buttondevteam.chat.formatting.ChatFormatter.Priority;
+import buttondevteam.lib.chat.*;
 
 public class ChatFormatterBuilder {
 	private Pattern regex;

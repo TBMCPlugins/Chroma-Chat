@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
+import buttondevteam.lib.chat.*;
 
 public final class ChatFormatter {
 	private Pattern regex;
@@ -168,7 +169,7 @@ public final class ChatFormatter {
 				if (formatter.color != null)
 					color = formatter.color;
 				if (formatter.format != null)
-					format = formatter.format.flag; //TODO: Fix
+					format = formatter.format.getFlag(); //TODO: Fix
 				if (formatter.openlink != null)
 					openlink = formatter.openlink;
 			}
@@ -192,59 +193,5 @@ public final class ChatFormatter {
 	public String toString() {
 		return new StringBuilder("F(").append(color).append(", ").append(format).append(", ").append(openlink)
 				.append(", ").append(priority).append(")").toString();
-	}
-
-	public enum Format implements TellrawSerializableEnum {
-		Bold("bold"), Underlined("underlined"), Italic("italic"), Strikethrough("strikethrough"), Obfuscated(
-				"obfuscated");
-		// TODO: Add format codes to /u c <mode>
-		private String name;
-
-		Format(String name) {
-			this.name = name;
-			this.flag = 1 << this.ordinal();
-		}
-
-		@Override
-		public String getName() {
-			return name;
-		}
-
-		private final int flag;
-
-		public int getFlag() {
-			return flag;
-		}
-	}
-
-	public enum Color implements TellrawSerializableEnum {
-		Black("black"), DarkBlue("dark_blue"), DarkGreen("dark_green"), DarkAqua("dark_aqua"), DarkRed(
-				"dark_red"), DarkPurple("dark_purple"), Gold("gold"), Gray("gray"), DarkGray("dark_gray"), Blue(
-						"blue"), Green("green"), Aqua("aqua"), Red(
-								"red"), LightPurple("light_purple"), Yellow("yellow"), White("white"), RPC("rpc");
-
-		private String name;
-
-		Color(String name) {
-			this.name = name;
-		}
-
-		@Override
-		public String getName() {
-			return name;
-		}
-	}
-
-	public enum Priority {
-		Low(0), Normal(1), High(2);
-		private int val;
-
-		Priority(int v) {
-			val = v;
-		}
-
-		public int GetValue() {
-			return val;
-		}
 	}
 }
