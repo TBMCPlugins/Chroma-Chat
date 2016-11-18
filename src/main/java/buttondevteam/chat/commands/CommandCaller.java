@@ -17,6 +17,8 @@ import buttondevteam.lib.chat.TBMCCommandBase;
 
 public class CommandCaller implements CommandExecutor {
 
+	private static final String REGISTER_ERROR_MSG = "An error occured while registering commands";
+
 	private CommandCaller() {
 	}
 
@@ -28,27 +30,29 @@ public class CommandCaller implements CommandExecutor {
 		for (Entry<String, TBMCCommandBase> entry : TBMCChatAPI.GetCommands().entrySet()) {
 			TBMCCommandBase c = entry.getValue();
 			if (c == null) {
-				TBMCCoreAPI.SendException("An error occured while registering commands",
+				TBMCCoreAPI.SendException(REGISTER_ERROR_MSG,
 						new Exception("Null command found at " + entry.getKey() + "!"));
 				continue;
 			}
 			if (c.GetCommandPath() == null) {
-				TBMCCoreAPI.SendException("An error occured while registering commands",
+				TBMCCoreAPI.SendException(REGISTER_ERROR_MSG,
 						new Exception("Command " + entry.getKey() + " has no command path!"));
 				continue;
 			}
 			if (c.getPlugin() == null) {
-				TBMCCoreAPI.SendException("An error occured while registering commands",
+				TBMCCoreAPI.SendException(REGISTER_ERROR_MSG,
 						new Exception("Command " + entry.getKey() + " has no plugin!"));
 				continue;
 			}
-			if (!c.GetCommandPath().contains(" ")) // Top-level command
+			int i;
+			String topcmd;
+			if ((i = (topcmd = c.GetCommandPath()).indexOf(' ')) != -1) // Get top-level command
+				topcmd = c.GetCommandPath().substring(0, i);
 			{
-				PluginCommand pc = ((JavaPlugin) c.getPlugin()).getCommand(c.GetCommandPath());
+				PluginCommand pc = ((JavaPlugin) c.getPlugin()).getCommand(topcmd);
 				if (pc == null)
-					TBMCCoreAPI.SendException("An error occured while registering commands",
-							new Exception("Can't find top-level command: " + c.GetCommandPath() + " for plugin: "
-									+ c.getPlugin().getName()));
+					TBMCCoreAPI.SendException(REGISTER_ERROR_MSG, new Exception("Top level command " + topcmd
+							+ " not registered in plugin.yml for plugin: " + c.getPlugin().getName()));
 				else
 					pc.setExecutor(instance);
 			}
@@ -62,12 +66,18 @@ public class CommandCaller implements CommandExecutor {
 			path += " " + arg;
 		TBMCCommandBase cmd = TBMCChatAPI.GetCommands().get(path);
 		int argc = 0;
+		boolean hadspace = false;
 		while (cmd == null && path.contains(" ")) {
+			hadspace = true;
 			path = path.substring(0, path.lastIndexOf(' '));
 			argc++;
 			cmd = TBMCChatAPI.GetCommands().get(path);
 		}
 		if (cmd == null) {
+			if (hadspace) {
+				sender.sendMessage(TBMCChatAPI.GetSubCommands(path));
+				return true;
+			}
 			sender.sendMessage("§cInternal error: Command not registered to CommandCaller");
 			if (sender != Bukkit.getConsoleSender())
 				Bukkit.getConsoleSender().sendMessage("§cInternal error: Command not registered to CommandCaller");
