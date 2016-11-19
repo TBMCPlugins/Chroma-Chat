@@ -61,7 +61,7 @@ public class CommandCaller implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
-		String path = command.getName();
+		String path = command.getName().toLowerCase();
 		for (String arg : args)
 			path += " " + arg;
 		TBMCCommandBase cmd = TBMCChatAPI.GetCommands().get(path);
