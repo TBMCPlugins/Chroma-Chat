@@ -78,9 +78,13 @@ public class CommandCaller implements CommandExecutor {
 				sender.sendMessage(TBMCChatAPI.GetSubCommands(path));
 				return true;
 			}
-			sender.sendMessage("§cInternal error: Command not registered to CommandCaller");
+			String[] errormsg = new String[] { //
+					"§cInternal error: Command not registered to CommandCaller", //
+					"§cCommand: " + command.getName() + " - Args: " + Arrays.toString(args) + " - Path: " + path //
+			};
+			sender.sendMessage(errormsg);
 			if (sender != Bukkit.getConsoleSender())
-				Bukkit.getConsoleSender().sendMessage("§cInternal error: Command not registered to CommandCaller");
+				Bukkit.getConsoleSender().sendMessage(errormsg);
 			return true;
 		}
 		if (cmd.GetModOnly() && !PluginMain.permission.has(sender, "tbmc.admin")) {
