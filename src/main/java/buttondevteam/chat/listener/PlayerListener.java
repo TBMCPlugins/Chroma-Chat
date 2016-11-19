@@ -372,14 +372,11 @@ public class PlayerListener implements Listener {
 	public void onGetInfo(TBMCPlayerGetInfoEvent e) {
 		ChatPlayer cp = e.getPlayer().asPluginPlayer(ChatPlayer.class);
 		e.addInfo("Minecraft name: " + cp.getPlayerName());
-		e.addInfo("Reddit name: " + cp.getUserName());
-		if (e.getTarget() == InfoTarget.MCCommand)
-			e.addInfo("/r/TheButton flair: " + cp.GetFormattedFlair());
-		else {
-			final String flair = cp.GetFormattedFlair(true);
-			if (flair.length() > 0)
-				e.addInfo("/r/TheButton flair: " + flair);
-		}
+		if (cp.getUserName() != null && cp.getUserName().length() > 0)
+			e.addInfo("Reddit name: " + cp.getUserName());
+		final String flair = cp.GetFormattedFlair(e.getTarget() != InfoTarget.MCCommand);
+		if (flair.length() > 0)
+			e.addInfo("/r/TheButton flair: " + flair);
 		e.addInfo("Respect: " + (double) cp.getFCount() / (double) cp.getFDeaths());
 	}
 }

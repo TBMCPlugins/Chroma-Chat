@@ -229,8 +229,8 @@ public class ChatProcessing {
 																								? "\nDeaths: "
 																										+ PlayerListener.AlphaDeaths
 																								: ""))))
-																.addExtra(new TellrawPart(
-																		"For more, do /u info " + sender.getName())))));
+																.addExtra(new TellrawPart("\nFor more, do /u info "
+																		+ sender.getName())))));
 		json.addExtra(new TellrawPart("> "));
 		long combinetime = System.nanoTime();
 		ChatFormatter.Combine(formatters, formattedmessage, json);
