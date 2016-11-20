@@ -10,8 +10,6 @@ import com.palmergames.bukkit.towny.Towny;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -20,22 +18,15 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.help.HelpTopic;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import au.com.mineauz.minigames.MinigamePlayer;
-import au.com.mineauz.minigames.Minigames;
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.PluginMain;
-import buttondevteam.chat.commands.ucmds.KittycannonCommand;
 import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.TBMCPlayer.InfoTarget;
 import buttondevteam.lib.chat.Channel;
@@ -210,8 +201,8 @@ public class PlayerListener implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		if (e.getEntity().getName().equals("Alpha_Bacca44"))
 			AlphaDeaths++;
-		MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(e.getEntity());
-		if ((mgp != null && !mgp.isInMinigame()) && new Random().nextBoolean()) { // Don't store Fs for NPCs
+		// MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(e.getEntity());
+		if (/* (mgp != null && !mgp.isInMinigame()) && */ new Random().nextBoolean()) { // Don't store Fs for NPCs
 			if (Ftimer != null)
 				Ftimer.cancel();
 			ActiveF = true;
@@ -241,29 +232,6 @@ public class PlayerListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerItemPickup(PlayerPickupItemEvent e) {
-		MinigamePlayer mp = Minigames.plugin.pdata.getMinigamePlayer(e.getPlayer());
-
-		if (!(mp.isInMinigame()
-				&& mp.getMinigame().getName(false).equalsIgnoreCase(KittycannonCommand.KittyCannonMinigame)))
-			return;
-		ItemStack item = e.getItem().getItemStack();
-		if (!item.getType().equals(Material.SKULL_ITEM) && !item.getType().equals(Material.SKULL))
-			return;
-		SkullMeta meta = (SkullMeta) item.getItemMeta();
-		if (!meta.getDisplayName().equals("§rOcelot Head") || !meta.getOwner().equals("MHF_Ocelot"))
-			return;
-		if (meta.getLore() == null || meta.getLore().size() == 0)
-			return;
-		ItemStack hat = e.getPlayer().getInventory().getHelmet();
-		if (!(hat != null && (hat.getType().equals(Material.SKULL) || hat.getType().equals(Material.SKULL_ITEM))
-				&& ((SkullMeta) hat.getItemMeta()).getDisplayName().equals("§rWolf Head")))
-			e.getPlayer().damage(1f * item.getAmount(), Bukkit.getPlayer(meta.getLore().get(0)));
-		e.getItem().remove();
-		e.setCancelled(true);
-	}
-
-	@EventHandler
 	@SuppressWarnings("deprecation")
 	public void onVotifierEvent(VotifierEvent event) {
 		Vote vote = event.getVote();
@@ -290,24 +258,6 @@ public class PlayerListener implements Listener {
 		if (TBMCPlayer.getPlayerAs(e.getPlayer(), ChatPlayer.class).ChatOnly) {
 			e.setCancelled(true);
 			e.getPlayer().sendMessage("§cYou are not allowed to teleport while in chat-only mode.");
-		}
-	}
-
-	@EventHandler
-	public void onPlayerInteract(PlayerInteractEvent e) {
-		MinigamePlayer mp = Minigames.plugin.pdata.getMinigamePlayer(e.getPlayer());
-		if (mp == null)
-			return;
-		if (mp.isInMinigame() && mp.getMinigame().getName(false).equalsIgnoreCase("twohundred")) {
-			Block block = e.getClickedBlock();
-			if (block == null)
-				return;
-			if (block.getType() == Material.ENDER_CHEST) {
-				e.setCancelled(true);
-				e.getPlayer().sendMessage("§You are not allowed to use enderchests here.");
-				PluginMain.Instance.getLogger()
-						.warning(e.getPlayer().getName() + " tried to use an enderchest in twohundred.");
-			}
 		}
 	}
 

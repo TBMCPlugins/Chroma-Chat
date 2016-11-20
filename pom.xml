@@ -152,11 +152,8 @@
 			<artifactId>votifier</artifactId>
 			<version>1.9</version>
 		</dependency>
-		<dependency>
-			<groupId>au.com.mineauz</groupId>
-			<artifactId>Minigames</artifactId>
-			<version>1.8.0</version>
-		</dependency>
+		<!-- <dependency> <groupId>au.com.mineauz</groupId> <artifactId>Minigames</artifactId> 
+			<version>1.8.0</version> </dependency> -->
 		<dependency>
 			<groupId>net.milkbowl.vault</groupId>
 			<artifactId>VaultAPI</artifactId>

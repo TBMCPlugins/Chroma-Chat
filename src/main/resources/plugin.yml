@@ -2,29 +2,38 @@ name: ButtonChat
 main: buttondevteam.chat.PluginMain
 version: 4.0
 commands:
-    u:
-        description: Auto-flair system. Accept or ignore flair.
-    ooc:
-        description: Send message in Out-of-Character.
-        alias: nrp
-    unlol:
-        description: Unlaugh the last laugh.
-        alias: unlaugh
-    mwiki:
-        description: Search the wiki.
-    dontrunthiscmd:
-    tableflip:
-        description: Flip a table.
-    unflip:
-        description: Unflip a flip.
-    chatonly:
-        description: Enable chat only mode. Useful for chat clients.
-    shrug:
-        description: Shrug.
-    yeehaw:
-        description: This command makes you yeehaw.
+  u:
+    description: Auto-flair system. Accept or ignore flair.
+  ooc:
+    description: Send message in Out-of-Character.
+    alias: nrp
+  unlol:
+    description: Unlaugh the last laugh.
+    alias: unlaugh
+  mwiki:
+    description: Search the wiki.
+  dontrunthiscmd: null
+  tableflip:
+    description: Flip a table.
+  unflip:
+    description: Unflip a flip.
+  chatonly:
+    description: Enable chat only mode. Useful for chat clients.
+  shrug:
+    description: Shrug.
+  yeehaw:
+    description: This command makes you yeehaw.
 author: NorbiPeti
-depend: [Essentials, Towny, Minigames, Votifier, WorldGuard, WorldEdit, ProtocolLib, Vault, ButtonCore]
+depend:
+- Essentials
+- Towny
+- Votifier
+- WorldGuard
+- WorldEdit
+- Vault
+- ButtonCore
+soft-depend:
+- Minigames
 permissions:
   tbmc.admin:
     description: Gives access to /un- commands and /u admin commands
