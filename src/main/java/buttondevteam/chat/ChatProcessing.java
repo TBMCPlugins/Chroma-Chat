@@ -46,7 +46,7 @@ public class ChatProcessing {
 	private static boolean pingedconsole = false;
 
 	// Returns e.setCancelled
-	public static boolean ProcessChat(CommandSender sender, String message) {
+	public static boolean ProcessChat(Channel channel, CommandSender sender, String message) {
 		long processstart = System.nanoTime();
 		if (PluginMain.essentials == null)
 			PluginMain.essentials = (Essentials) (Bukkit.getPluginManager().getPlugin("Essentials"));
@@ -81,7 +81,7 @@ public class ChatProcessing {
 				}
 			}
 		}
-		Channel currentchannel = (mp == null ? PlayerListener.ConsoleChannel : mp.CurrentChannel);
+		Channel currentchannel = channel;
 
 		ArrayList<ChatFormatter> formatters = new ArrayList<ChatFormatter>();
 

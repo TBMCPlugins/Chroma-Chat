@@ -27,9 +27,11 @@ import org.bukkit.potion.PotionEffectType;
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.PluginMain;
+import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.TBMCPlayer.InfoTarget;
 import buttondevteam.lib.chat.Channel;
+import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.TBMCPlayerGetInfoEvent;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -64,7 +66,9 @@ public class PlayerListener implements Listener {
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		if (event.isCancelled())
 			return;
-		event.setCancelled(ChatProcessing.ProcessChat(event.getPlayer(), event.getMessage()));
+		TBMCChatAPI.SendChatMessage(
+				TBMCPlayer.getPlayer(event.getPlayer()).asPluginPlayer(ChatPlayer.class).CurrentChannel,
+				event.getPlayer(), event.getMessage());
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -288,7 +292,7 @@ public class PlayerListener implements Listener {
 				if (cmd.equalsIgnoreCase(channel.Command)) {
 					Channel c = ConsoleChannel;
 					ConsoleChannel = channel;
-					ChatProcessing.ProcessChat(Bukkit.getServer().getConsoleSender(),
+					TBMCChatAPI.SendChatMessage(PlayerListener.ConsoleChannel, Bukkit.getConsoleSender(),
 							event.getCommand().substring(index + 1));
 					ConsoleChannel = c;
 					event.setCommand("dontrunthiscmd");
@@ -328,5 +332,10 @@ public class PlayerListener implements Listener {
 		if (flair.length() > 0)
 			e.addInfo("/r/TheButton flair: " + flair);
 		e.addInfo("Respect: " + (double) cp.getFCount() / (double) cp.getFDeaths());
+	}
+
+	@EventHandler
+	public void onPlayerTBMCChat(TBMCChatEvent e) {
+		ChatProcessing.ProcessChat(e.getChannel(), e.getSender(), e.getMessage());
 	}
 }
