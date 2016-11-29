@@ -153,8 +153,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 						if (mp.getFlairState().equals(FlairStates.NoComment)) {
 							mp.setFlairState(FlairStates.Commented);
 							ConfirmUserMessage(mp);
-						} else
-							PlayersWithFlairs.add(ign);
+						}
+						PlayersWithFlairs.add(ign); // Don't redownload even if flair isn't accepted
 					}
 					try {
 						Thread.sleep(10);
