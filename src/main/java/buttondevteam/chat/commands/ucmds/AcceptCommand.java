@@ -9,6 +9,7 @@ import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.FlairStates;
 import buttondevteam.chat.PlayerJoinTimerTask;
 import buttondevteam.chat.PluginMain;
+import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.TBMCPlayer;
 
 public class AcceptCommand extends UCommandBase {
@@ -65,7 +66,8 @@ public class AcceptCommand extends UCommandBase {
 				try {
 					PluginMain.Instance.DownloadFlair(mp);
 				} catch (Exception e) {
-					e.printStackTrace();
+					TBMCCoreAPI.SendException(
+							"An error occured while downloading flair for " + player.getCustomName() + "!", e);
 					player.sendMessage(
 							"Sorry, but an error occured while trying to get your flair. Please contact a mod.");
 					mp.Working = false;

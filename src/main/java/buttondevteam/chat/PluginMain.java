@@ -6,7 +6,6 @@ import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -120,6 +119,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	}
 
 	private void FlairGetterThreadMethod() {
+		int errorcount = 0;
 		while (!stop) {
 			try {
 				String body = TBMCCoreAPI.DownloadString(FlairThreadURL + ".json?limit=1000");
@@ -168,7 +168,11 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					Thread.currentThread().interrupt();
 				}
 			} catch (Exception e) {
-				LastException = e;
+				errorcount++;
+				if (errorcount >= 10) {
+					errorcount = 0;
+					TBMCCoreAPI.SendException("Error while getting flairs from Reddit!", e);
+				}
 			}
 		}
 	}
@@ -190,8 +194,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		SetFlair(mp, flair, flairclass, mp.getUserName());
 	}
 
-	public static Exception LastException;
-
 	private void SetFlair(ChatPlayer p, String text, String flairclass, String username) {
 		p.setUserName(username);
 		p.setFlairState(FlairStates.Recognised);
@@ -200,34 +202,19 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			p.SetFlair(Short.parseShort(text), true);
 			return;
 		case "unknown":
-			if (text.equals("-1")) // If true, only non-presser/can't press; if
-									// false, any flair (but we can still detect
-									// can't press)
-			{
-				try {
-					if (CheckForJoinDate(p)) {
+			try {
+				if (CheckForJoinDate(p)) {
+					if (text.equals("-1")) // If true, only non-presser/can't press; if false, any flair (but we can still detect can't press)
 						p.SetFlair(ChatPlayer.FlairTimeNonPresser);
-					} else {
-						p.SetFlair(ChatPlayer.FlairTimeCantPress);
-					}
-				} catch (Exception e) {
-					p.setFlairState(FlairStates.Commented); // Flair unknown
-					p.SetFlair(ChatPlayer.FlairTimeNone);
-					e.printStackTrace();
+					else
+						p.SetFlair(ChatPlayer.FlairTimeNone); // Flair unknown
+				} else {
+					p.SetFlair(ChatPlayer.FlairTimeCantPress);
 				}
-			} else {
-				try {
-					if (CheckForJoinDate(p)) {
-						p.setFlairState(FlairStates.Commented); // Flair unknown
-						p.SetFlair(ChatPlayer.FlairTimeNone);
-					} else {
-						p.SetFlair(ChatPlayer.FlairTimeCantPress);
-					}
-				} catch (Exception e) {
-					p.setFlairState(FlairStates.Commented); // Flair unknown
-					p.SetFlair(ChatPlayer.FlairTimeNone);
-					e.printStackTrace();
-				}
+			} catch (Exception e) {
+				p.setFlairState(FlairStates.Commented); // Flair unknown
+				p.SetFlair(ChatPlayer.FlairTimeNone);
+				TBMCCoreAPI.SendException("Error while checking join date for player " + p.getPlayerName() + "!", e);
 			}
 			return;
 		default:
@@ -289,12 +276,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 				PlayerListener.AlphaDeaths = yc.getInt("alphadeaths");
 			}
 			PluginMain.Instance.getLogger().info("Loaded files!");
-		} catch (IOException e) {
-			PluginMain.Instance.getLogger().warning("Error!\n" + e);
-			LastException = e;
-		} catch (InvalidConfigurationException e) {
-			PluginMain.Instance.getLogger().warning("Error!\n" + e);
-			LastException = e;
+		} catch (Exception e) {
+			TBMCCoreAPI.SendException("Error while loading chat files!", e);
 		}
 	}
 
@@ -310,9 +293,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			yc.set("alphadeaths", PlayerListener.AlphaDeaths);
 			yc.save(file);
 			PluginMain.Instance.getLogger().info("Saved files!");
-		} catch (IOException e) {
-			PluginMain.Instance.getLogger().warning("Error!\n" + e);
-			LastException = e;
+		} catch (Exception e) {
+			TBMCCoreAPI.SendException("Error while loading chat files!", e);
 		}
 	}
 

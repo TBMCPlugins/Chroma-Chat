@@ -25,6 +25,7 @@ import buttondevteam.chat.formatting.ChatFormatterBuilder;
 import buttondevteam.chat.formatting.TellrawEvent;
 import buttondevteam.chat.formatting.TellrawPart;
 import buttondevteam.chat.formatting.TellrawSerializer;
+import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.TellrawSerializableEnum;
@@ -255,18 +256,22 @@ public class ChatProcessing {
 			for (Player p : PluginMain.GetPlayers()) {
 				try {
 					Resident resident = PluginMain.Instance.TU.getResidentMap().get(p.getName().toLowerCase());
-					if (!resident.getName().equals(player.getName()) && resident.getModes().contains("spy"))
+					if (resident != null && !resident.getName().equals(player.getName())
+							&& resident.getModes().contains("spy"))
 						Bukkit.getPlayer(resident.getName()).sendMessage(String.format("[SPY-%s] - %s: %s",
 								currentchannel.DisplayName, player.getDisplayName(), message));
 				} catch (Exception e) {
 				}
 			}
 		}
-		if (currentchannel.equals(Channel.TownChat)) {
-			try {
+		try {
+			if (currentchannel.equals(Channel.TownChat)) {
 				Town town = null;
 				try {
-					town = PluginMain.Instance.TU.getResidentMap().get(player.getName().toLowerCase()).getTown();
+					final Resident resident = PluginMain.Instance.TU.getResidentMap()
+							.get(player.getName().toLowerCase());
+					if (resident != null && resident.hasTown())
+						town = resident.getTown();
 				} catch (NotRegisteredException e) {
 				}
 				if (town == null) {
@@ -281,8 +286,7 @@ public class ChatProcessing {
 				Objective obj = PluginMain.SB.getObjective("town");
 				for (Player p : PluginMain.GetPlayers()) {
 					try {
-						if (PluginMain.Instance.TU.getResidentMap().get(p.getName().toLowerCase()).getTown().getName()
-								.equals(town.getName()))
+						if (town.getResidents().stream().anyMatch(r -> r.getName().equalsIgnoreCase(p.getName())))
 							obj.getScore(p.getName()).setScore(index);
 						else
 							obj.getScore(p.getName()).setScore(-1);
@@ -292,20 +296,13 @@ public class ChatProcessing {
 				}
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 						String.format("tellraw @a[score_town=%d,score_town_min=%d] %s", index, index, jsonstr));
-			} catch (IllegalStateException e) {
-				e.printStackTrace();
-				player.sendMessage("§cAn error occured while sending the message. (IllegalStateException)");
-				return true;
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-				player.sendMessage("§cAn error occured while sending the message. (IllegalArgumentException)");
-				return true;
-			}
-		} else if (currentchannel.equals(Channel.NationChat)) {
-			try {
+			} else if (currentchannel.equals(Channel.NationChat)) {
 				Town town = null;
 				try {
-					town = PluginMain.Instance.TU.getResidentMap().get(player.getName().toLowerCase()).getTown();
+					final Resident resident = PluginMain.Instance.TU.getResidentMap()
+							.get(player.getName().toLowerCase());
+					if (resident != null && resident.hasTown())
+						town = resident.getTown();
 				} catch (NotRegisteredException e) {
 				}
 				if (town == null) {
@@ -329,8 +326,7 @@ public class ChatProcessing {
 				Objective obj = PluginMain.SB.getObjective("nation");
 				for (Player p : PluginMain.GetPlayers()) {
 					try {
-						if (PluginMain.Instance.TU.getResidentMap().get(p.getName().toLowerCase()).getTown().getNation()
-								.getName().equals(nation.getName()))
+						if (nation.getResidents().stream().anyMatch(r -> r.getName().equalsIgnoreCase(p.getName())))
 							obj.getScore(p.getName()).setScore(index);
 						else
 							obj.getScore(p.getName()).setScore(-1);
@@ -339,17 +335,7 @@ public class ChatProcessing {
 				}
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 						String.format("tellraw @a[score_nation=%d,score_nation_min=%d] %s", index, index, jsonstr));
-			} catch (IllegalStateException e) {
-				e.printStackTrace();
-				player.sendMessage("§cAn error occured while sending the message. (IllegalStateException)");
-				return true;
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-				player.sendMessage("§cAn error occured while sending the message. (IllegalArgumentException)");
-				return true;
-			}
-		} else if (currentchannel.equals(Channel.AdminChat)) {
-			try {
+			} else if (currentchannel.equals(Channel.AdminChat)) {
 				if (player != null && !player.isOp()) {
 					player.sendMessage("§cYou need to be an OP to use this channel.");
 					return true;
@@ -363,17 +349,7 @@ public class ChatProcessing {
 				}
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 						String.format("tellraw @a[score_admin=%d,score_admin_min=%d] %s", 1, 1, jsonstr));
-			} catch (IllegalStateException e) {
-				e.printStackTrace();
-				player.sendMessage("§cAn error occured while sending the message. (IllegalStateException)");
-				return true;
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-				player.sendMessage("§cAn error occured while sending the message. (IllegalArgumentException)");
-				return true;
-			}
-		} else if (currentchannel.equals(Channel.ModChat)) {
-			try {
+			} else if (currentchannel.equals(Channel.ModChat)) {
 				if (player != null && !PluginMain.permission.playerInGroup(player, "mod")) {
 					player.sendMessage("§cYou need to be a mod to use this channel.");
 					return true;
@@ -387,18 +363,14 @@ public class ChatProcessing {
 				}
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 						String.format("tellraw @a[score_mod=%d,score_mod_min=%d] %s", 1, 1, jsonstr));
-			} catch (IllegalStateException e) {
-				e.printStackTrace();
-				player.sendMessage("§cAn error occured while sending the message. (IllegalStateException)");
-				return true;
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-				player.sendMessage("§cAn error occured while sending the message. (IllegalArgumentException)");
-				return true;
-			}
-		} else
-			PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-					String.format("tellraw @a %s", jsonstr));
+			} else
+				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
+						String.format("tellraw @a %s", jsonstr));
+		} catch (Exception e) {
+			TBMCCoreAPI.SendException("An error occured while sending a chat message!", e);
+			player.sendMessage("§cAn error occured while sending the message.");
+			return true;
+		}
 		PluginMain.Instance.getServer().getConsoleSender()
 				.sendMessage(String.format("[%s] <%s%s> %s", currentchannel.DisplayName,
 						(player != null ? player.getDisplayName() : sender.getName()),
