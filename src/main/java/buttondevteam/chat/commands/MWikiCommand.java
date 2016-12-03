@@ -8,13 +8,11 @@ public class MWikiCommand extends TBMCCommandBase {
 
 	@Override
 	public String[] GetHelpText(String alias) {
-		return new String[] {
-				"§6---- Minecraft Wiki linker ----",
-				"Use without parameters to get a link to the wiki",
-				"You can also search the wiki, for example:",
-				" /"
-						+ alias
-						+ " beacon - Provides a link that redirects to the beacon's wiki page" };
+		return new String[] { "§6---- Minecraft Wiki linker ----", //
+				"Use without parameters to get a link to the wiki", //
+				"You can also search the wiki, for example:", //
+				" /" + alias + " beacon - Provides a link that redirects to the beacon's wiki page" //
+		};
 	}
 
 	@Override
@@ -26,8 +24,8 @@ public class MWikiCommand extends TBMCCommandBase {
 		if (args.length == 0)
 			sender.sendMessage("§bMinecraft Wiki link: http://minecraft.gamepedia.com/");
 		else
-			sender.sendMessage("§bMinecraft Wiki link: http://minecraft.gamepedia.com/index.php?search="
-					+ query + "&title=Special%3ASearch&go=Go");
+			sender.sendMessage("§bMinecraft Wiki link: http://minecraft.gamepedia.com/index.php?search=" + query
+					+ "&title=Special%3ASearch&go=Go");
 		return true;
 	}
 

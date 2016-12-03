@@ -40,4 +40,8 @@ public class InfoCommand extends UCommandBase {
 		return true;
 	}
 
+	@Override
+	public boolean GetPlayerOnly() {
+		return false;
+	}
 }
