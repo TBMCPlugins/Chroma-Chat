@@ -191,12 +191,14 @@ public class ChatProcessing {
 			json.addExtra(new TellrawPart("[C]").setHoverEvent(
 					TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT, "Chat only")));
 		}
-		json.addExtra(
-				new TellrawPart(("[" + currentchannel.DisplayName) + "]" + (mp != null && !mp.RPMode ? "[OOC]" : ""))
-						.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
-								new TellrawPart("Copy message").setColor(Color.Blue)))
-						.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAC,
-								TellrawEvent.ClickAction.SUGGEST_COMMAND, suggestmsg)));
+		json.addExtra(new TellrawPart(
+				("[" + (sender instanceof Player ? "" : sender.getClass().getSimpleName().toLowerCase().charAt(0))
+						+ currentchannel.DisplayName) + "]" + (mp != null && !mp.RPMode ? "[OOC]" : ""))
+								.setHoverEvent(
+										TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
+												new TellrawPart("Copy message").setColor(Color.Blue)))
+								.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAC,
+										TellrawEvent.ClickAction.SUGGEST_COMMAND, suggestmsg)));
 		json.addExtra(new TellrawPart(" <"));
 		json.addExtra(
 				new TellrawPart(
