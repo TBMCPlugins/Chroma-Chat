@@ -75,7 +75,7 @@ public class CommandCaller implements CommandExecutor {
 		}
 		if (cmd == null) {
 			if (hadspace) {
-				sender.sendMessage(TBMCChatAPI.GetSubCommands(path));
+				sender.sendMessage(TBMCChatAPI.GetSubCommands(path, sender));
 				return true;
 			}
 			String[] errormsg = new String[] { //

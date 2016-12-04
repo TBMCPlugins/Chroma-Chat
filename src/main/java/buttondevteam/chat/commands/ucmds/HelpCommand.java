@@ -3,7 +3,9 @@ package buttondevteam.chat.commands.ucmds;
 import java.util.ArrayList;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
+import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.chat.TBMCCommandBase;
 
@@ -34,7 +36,9 @@ public final class HelpCommand extends UCommandBase {
 			text.add("§6---- Command list ----");
 			for (TBMCCommandBase cmd : TBMCChatAPI.GetCommands().values())
 				if (!cmd.GetCommandPath().contains(" "))
-					text.add("/" + cmd.GetCommandPath());
+					if (!cmd.GetModOnly() || PluginMain.permission.has(sender, "tbmc.admin"))
+						if (!cmd.GetPlayerOnly() || sender instanceof Player)
+							text.add("/" + cmd.GetCommandPath());
 			sender.sendMessage(text.toArray(new String[text.size()]));
 		} else if (args[0].equalsIgnoreCase("colors")) {
 			sender.sendMessage(new String[] { "§6---- Chat colors/formats ----", //
