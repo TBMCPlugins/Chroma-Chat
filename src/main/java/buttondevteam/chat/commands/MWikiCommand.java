@@ -1,5 +1,8 @@
 package buttondevteam.chat.commands;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import org.bukkit.command.CommandSender;
 
 import buttondevteam.lib.chat.TBMCCommandBase;
@@ -21,11 +24,15 @@ public class MWikiCommand extends TBMCCommandBase {
 		for (int i = 0; i < args.length; i++)
 			query += args[i] + " ";
 		query = query.trim();
-		if (args.length == 0)
-			sender.sendMessage("§bMinecraft Wiki link: http://minecraft.gamepedia.com/");
-		else
-			sender.sendMessage("§bMinecraft Wiki link: http://minecraft.gamepedia.com/index.php?search=" + query
-					+ "&title=Special%3ASearch&go=Go");
+		try {
+			if (args.length == 0)
+				sender.sendMessage("§bMinecraft Wiki link: http://minecraft.gamepedia.com/");
+			else
+				sender.sendMessage("§bMinecraft Wiki link: http://minecraft.gamepedia.com/index.php?search="
+						+ URLEncoder.encode(query, "UTF-8") + "&title=Special%3ASearch&go=Go");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		return true;
 	}
 

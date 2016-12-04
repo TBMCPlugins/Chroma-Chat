@@ -10,9 +10,12 @@ public class UpdatePlugin extends AdminCommandBase {
 
 	@Override
 	public String[] GetHelpText(String alias) {
-		return new String[] { "§6---- Update plugin ----",
-				"This command downloads the latest version of a TBMC plugin from GitHub",
-				"To update a plugin: /" + alias + " <plugin>", "To list the plugin names: /" + alias };
+		return new String[] { //
+				"§6---- Update plugin ----", //
+				"This command downloads the latest version of a TBMC plugin from GitHub", //
+				"To update a plugin: /" + alias + " <plugin>", //
+				"To list the plugin names: /" + alias //
+		};
 	}
 
 	@Override
@@ -29,7 +32,6 @@ public class UpdatePlugin extends AdminCommandBase {
 			}
 			return true;
 		} else {
-			sender.sendMessage("Updating plugin...");
 			Bukkit.getScheduler().runTaskAsynchronously(PluginMain.Instance, () -> {
 				TBMCCoreAPI.UpdatePlugin(args[0], sender);
 			});
