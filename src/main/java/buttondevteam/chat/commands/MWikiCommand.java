@@ -25,8 +25,9 @@ public class MWikiCommand extends TBMCCommandBase {
 			query += args[i] + " ";
 		query = query.trim();
 		try {
-			if (args.length == 0)
-				sender.sendMessage("§bMinecraft Wiki link: http://minecraft.gamepedia.com/");
+			if (query.length() == 0)
+				sender.sendMessage(new String[] { "§bMinecraft Wiki link: http://minecraft.gamepedia.com/",
+						"You can also search on it using /mwiki <query>" });
 			else
 				sender.sendMessage("§bMinecraft Wiki link: http://minecraft.gamepedia.com/index.php?search="
 						+ URLEncoder.encode(query, "UTF-8") + "&title=Special%3ASearch&go=Go");
