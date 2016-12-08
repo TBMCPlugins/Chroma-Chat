@@ -1,6 +1,8 @@
 package buttondevteam.chat;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -27,7 +29,7 @@ public class ChatPlayer extends TBMCPlayer {
 	}
 
 	public short getFlairTime() {
-		return getIntData(Short.class);
+		return getIntData(Short.class).orElse(FlairTimeNone);
 	}
 
 	private void setFlairTime(short time) {
@@ -43,7 +45,7 @@ public class ChatPlayer extends TBMCPlayer {
 	}
 
 	public int getFCount() {
-		return getIntData(Integer.class);
+		return getIntData(Integer.class).orElse(0);
 	}
 
 	public void setFCount(int count) {
@@ -51,7 +53,7 @@ public class ChatPlayer extends TBMCPlayer {
 	}
 
 	public int getFDeaths() {
-		return getIntData(Integer.class);
+		return getIntData(Integer.class).orElse(0);
 	}
 
 	public void setFDeaths(int count) {
