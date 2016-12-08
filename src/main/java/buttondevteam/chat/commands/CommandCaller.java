@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -66,25 +67,21 @@ public class CommandCaller implements CommandExecutor {
 			path += " " + arg;
 		TBMCCommandBase cmd = TBMCChatAPI.GetCommands().get(path);
 		int argc = 0;
-		boolean hadspace = false;
 		while (cmd == null && path.contains(" ")) {
-			hadspace = true;
 			path = path.substring(0, path.lastIndexOf(' '));
 			argc++;
 			cmd = TBMCChatAPI.GetCommands().get(path);
 		}
 		if (cmd == null) {
-			if (hadspace) {
-				sender.sendMessage(TBMCChatAPI.GetSubCommands(path, sender));
-				return true;
+			String[] subcmds = TBMCChatAPI.GetSubCommands(path, sender);
+			if (subcmds.length > 0)
+				sender.sendMessage(subcmds);
+			else {
+				final String errormsg = "§cInternal error: Command not registered to CommandCaller";
+				sender.sendMessage(errormsg);
+				if (!(sender instanceof ConsoleCommandSender))
+					Bukkit.getConsoleSender().sendMessage(errormsg);
 			}
-			String[] errormsg = new String[] { //
-					"§cInternal error: Command not registered to CommandCaller", //
-					"§cCommand: " + command.getName() + " - Args: " + Arrays.toString(args) + " - Path: " + path //
-			};
-			sender.sendMessage(errormsg);
-			if (sender != Bukkit.getConsoleSender())
-				Bukkit.getConsoleSender().sendMessage(errormsg);
 			return true;
 		}
 		if (cmd.GetModOnly() && !PluginMain.permission.has(sender, "tbmc.admin")) {
