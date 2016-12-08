@@ -77,7 +77,7 @@ public class CommandCaller implements CommandExecutor {
 			if (subcmds.length > 0)
 				sender.sendMessage(subcmds);
 			else {
-				final String errormsg = "§cInternal error: Command not registered to CommandCaller";
+				final String errormsg = "§cYou don't have access to any of this command's subcommands.";
 				sender.sendMessage(errormsg);
 				if (!(sender instanceof ConsoleCommandSender))
 					Bukkit.getConsoleSender().sendMessage(errormsg);
