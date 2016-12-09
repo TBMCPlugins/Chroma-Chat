@@ -58,12 +58,16 @@ public final class HelpCommand extends UCommandBase {
 		} else {
 			String path = args[0];
 			for (int i = 1; i < args.length; i++)
-				path += "/" + args[i];
+				path += " " + args[i];
 			TBMCCommandBase cmd = TBMCChatAPI.GetCommands().get(path);
-			if (cmd == null)
-				sender.sendMessage(new String[] { "§cError: Command not found: " + path.replace('/', ' '),
-						"Usage example: /u accept --> /u help u accept" });
-			else
+			if (cmd == null) {
+				String[] subcmds = TBMCChatAPI.GetSubCommands(path, sender);
+				if (subcmds.length > 0)
+					sender.sendMessage(subcmds);
+				else
+					sender.sendMessage(new String[] { "§cError: Command not found or you don't have permission for it: " + path,
+							"Usage example: /u accept --> /u help u accept" });
+			} else
 				sender.sendMessage(cmd.GetHelpText(args[0]));
 		}
 		return true;

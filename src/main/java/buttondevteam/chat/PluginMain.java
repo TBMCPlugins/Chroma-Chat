@@ -14,7 +14,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 
-import buttondevteam.chat.commands.CommandCaller;
 import buttondevteam.chat.commands.YeehawCommand;
 import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.lib.TBMCCoreAPI;
@@ -105,7 +104,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		};
 		t = new Thread(r);
 		t.start();
-		Bukkit.getScheduler().runTaskLater(this, () -> CommandCaller.RegisterCommands(), 0);
 	}
 
 	public Boolean stop = false;

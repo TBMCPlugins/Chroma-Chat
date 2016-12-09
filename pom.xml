@@ -48,7 +48,6 @@
 							<artifactSet>
 								<includes>
 									<include>net.sourceforge.htmlcleaner:htmlcleaner</include>
-									<include>org.reflections:reflections</include>
 									<include>org.javassist:javassist</include>
 								</includes>
 							</artifactSet>

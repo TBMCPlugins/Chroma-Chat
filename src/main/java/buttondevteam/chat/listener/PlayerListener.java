@@ -66,10 +66,10 @@ public class PlayerListener implements Listener {
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		if (event.isCancelled())
 			return;
-		event.setCancelled(true);
 		TBMCChatAPI.SendChatMessage(
 				TBMCPlayer.getPlayer(event.getPlayer()).asPluginPlayer(ChatPlayer.class).CurrentChannel,
 				event.getPlayer(), event.getMessage());
+		event.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
