@@ -33,7 +33,7 @@ public class UpdatePlugin extends AdminCommandBase {
 			return true;
 		} else {
 			Bukkit.getScheduler().runTaskAsynchronously(PluginMain.Instance, () -> {
-				TBMCCoreAPI.UpdatePlugin(args[0], sender);
+				TBMCCoreAPI.UpdatePlugin(args[0], sender, args.length == 1 ? "master" : args[1]);
 			});
 			return true;
 		}
