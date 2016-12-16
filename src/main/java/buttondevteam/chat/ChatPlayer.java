@@ -1,5 +1,6 @@
 package buttondevteam.chat;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +22,10 @@ public class ChatPlayer extends TBMCPlayer {
 	}
 
 	public List<String> getUserNames() {
-		return getData();
+		final List<String> data = getData();
+		if (data == null)
+			setUserNames(new ArrayList<String>());
+		return data;
 	}
 
 	public void setUserNames(List<String> names) {
