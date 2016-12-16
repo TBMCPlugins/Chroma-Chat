@@ -61,7 +61,7 @@ public class ChatPlayer extends TBMCPlayer {
 	}
 
 	public boolean getFlairCheater() {
-		return getData();
+		return getBoolData();
 	}
 
 	private void setFlairCheater(boolean cheater) {
