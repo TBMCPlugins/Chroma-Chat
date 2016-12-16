@@ -147,8 +147,6 @@ public class ChatProcessing {
 
 			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(nicksb.toString())).setColor(Color.Aqua)
 					.setOnmatch((String match) -> {
-						System.out.println("Match: " + match);
-						System.out.println("A nickname: " + PlayerListener.nicknames.keySet().stream().findAny());
 						if (PlayerListener.nicknames.containsKey(match)) {
 							Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(match));
 							if (p == null) {
