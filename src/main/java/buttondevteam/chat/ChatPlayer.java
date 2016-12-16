@@ -2,13 +2,10 @@ package buttondevteam.chat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import buttondevteam.chat.formatting.ChatFormatter;
 import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.*;
 
@@ -22,9 +19,9 @@ public class ChatPlayer extends TBMCPlayer {
 	}
 
 	public List<String> getUserNames() {
-		final List<String> data = getData();
+		List<String> data = getData();
 		if (data == null)
-			setUserNames(new ArrayList<String>());
+			setUserNames(data = new ArrayList<String>());
 		return data;
 	}
 
