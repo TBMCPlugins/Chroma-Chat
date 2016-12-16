@@ -19,9 +19,10 @@ public final class ChatFormatter {
 	private Priority priority;
 	private short removecharcount = 0;
 	private short removecharpos = -1;
+	private boolean isrange;
 
 	public ChatFormatter(Pattern regex, Format format, Color color, Function<String, String> onmatch, String openlink,
-			Priority priority, short removecharcount, short removecharpos) {
+			Priority priority, short removecharcount, short removecharpos, boolean isrange) {
 		this.regex = regex;
 		this.format = format;
 		this.color = color;
@@ -30,6 +31,7 @@ public final class ChatFormatter {
 		this.priority = Priority.High;
 		this.removecharcount = removecharcount;
 		this.removecharpos = removecharpos;
+		this.isrange = isrange;
 	}
 
 	public static void Combine(List<ChatFormatter> formatters, String str, TellrawPart tp) {
@@ -48,7 +50,8 @@ public final class ChatFormatter {
 				if (groups.size() > 0)
 					DebugCommand.SendDebugMessage("First group: " + groups.get(0));
 				FormattedSection section = new FormattedSection(formatter, matcher.start(), matcher.end() - 1, groups,
-						formatter.removecharcount, formatter.removecharcount, formatter.removecharpos);
+						formatter.removecharcount, formatter.removecharcount, formatter.removecharpos,
+						formatter.isrange);
 				sections.add(section);
 			}
 		}
@@ -58,94 +61,9 @@ public final class ChatFormatter {
 			else
 				return Integer.compare(s1.Start, s2.Start);
 		});
-		boolean cont = true;
-		boolean found = false;
-		for (int i = 1; cont;) {
-			int nextindex = i + 1;
-			if (sections.size() < 2)
-				break;
-			DebugCommand.SendDebugMessage("i: " + i);
-			FormattedSection firstSection = sections.get(i - 1);
-			DebugCommand.SendDebugMessage("Combining sections " + firstSection + " and " + sections.get(i));
-			if (firstSection.Start == sections.get(i).Start && firstSection.End == sections.get(i).End) {
-				firstSection.Formatters.addAll(sections.get(i).Formatters);
-				firstSection.Matches.addAll(sections.get(i).Matches);
-				if (firstSection.RemCharFromStart < sections.get(i).RemCharFromStart)
-					firstSection.RemCharFromStart = sections.get(i).RemCharFromStart;
-				if (firstSection.RemCharFromEnd < sections.get(i).RemCharFromEnd)
-					firstSection.RemCharFromEnd = sections.get(i).RemCharFromEnd;
-				firstSection.RemCharPos.addAll(sections.get(i).RemCharPos);
-				DebugCommand.SendDebugMessage("To section " + firstSection);
-				sections.remove(i);
-				found = true;
-			} else if (firstSection.End > sections.get(i).Start && firstSection.Start < sections.get(i).End) {
-				int origend = firstSection.End;
-				firstSection.End = sections.get(i).Start - 1;
-				int origend2 = sections.get(i).End;
-				boolean switchends;
-				if (switchends = origend2 < origend) {
-					int tmp = origend;
-					origend = origend2;
-					origend2 = tmp;
-				}
-				FormattedSection section = new FormattedSection(firstSection.Formatters, sections.get(i).Start, origend,
-						firstSection.Matches, sections.get(i).RemCharFromStart, firstSection.RemCharFromEnd,
-						Collections.emptyList());
-				section.Formatters.addAll(sections.get(i).Formatters);
-				section.Matches.addAll(sections.get(i).Matches); // TODO: Clean
-				sections.add(i, section);
-				nextindex++;
-				FormattedSection thirdFormattedSection = sections.get(i + 1);
-				if (switchends) { // Use the properties of the first section not the second one
-					thirdFormattedSection.Formatters.clear();
-					thirdFormattedSection.Formatters.addAll(firstSection.Formatters);
-					thirdFormattedSection.Matches.clear();
-					thirdFormattedSection.Matches.addAll(firstSection.Matches);
-					short remchar = section.RemCharFromEnd;
-					section.RemCharFromEnd = thirdFormattedSection.RemCharFromEnd;
-					thirdFormattedSection.RemCharFromEnd = remchar;
-				}
-				firstSection.RemCharFromEnd = 0;
-				thirdFormattedSection.RemCharFromStart = 0;
-				thirdFormattedSection.Start = origend + 1;
-				thirdFormattedSection.End = origend2;
-				for (int x = 0; x < firstSection.RemCharPos.size(); x++) {
-					if (firstSection.RemCharPos.get(x) > firstSection.End) {
-						if (firstSection.RemCharPos.get(x) > section.End)
-							thirdFormattedSection.RemCharPos.add(
-									firstSection.RemCharPos.get(x) - thirdFormattedSection.Start + firstSection.Start);
-						else
-							section.RemCharPos.add(firstSection.RemCharPos.get(x) - section.Start + firstSection.Start);
-						firstSection.RemCharPos.remove(x--);
-					}
-				}
-				DebugCommand.SendDebugMessage("To sections 1:" + firstSection + "");
-				DebugCommand.SendDebugMessage("  2:" + section + "");
-				DebugCommand.SendDebugMessage("  3:" + thirdFormattedSection);
-				found = true;
-			}
-			for (int j = i - 1; j <= i + 1; j++) {
-				if (j < sections.size() && sections.get(j).End < sections.get(j).Start) {
-					DebugCommand.SendDebugMessage("Removing section: " + sections.get(j));
-					sections.remove(j);
-					found = true;
-				}
-			}
-			i = nextindex - 1;
-			i++;
-			if (i >= sections.size()) {
-				if (found) {
-					i = 1;
-					found = false;
-					sections.sort((s1, s2) -> {
-						if (s1.Start == s2.Start)
-							return Integer.compare(s1.End, s2.End);
-						else
-							return Integer.compare(s1.Start, s2.Start);
-					});
-				} else
-					cont = false;
-			}
+		List<FormattedSection> combined = new ArrayList<>();
+		for (int i = 0; i < sections.size(); i++) {
+			// Set ending to -1 until closed with another 1 long "section" - only do this if IsRange is true
 		}
 		for (int i = 0; i < sections.size(); i++) {
 			FormattedSection section = sections.get(i);
@@ -169,7 +87,7 @@ public final class ChatFormatter {
 				if (formatter.color != null)
 					color = formatter.color;
 				if (formatter.format != null)
-					format = formatter.format.getFlag(); //TODO: Fix
+					format = formatter.format.getFlag(); // TODO: Fix
 				if (formatter.openlink != null)
 					openlink = formatter.openlink;
 			}

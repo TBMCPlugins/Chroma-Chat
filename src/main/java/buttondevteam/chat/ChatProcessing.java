@@ -33,15 +33,15 @@ import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.lib.chat.*;
 
 public class ChatProcessing {
-	private static final Pattern ESCAPE_PATTERN = Pattern.compile("\\\\([\\*\\_\\\\])");
+	private static final Pattern NULL_MENTION_PATTERN = Pattern.compile("null");
+	private static final Pattern ESCAPE_PATTERN = Pattern.compile("\\\\");
 	private static final Pattern CONSOLE_PING_PATTERN = Pattern.compile("(?i)" + Pattern.quote("@console"));
 	private static final Pattern HASHTAG_PATTERN = Pattern.compile("#(\\w+)");
 	private static final Pattern URL_PATTERN = Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),]+)");
 	private static final Pattern ENTIRE_MESSAGE_PATTERN = Pattern.compile(".+");
-	private static final Pattern UNDERLINED_PATTERN = Pattern.compile("(?<!\\\\)\\_((?:\\\\\\_|[^\\_])+[^\\_\\\\])\\_");
-	private static final Pattern ITALIC_PATTERN = Pattern
-			.compile("(?<![\\\\\\*])\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*(?!\\*)");
-	private static final Pattern BOLD_PATTERN = Pattern.compile("(?<!\\\\)\\*\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*\\*");
+	private static final Pattern UNDERLINED_PATTERN = Pattern.compile("\\_");
+	private static final Pattern ITALIC_PATTERN = Pattern.compile("\\*");
+	private static final Pattern BOLD_PATTERN = Pattern.compile("\\*\\*");
 	private static final String[] RainbowPresserColors = new String[] { "red", "gold", "yellow", "green", "blue",
 			"dark_purple" }; // TODO
 	private static boolean pingedconsole = false;
@@ -130,8 +130,7 @@ public class ChatProcessing {
 			nicksb.deleteCharAt(nicksb.length() - 1);
 			nicksb.append(")");
 
-			formatters
-					.add(new ChatFormatterBuilder().setRegex(Pattern.compile("null")).setColor(Color.DarkRed).build()); // Properly added a bug as a feature
+			formatters.add(new ChatFormatterBuilder().setRegex(NULL_MENTION_PATTERN).setColor(Color.DarkRed).build()); // Properly added a bug as a feature
 
 			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(namesb.toString())).setColor(Color.Aqua)
 					.setOnmatch((String match) -> {
