@@ -164,15 +164,12 @@ public final class ChatFormatter {
 			section.Formatters.sort((cf2, cf1) -> cf1.priority.compareTo(cf2.priority));
 			for (ChatFormatter formatter : section.Formatters) {
 				DebugCommand.SendDebugMessage("Applying formatter: " + formatter);
-				if (formatter.onmatch != null) {
-					String f = formatter.onmatch.apply(originaltext);
-					if (f != null)
-						originaltext = f; //TODO: Find out...
-				}
+				if (formatter.onmatch != null)
+					originaltext = formatter.onmatch.apply(originaltext);
 				if (formatter.color != null)
 					color = formatter.color;
 				if (formatter.format != null)
-					format = formatter.format.getFlag(); // TODO: Fix
+					format = formatter.format.getFlag(); //TODO: Fix
 				if (formatter.openlink != null)
 					openlink = formatter.openlink;
 			}

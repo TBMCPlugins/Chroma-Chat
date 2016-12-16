@@ -122,10 +122,16 @@ public class ChatProcessing {
 			namesb.append(")");
 			StringBuilder nicksb = new StringBuilder();
 			nicksb.append("(?i)(");
-			for (Player p : PluginMain.GetPlayers())
-				nicksb.append(PlayerListener.nicknames.inverse().get(p.getUniqueId())).append("|");
+			for (Player p : PluginMain.GetPlayers()) {
+				final String nick = PlayerListener.nicknames.inverse().get(p.getUniqueId());
+				if (nick != null) // Not everyone has a nickname
+					nicksb.append(nick).append("|");
+			}
 			nicksb.deleteCharAt(nicksb.length() - 1);
 			nicksb.append(")");
+
+			formatters
+					.add(new ChatFormatterBuilder().setRegex(Pattern.compile("null")).setColor(Color.DarkRed).build()); // Properly added a bug as a feature
 
 			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(namesb.toString())).setColor(Color.Aqua)
 					.setOnmatch((String match) -> {
