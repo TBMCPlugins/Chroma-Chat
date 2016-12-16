@@ -12,7 +12,7 @@ public class InfoCommand extends UCommandBase {
 		return new String[] { //
 				"§6---- User information ----", //
 				"Get some information known about the user.", //
-				"Usage: /u " + alias + " <playername>" //
+				"Usage: /"+alias+" info <playername>" //
 		};
 	}
 
