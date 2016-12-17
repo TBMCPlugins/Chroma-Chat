@@ -131,7 +131,7 @@ public class ChatProcessing {
 			                nicksb.append(nick);
 			                if (i < size - 1)
 			                {
-			                        nicksb.append("|")
+			                        nicksb.append("|");
 			                }
 			        }
 			}
