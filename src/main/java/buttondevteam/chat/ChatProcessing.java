@@ -122,12 +122,19 @@ public class ChatProcessing {
 			namesb.append(")");
 			StringBuilder nicksb = new StringBuilder();
 			nicksb.append("(?i)(");
-			for (Player p : PluginMain.GetPlayers()) {
-				final String nick = PlayerListener.nicknames.inverse().get(p.getUniqueId());
-				if (nick != null) // Not everyone has a nickname
-					nicksb.append(nick).append("|");
+			final int size = PluginMain.GetPlayers().size();
+			for (int i = 0; i < size; i++)
+			{
+			        final String nick = PlayerListener.nicknames.inverse().get(p.getUniqueId());
+			        if (nick != null)
+			        {
+			                nicksb.append(nick);
+			                if (i < size - 1)
+			                {
+			                        nicksb.append("|")
+			                }
+			        }
 			}
-			nicksb.deleteCharAt(nicksb.length() - 1);
 			nicksb.append(")");
 
 			formatters
