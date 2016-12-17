@@ -28,6 +28,7 @@ import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.TBMCChatEvent;
+import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.TBMCPlayer.InfoTarget;
 import buttondevteam.lib.chat.Channel;
@@ -337,6 +338,15 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerTBMCChat(TBMCChatEvent e) {
-		ChatProcessing.ProcessChat(e.getChannel(), e.getSender(), e.getMessage());
+		try {
+			ChatProcessing.ProcessChat(e.getChannel(), e.getSender(), e.getMessage());
+		} catch (Exception ex) {
+			for (Player p : Bukkit.getOnlinePlayers())
+				p.sendMessage("§c!§r["
+						+ e.getChannel().DisplayName + "] <" + (e.getSender() instanceof Player
+								? ((Player) e.getSender()).getDisplayName() : e.getSender().getName())
+						+ "> " + e.getMessage());
+			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex);
+		}
 	}
 }
