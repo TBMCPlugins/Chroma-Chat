@@ -46,7 +46,7 @@ public class ChatProcessing {
 			"dark_purple" }; // TODO
 	private static boolean pingedconsole = false;
 
-	// Returns e.setCancelled
+	// Returns e.setCancelled for custom event
 	public static boolean ProcessChat(Channel channel, CommandSender sender, String message) {
 		long processstart = System.nanoTime();
 		if (PluginMain.essentials == null)
@@ -398,6 +398,6 @@ public class ChatProcessing {
 		DebugCommand.SendDebugMessage(
 				"-- Full ChatProcessing time: " + (System.nanoTime() - processstart) / 1000000f + " ms");
 		DebugCommand.SendDebugMessage("-- ChatFormatter.Combine time: " + combinetime / 1000000f + " ms");
-		return true;
+		return false;
 	}
 }

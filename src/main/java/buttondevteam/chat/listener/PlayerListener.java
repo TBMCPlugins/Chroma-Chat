@@ -63,14 +63,14 @@ public class PlayerListener implements Listener {
 
 	public final static String[] LaughStrings = new String[] { "xd", "lel", "lawl", "kek", "lmao", "hue", "hah" };
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		if (event.isCancelled())
 			return;
 		TBMCChatAPI.SendChatMessage(
 				TBMCPlayer.getPlayer(event.getPlayer()).asPluginPlayer(ChatPlayer.class).CurrentChannel,
 				event.getPlayer(), event.getMessage());
-		event.setCancelled(true);
+		event.setCancelled(true); // The custom event should only be cancelled when muted or similar
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -339,7 +339,7 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerTBMCChat(TBMCChatEvent e) {
 		try {
-			ChatProcessing.ProcessChat(e.getChannel(), e.getSender(), e.getMessage());
+			e.setCancelled(ChatProcessing.ProcessChat(e.getChannel(), e.getSender(), e.getMessage()));
 		} catch (Exception ex) {
 			for (Player p : Bukkit.getOnlinePlayers())
 				p.sendMessage("§c!§r["
@@ -347,6 +347,7 @@ public class PlayerListener implements Listener {
 								? ((Player) e.getSender()).getDisplayName() : e.getSender().getName())
 						+ "> " + e.getMessage());
 			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex);
+			e.setCancelled(true);
 		}
 	}
 }
