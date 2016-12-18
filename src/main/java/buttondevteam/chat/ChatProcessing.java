@@ -2,6 +2,7 @@ package buttondevteam.chat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
@@ -46,6 +47,39 @@ public class ChatProcessing {
 			"dark_purple" }; // TODO
 	private static boolean pingedconsole = false;
 
+	private static ArrayList<ChatFormatter> commonFormatters = new ArrayList<>();
+
+	public static final ChatFormatter ESCAPE_FORMATTER = new ChatFormatterBuilder().setRegex(ESCAPE_PATTERN)
+			.setRemoveCharPos((short) 0).build();
+
+	private ChatProcessing() {
+	}
+
+	static {
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setFormat(Format.Bold)
+				.setRemoveCharCount((short) 2).build());
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setFormat(Format.Italic)
+				.setRemoveCharCount((short) 1).build());
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN).setFormat(Format.Underlined)
+				.setRemoveCharCount((short) 1).build());
+		commonFormatters.add(ESCAPE_FORMATTER);
+		// URLs + Rainbow text
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(URL_PATTERN).setFormat(Format.Underlined)
+				.setOpenlink("$1").build());
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(NULL_MENTION_PATTERN).setColor(Color.DarkRed).build()); // Properly added a bug as a feature
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(CONSOLE_PING_PATTERN).setColor(Color.Aqua)
+				.setOnmatch((String match) -> {
+					if (!pingedconsole) {
+						System.out.print("\007");
+						pingedconsole = true; // Will set it to false in ProcessChat
+					}
+					return match;
+				}).setPriority(Priority.High).build());
+
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(HASHTAG_PATTERN).setColor(Color.Blue)
+				.setOpenlink("https://twitter.com/hashtag/$1").setPriority(Priority.High).build());
+	}
+
 	// Returns e.setCancelled
 	public static boolean ProcessChat(Channel channel, CommandSender sender, String message) {
 		long processstart = System.nanoTime();
@@ -84,7 +118,8 @@ public class ChatProcessing {
 		}
 		Channel currentchannel = channel;
 
-		ArrayList<ChatFormatter> formatters = new ArrayList<ChatFormatter>();
+		@SuppressWarnings("unchecked")
+		ArrayList<ChatFormatter> formatters = (ArrayList<ChatFormatter>) commonFormatters.clone();
 
 		Color colormode = currentchannel.color;
 		if (mp != null && mp.OtherColorMode != null)
@@ -102,17 +137,6 @@ public class ChatProcessing {
 
 		String suggestmsg = formattedmessage;
 
-		formatters.add(new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setFormat(Format.Bold)
-				.setRemoveCharCount((short) 2).build());
-		formatters.add(new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setFormat(Format.Italic)
-				.setRemoveCharCount((short) 1).build());
-		formatters.add(new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN).setFormat(Format.Underlined)
-				.setRemoveCharCount((short) 1).build());
-		formatters.add(new ChatFormatterBuilder().setRegex(ESCAPE_PATTERN).setRemoveCharPos((short) 0).build());
-
-		// URLs + Rainbow text
-		formatters.add(new ChatFormatterBuilder().setRegex(URL_PATTERN).setFormat(Format.Underlined).setOpenlink("$1")
-				.build());
 		if (PluginMain.GetPlayers().size() > 0) {
 			StringBuilder namesb = new StringBuilder();
 			namesb.append("(?i)(");
@@ -129,8 +153,6 @@ public class ChatProcessing {
 			}
 			nicksb.deleteCharAt(nicksb.length() - 1);
 			nicksb.append(")");
-
-			formatters.add(new ChatFormatterBuilder().setRegex(NULL_MENTION_PATTERN).setColor(Color.DarkRed).build()); // Properly added a bug as a feature
 
 			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(namesb.toString())).setColor(Color.Aqua)
 					.setOnmatch((String match) -> {
@@ -172,24 +194,7 @@ public class ChatProcessing {
 					}).setPriority(Priority.High).build());
 		}
 
-		pingedconsole = false;
-		formatters.add(new ChatFormatterBuilder().setRegex(CONSOLE_PING_PATTERN).setColor(Color.Aqua)
-				.setOnmatch((String match) -> {
-					if (!pingedconsole) {
-						System.out.print("\007");
-						pingedconsole = true;
-					}
-					return match;
-				}).setPriority(Priority.High).build());
-
-		formatters.add(new ChatFormatterBuilder().setRegex(HASHTAG_PATTERN).setColor(Color.Blue)
-				.setOpenlink("https://twitter.com/hashtag/$1").setPriority(Priority.High).build());
-
-		/*
-		 * if (!hadurls) { if (formattedmessage.matches("(?i).*" + Pattern.quote("@console") + ".*")) { formattedmessage = formattedmessage.replaceAll( "(?i)" + Pattern.quote("@console"),
-		 * "§b@console§r"); formattedmessage = formattedmessage .replaceAll( "(?i)" + Pattern.quote("@console"), String.format(
-		 * "\",\"color\":\"%s\"},{\"text\":\"§b@console§r\",\"color\":\"blue\"},{\"text\":\"" , colormode)); System.out.println("\007"); } }
-		 */
+		pingedconsole = false; // Will set it to true onmatch (static constructor)
 
 		TellrawPart json = new TellrawPart("");
 		if (mp != null && mp.ChatOnly) {

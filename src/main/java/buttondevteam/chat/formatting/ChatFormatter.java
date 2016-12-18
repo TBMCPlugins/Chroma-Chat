@@ -2,11 +2,14 @@ package buttondevteam.chat.formatting;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.lib.chat.*;
 
@@ -62,8 +65,20 @@ public final class ChatFormatter {
 				return Integer.compare(s1.Start, s2.Start);
 		});
 		List<FormattedSection> combined = new ArrayList<>();
+		Map<ChatFormatter, FormattedSection> nextSection = new HashMap<>();
+		boolean escaped = false;
 		for (int i = 0; i < sections.size(); i++) {
 			// Set ending to -1 until closed with another 1 long "section" - only do this if IsRange is true
+			final FormattedSection section = sections.get(i);
+			if (!section.IsRange) {
+				escaped = section.Formatters.contains(ChatProcessing.ESCAPE_FORMATTER);
+				continue; // TODO: Escape \ and check and fix escape logic
+			}
+			if (nextSection.containsKey(section.Formatters.get(0)) && !escaped) {
+				FormattedSection s = nextSection.remove(section.Formatters.get(0));
+				s.End = section.Start;
+				combined.add(s);
+			}
 		}
 		for (int i = 0; i < sections.size(); i++) {
 			FormattedSection section = sections.get(i);
