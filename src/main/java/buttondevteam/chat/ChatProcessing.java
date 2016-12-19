@@ -2,7 +2,6 @@ package buttondevteam.chat;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
@@ -21,11 +20,7 @@ import com.palmergames.bukkit.towny.object.Town;
 
 import buttondevteam.chat.commands.UnlolCommand;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
-import buttondevteam.chat.formatting.ChatFormatter;
-import buttondevteam.chat.formatting.ChatFormatterBuilder;
-import buttondevteam.chat.formatting.TellrawEvent;
-import buttondevteam.chat.formatting.TellrawPart;
-import buttondevteam.chat.formatting.TellrawSerializer;
+import buttondevteam.chat.formatting.*;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.Channel;
@@ -57,15 +52,15 @@ public class ChatProcessing {
 
 	static {
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setFormat(Format.Bold)
-				.setRemoveCharCount((short) 2).build());
+				.setRemoveCharCount((short) 2).setRange(true).build());
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setFormat(Format.Italic)
-				.setRemoveCharCount((short) 1).build());
+				.setRemoveCharCount((short) 1).setRange(true).build());
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN).setFormat(Format.Underlined)
-				.setRemoveCharCount((short) 1).build());
+				.setRemoveCharCount((short) 1).setRange(true).build());
 		commonFormatters.add(ESCAPE_FORMATTER);
 		// URLs + Rainbow text
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(URL_PATTERN).setFormat(Format.Underlined)
-				.setOpenlink("$1").build());
+				.setOpenlink("$1").setRange(true).build());
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(NULL_MENTION_PATTERN).setColor(Color.DarkRed).build()); // Properly added a bug as a feature
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(CONSOLE_PING_PATTERN).setColor(Color.Aqua)
 				.setOnmatch((String match) -> {
