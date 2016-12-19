@@ -38,7 +38,10 @@ public class ChatPlayer extends TBMCPlayer {
 	}
 
 	public FlairStates getFlairState() {
-		return getEnumData(FlairStates.class);
+		FlairStates data = getEnumData(FlairStates.class);
+		if (data == null)
+			setFlairState(data = FlairStates.NoComment);
+		return data;
 	}
 
 	public void setFlairState(FlairStates state) {
