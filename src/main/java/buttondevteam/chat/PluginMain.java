@@ -141,7 +141,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					if (PlayersWithFlairs.contains(ign))
 						continue;
 					try (ChatPlayer mp = TBMCPlayer.getFromName(ign).asPluginPlayer(ChatPlayer.class)) { // Loads player file
-						if (mp == null)
+						if (mp == null || mp.getUserNames() == null || author == null)
 							continue;
 						/*
 						 * if (!JoinedBefore(mp, 2015, 6, 5)) continue;
