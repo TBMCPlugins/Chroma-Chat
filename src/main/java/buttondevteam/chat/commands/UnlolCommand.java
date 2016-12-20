@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.chat.TBMCCommandBase;
 
 public final class UnlolCommand extends TBMCCommandBase {
@@ -31,9 +30,7 @@ public final class UnlolCommand extends TBMCCommandBase {
 			String msg = (sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName())
 					+ (Lastlolornot ? " unlolled " : " unlaughed ")
 					+ (Lastlol instanceof Player ? ((Player) Lastlol).getDisplayName() : Lastlol.getName());
-			for (Player pl : PluginMain.GetPlayers())
-				pl.sendMessage(msg);
-			Bukkit.getServer().getConsoleSender().sendMessage(msg);
+			Bukkit.broadcastMessage(msg);
 			Lastlol = null;
 		}
 		return true;

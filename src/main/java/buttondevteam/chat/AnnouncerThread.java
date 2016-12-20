@@ -1,6 +1,6 @@
 package buttondevteam.chat;
 
-import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
 
 public class AnnouncerThread {
 	private static int AnnounceMessageIndex = 0;
@@ -13,9 +13,7 @@ public class AnnouncerThread {
 				Thread.currentThread().interrupt();
 			}
 			if (PluginMain.AnnounceMessages.size() > AnnounceMessageIndex) {
-				for (Player player : PluginMain.GetPlayers())
-					player.sendMessage(PluginMain.AnnounceMessages
-							.get(AnnounceMessageIndex));
+				Bukkit.broadcastMessage(PluginMain.AnnounceMessages.get(AnnounceMessageIndex));
 				AnnounceMessageIndex++;
 				if (AnnounceMessageIndex == PluginMain.AnnounceMessages.size())
 					AnnounceMessageIndex = 0;

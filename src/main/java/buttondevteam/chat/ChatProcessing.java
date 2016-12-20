@@ -56,18 +56,12 @@ public class ChatProcessing {
 		if (player != null && PluginMain.essentials.getUser(player).isMuted())
 			return true;
 
+		if (PlayerListener.ActiveF && !PlayerListener.Fs.contains(sender) && message.equalsIgnoreCase("F"))
+			PlayerListener.Fs.add(sender);
+
 		ChatPlayer mp = null;
-		if (player != null) {
+		if (player != null)
 			mp = TBMCPlayer.getPlayer(player).asPluginPlayer(ChatPlayer.class);
-			if (message.equalsIgnoreCase("F")) {
-				if (!mp.PressedF && PlayerListener.ActiveF) {
-					PlayerListener.FCount++;
-					mp.PressedF = true;
-					if (PlayerListener.FPlayer != null && PlayerListener.FPlayer.getFCount() < Integer.MAX_VALUE - 1)
-						PlayerListener.FPlayer.setFCount(PlayerListener.FPlayer.getFCount() + 1);
-				}
-			}
-		}
 
 		String msg = message.toLowerCase();
 		if (msg.contains("lol")) {
@@ -113,34 +107,30 @@ public class ChatProcessing {
 		// URLs + Rainbow text
 		formatters.add(new ChatFormatterBuilder().setRegex(URL_PATTERN).setFormat(Format.Underlined).setOpenlink("$1")
 				.build());
-		if (PluginMain.GetPlayers().size() > 0) {
+		if (Bukkit.getOnlinePlayers().size() > 0) {
 			StringBuilder namesb = new StringBuilder();
 			namesb.append("(?i)(");
-			for (Player p : PluginMain.GetPlayers())
+			for (Player p : Bukkit.getOnlinePlayers())
 				namesb.append(p.getName()).append("|");
 			namesb.deleteCharAt(namesb.length() - 1);
 			namesb.append(")");
 			StringBuilder nicksb = new StringBuilder();
 			nicksb.append("(?i)(");
 			{
-				final int size = PluginMain.GetPlayers().size();
+				final int size = Bukkit.getOnlinePlayers().size();
 				int index = 0;
-				for (Player p : PluginMain.GetPlayers())
-				{
+				for (Player p : Bukkit.getOnlinePlayers()) {
 					final String nick = PlayerListener.nicknames.inverse().get(p.getUniqueId());
-			        if (nick != null)
-			        {
-		                nicksb.append(nick);
-		                if (index < size - 1)
-		                {
-		                        nicksb.append("|");
-		                }
-			        }
-			        index++;
+					if (nick != null) {
+						nicksb.append(nick);
+						if (index < size - 1) {
+							nicksb.append("|");
+						}
+					}
+					index++;
 				}
 				nicksb.append(")");
 			}
-			
 
 			formatters
 					.add(new ChatFormatterBuilder().setRegex(Pattern.compile("null")).setColor(Color.DarkRed).build()); // Properly added a bug as a feature
@@ -273,7 +263,7 @@ public class ChatProcessing {
 				sender.sendMessage("§cYou are not a player!");
 				return true;
 			}
-			for (Player p : PluginMain.GetPlayers()) {
+			for (Player p : Bukkit.getOnlinePlayers()) {
 				try {
 					Resident resident = PluginMain.Instance.TU.getResidentMap().get(p.getName().toLowerCase());
 					if (resident != null && !resident.getName().equals(player.getName())
@@ -304,7 +294,7 @@ public class ChatProcessing {
 					index = PluginMain.Instance.Towns.size() - 1;
 				}
 				Objective obj = PluginMain.SB.getObjective("town");
-				for (Player p : PluginMain.GetPlayers()) {
+				for (Player p : Bukkit.getOnlinePlayers()) {
 					try {
 						if (town.getResidents().stream().anyMatch(r -> r.getName().equalsIgnoreCase(p.getName())))
 							obj.getScore(p.getName()).setScore(index);
@@ -344,7 +334,7 @@ public class ChatProcessing {
 					index = PluginMain.Instance.Nations.size() - 1;
 				}
 				Objective obj = PluginMain.SB.getObjective("nation");
-				for (Player p : PluginMain.GetPlayers()) {
+				for (Player p : Bukkit.getOnlinePlayers()) {
 					try {
 						if (nation.getResidents().stream().anyMatch(r -> r.getName().equalsIgnoreCase(p.getName())))
 							obj.getScore(p.getName()).setScore(index);
@@ -361,7 +351,7 @@ public class ChatProcessing {
 					return true;
 				}
 				Objective obj = PluginMain.SB.getObjective("admin");
-				for (Player p : PluginMain.GetPlayers()) {
+				for (Player p : Bukkit.getOnlinePlayers()) {
 					if (p.isOp())
 						obj.getScore(p.getName()).setScore(1);
 					else
@@ -375,7 +365,7 @@ public class ChatProcessing {
 					return true;
 				}
 				Objective obj = PluginMain.SB.getObjective("mod");
-				for (Player p : PluginMain.GetPlayers()) {
+				for (Player p : Bukkit.getOnlinePlayers()) {
 					if (PluginMain.permission.playerInGroup(p, "mod"))
 						obj.getScore(p.getName()).setScore(1);
 					else

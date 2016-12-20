@@ -73,7 +73,6 @@ public class ChatPlayer extends TBMCPlayer {
 	}
 
 	public boolean RPMode = true;
-	public boolean PressedF;
 	public Location SavedLocation;
 	public boolean Working;
 	// public int Tables = 10;
