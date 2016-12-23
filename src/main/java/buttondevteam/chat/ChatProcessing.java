@@ -199,9 +199,10 @@ public class ChatProcessing {
 			json.addExtra(new TellrawPart("[C]").setHoverEvent(
 					TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT, "Chat only")));
 		}
+		final String channelidentifier = ("[" + (sender instanceof IDiscordSender ? "d|" : "") + currentchannel.DisplayName)
+				+ "]" + (mp != null && !mp.RPMode ? "[OOC]" : "");
 		json.addExtra(
-				new TellrawPart(("[" + (sender instanceof IDiscordSender ? "d|" : "") + currentchannel.DisplayName)
-						+ "]" + (mp != null && !mp.RPMode ? "[OOC]" : "")).setHoverEvent(
+				new TellrawPart(channelidentifier).setHoverEvent(
 								TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
 										new TellrawPart((sender instanceof IDiscordSender ? "From Discord\n" : "")
 												+ "Copy message").setColor(Color.Blue)))
@@ -382,9 +383,8 @@ public class ChatProcessing {
 			return true;
 		}
 		PluginMain.Instance.getServer().getConsoleSender()
-				.sendMessage(String.format("[%s] <%s%s> %s", currentchannel.DisplayName,
-						(player != null ? player.getDisplayName() : sender.getName()),
-						(mp != null ? mp.GetFormattedFlair() : ""), message));
+				.sendMessage(String.format("[%s] <%s> %s", channelidentifier,
+						(player != null ? player.getDisplayName() : sender.getName()), message));
 		DebugCommand.SendDebugMessage(
 				"-- Full ChatProcessing time: " + (System.nanoTime() - processstart) / 1000000f + " ms");
 		DebugCommand.SendDebugMessage("-- ChatFormatter.Combine time: " + combinetime / 1000000f + " ms");
