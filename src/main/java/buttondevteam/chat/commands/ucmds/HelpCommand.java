@@ -35,10 +35,15 @@ public final class HelpCommand extends UCommandBase {
 			ArrayList<String> text = new ArrayList<String>();
 			text.add("§6---- Command list ----");
 			for (TBMCCommandBase cmd : TBMCChatAPI.GetCommands().values())
-				if (!cmd.GetCommandPath().contains(" "))
-					if (!cmd.GetModOnly() || PluginMain.permission.has(sender, "tbmc.admin"))
-						if (!cmd.GetPlayerOnly() || sender instanceof Player)
+				if (!cmd.GetModOnly() || PluginMain.permission.has(sender, "tbmc.admin"))
+					if (!cmd.GetPlayerOnly() || sender instanceof Player)
+						if (!cmd.GetCommandPath().contains(" "))
 							text.add("/" + cmd.GetCommandPath());
+						else {
+							final String topcmd = cmd.GetCommandPath().substring(0, cmd.GetCommandPath().indexOf(' '));
+							if (!text.contains("/" + topcmd))
+								text.add("/" + topcmd);
+						}
 			sender.sendMessage(text.toArray(new String[text.size()]));
 		} else if (args[0].equalsIgnoreCase("colors")) {
 			sender.sendMessage(new String[] { "§6---- Chat colors/formats ----", //
@@ -65,8 +70,9 @@ public final class HelpCommand extends UCommandBase {
 				if (subcmds.length > 0)
 					sender.sendMessage(subcmds);
 				else
-					sender.sendMessage(new String[] { "§cError: Command not found or you don't have permission for it: " + path,
-							"Usage example: /u accept --> /u help u accept" });
+					sender.sendMessage(
+							new String[] { "§cError: Command not found or you don't have permission for it: " + path,
+									"Usage example: /u accept --> /u help u accept" });
 			} else
 				sender.sendMessage(cmd.GetHelpText(args[0]));
 		}
