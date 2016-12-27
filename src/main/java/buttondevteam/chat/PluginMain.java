@@ -37,7 +37,6 @@ import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -251,10 +250,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 						"§9Multiple Reddit users commented your name. You can select with /u accept.§r §6Type /u accept or /u ignore§r");
 			else
 				p.sendMessage("§9A Reddit user commented your name. Is that you?§r §6Type /u accept or /u ignore§r");
-	}
-
-	public static Collection<? extends Player> GetPlayers() {
-		return Instance.getServer().getOnlinePlayers();
 	}
 
 	public static ArrayList<String> AnnounceMessages = new ArrayList<>();

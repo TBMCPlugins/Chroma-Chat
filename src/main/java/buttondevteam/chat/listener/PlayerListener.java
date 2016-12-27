@@ -1,5 +1,6 @@
 package buttondevteam.chat.listener;
 
+import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Timer;
@@ -10,6 +11,7 @@ import com.palmergames.bukkit.towny.Towny;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -28,6 +30,7 @@ import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.TBMCChatEvent;
+import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.TBMCPlayer.InfoTarget;
 import buttondevteam.lib.chat.Channel;
@@ -62,14 +65,14 @@ public class PlayerListener implements Listener {
 
 	public final static String[] LaughStrings = new String[] { "xd", "lel", "lawl", "kek", "lmao", "hue", "hah" };
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		if (event.isCancelled())
 			return;
 		TBMCChatAPI.SendChatMessage(
 				TBMCPlayer.getPlayer(event.getPlayer()).asPluginPlayer(ChatPlayer.class).CurrentChannel,
 				event.getPlayer(), event.getMessage());
-		event.setCancelled(true);
+		event.setCancelled(true); // The custom event should only be cancelled when muted or similar
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -110,8 +113,7 @@ public class PlayerListener implements Listener {
 					if (!PluginMain.essentials.getUser(event.getPlayer()).isMuted()) {
 						event.setCancelled(true);
 						String message = event.getMessage().substring(index + 1);
-						for (Player p : PluginMain.GetPlayers())
-							p.sendMessage(String.format("* %s %s", event.getPlayer().getDisplayName(), message));
+						Bukkit.broadcastMessage(String.format("* %s %s", event.getPlayer().getDisplayName(), message));
 					}
 				}
 			}
@@ -166,10 +168,7 @@ public class PlayerListener implements Listener {
 				}
 				if (target != null) {
 					target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 5, false, false));
-					for (Player pl : PluginMain.GetPlayers())
-						pl.sendMessage(
-								event.getPlayer().getDisplayName() + " un" + s + "'d " + target.getDisplayName());
-					Bukkit.getServer().getConsoleSender().sendMessage(
+					Bukkit.broadcastMessage(
 							event.getPlayer().getDisplayName() + " un" + s + "'d " + target.getDisplayName());
 					event.setCancelled(true);
 				}
@@ -197,10 +196,10 @@ public class PlayerListener implements Listener {
 	}
 
 	public static boolean ActiveF = false;
-	public static int FCount = 0;
 	public static ChatPlayer FPlayer = null;
 	private Timer Ftimer;
 	public static int AlphaDeaths;
+	public static ArrayList<CommandSender> Fs = new ArrayList<>();
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
@@ -211,24 +210,21 @@ public class PlayerListener implements Listener {
 			if (Ftimer != null)
 				Ftimer.cancel();
 			ActiveF = true;
-			FCount = 0;
+			Fs.clear();
 			FPlayer = TBMCPlayer.getPlayer(e.getEntity().getUniqueId()).asPluginPlayer(ChatPlayer.class);
 			FPlayer.setFDeaths(FPlayer.getFDeaths() + 1);
-			for (Player p : PluginMain.GetPlayers()) {
-				ChatPlayer mp = TBMCPlayer.getPlayerAs(p.getUniqueId(), ChatPlayer.class);
-				mp.PressedF = false;
-				p.sendMessage("§bPress F to pay respects.§r");
-			}
+			Bukkit.broadcastMessage("§bPress F to pay respects.§r");
 			Ftimer = new Timer();
 			TimerTask tt = new TimerTask() {
 				@Override
 				public void run() {
 					if (ActiveF) {
 						ActiveF = false;
-						for (Player p : PluginMain.GetPlayers()) {
-							p.sendMessage("§b" + FCount + " " + (FCount == 1 ? "person" : "people")
-									+ " paid their respects.§r");
-						}
+						if (FPlayer != null && FPlayer.getFCount() < Integer.MAX_VALUE - 1)
+							FPlayer.setFCount(FPlayer.getFCount() + Fs.size());
+						Bukkit.broadcastMessage("§b" + Fs.size() + " " + (Fs.size() == 1 ? "person" : "people")
+								+ " paid their respects.§r");
+						Fs.clear();
 					}
 				}
 			};
@@ -314,10 +310,7 @@ public class PlayerListener implements Listener {
 			}
 			if (target != null) {
 				target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 5, false, false));
-				for (Player pl : PluginMain.GetPlayers())
-					pl.sendMessage(event.getSender().getName() + " un" + s + "'d " + target.getDisplayName());
-				Bukkit.getServer().getConsoleSender()
-						.sendMessage(event.getSender().getName() + " un" + s + "'d " + target.getDisplayName());
+				Bukkit.broadcastMessage(event.getSender().getName() + " un" + s + "'d " + target.getDisplayName());
 				event.setCommand("dontrunthiscmd");
 			}
 		}
@@ -337,6 +330,16 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerTBMCChat(TBMCChatEvent e) {
-		ChatProcessing.ProcessChat(e.getChannel(), e.getSender(), e.getMessage());
+		try {
+			e.setCancelled(ChatProcessing.ProcessChat(e.getChannel(), e.getSender(), e.getMessage()));
+		} catch (Exception ex) {
+			for (Player p : Bukkit.getOnlinePlayers())
+				p.sendMessage("§c!§r["
+						+ e.getChannel().DisplayName + "] <" + (e.getSender() instanceof Player
+								? ((Player) e.getSender()).getDisplayName() : e.getSender().getName())
+						+ "> " + e.getMessage());
+			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex);
+			e.setCancelled(true);
+		}
 	}
 }

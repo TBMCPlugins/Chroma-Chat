@@ -38,7 +38,10 @@ public class ChatPlayer extends TBMCPlayer {
 	}
 
 	public FlairStates getFlairState() {
-		return getEnumData(FlairStates.class);
+		FlairStates data = getEnumData(FlairStates.class);
+		if (data == null)
+			setFlairState(data = FlairStates.NoComment);
+		return data;
 	}
 
 	public void setFlairState(FlairStates state) {
@@ -70,7 +73,6 @@ public class ChatPlayer extends TBMCPlayer {
 	}
 
 	public boolean RPMode = true;
-	public boolean PressedF;
 	public Location SavedLocation;
 	public boolean Working;
 	// public int Tables = 10;
