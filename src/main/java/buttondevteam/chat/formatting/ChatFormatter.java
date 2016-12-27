@@ -64,7 +64,7 @@ public final class ChatFormatter {
 			else
 				return Integer.compare(s1.Start, s2.Start);
 		});
-		List<FormattedSection> combined = new ArrayList<>();
+		ArrayList<FormattedSection> combined = new ArrayList<>();
 		Map<ChatFormatter, FormattedSection> nextSection = new HashMap<>();
 		boolean escaped = false;
 		for (int i = 0; i < sections.size(); i++) {
@@ -72,14 +72,20 @@ public final class ChatFormatter {
 			final FormattedSection section = sections.get(i);
 			if (!section.IsRange) {
 				escaped = section.Formatters.contains(ChatProcessing.ESCAPE_FORMATTER);
+				combined.add(section);
 				continue; // TODO: Escape \ and check and fix escape logic
-			}
+			} // TODO: Actually combine overlapping sections
 			if (nextSection.containsKey(section.Formatters.get(0)) && !escaped) {
 				FormattedSection s = nextSection.remove(section.Formatters.get(0));
+				DebugCommand.SendDebugMessage("Finishing section: " + s);
 				s.End = section.Start;
 				combined.add(s);
+			} else {
+				DebugCommand.SendDebugMessage("Adding next section: " + section);
+				nextSection.put(section.Formatters.get(0), section);
 			}
 		}
+		sections = combined;
 		for (int i = 0; i < sections.size(); i++) {
 			FormattedSection section = sections.get(i);
 			DebugCommand.SendDebugMessage("Applying section: " + section);
