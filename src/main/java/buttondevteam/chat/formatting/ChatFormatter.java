@@ -71,15 +71,18 @@ public final class ChatFormatter {
 			// Set ending to -1 until closed with another 1 long "section" - only do this if IsRange is true
 			final FormattedSection section = sections.get(i);
 			if (!section.IsRange) {
-				escaped = section.Formatters.contains(ChatProcessing.ESCAPE_FORMATTER);
+				escaped = section.Formatters.contains(ChatProcessing.ESCAPE_FORMATTER) && !escaped; // Enable escaping on first \, disable on second
 				combined.add(section);
-				continue; // TODO: Escape \ and check and fix escape logic
+				continue;
 			} // TODO: Actually combine overlapping sections
-			if (nextSection.containsKey(section.Formatters.get(0)) && !escaped) {
-				FormattedSection s = nextSection.remove(section.Formatters.get(0));
-				DebugCommand.SendDebugMessage("Finishing section: " + s);
-				s.End = section.Start;
-				combined.add(s);
+			if (nextSection.containsKey(section.Formatters.get(0))) {
+				if (!escaped) {
+					FormattedSection s = nextSection.remove(section.Formatters.get(0));
+					s.End = section.Start;
+					combined.add(s);
+					DebugCommand.SendDebugMessage("Finished section: " + s);
+				} else
+					escaped = false; // Reset escaping if applied, like if we're at the '*' in '\*'
 			} else {
 				DebugCommand.SendDebugMessage("Adding next section: " + section);
 				nextSection.put(section.Formatters.get(0), section);
