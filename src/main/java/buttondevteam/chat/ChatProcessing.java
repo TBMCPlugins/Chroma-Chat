@@ -30,6 +30,7 @@ import buttondevteam.lib.chat.*;
 
 public class ChatProcessing {
 	private static final Pattern NULL_MENTION_PATTERN = Pattern.compile("null");
+	private static final Pattern CYAN_PATTERN = Pattern.compile("cyan");
 	private static final Pattern ESCAPE_PATTERN = Pattern.compile("\\\\");
 	private static final Pattern CONSOLE_PING_PATTERN = Pattern.compile("(?i)" + Pattern.quote("@console"));
 	private static final Pattern HASHTAG_PATTERN = Pattern.compile("#(\\w+)");
@@ -72,6 +73,7 @@ public class ChatProcessing {
 
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(HASHTAG_PATTERN).setColor(Color.Blue)
 				.setOpenlink("https://twitter.com/hashtag/$1").setPriority(Priority.High).build());
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(CYAN_PATTERN).setColor(Color.Aqua).build()); // #55
 	}
 
 	// Returns e.setCancelled for custom event
