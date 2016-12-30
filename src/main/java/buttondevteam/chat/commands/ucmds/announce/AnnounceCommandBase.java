@@ -17,4 +17,9 @@ public abstract class AnnounceCommandBase extends UCommandBase {
 	public boolean GetPlayerOnly() {
 		return false;
 	}
+
+	@Override
+	public boolean GetModOnly() {
+		return true;
+	}
 }
