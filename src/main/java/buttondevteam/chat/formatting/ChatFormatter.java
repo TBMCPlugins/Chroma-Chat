@@ -2,11 +2,14 @@ package buttondevteam.chat.formatting;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.lib.chat.*;
 
@@ -19,9 +22,10 @@ public final class ChatFormatter {
 	private Priority priority;
 	private short removecharcount = 0;
 	private short removecharpos = -1;
+	private boolean isrange;
 
 	public ChatFormatter(Pattern regex, Format format, Color color, Function<String, String> onmatch, String openlink,
-			Priority priority, short removecharcount, short removecharpos) {
+			Priority priority, short removecharcount, short removecharpos, boolean isrange) {
 		this.regex = regex;
 		this.format = format;
 		this.color = color;
@@ -30,6 +34,7 @@ public final class ChatFormatter {
 		this.priority = Priority.High;
 		this.removecharcount = removecharcount;
 		this.removecharpos = removecharpos;
+		this.isrange = isrange;
 	}
 
 	public static void Combine(List<ChatFormatter> formatters, String str, TellrawPart tp) {
@@ -48,7 +53,8 @@ public final class ChatFormatter {
 				if (groups.size() > 0)
 					DebugCommand.SendDebugMessage("First group: " + groups.get(0));
 				FormattedSection section = new FormattedSection(formatter, matcher.start(), matcher.end() - 1, groups,
-						formatter.removecharcount, formatter.removecharcount, formatter.removecharpos);
+						formatter.removecharcount, formatter.removecharcount, formatter.removecharpos,
+						formatter.isrange);
 				sections.add(section);
 			}
 		}
@@ -58,6 +64,37 @@ public final class ChatFormatter {
 			else
 				return Integer.compare(s1.Start, s2.Start);
 		});
+		ArrayList<FormattedSection> combined = new ArrayList<>();
+		Map<ChatFormatter, FormattedSection> nextSection = new HashMap<>();
+		boolean escaped = false;
+		for (int i = 0; i < sections.size(); i++) {
+			// Set ending to -1 until closed with another 1 long "section" - only do this if IsRange is true
+			final FormattedSection section = sections.get(i);
+			if (!section.IsRange) {
+				escaped = section.Formatters.contains(ChatProcessing.ESCAPE_FORMATTER) && !escaped; // Enable escaping on first \, disable on second
+				if (escaped) // Don't add the escape character
+					section.RemCharFromStart = 1;
+				combined.add(section);
+				DebugCommand.SendDebugMessage("Added " + (!escaped ? "not " : "") + "escaped section: " + section);
+				continue;
+			}
+			if (!escaped) {
+				if (nextSection.containsKey(section.Formatters.get(0))) {
+					FormattedSection s = nextSection.remove(section.Formatters.get(0));
+					s.End = section.Start;
+					s.IsRange = false; // IsRange means it's a 1 long section indicating a start or an end
+					combined.add(s);
+					DebugCommand.SendDebugMessage("Finished section: " + s);
+				} else {
+					DebugCommand.SendDebugMessage("Adding next section: " + section);
+					nextSection.put(section.Formatters.get(0), section);
+				}
+			} else {
+				DebugCommand.SendDebugMessage("Skipping section: " + section);
+				escaped = false; // Reset escaping if applied, like if we're at the '*' in '\*'
+			}
+		}
+		sections = combined;
 		boolean cont = true;
 		boolean found = false;
 		for (int i = 1; cont;) {
@@ -90,7 +127,7 @@ public final class ChatFormatter {
 				}
 				FormattedSection section = new FormattedSection(firstSection.Formatters, sections.get(i).Start, origend,
 						firstSection.Matches, sections.get(i).RemCharFromStart, firstSection.RemCharFromEnd,
-						Collections.emptyList());
+						Collections.emptyList(), false);
 				section.Formatters.addAll(sections.get(i).Formatters);
 				section.Matches.addAll(sections.get(i).Matches); // TODO: Clean
 				sections.add(i, section);
@@ -169,7 +206,7 @@ public final class ChatFormatter {
 				if (formatter.color != null)
 					color = formatter.color;
 				if (formatter.format != null)
-					format = formatter.format.getFlag(); //TODO: Fix
+					format = formatter.format.getFlag(); // TODO: Fix
 				if (formatter.openlink != null)
 					openlink = formatter.openlink;
 			}
@@ -192,6 +229,6 @@ public final class ChatFormatter {
 	@Override
 	public String toString() {
 		return new StringBuilder("F(").append(color).append(", ").append(format).append(", ").append(openlink)
-				.append(", ").append(priority).append(")").toString();
+				.append(", ").append(priority).append(", ").append(regex).append(")").toString();
 	}
 }

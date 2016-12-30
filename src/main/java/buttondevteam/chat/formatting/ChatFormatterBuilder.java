@@ -14,9 +14,11 @@ public class ChatFormatterBuilder {
 	private Priority priority;
 	private short removecharcount = 0;
 	private short removecharpos = -1;
+	private boolean range = false;
 
 	public ChatFormatter build() {
-		return new ChatFormatter(regex, format, color, onmatch, openlink, priority, removecharcount, removecharpos);
+		return new ChatFormatter(regex, format, color, onmatch, openlink, priority, removecharcount, removecharpos,
+				range);
 	}
 
 	public Pattern getRegex() {
@@ -98,6 +100,15 @@ public class ChatFormatterBuilder {
 	 */
 	public ChatFormatterBuilder setRemoveCharPos(short removecharpos) {
 		this.removecharpos = removecharpos;
+		return this;
+	}
+
+	public boolean isRange() {
+		return range;
+	}
+
+	public ChatFormatterBuilder setRange(boolean range) {
+		this.range = range;
 		return this;
 	}
 }
