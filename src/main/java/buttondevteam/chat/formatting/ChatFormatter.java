@@ -72,8 +72,10 @@ public final class ChatFormatter {
 			final FormattedSection section = sections.get(i);
 			if (!section.IsRange) {
 				escaped = section.Formatters.contains(ChatProcessing.ESCAPE_FORMATTER) && !escaped; // Enable escaping on first \, disable on second
-				if (!escaped) // Don't add the escape character
-					combined.add(section);
+				if (escaped) // Don't add the escape character
+					section.RemCharFromStart = 1;
+				combined.add(section);
+				DebugCommand.SendDebugMessage("Added " + (!escaped ? "not " : "") + "escaped section: " + section);
 				continue;
 			} // TODO: Actually combine overlapping sections
 			if (!escaped) {
@@ -87,8 +89,10 @@ public final class ChatFormatter {
 					DebugCommand.SendDebugMessage("Adding next section: " + section);
 					nextSection.put(section.Formatters.get(0), section);
 				}
-			} else
+			} else {
+				DebugCommand.SendDebugMessage("Skipping section: " + section);
 				escaped = false; // Reset escaping if applied, like if we're at the '*' in '\*'
+			}
 		}
 		sections = combined;
 		boolean cont = true;
@@ -225,6 +229,6 @@ public final class ChatFormatter {
 	@Override
 	public String toString() {
 		return new StringBuilder("F(").append(color).append(", ").append(format).append(", ").append(openlink)
-				.append(", ").append(priority).append(")").toString();
+				.append(", ").append(priority).append(", ").append(regex).append(")").toString();
 	}
 }
