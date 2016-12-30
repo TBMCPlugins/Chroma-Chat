@@ -72,23 +72,114 @@ public final class ChatFormatter {
 			final FormattedSection section = sections.get(i);
 			if (!section.IsRange) {
 				escaped = section.Formatters.contains(ChatProcessing.ESCAPE_FORMATTER) && !escaped; // Enable escaping on first \, disable on second
-				combined.add(section);
+				if (!escaped) // Don't add the escape character
+					combined.add(section);
 				continue;
 			} // TODO: Actually combine overlapping sections
-			if (nextSection.containsKey(section.Formatters.get(0))) {
-				if (!escaped) {
+			if (!escaped) {
+				if (nextSection.containsKey(section.Formatters.get(0))) {
 					FormattedSection s = nextSection.remove(section.Formatters.get(0));
 					s.End = section.Start;
+					s.IsRange = false; // IsRange means it's a 1 long section indicating a start or an end
 					combined.add(s);
 					DebugCommand.SendDebugMessage("Finished section: " + s);
-				} else
-					escaped = false; // Reset escaping if applied, like if we're at the '*' in '\*'
-			} else {
-				DebugCommand.SendDebugMessage("Adding next section: " + section);
-				nextSection.put(section.Formatters.get(0), section);
-			}
+				} else {
+					DebugCommand.SendDebugMessage("Adding next section: " + section);
+					nextSection.put(section.Formatters.get(0), section);
+				}
+			} else
+				escaped = false; // Reset escaping if applied, like if we're at the '*' in '\*'
 		}
 		sections = combined;
+		boolean cont = true;
+		boolean found = false;
+		for (int i = 1; cont;) {
+			int nextindex = i + 1;
+			if (sections.size() < 2)
+				break;
+			DebugCommand.SendDebugMessage("i: " + i);
+			FormattedSection firstSection = sections.get(i - 1);
+			DebugCommand.SendDebugMessage("Combining sections " + firstSection + " and " + sections.get(i));
+			if (firstSection.Start == sections.get(i).Start && firstSection.End == sections.get(i).End) {
+				firstSection.Formatters.addAll(sections.get(i).Formatters);
+				firstSection.Matches.addAll(sections.get(i).Matches);
+				if (firstSection.RemCharFromStart < sections.get(i).RemCharFromStart)
+					firstSection.RemCharFromStart = sections.get(i).RemCharFromStart;
+				if (firstSection.RemCharFromEnd < sections.get(i).RemCharFromEnd)
+					firstSection.RemCharFromEnd = sections.get(i).RemCharFromEnd;
+				firstSection.RemCharPos.addAll(sections.get(i).RemCharPos);
+				DebugCommand.SendDebugMessage("To section " + firstSection);
+				sections.remove(i);
+				found = true;
+			} else if (firstSection.End > sections.get(i).Start && firstSection.Start < sections.get(i).End) {
+				int origend = firstSection.End;
+				firstSection.End = sections.get(i).Start - 1;
+				int origend2 = sections.get(i).End;
+				boolean switchends;
+				if (switchends = origend2 < origend) {
+					int tmp = origend;
+					origend = origend2;
+					origend2 = tmp;
+				}
+				FormattedSection section = new FormattedSection(firstSection.Formatters, sections.get(i).Start, origend,
+						firstSection.Matches, sections.get(i).RemCharFromStart, firstSection.RemCharFromEnd,
+						Collections.emptyList(), false);
+				section.Formatters.addAll(sections.get(i).Formatters);
+				section.Matches.addAll(sections.get(i).Matches); // TODO: Clean
+				sections.add(i, section);
+				nextindex++;
+				FormattedSection thirdFormattedSection = sections.get(i + 1);
+				if (switchends) { // Use the properties of the first section not the second one
+					thirdFormattedSection.Formatters.clear();
+					thirdFormattedSection.Formatters.addAll(firstSection.Formatters);
+					thirdFormattedSection.Matches.clear();
+					thirdFormattedSection.Matches.addAll(firstSection.Matches);
+					short remchar = section.RemCharFromEnd;
+					section.RemCharFromEnd = thirdFormattedSection.RemCharFromEnd;
+					thirdFormattedSection.RemCharFromEnd = remchar;
+				}
+				firstSection.RemCharFromEnd = 0;
+				thirdFormattedSection.RemCharFromStart = 0;
+				thirdFormattedSection.Start = origend + 1;
+				thirdFormattedSection.End = origend2;
+				for (int x = 0; x < firstSection.RemCharPos.size(); x++) {
+					if (firstSection.RemCharPos.get(x) > firstSection.End) {
+						if (firstSection.RemCharPos.get(x) > section.End)
+							thirdFormattedSection.RemCharPos.add(
+									firstSection.RemCharPos.get(x) - thirdFormattedSection.Start + firstSection.Start);
+						else
+							section.RemCharPos.add(firstSection.RemCharPos.get(x) - section.Start + firstSection.Start);
+						firstSection.RemCharPos.remove(x--);
+					}
+				}
+				DebugCommand.SendDebugMessage("To sections 1:" + firstSection + "");
+				DebugCommand.SendDebugMessage("  2:" + section + "");
+				DebugCommand.SendDebugMessage("  3:" + thirdFormattedSection);
+				found = true;
+			}
+			for (int j = i - 1; j <= i + 1; j++) {
+				if (j < sections.size() && sections.get(j).End < sections.get(j).Start) {
+					DebugCommand.SendDebugMessage("Removing section: " + sections.get(j));
+					sections.remove(j);
+					found = true;
+				}
+			}
+			i = nextindex - 1;
+			i++;
+			if (i >= sections.size()) {
+				if (found) {
+					i = 1;
+					found = false;
+					sections.sort((s1, s2) -> {
+						if (s1.Start == s2.Start)
+							return Integer.compare(s1.End, s2.End);
+						else
+							return Integer.compare(s1.Start, s2.Start);
+					});
+				} else
+					cont = false;
+			}
+		}
 		for (int i = 0; i < sections.size(); i++) {
 			FormattedSection section = sections.get(i);
 			DebugCommand.SendDebugMessage("Applying section: " + section);
