@@ -77,7 +77,7 @@ public final class ChatFormatter {
 				combined.add(section);
 				DebugCommand.SendDebugMessage("Added " + (!escaped ? "not " : "") + "escaped section: " + section);
 				continue;
-			} // TODO: Actually combine overlapping sections
+			}
 			if (!escaped) {
 				if (nextSection.containsKey(section.Formatters.get(0))) {
 					FormattedSection s = nextSection.remove(section.Formatters.get(0));

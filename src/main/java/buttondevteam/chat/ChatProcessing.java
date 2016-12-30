@@ -44,8 +44,7 @@ public class ChatProcessing {
 
 	private static ArrayList<ChatFormatter> commonFormatters = new ArrayList<>();
 
-	public static final ChatFormatter ESCAPE_FORMATTER = new ChatFormatterBuilder().setRegex(ESCAPE_PATTERN)
-			.setRemoveCharPos((short) 0).build();
+	public static final ChatFormatter ESCAPE_FORMATTER = new ChatFormatterBuilder().setRegex(ESCAPE_PATTERN).build();
 
 	private ChatProcessing() {
 	}
