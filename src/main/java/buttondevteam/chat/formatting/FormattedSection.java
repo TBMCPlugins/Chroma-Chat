@@ -11,9 +11,10 @@ class FormattedSection {
 	short RemCharFromStart;
 	short RemCharFromEnd;
 	ArrayList<Integer> RemCharPos = new ArrayList<Integer>();
+	boolean IsRange;
 
 	FormattedSection(ChatFormatter formatter, int start, int end, ArrayList<String> matches, short remcharfromstart,
-			short remcharfromend, int remcharpos) {
+			short remcharfromend, int remcharpos, boolean isrange) {
 		Start = start;
 		End = end;
 		Formatters.add(formatter);
@@ -21,10 +22,11 @@ class FormattedSection {
 		RemCharFromStart = remcharfromstart;
 		RemCharFromEnd = remcharfromend;
 		RemCharPos.add(remcharpos);
+		IsRange = isrange;
 	}
 
 	FormattedSection(Collection<ChatFormatter> formatters, int start, int end, ArrayList<String> matches,
-			short remcharfromstart, short remcharfromend, Collection<Integer> remcharpos) {
+			short remcharfromstart, short remcharfromend, Collection<Integer> remcharpos, boolean isrange) {
 		Start = start;
 		End = end;
 		Formatters.addAll(formatters);
@@ -32,6 +34,7 @@ class FormattedSection {
 		RemCharFromStart = remcharfromstart;
 		RemCharFromEnd = remcharfromend;
 		RemCharPos.addAll(remcharpos);
+		IsRange = isrange;
 	}
 
 	@Override
@@ -39,6 +42,6 @@ class FormattedSection {
 		return new StringBuilder("Section(").append(Start).append(", ").append(End).append(", formatters: ")
 				.append(Formatters.toString()).append(", matches: ").append(Matches.toString()).append(", RemChars: ")
 				.append(RemCharFromStart).append(", ").append(RemCharFromEnd).append(", ").append(RemCharPos)
-				.append(")").toString();
+				.append(", ").append(IsRange).append(")").toString();
 	}
 }

@@ -20,11 +20,7 @@ import com.palmergames.bukkit.towny.object.Town;
 
 import buttondevteam.chat.commands.UnlolCommand;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
-import buttondevteam.chat.formatting.ChatFormatter;
-import buttondevteam.chat.formatting.ChatFormatterBuilder;
-import buttondevteam.chat.formatting.TellrawEvent;
-import buttondevteam.chat.formatting.TellrawPart;
-import buttondevteam.chat.formatting.TellrawSerializer;
+import buttondevteam.chat.formatting.*;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.Channel;
@@ -33,18 +29,50 @@ import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.lib.chat.*;
 
 public class ChatProcessing {
-	private static final Pattern ESCAPE_PATTERN = Pattern.compile("\\\\([\\*\\_\\\\])");
+	private static final Pattern NULL_MENTION_PATTERN = Pattern.compile("null");
+	private static final Pattern ESCAPE_PATTERN = Pattern.compile("\\\\");
 	private static final Pattern CONSOLE_PING_PATTERN = Pattern.compile("(?i)" + Pattern.quote("@console"));
 	private static final Pattern HASHTAG_PATTERN = Pattern.compile("#(\\w+)");
 	private static final Pattern URL_PATTERN = Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),]+)");
 	private static final Pattern ENTIRE_MESSAGE_PATTERN = Pattern.compile(".+");
-	private static final Pattern UNDERLINED_PATTERN = Pattern.compile("(?<!\\\\)\\_((?:\\\\\\_|[^\\_])+[^\\_\\\\])\\_");
-	private static final Pattern ITALIC_PATTERN = Pattern
-			.compile("(?<![\\\\\\*])\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*(?!\\*)");
-	private static final Pattern BOLD_PATTERN = Pattern.compile("(?<!\\\\)\\*\\*((?:\\\\\\*|[^\\*])+[^\\*\\\\])\\*\\*");
+	private static final Pattern UNDERLINED_PATTERN = Pattern.compile("\\_");
+	private static final Pattern ITALIC_PATTERN = Pattern.compile("\\*");
+	private static final Pattern BOLD_PATTERN = Pattern.compile("\\*\\*");
 	private static final String[] RainbowPresserColors = new String[] { "red", "gold", "yellow", "green", "blue",
 			"dark_purple" }; // TODO
 	private static boolean pingedconsole = false;
+
+	private static ArrayList<ChatFormatter> commonFormatters = new ArrayList<>();
+
+	public static final ChatFormatter ESCAPE_FORMATTER = new ChatFormatterBuilder().setRegex(ESCAPE_PATTERN).build();
+
+	private ChatProcessing() {
+	}
+
+	static {
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setFormat(Format.Bold)
+				.setRemoveCharCount((short) 2).setRange(true).build());
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setFormat(Format.Italic)
+				.setRemoveCharCount((short) 1).setRange(true).build());
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN).setFormat(Format.Underlined)
+				.setRemoveCharCount((short) 1).setRange(true).build());
+		commonFormatters.add(ESCAPE_FORMATTER);
+		// URLs + Rainbow text
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(URL_PATTERN).setFormat(Format.Underlined)
+				.setOpenlink("$1").setRange(true).build());
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(NULL_MENTION_PATTERN).setColor(Color.DarkRed).build()); // Properly added a bug as a feature
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(CONSOLE_PING_PATTERN).setColor(Color.Aqua)
+				.setOnmatch((String match) -> {
+					if (!pingedconsole) {
+						System.out.print("\007");
+						pingedconsole = true; // Will set it to false in ProcessChat
+					}
+					return match;
+				}).setPriority(Priority.High).build());
+
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(HASHTAG_PATTERN).setColor(Color.Blue)
+				.setOpenlink("https://twitter.com/hashtag/$1").setPriority(Priority.High).build());
+	}
 
 	// Returns e.setCancelled for custom event
 	public static boolean ProcessChat(Channel channel, CommandSender sender, String message) {
@@ -78,7 +106,8 @@ public class ChatProcessing {
 		}
 		Channel currentchannel = channel;
 
-		ArrayList<ChatFormatter> formatters = new ArrayList<ChatFormatter>();
+		@SuppressWarnings("unchecked")
+		ArrayList<ChatFormatter> formatters = (ArrayList<ChatFormatter>) commonFormatters.clone();
 
 		Color colormode = currentchannel.color;
 		if (mp != null && mp.OtherColorMode != null)
@@ -96,17 +125,6 @@ public class ChatProcessing {
 
 		String suggestmsg = formattedmessage;
 
-		formatters.add(new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setFormat(Format.Bold)
-				.setRemoveCharCount((short) 2).build());
-		formatters.add(new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setFormat(Format.Italic)
-				.setRemoveCharCount((short) 1).build());
-		formatters.add(new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN).setFormat(Format.Underlined)
-				.setRemoveCharCount((short) 1).build());
-		formatters.add(new ChatFormatterBuilder().setRegex(ESCAPE_PATTERN).setRemoveCharPos((short) 0).build());
-
-		// URLs + Rainbow text
-		formatters.add(new ChatFormatterBuilder().setRegex(URL_PATTERN).setFormat(Format.Underlined).setOpenlink("$1")
-				.build());
 		if (Bukkit.getOnlinePlayers().size() > 0) {
 			StringBuilder namesb = new StringBuilder();
 			namesb.append("(?i)(");
@@ -116,6 +134,7 @@ public class ChatProcessing {
 			namesb.append(")");
 			StringBuilder nicksb = new StringBuilder();
 			nicksb.append("(?i)(");
+			boolean addNickFormatter = false;
 			{
 				final int size = Bukkit.getOnlinePlayers().size();
 				int index = 0;
@@ -125,15 +144,13 @@ public class ChatProcessing {
 						nicksb.append(nick);
 						if (index < size - 1) {
 							nicksb.append("|");
+							addNickFormatter = true;
 						}
 					}
 					index++;
 				}
 				nicksb.append(")");
 			}
-
-			formatters
-					.add(new ChatFormatterBuilder().setRegex(Pattern.compile("null")).setColor(Color.DarkRed).build()); // Properly added a bug as a feature
 
 			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(namesb.toString())).setColor(Color.Aqua)
 					.setOnmatch((String match) -> {
@@ -153,61 +170,46 @@ public class ChatProcessing {
 						return color + p.getName() + "§r";
 					}).setPriority(Priority.High).build());
 
-			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(nicksb.toString())).setColor(Color.Aqua)
-					.setOnmatch((String match) -> {
-						if (PlayerListener.nicknames.containsKey(match)) {
-							Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(match));
-							if (p == null) {
-								PluginMain.Instance.getLogger().warning(
-										"Error: Can't find player nicknamed " + match + " but was reported as online.");
-								return "§c" + match + "§r";
+			if (addNickFormatter)
+				formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(nicksb.toString()))
+						.setColor(Color.Aqua).setOnmatch((String match) -> {
+							if (PlayerListener.nicknames.containsKey(match)) {
+								Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(match));
+								if (p == null) {
+									PluginMain.Instance.getLogger().warning("Error: Can't find player nicknamed "
+											+ match + " but was reported as online.");
+									return "§c" + match + "§r";
+								}
+								if (PlayerListener.NotificationSound == null)
+									p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f);
+								else
+									p.playSound(p.getLocation(), PlayerListener.NotificationSound, 1.0f,
+											(float) PlayerListener.NotificationPitch);
+								return PluginMain.essentials.getUser(p).getNickname();
 							}
-							if (PlayerListener.NotificationSound == null)
-								p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f);
-							else
-								p.playSound(p.getLocation(), PlayerListener.NotificationSound, 1.0f,
-										(float) PlayerListener.NotificationPitch);
-							return PluginMain.essentials.getUser(p).getNickname();
-						}
-						Bukkit.getServer().getLogger().warning(
-								"Player nicknamed " + match + " not found in nickname map but was reported as online.");
-						return "§c" + match + "§r";
-					}).setPriority(Priority.High).build());
+							Bukkit.getServer().getLogger().warning("Player nicknamed " + match
+									+ " not found in nickname map but was reported as online.");
+							return "§c" + match + "§r";
+						}).setPriority(Priority.High).build());
 		}
 
-		pingedconsole = false;
-		formatters.add(new ChatFormatterBuilder().setRegex(CONSOLE_PING_PATTERN).setColor(Color.Aqua)
-				.setOnmatch((String match) -> {
-					if (!pingedconsole) {
-						System.out.print("\007");
-						pingedconsole = true;
-					}
-					return match;
-				}).setPriority(Priority.High).build());
-
-		formatters.add(new ChatFormatterBuilder().setRegex(HASHTAG_PATTERN).setColor(Color.Blue)
-				.setOpenlink("https://twitter.com/hashtag/$1").setPriority(Priority.High).build());
-
-		/*
-		 * if (!hadurls) { if (formattedmessage.matches("(?i).*" + Pattern.quote("@console") + ".*")) { formattedmessage = formattedmessage.replaceAll( "(?i)" + Pattern.quote("@console"),
-		 * "§b@console§r"); formattedmessage = formattedmessage .replaceAll( "(?i)" + Pattern.quote("@console"), String.format(
-		 * "\",\"color\":\"%s\"},{\"text\":\"§b@console§r\",\"color\":\"blue\"},{\"text\":\"" , colormode)); System.out.println("\007"); } }
-		 */
+		pingedconsole = false; // Will set it to true onmatch (static constructor)
 
 		TellrawPart json = new TellrawPart("");
 		if (mp != null && mp.ChatOnly) {
 			json.addExtra(new TellrawPart("[C]").setHoverEvent(
 					TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT, "Chat only")));
 		}
-		final String channelidentifier = ("[" + (sender instanceof IDiscordSender ? "d|" : "") + currentchannel.DisplayName)
-				+ "]" + (mp != null && !mp.RPMode ? "[OOC]" : "");
+		final String channelidentifier = ("[" + (sender instanceof IDiscordSender ? "d|" : "")
+				+ currentchannel.DisplayName) + "]" + (mp != null && !mp.RPMode ? "[OOC]" : "");
 		json.addExtra(
-				new TellrawPart(channelidentifier).setHoverEvent(
+				new TellrawPart(channelidentifier)
+						.setHoverEvent(
 								TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
 										new TellrawPart((sender instanceof IDiscordSender ? "From Discord\n" : "")
 												+ "Copy message").setColor(Color.Blue)))
-								.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAC,
-										TellrawEvent.ClickAction.SUGGEST_COMMAND, suggestmsg)));
+						.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAC,
+								TellrawEvent.ClickAction.SUGGEST_COMMAND, suggestmsg)));
 		json.addExtra(new TellrawPart(" <"));
 		json.addExtra(
 				new TellrawPart(
@@ -382,9 +384,8 @@ public class ChatProcessing {
 			player.sendMessage("§cAn error occured while sending the message.");
 			return true;
 		}
-		PluginMain.Instance.getServer().getConsoleSender()
-				.sendMessage(String.format("[%s] <%s> %s", channelidentifier,
-						(player != null ? player.getDisplayName() : sender.getName()), message));
+		PluginMain.Instance.getServer().getConsoleSender().sendMessage(String.format("%s <%s> %s", channelidentifier,
+				(player != null ? player.getDisplayName() : sender.getName()), message));
 		DebugCommand.SendDebugMessage(
 				"-- Full ChatProcessing time: " + (System.nanoTime() - processstart) / 1000000f + " ms");
 		DebugCommand.SendDebugMessage("-- ChatFormatter.Combine time: " + combinetime / 1000000f + " ms");
