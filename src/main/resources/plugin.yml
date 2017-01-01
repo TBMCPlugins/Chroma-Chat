@@ -23,6 +23,9 @@ commands:
     description: Shrug.
   yeehaw:
     description: This command makes you yeehaw.
+  waitwhat:
+    description: Wait what.
+    aliases: ww
 author: NorbiPeti
 depend:
 - Essentials
