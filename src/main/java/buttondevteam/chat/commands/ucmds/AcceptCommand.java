@@ -10,7 +10,7 @@ import buttondevteam.chat.FlairStates;
 import buttondevteam.chat.PlayerJoinTimerTask;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.TBMCPlayer;
+import buttondevteam.lib.player.TBMCPlayer;
 
 public class AcceptCommand extends UCommandBase {
 

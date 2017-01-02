@@ -31,11 +31,12 @@ import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.TBMCPlayer;
-import buttondevteam.lib.TBMCPlayer.InfoTarget;
 import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.TBMCChatAPI;
-import buttondevteam.lib.TBMCPlayerGetInfoEvent;
+import buttondevteam.lib.player.TBMCPlayer;
+import buttondevteam.lib.player.TBMCPlayerGetInfoEvent;
+import buttondevteam.lib.player.TBMCPlayer.InfoTarget;
+
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;

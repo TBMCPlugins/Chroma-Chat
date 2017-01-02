@@ -3,7 +3,7 @@ package buttondevteam.chat.commands.ucmds.admin;
 import org.bukkit.command.CommandSender;
 
 import buttondevteam.chat.ChatPlayer;
-import buttondevteam.lib.TBMCPlayer;
+import buttondevteam.lib.player.TBMCPlayer;
 
 public class PlayerInfoCommand extends AdminCommandBase {
 

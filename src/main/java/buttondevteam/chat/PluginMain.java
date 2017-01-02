@@ -17,8 +17,8 @@ import org.htmlcleaner.TagNode;
 import buttondevteam.chat.commands.YeehawCommand;
 import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.TBMCChatAPI;
+import buttondevteam.lib.player.TBMCPlayer;
 
 import com.earth2me.essentials.Essentials;
 import com.google.gson.JsonArray;
@@ -57,7 +57,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	 * This variable is used as a cache for flair state checking when reading the flair thread.
 	 * </p>
 	 * <p>
-	 * It's used because normally it has to load all associated player files every time to read the filename
+	 * It's used because normally it has to load all associated player files every time to read the flair state
 	 * </p>
 	 */
 	private Set<String> PlayersWithFlairs = new HashSet<>();

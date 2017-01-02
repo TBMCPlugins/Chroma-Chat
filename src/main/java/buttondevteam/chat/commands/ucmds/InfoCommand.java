@@ -2,8 +2,8 @@ package buttondevteam.chat.commands.ucmds;
 
 import org.bukkit.command.CommandSender;
 
-import buttondevteam.lib.TBMCPlayer;
-import buttondevteam.lib.TBMCPlayer.InfoTarget;
+import buttondevteam.lib.player.TBMCPlayer;
+import buttondevteam.lib.player.TBMCPlayer.InfoTarget;
 
 public class InfoCommand extends UCommandBase {
 

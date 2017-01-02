@@ -6,8 +6,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.*;
+import buttondevteam.lib.player.TBMCPlayer;
 
 public class ChatPlayer extends TBMCPlayer {
 	public String getUserName() {

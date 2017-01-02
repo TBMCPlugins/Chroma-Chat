@@ -5,10 +5,10 @@ import org.bukkit.entity.Player;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.listener.PlayerListener;
-import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.chat.TBMCCommandBase;
+import buttondevteam.lib.player.TBMCPlayer;
 
 public abstract class AppendTextCommandBase extends TBMCCommandBase {
 

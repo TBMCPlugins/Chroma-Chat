@@ -22,9 +22,9 @@ import buttondevteam.chat.commands.UnlolCommand;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.formatting.*;
 import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.TellrawSerializableEnum;
+import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.lib.chat.*;
 

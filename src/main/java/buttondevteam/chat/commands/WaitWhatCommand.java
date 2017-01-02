@@ -7,10 +7,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import buttondevteam.chat.ChatPlayer;
-import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.chat.TBMCCommandBase;
+import buttondevteam.lib.player.TBMCPlayer;
 
 public class WaitWhatCommand extends TBMCCommandBase {
 	@Override

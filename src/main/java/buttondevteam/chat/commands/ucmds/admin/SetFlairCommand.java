@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.FlairStates;
-import buttondevteam.lib.TBMCPlayer;
+import buttondevteam.lib.player.TBMCPlayer;
 
 public class SetFlairCommand extends AdminCommandBase {
 

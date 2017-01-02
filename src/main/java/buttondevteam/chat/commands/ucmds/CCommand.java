@@ -5,8 +5,8 @@ import org.bukkit.entity.Player;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
-import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.*;
+import buttondevteam.lib.player.TBMCPlayer;
 
 public class CCommand extends UCommandBase {
 

@@ -17,10 +17,10 @@ import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.FlairStates;
 import buttondevteam.chat.PlayerJoinTimerTask;
 import buttondevteam.chat.PluginMain;
-import buttondevteam.lib.TBMCPlayerAddEvent;
-import buttondevteam.lib.TBMCPlayerJoinEvent;
-import buttondevteam.lib.TBMCPlayerLoadEvent;
-import buttondevteam.lib.TBMCPlayerSaveEvent;
+import buttondevteam.lib.player.TBMCPlayerAddEvent;
+import buttondevteam.lib.player.TBMCPlayerJoinEvent;
+import buttondevteam.lib.player.TBMCPlayerLoadEvent;
+import buttondevteam.lib.player.TBMCPlayerSaveEvent;
 
 public class PlayerJoinLeaveListener implements Listener {
 
