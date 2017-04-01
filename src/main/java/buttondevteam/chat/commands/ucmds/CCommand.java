@@ -19,7 +19,7 @@ public class CCommand extends UCommandBase {
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		Player player = (Player) sender;
-		ChatPlayer p = TBMCPlayer.getPlayerAs(player, ChatPlayer.class);
+		ChatPlayer p = TBMCPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class);
 		if (args.length < 1) {
 			if (PluginMain.permission.has(player, "tbmc.rainbow")) {
 				p.RainbowPresserColorMode = !p.RainbowPresserColorMode;

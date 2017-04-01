@@ -25,6 +25,7 @@ import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.TellrawSerializableEnum;
 import buttondevteam.lib.player.TBMCPlayer;
+import buttondevteam.lib.player.TBMCPlayerBase;
 import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.lib.chat.*;
 
@@ -91,7 +92,7 @@ public class ChatProcessing {
 
 		ChatPlayer mp = null;
 		if (player != null)
-			mp = TBMCPlayer.getPlayer(player).asPluginPlayer(ChatPlayer.class);
+			mp = TBMCPlayerBase.getPlayer(player.getUniqueId(), ChatPlayer.class);
 
 		String msg = message.toLowerCase();
 		if (msg.contains("lol")) {
@@ -162,7 +163,7 @@ public class ChatProcessing {
 									.warning("Error: Can't find player " + match + " but was reported as online.");
 							return "§c" + match + "§r";
 						}
-						ChatPlayer mpp = TBMCPlayer.getPlayer(p).asPluginPlayer(ChatPlayer.class);
+						ChatPlayer mpp = TBMCPlayer.getPlayer(p.getUniqueId(), ChatPlayer.class);
 						if (PlayerListener.NotificationSound == null)
 							p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
 						else
@@ -230,21 +231,21 @@ public class ChatProcessing {
 																.addExtra(new TellrawPart(String.format("World: %s\n",
 																		(player != null ? player.getWorld().getName()
 																				: "-"))))
-																.addExtra(
-																		new TellrawPart(String.format("Respect: %s%s%s",
-																				(mp != null ? (mp.getFCount()
-																						/ (double) mp.getFDeaths())
-																						: "Infinite"),
-																				(mp != null && mp.getUserName() != null
-																						&& !mp.getUserName().isEmpty()
-																								? "\nUserName: "
-																										+ mp.getUserName()
-																								: ""),
-																				(mp != null && mp.getPlayerName()
-																						.equals("\nAlpha_Bacca44")
-																								? "\nDeaths: "
-																										+ PlayerListener.AlphaDeaths
-																								: ""))))
+																.addExtra(new TellrawPart(String.format(
+																		"Respect: %s%s%s",
+																		(mp != null ? (mp.FCount().getOrDefault(0)
+																				/ (double) mp.FDeaths().getOrDefault(0))
+																				: "Infinite"),
+																		(mp != null && mp.UserName().get() != null
+																				&& !mp.UserName().get().isEmpty()
+																						? "\nUserName: "
+																								+ mp.UserName().get()
+																						: ""),
+																		(mp != null && mp.PlayerName().get()
+																				.equals("\nAlpha_Bacca44")
+																						? "\nDeaths: "
+																								+ PlayerListener.AlphaDeaths
+																						: ""))))
 																.addExtra(new TellrawPart("\nFor more, do /u info "
 																		+ sender.getName())))));
 		json.addExtra(new TellrawPart("> "));

@@ -35,7 +35,7 @@ import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerGetInfoEvent;
-import buttondevteam.lib.player.TBMCPlayer.InfoTarget;
+import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -71,7 +71,7 @@ public class PlayerListener implements Listener {
 		if (event.isCancelled())
 			return;
 		TBMCChatAPI.SendChatMessage(
-				TBMCPlayer.getPlayer(event.getPlayer()).asPluginPlayer(ChatPlayer.class).CurrentChannel,
+				TBMCPlayer.getPlayer(event.getPlayer().getUniqueId(), ChatPlayer.class).CurrentChannel,
 				event.getPlayer(), event.getMessage());
 		event.setCancelled(true); // The custom event should only be cancelled when muted or similar
 	}
@@ -81,7 +81,7 @@ public class PlayerListener implements Listener {
 		if (event.getMessage().length() < 2)
 			return;
 		int index = event.getMessage().indexOf(" ");
-		ChatPlayer mp = TBMCPlayer.getPlayer(event.getPlayer()).asPluginPlayer(ChatPlayer.class);
+		ChatPlayer mp = TBMCPlayer.getPlayer(event.getPlayer().getUniqueId(), ChatPlayer.class);
 		String cmd = "";
 		if (index == -1) {
 			cmd = event.getMessage().substring(1);
@@ -212,8 +212,8 @@ public class PlayerListener implements Listener {
 				Ftimer.cancel();
 			ActiveF = true;
 			Fs.clear();
-			FPlayer = TBMCPlayer.getPlayer(e.getEntity().getUniqueId()).asPluginPlayer(ChatPlayer.class);
-			FPlayer.setFDeaths(FPlayer.getFDeaths() + 1);
+			FPlayer = TBMCPlayer.getPlayer(e.getEntity().getUniqueId(), ChatPlayer.class);
+			FPlayer.FDeaths().set(FPlayer.FDeaths().get() + 1);
 			Bukkit.broadcastMessage("§bPress F to pay respects.§r");
 			Ftimer = new Timer();
 			TimerTask tt = new TimerTask() {
@@ -221,8 +221,8 @@ public class PlayerListener implements Listener {
 				public void run() {
 					if (ActiveF) {
 						ActiveF = false;
-						if (FPlayer != null && FPlayer.getFCount() < Integer.MAX_VALUE - 1)
-							FPlayer.setFCount(FPlayer.getFCount() + Fs.size());
+						if (FPlayer != null && FPlayer.FCount().get() < Integer.MAX_VALUE - 1)
+							FPlayer.FCount().set(FPlayer.FCount().get() + Fs.size());
 						Bukkit.broadcastMessage("§b" + Fs.size() + " " + (Fs.size() == 1 ? "person" : "people")
 								+ " paid their respects.§r");
 						Fs.clear();
@@ -250,14 +250,14 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e) {
-		ChatPlayer mp = TBMCPlayer.getPlayerAs(e.getPlayer(), ChatPlayer.class);
+		ChatPlayer mp = TBMCPlayer.getPlayer(e.getPlayer().getUniqueId(), ChatPlayer.class);
 		if (mp.ChatOnly)
 			e.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerTeleport(PlayerTeleportEvent e) {
-		if (TBMCPlayer.getPlayerAs(e.getPlayer(), ChatPlayer.class).ChatOnly) {
+		if (TBMCPlayer.getPlayer(e.getPlayer().getUniqueId(), ChatPlayer.class).ChatOnly) {
 			e.setCancelled(true);
 			e.getPlayer().sendMessage("§cYou are not allowed to teleport while in chat-only mode.");
 		}
@@ -319,14 +319,19 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onGetInfo(TBMCPlayerGetInfoEvent e) {
-		ChatPlayer cp = e.getPlayer().asPluginPlayer(ChatPlayer.class);
-		e.addInfo("Minecraft name: " + cp.getPlayerName());
-		if (cp.getUserName() != null && cp.getUserName().length() > 0)
-			e.addInfo("Reddit name: " + cp.getUserName());
-		final String flair = cp.GetFormattedFlair(e.getTarget() != InfoTarget.MCCommand);
-		if (flair.length() > 0)
-			e.addInfo("/r/TheButton flair: " + flair);
-		e.addInfo("Respect: " + (double) cp.getFCount() / (double) cp.getFDeaths());
+		try (ChatPlayer cp = e.getPlayer().getAs(ChatPlayer.class)) {
+			if (cp == null)
+				return;
+			e.addInfo("Minecraft name: " + cp.PlayerName().get());
+			if (cp.UserName().get() != null && cp.UserName().get().length() > 0)
+				e.addInfo("Reddit name: " + cp.UserName().get());
+			final String flair = cp.GetFormattedFlair(e.getTarget() != InfoTarget.MCCommand);
+			if (flair.length() > 0)
+				e.addInfo("/r/TheButton flair: " + flair);
+			e.addInfo("Respect: " + (double) cp.FCount().get() / (double) cp.FDeaths().get());
+		} catch (Exception ex) {
+			TBMCCoreAPI.SendException("Error while providing chat info for player " + e.getPlayer().getFileName(), ex);
+		}
 	}
 
 	@EventHandler

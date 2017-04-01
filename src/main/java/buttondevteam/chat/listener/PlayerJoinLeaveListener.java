@@ -1,6 +1,5 @@
 package buttondevteam.chat.listener;
 
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.UUID;
 
@@ -17,7 +16,6 @@ import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.FlairStates;
 import buttondevteam.chat.PlayerJoinTimerTask;
 import buttondevteam.chat.PluginMain;
-import buttondevteam.lib.player.TBMCPlayerAddEvent;
 import buttondevteam.lib.player.TBMCPlayerJoinEvent;
 import buttondevteam.lib.player.TBMCPlayerLoadEvent;
 import buttondevteam.lib.player.TBMCPlayerSaveEvent;
@@ -35,9 +33,9 @@ public class PlayerJoinLeaveListener implements Listener {
 		if (PluginMain.essentials == null)
 			PluginMain.essentials = ((Essentials) Bukkit.getPluginManager().getPlugin("Essentials"));
 		ChatPlayer cp = e.GetPlayer().asPluginPlayer(ChatPlayer.class);
-		Player p = Bukkit.getPlayer(cp.getUuid());
+		Player p = Bukkit.getPlayer(cp.getUUID());
 
-		if (!cp.getFlairState().equals(FlairStates.NoComment)) {
+		if (!cp.FlairState().get().equals(FlairStates.NoComment)) {
 			PluginMain.ConfirmUserMessage(cp);
 			Timer timer = new Timer();
 			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
@@ -49,26 +47,26 @@ public class PlayerJoinLeaveListener implements Listener {
 			tt.mp = cp;
 			timer.schedule(tt, 1000);
 		} else {
-			if (cp.getFlairTime() == 0x00)
+			if (cp.FlairTime().get() == 0x00)
 				cp.SetFlair(ChatPlayer.FlairTimeNone);
 			Timer timer = new Timer();
 			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
 
 				@Override
 				public void run() {
-					Player player = Bukkit.getPlayer(mp.getPlayerName());
+					Player player = Bukkit.getPlayer(mp.PlayerName().get());
 					if (player == null)
 						return;
 
-					if (mp.getFlairState().equals(FlairStates.NoComment)) {
+					if (mp.FlairState().get().equals(FlairStates.NoComment)) {
 						String json = String.format(
 								"[\"\",{\"text\":\"If you're from Reddit and you'd like your /r/TheButton flair displayed ingame, write your Minecraft name to \",\"color\":\"aqua\"},{\"text\":\"[this thread].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
 								PluginMain.FlairThreadURL);
 						PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-								"tellraw " + mp.getPlayerName() + " " + json);
+								"tellraw " + mp.PlayerName() + " " + json);
 						json = "[\"\",{\"text\":\"If you aren't from Reddit or don't want the flair, type /u ignore to prevent this message after next login.\",\"color\":\"aqua\"}]";
 						PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-								"tellraw " + mp.getPlayerName() + " " + json);
+								"tellraw " + mp.PlayerName() + " " + json);
 					}
 				}
 			};
@@ -99,14 +97,6 @@ public class PlayerJoinLeaveListener implements Listener {
 
 	@EventHandler
 	public void onPlayerSave(TBMCPlayerSaveEvent e) {
-	}
-
-	@EventHandler
-	public void onPlayerAdd(TBMCPlayerAddEvent event) {
-		ChatPlayer cp = event.GetPlayer().asPluginPlayer(ChatPlayer.class);
-		cp.SetFlair(ChatPlayer.FlairTimeNone);
-		cp.setFlairState(FlairStates.NoComment);
-		cp.setUserNames(new ArrayList<>());
 	}
 
 	@EventHandler

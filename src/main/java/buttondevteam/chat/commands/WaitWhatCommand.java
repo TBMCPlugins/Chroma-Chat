@@ -17,7 +17,7 @@ public class WaitWhatCommand extends TBMCCommandBase {
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		Channel channel;
 		if (sender instanceof Player && ((Player) sender).isOnline())
-			channel = TBMCPlayer.getPlayer((Player) sender).asPluginPlayer(ChatPlayer.class).CurrentChannel;
+			channel = TBMCPlayer.getPlayer(((Player) sender).getUniqueId(), ChatPlayer.class).CurrentChannel;
 		else
 			channel = Channel.GlobalChat;
 		final String message;

@@ -23,7 +23,8 @@ public abstract class AppendTextCommandBase extends TBMCCommandBase {
 			msg = args[i] + " " + msg;
 		if (sender instanceof Player)
 			TBMCChatAPI.SendChatMessage(
-					TBMCPlayer.getPlayer((Player) sender).asPluginPlayer(ChatPlayer.class).CurrentChannel, sender, msg);
+					TBMCPlayer.getPlayer(((Player) sender).getUniqueId(), ChatPlayer.class).CurrentChannel, sender,
+					msg);
 		else if (sender.isOp())
 			TBMCChatAPI.SendChatMessage(PlayerListener.ConsoleChannel, sender, msg);
 		else
