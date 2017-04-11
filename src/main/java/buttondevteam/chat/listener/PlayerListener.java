@@ -328,7 +328,7 @@ public class PlayerListener implements Listener {
 			final String flair = cp.GetFormattedFlair(e.getTarget() != InfoTarget.MCCommand);
 			if (flair.length() > 0)
 				e.addInfo("/r/TheButton flair: " + flair);
-			e.addInfo("Respect: " + (double) cp.FCount().get() / (double) cp.FDeaths().get());
+			e.addInfo("Respect: " + (double) cp.FCount().getOrDefault(0) / (double) cp.FDeaths().getOrDefault(0));
 		} catch (Exception ex) {
 			TBMCCoreAPI.SendException("Error while providing chat info for player " + e.getPlayer().getFileName(), ex);
 		}
@@ -337,6 +337,8 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerTBMCChat(TBMCChatEvent e) {
 		try {
+			if (e.isCancelled())
+				return;
 			e.setCancelled(ChatProcessing.ProcessChat(e.getChannel(), e.getSender(), e.getMessage()));
 		} catch (Exception ex) {
 			for (Player p : Bukkit.getOnlinePlayers())
@@ -345,7 +347,6 @@ public class PlayerListener implements Listener {
 								? ((Player) e.getSender()).getDisplayName() : e.getSender().getName())
 						+ "> " + e.getMessage());
 			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex);
-			e.setCancelled(true);
 		}
 	}
 }
