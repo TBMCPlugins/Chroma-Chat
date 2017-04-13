@@ -84,7 +84,7 @@ public final class ChatFormatter {
 					s.End = section.Start;
 					s.IsRange = false; // IsRange means it's a 1 long section indicating a start or an end
 					combined.add(s);
-					DebugCommand.SendDebugMessage("Finished section: " + s);
+					DebugCommand.SendDebugMessage("Finished section: " + s); //TODO: Remove smaller sections from IsRange sections
 				} else {
 					DebugCommand.SendDebugMessage("Adding next section: " + section);
 					nextSection.put(section.Formatters.get(0), section);
