@@ -53,16 +53,15 @@ public class ChatProcessing {
 	}
 
 	static {
-		commonFormatters.add(new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setFormat(Format.Bold)
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setBold(true)
 				.setRemoveCharCount((short) 2).setRange(true).build());
-		commonFormatters.add(new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setFormat(Format.Italic)
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setItalic(true)
 				.setRemoveCharCount((short) 1).setRange(true).build());
-		commonFormatters.add(new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN).setFormat(Format.Underlined)
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN).setUnderlined(true)
 				.setRemoveCharCount((short) 1).setRange(true).build());
 		commonFormatters.add(ESCAPE_FORMATTER);
-		// URLs + Rainbow text
-		commonFormatters.add(new ChatFormatterBuilder().setRegex(URL_PATTERN).setFormat(Format.Underlined)
-				.setOpenlink("$1").setRange(true).build());
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(URL_PATTERN).setUnderlined(true).setOpenlink("$1")
+				.setRange(true).build());
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(NULL_MENTION_PATTERN).setColor(Color.DarkRed).build()); // Properly added a bug as a feature
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(CONSOLE_PING_PATTERN).setColor(Color.Aqua)
 				.setOnmatch((String match) -> {

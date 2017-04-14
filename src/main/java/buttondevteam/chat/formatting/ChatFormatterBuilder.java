@@ -7,7 +7,11 @@ import buttondevteam.lib.chat.*;
 
 public class ChatFormatterBuilder {
 	private Pattern regex;
-	private Format format;
+	private boolean italic;
+	private boolean bold;
+	private boolean underlined;
+	private boolean strikethrough;
+	private boolean obfuscated;
 	private Color color;
 	private Function<String, String> onmatch;
 	private String openlink;
@@ -17,8 +21,8 @@ public class ChatFormatterBuilder {
 	private boolean range = false;
 
 	public ChatFormatter build() {
-		return new ChatFormatter(regex, format, color, onmatch, openlink, priority, removecharcount, removecharpos,
-				range);
+		return new ChatFormatter(regex, italic, bold, underlined, strikethrough, obfuscated, color, onmatch, openlink,
+				priority, removecharcount, removecharpos, range);
 	}
 
 	public Pattern getRegex() {
@@ -30,12 +34,48 @@ public class ChatFormatterBuilder {
 		return this;
 	}
 
-	public Format getFormat() {
-		return format;
+	public boolean isItalic() {
+		return italic;
 	}
 
-	public ChatFormatterBuilder setFormat(Format format) {
-		this.format = format;
+	public ChatFormatterBuilder setItalic(boolean italic) {
+		this.italic = italic;
+		return this;
+	}
+
+	public boolean isBold() {
+		return bold;
+	}
+
+	public ChatFormatterBuilder setBold(boolean bold) {
+		this.bold = bold;
+		return this;
+	}
+
+	public boolean isUnderlined() {
+		return underlined;
+	}
+
+	public ChatFormatterBuilder setUnderlined(boolean underlined) {
+		this.underlined = underlined;
+		return this;
+	}
+
+	public boolean isStrikethrough() {
+		return strikethrough;
+	}
+
+	public ChatFormatterBuilder setStrikethrough(boolean strikethrough) {
+		this.strikethrough = strikethrough;
+		return this;
+	}
+
+	public boolean isObfuscated() {
+		return obfuscated;
+	}
+
+	public ChatFormatterBuilder setObfuscated(boolean obfuscated) {
+		this.obfuscated = obfuscated;
 		return this;
 	}
 

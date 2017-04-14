@@ -6,11 +6,9 @@ import java.util.List;
 
 import buttondevteam.lib.chat.*;
 
-@SuppressWarnings("unused")
 public final class TellrawPart implements Serializable {
 	private static final long serialVersionUID = 4125357644462144024L;
 	private Color color;
-	private transient int format;
 	private boolean italic;
 	private boolean bold;
 	private boolean underlined;
@@ -34,29 +32,48 @@ public final class TellrawPart implements Serializable {
 		return this;
 	}
 
-	public int getFormat() {
-		return format;
+	public boolean isItalic() {
+		return italic;
 	}
 
-	public TellrawPart setFormat(int format) {
-		this.format = format;
-		this.italic = false;
-		this.bold = false;
-		this.underlined = false;
-		this.strikethrough = false;
-		this.obfuscated = false;
-		if ((format & Format.Italic.getFlag()) != 0)
-			this.italic = true;
-		else if ((format & Format.Bold.getFlag()) != 0)
-			this.bold = true;
-		else if ((format & Format.Underlined.getFlag()) != 0)
-			this.underlined = true;
-		else if ((format & Format.Strikethrough.getFlag()) != 0)
-			this.strikethrough = true;
-		else if ((format & Format.Obfuscated.getFlag()) != 0)
-			this.obfuscated = true;
-		else
-			throw new UnsupportedOperationException("Trying to set to an unknown format!");
+	public TellrawPart setItalic(boolean italic) {
+		this.italic = italic;
+		return this;
+	}
+
+	public boolean isBold() {
+		return bold;
+	}
+
+	public TellrawPart setBold(boolean bold) {
+		this.bold = bold;
+		return this;
+	}
+
+	public boolean isUnderlined() {
+		return underlined;
+	}
+
+	public TellrawPart setUnderlined(boolean underlined) {
+		this.underlined = underlined;
+		return this;
+	}
+
+	public boolean isStrikethrough() {
+		return strikethrough;
+	}
+
+	public TellrawPart setStrikethrough(boolean strikethrough) {
+		this.strikethrough = strikethrough;
+		return this;
+	}
+
+	public boolean isObfuscated() {
+		return obfuscated;
+	}
+
+	public TellrawPart setObfuscated(boolean obfuscated) {
+		this.obfuscated = obfuscated;
 		return this;
 	}
 
