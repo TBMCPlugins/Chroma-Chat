@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.FlairStates;
-import buttondevteam.lib.TBMCPlayer;
+import buttondevteam.lib.player.TBMCPlayer;
 
 public final class IgnoreCommand extends UCommandBase {
 
@@ -19,19 +19,19 @@ public final class IgnoreCommand extends UCommandBase {
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		final Player player = (Player) sender;
-		ChatPlayer p = TBMCPlayer.getPlayerAs(player, ChatPlayer.class);
-		if (p.getFlairState().equals(FlairStates.Accepted)) {
+		ChatPlayer p = TBMCPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class);
+		if (p.FlairState().get().equals(FlairStates.Accepted)) {
 			player.sendMessage("§cYou can only ignore the \"write your name in the thread\" message.");
 			return true;
 		}
-		if (p.getFlairState().equals(FlairStates.Commented)) {
+		if (p.FlairState().get().equals(FlairStates.Commented)) {
 			player.sendMessage("Sorry, but your flair isn't recorded. Please ask a mod to set it for you.");
 			return true;
 		}
-		if (!p.getFlairState().equals(FlairStates.Ignored)) {
-			p.setFlairState(FlairStates.Ignored);
+		if (!p.FlairState().get().equals(FlairStates.Ignored)) {
+			p.FlairState().set(FlairStates.Ignored);
 			p.SetFlair(ChatPlayer.FlairTimeNone);
-			p.setUserName("");
+			p.UserName().set("");
 			player.sendMessage("§bYou have ignored the message.§r");
 		} else
 			player.sendMessage("§cYou already ignored the message.§r");

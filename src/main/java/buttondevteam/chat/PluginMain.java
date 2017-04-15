@@ -17,8 +17,8 @@ import org.htmlcleaner.TagNode;
 import buttondevteam.chat.commands.YeehawCommand;
 import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.TBMCChatAPI;
+import buttondevteam.lib.player.TBMCPlayerBase;
 
 import com.earth2me.essentials.Essentials;
 import com.google.gson.JsonArray;
@@ -57,7 +57,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	 * This variable is used as a cache for flair state checking when reading the flair thread.
 	 * </p>
 	 * <p>
-	 * It's used because normally it has to load all associated player files every time to read the filename
+	 * It's used because normally it has to load all associated player files every time to read the flair state
 	 * </p>
 	 */
 	private Set<String> PlayersWithFlairs = new HashSet<>();
@@ -139,16 +139,16 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					ign = ign.trim();
 					if (PlayersWithFlairs.contains(ign))
 						continue;
-					try (ChatPlayer mp = TBMCPlayer.getFromName(ign).asPluginPlayer(ChatPlayer.class)) { // Loads player file
+					try (ChatPlayer mp = TBMCPlayerBase.getFromName(ign, ChatPlayer.class)) { // Loads player file
 						if (mp == null)
 							continue;
 						/*
 						 * if (!JoinedBefore(mp, 2015, 6, 5)) continue;
 						 */
-						if (!mp.getUserNames().contains(author))
-							mp.getUserNames().add(author);
-						if (mp.getFlairState().equals(FlairStates.NoComment)) {
-							mp.setFlairState(FlairStates.Commented);
+						if (!mp.UserNames().contains(author))
+							mp.UserNames().add(author);
+						if (mp.FlairState().getOrDefault(FlairStates.NoComment).equals(FlairStates.NoComment)) {
+							mp.FlairState().set(FlairStates.Commented);
 							ConfirmUserMessage(mp);
 						}
 						PlayersWithFlairs.add(ign); // Don't redownload even if flair isn't accepted
@@ -176,8 +176,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 	public void DownloadFlair(ChatPlayer mp) throws MalformedURLException, IOException {
 		String[] flairdata = TBMCCoreAPI
-				.DownloadString("http://karmadecay.com/thebutton-data.php?users=" + mp.getUserName()).replace("\"", "")
-				.split(":");
+				.DownloadString("http://karmadecay.com/thebutton-data.php?users=" + mp.UserName().get())
+				.replace("\"", "").split(":");
 		String flair;
 		if (flairdata.length > 1)
 			flair = flairdata[1];
@@ -188,12 +188,12 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			flairclass = flairdata[2];
 		else
 			flairclass = "unknown";
-		SetFlair(mp, flair, flairclass, mp.getUserName());
+		SetFlair(mp, flair, flairclass, mp.UserName().get());
 	}
 
 	private void SetFlair(ChatPlayer p, String text, String flairclass, String username) {
-		p.setUserName(username);
-		p.setFlairState(FlairStates.Recognised);
+		p.UserName().set(username);
+		p.FlairState().set(FlairStates.Recognised);
 		switch (flairclass) {
 		case "cheater":
 			p.SetFlair(Short.parseShort(text), true);
@@ -209,9 +209,9 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					p.SetFlair(ChatPlayer.FlairTimeCantPress);
 				}
 			} catch (Exception e) {
-				p.setFlairState(FlairStates.Commented); // Flair unknown
+				p.FlairState().set(FlairStates.Commented); // Flair unknown
 				p.SetFlair(ChatPlayer.FlairTimeNone);
-				TBMCCoreAPI.SendException("Error while checking join date for player " + p.getPlayerName() + "!", e);
+				TBMCCoreAPI.SendException("Error while checking join date for player " + p.PlayerName() + "!", e);
 			}
 			return;
 		default:
@@ -225,7 +225,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	}
 
 	public static boolean JoinedBefore(ChatPlayer mp, int year, int month, int day) throws Exception {
-		URL url = new URL("https://www.reddit.com/u/" + mp.getUserName());
+		URL url = new URL("https://www.reddit.com/u/" + mp.UserName());
 		URLConnection con = url.openConnection();
 		con.setRequestProperty("User-Agent", "TheButtonAutoFlair");
 		InputStream in = con.getInputStream();
@@ -243,9 +243,9 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	}
 
 	public static void ConfirmUserMessage(ChatPlayer mp) {
-		Player p = Bukkit.getPlayer(mp.getUuid());
-		if (mp.getFlairState().equals(FlairStates.Commented) && p != null)
-			if (mp.getUserNames().size() > 1)
+		Player p = Bukkit.getPlayer(mp.getUUID());
+		if (mp.FlairState().get().equals(FlairStates.Commented) && p != null)
+			if (mp.UserNames().size() > 1)
 				p.sendMessage(
 						"§9Multiple Reddit users commented your name. You can select with /u accept.§r §6Type /u accept or /u ignore§r");
 			else

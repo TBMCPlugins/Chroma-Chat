@@ -5,10 +5,10 @@ import org.bukkit.entity.Player;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.listener.PlayerListener;
-import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.chat.TBMCCommandBase;
+import buttondevteam.lib.player.TBMCPlayer;
 
 public abstract class AppendTextCommandBase extends TBMCCommandBase {
 
@@ -23,7 +23,8 @@ public abstract class AppendTextCommandBase extends TBMCCommandBase {
 			msg = args[i] + " " + msg;
 		if (sender instanceof Player)
 			TBMCChatAPI.SendChatMessage(
-					TBMCPlayer.getPlayer((Player) sender).asPluginPlayer(ChatPlayer.class).CurrentChannel, sender, msg);
+					TBMCPlayer.getPlayer(((Player) sender).getUniqueId(), ChatPlayer.class).CurrentChannel, sender,
+					msg);
 		else if (sender.isOp())
 			TBMCChatAPI.SendChatMessage(PlayerListener.ConsoleChannel, sender, msg);
 		else

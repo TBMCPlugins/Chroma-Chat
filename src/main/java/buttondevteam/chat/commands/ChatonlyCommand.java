@@ -5,8 +5,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import buttondevteam.chat.ChatPlayer;
-import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.TBMCCommandBase;
+import buttondevteam.lib.player.TBMCPlayer;
 
 public final class ChatonlyCommand extends TBMCCommandBase {
 
@@ -22,7 +22,7 @@ public final class ChatonlyCommand extends TBMCCommandBase {
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		Player player = (Player) sender;
-		ChatPlayer p = TBMCPlayer.getPlayerAs(player, ChatPlayer.class);
+		ChatPlayer p = TBMCPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class);
 		p.ChatOnly = true;
 		player.setGameMode(GameMode.SPECTATOR);
 		player.sendMessage("§bChat-only mode enabled. You are now invincible.");

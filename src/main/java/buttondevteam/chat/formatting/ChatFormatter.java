@@ -15,7 +15,11 @@ import buttondevteam.lib.chat.*;
 
 public final class ChatFormatter {
 	private Pattern regex;
-	private Format format;
+	private boolean italic;
+	private boolean bold;
+	private boolean underlined;
+	private boolean strikethrough;
+	private boolean obfuscated;
 	private Color color;
 	private Function<String, String> onmatch;
 	private String openlink;
@@ -24,14 +28,23 @@ public final class ChatFormatter {
 	private short removecharpos = -1;
 	private boolean isrange;
 
-	public ChatFormatter(Pattern regex, Format format, Color color, Function<String, String> onmatch, String openlink,
-			Priority priority, short removecharcount, short removecharpos, boolean isrange) {
+	public ChatFormatter(Pattern regex, boolean italic, boolean bold, boolean underlined, boolean strikethrough,
+			boolean obfuscated, Color color, Function<String, String> onmatch, String openlink, Priority priority,
+			short removecharcount, short removecharpos, boolean isrange) {
+		super();
 		this.regex = regex;
-		this.format = format;
+		this.italic = italic;
+		this.bold = bold;
+		this.underlined = underlined;
+		this.strikethrough = strikethrough;
+		this.obfuscated = obfuscated;
 		this.color = color;
 		this.onmatch = onmatch;
 		this.openlink = openlink;
-		this.priority = Priority.High;
+		if (priority == null)
+			this.priority = Priority.Normal;
+		else
+			this.priority = priority;
 		this.removecharcount = removecharcount;
 		this.removecharpos = removecharpos;
 		this.isrange = isrange;
@@ -67,6 +80,8 @@ public final class ChatFormatter {
 		ArrayList<FormattedSection> combined = new ArrayList<>();
 		Map<ChatFormatter, FormattedSection> nextSection = new HashMap<>();
 		boolean escaped = false;
+		int takenStart = -1, takenEnd = -1;
+		ChatFormatter takenFormatter = null;
 		for (int i = 0; i < sections.size(); i++) {
 			// Set ending to -1 until closed with another 1 long "section" - only do this if IsRange is true
 			final FormattedSection section = sections.get(i);
@@ -79,9 +94,22 @@ public final class ChatFormatter {
 				continue;
 			}
 			if (!escaped) {
+				if (section.Start >= takenStart && section.Start <= takenEnd) {
+					if (section.RemCharFromStart <= takenEnd - takenStart) {
+						System.out.println("Lose: " + section);
+						System.out.println("And win: " + takenFormatter);
+						continue; // The current section loses
+					}
+					nextSection.remove(takenFormatter); // The current section wins
+					System.out.println("Win: " + section);
+					System.out.println("And lose: " + takenFormatter);
+				}
+				takenStart = section.Start;
+				takenEnd = section.Start + section.RemCharFromStart;
+				takenFormatter = section.Formatters.get(0);
 				if (nextSection.containsKey(section.Formatters.get(0))) {
 					FormattedSection s = nextSection.remove(section.Formatters.get(0));
-					s.End = section.Start;
+					s.End = section.Start + section.RemCharFromStart - 1;
 					s.IsRange = false; // IsRange means it's a 1 long section indicating a start or an end
 					combined.add(s);
 					DebugCommand.SendDebugMessage("Finished section: " + s);
@@ -89,6 +117,8 @@ public final class ChatFormatter {
 					DebugCommand.SendDebugMessage("Adding next section: " + section);
 					nextSection.put(section.Formatters.get(0), section);
 				}
+				DebugCommand
+						.SendDebugMessage("New area taken: (" + takenStart + "-" + takenEnd + ") " + takenFormatter);
 			} else {
 				DebugCommand.SendDebugMessage("Skipping section: " + section);
 				escaped = false; // Reset escaping if applied, like if we're at the '*' in '\*'
@@ -196,7 +226,7 @@ public final class ChatFormatter {
 			originaltext = textsb.toString();
 			DebugCommand.SendDebugMessage("Section text: " + originaltext);
 			Color color = null;
-			int format = 0;
+			boolean bold = false, italic = false, underlined = false, strikethrough = false, obfuscated = false;
 			String openlink = null;
 			section.Formatters.sort((cf2, cf1) -> cf1.priority.compareTo(cf2.priority));
 			for (ChatFormatter formatter : section.Formatters) {
@@ -205,8 +235,16 @@ public final class ChatFormatter {
 					originaltext = formatter.onmatch.apply(originaltext);
 				if (formatter.color != null)
 					color = formatter.color;
-				if (formatter.format != null)
-					format = formatter.format.getFlag(); // TODO: Fix
+				if (formatter.bold)
+					bold = true;
+				if (formatter.italic)
+					italic = true;
+				if (formatter.underlined)
+					underlined = true;
+				if (formatter.strikethrough)
+					strikethrough = true;
+				if (formatter.obfuscated)
+					obfuscated = true;
 				if (formatter.openlink != null)
 					openlink = formatter.openlink;
 			}
@@ -214,8 +252,11 @@ public final class ChatFormatter {
 			newtp.setText(originaltext);
 			if (color != null)
 				newtp.setColor(color);
-			if (format != 0)
-				newtp.setFormat(format);
+			newtp.setBold(bold);
+			newtp.setItalic(italic);
+			newtp.setUnderlined(underlined);
+			newtp.setStrikethrough(strikethrough);
+			newtp.setObfuscated(obfuscated);
 			if (openlink != null && openlink.length() > 0) {
 				newtp.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAC, TellrawEvent.ClickAction.OPEN_URL,
 						(section.Matches.size() > 0 ? openlink.replace("$1", section.Matches.get(0)) : openlink)))
@@ -228,7 +269,10 @@ public final class ChatFormatter {
 
 	@Override
 	public String toString() {
-		return new StringBuilder("F(").append(color).append(", ").append(format).append(", ").append(openlink)
-				.append(", ").append(priority).append(", ").append(regex).append(")").toString();
+		return new StringBuilder("F(").append(color).append(", ")
+				.append((bold ? "bold" : "") + (italic ? "italic" : "") + (underlined ? "underlined" : "")
+						+ (strikethrough ? "strikethrough" : "") + (obfuscated ? "obfuscated" : ""))
+				.append(", ").append(openlink).append(", ").append(priority).append(", ").append(regex).append(")")
+				.toString();
 	}
 }

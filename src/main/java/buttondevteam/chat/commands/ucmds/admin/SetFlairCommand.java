@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.FlairStates;
-import buttondevteam.lib.TBMCPlayer;
+import buttondevteam.lib.player.TBMCPlayerBase;
 
 public class SetFlairCommand extends AdminCommandBase {
 
@@ -53,18 +53,18 @@ public class SetFlairCommand extends AdminCommandBase {
 			sender.sendMessage("§cUnknown value for cheater parameter. Run without args to see usage.");
 			return true;
 		}
-		ChatPlayer mp = TBMCPlayer.getPlayerAs(p, ChatPlayer.class);
+		ChatPlayer mp = TBMCPlayerBase.getPlayer(p.getUniqueId(), ChatPlayer.class);
 		mp.SetFlair(flairtime, cheater);
-		mp.setFlairState(FlairStates.Accepted);
+		mp.FlairState().set(FlairStates.Accepted);
 		if (args.length < 4)
-			mp.setUserName("");
+			mp.UserName().set("");
 		else {
-			mp.setUserName(args[3]);
-			if (!mp.getUserNames().contains(args[3]))
-				mp.getUserNames().add(args[3]);
+			mp.UserName().set(args[3]);
+			if (!mp.UserNames().contains(args[3]))
+				mp.UserNames().add(args[3]);
 		}
 		sender.sendMessage(
-				"§bThe flair has been set. Player: " + mp.getPlayerName() + " Flair: " + mp.GetFormattedFlair() + "§r");
+				"§bThe flair has been set. Player: " + mp.PlayerName() + " Flair: " + mp.GetFormattedFlair() + "§r");
 		return true;
 	}
 

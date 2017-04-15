@@ -4,8 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import buttondevteam.lib.TBMCYEEHAWEvent;
 import buttondevteam.lib.chat.TBMCCommandBase;
+import buttondevteam.lib.player.TBMCYEEHAWEvent;
 
 public class YeehawCommand extends TBMCCommandBase {
 

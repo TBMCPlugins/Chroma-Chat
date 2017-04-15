@@ -22,9 +22,10 @@ import buttondevteam.chat.commands.UnlolCommand;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.formatting.*;
 import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.TellrawSerializableEnum;
+import buttondevteam.lib.player.TBMCPlayer;
+import buttondevteam.lib.player.TBMCPlayerBase;
 import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.lib.chat.*;
 
@@ -44,6 +45,7 @@ public class ChatProcessing {
 	private static boolean pingedconsole = false;
 
 	private static ArrayList<ChatFormatter> commonFormatters = new ArrayList<>();
+	private static Gson gson;
 
 	public static final ChatFormatter ESCAPE_FORMATTER = new ChatFormatterBuilder().setRegex(ESCAPE_PATTERN).build();
 
@@ -51,16 +53,15 @@ public class ChatProcessing {
 	}
 
 	static {
-		commonFormatters.add(new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setFormat(Format.Bold)
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setBold(true)
 				.setRemoveCharCount((short) 2).setRange(true).build());
-		commonFormatters.add(new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setFormat(Format.Italic)
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setItalic(true)
 				.setRemoveCharCount((short) 1).setRange(true).build());
-		commonFormatters.add(new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN).setFormat(Format.Underlined)
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN).setUnderlined(true)
 				.setRemoveCharCount((short) 1).setRange(true).build());
 		commonFormatters.add(ESCAPE_FORMATTER);
-		// URLs + Rainbow text
-		commonFormatters.add(new ChatFormatterBuilder().setRegex(URL_PATTERN).setFormat(Format.Underlined)
-				.setOpenlink("$1").setRange(true).build());
+		commonFormatters.add(new ChatFormatterBuilder().setRegex(URL_PATTERN).setUnderlined(true).setOpenlink("$1")
+				.setRange(true).build());
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(NULL_MENTION_PATTERN).setColor(Color.DarkRed).build()); // Properly added a bug as a feature
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(CONSOLE_PING_PATTERN).setColor(Color.Aqua)
 				.setOnmatch((String match) -> {
@@ -74,6 +75,11 @@ public class ChatProcessing {
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(HASHTAG_PATTERN).setColor(Color.Blue)
 				.setOpenlink("https://twitter.com/hashtag/$1").setPriority(Priority.High).build());
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(CYAN_PATTERN).setColor(Color.Aqua).build()); // #55
+		gson = new GsonBuilder()
+				.registerTypeHierarchyAdapter(TellrawSerializableEnum.class, new TellrawSerializer.TwEnum())
+				.registerTypeHierarchyAdapter(Collection.class, new TellrawSerializer.TwCollection())
+				.registerTypeAdapter(Boolean.class, new TellrawSerializer.TwBool())
+				.registerTypeAdapter(boolean.class, new TellrawSerializer.TwBool()).disableHtmlEscaping().create();
 	}
 
 	// Returns e.setCancelled for custom event
@@ -86,32 +92,13 @@ public class ChatProcessing {
 		if (player != null && PluginMain.essentials.getUser(player).isMuted())
 			return true;
 
-		if (PlayerListener.ActiveF && !PlayerListener.Fs.contains(sender) && message.equalsIgnoreCase("F"))
-			PlayerListener.Fs.add(sender);
+		doFunStuff(sender, message);
 
 		ChatPlayer mp = null;
 		if (player != null)
-			mp = TBMCPlayer.getPlayer(player).asPluginPlayer(ChatPlayer.class);
+			mp = TBMCPlayerBase.getPlayer(player.getUniqueId(), ChatPlayer.class);
 
-		String msg = message.toLowerCase();
-		if (msg.contains("lol")) {
-			UnlolCommand.Lastlolornot = true;
-			UnlolCommand.Lastlol = sender;
-		} else {
-			for (int i = 0; i < PlayerListener.LaughStrings.length; i++) {
-				if (msg.contains(PlayerListener.LaughStrings[i])) {
-					UnlolCommand.Lastlol = sender;
-					UnlolCommand.Lastlolornot = false;
-					break;
-				}
-			}
-		}
-		Channel currentchannel = channel;
-
-		@SuppressWarnings("unchecked")
-		ArrayList<ChatFormatter> formatters = (ArrayList<ChatFormatter>) commonFormatters.clone();
-
-		Color colormode = currentchannel.color;
+		Color colormode = channel.color;
 		if (mp != null && mp.OtherColorMode != null)
 			colormode = mp.OtherColorMode;
 		if (mp != null && mp.RainbowPresserColorMode)
@@ -120,150 +107,22 @@ public class ChatProcessing {
 			colormode = Color.Green;
 		// If greentext, ignore channel or player colors
 
-		formatters.add(new ChatFormatterBuilder().setRegex(ENTIRE_MESSAGE_PATTERN).setColor(colormode)
-				.setPriority(Priority.Low).build());
-
-		String formattedmessage = message;
-
-		String suggestmsg = formattedmessage;
-
-		if (Bukkit.getOnlinePlayers().size() > 0) {
-			StringBuilder namesb = new StringBuilder();
-			namesb.append("(?i)(");
-			for (Player p : Bukkit.getOnlinePlayers())
-				namesb.append(p.getName()).append("|");
-			namesb.deleteCharAt(namesb.length() - 1);
-			namesb.append(")");
-			StringBuilder nicksb = new StringBuilder();
-			nicksb.append("(?i)(");
-			boolean addNickFormatter = false;
-			{
-				final int size = Bukkit.getOnlinePlayers().size();
-				int index = 0;
-				for (Player p : Bukkit.getOnlinePlayers()) {
-					final String nick = PlayerListener.nicknames.inverse().get(p.getUniqueId());
-					if (nick != null) {
-						nicksb.append(nick);
-						if (index < size - 1) {
-							nicksb.append("|");
-							addNickFormatter = true;
-						}
-					}
-					index++;
-				}
-				nicksb.append(")");
-			}
-
-			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(namesb.toString())).setColor(Color.Aqua)
-					.setOnmatch((String match) -> {
-						Player p = Bukkit.getPlayer(match);
-						if (p == null) {
-							PluginMain.Instance.getLogger()
-									.warning("Error: Can't find player " + match + " but was reported as online.");
-							return "§c" + match + "§r";
-						}
-						ChatPlayer mpp = TBMCPlayer.getPlayer(p).asPluginPlayer(ChatPlayer.class);
-						if (PlayerListener.NotificationSound == null)
-							p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
-						else
-							p.playSound(p.getLocation(), PlayerListener.NotificationSound, 1.0f,
-									(float) PlayerListener.NotificationPitch);
-						String color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
-						return color + p.getName() + "§r";
-					}).setPriority(Priority.High).build());
-
-			if (addNickFormatter)
-				formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(nicksb.toString()))
-						.setColor(Color.Aqua).setOnmatch((String match) -> {
-							if (PlayerListener.nicknames.containsKey(match)) {
-								Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(match));
-								if (p == null) {
-									PluginMain.Instance.getLogger().warning("Error: Can't find player nicknamed "
-											+ match + " but was reported as online.");
-									return "§c" + match + "§r";
-								}
-								if (PlayerListener.NotificationSound == null)
-									p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f);
-								else
-									p.playSound(p.getLocation(), PlayerListener.NotificationSound, 1.0f,
-											(float) PlayerListener.NotificationPitch);
-								return PluginMain.essentials.getUser(p).getNickname();
-							}
-							Bukkit.getServer().getLogger().warning("Player nicknamed " + match
-									+ " not found in nickname map but was reported as online.");
-							return "§c" + match + "§r";
-						}).setPriority(Priority.High).build());
-		}
-
+		ArrayList<ChatFormatter> formatters = addFormatters(colormode);
 		pingedconsole = false; // Will set it to true onmatch (static constructor)
+		final String channelidentifier = getChannelID(channel, sender, mp);
 
-		TellrawPart json = new TellrawPart("");
-		if (mp != null && mp.ChatOnly) {
-			json.addExtra(new TellrawPart("[C]").setHoverEvent(
-					TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT, "Chat only")));
-		}
-		final String channelidentifier = ("[" + (sender instanceof IDiscordSender ? "d|" : "")
-				+ currentchannel.DisplayName) + "]" + (mp != null && !mp.RPMode ? "[OOC]" : "");
-		json.addExtra(
-				new TellrawPart(channelidentifier)
-						.setHoverEvent(
-								TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
-										new TellrawPart((sender instanceof IDiscordSender ? "From Discord\n" : "")
-												+ "Copy message").setColor(Color.Blue)))
-						.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAC,
-								TellrawEvent.ClickAction.SUGGEST_COMMAND, suggestmsg)));
-		json.addExtra(new TellrawPart(" <"));
-		json.addExtra(
-				new TellrawPart(
-						(player != null ? player.getDisplayName() : sender.getName()))
-								.setHoverEvent(
-										TellrawEvent
-												.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
-														new TellrawPart("")
-																.addExtra(new TellrawPart(String.format("Flair: %s",
-																		(mp != null ? mp.GetFormattedFlair() : "-"))))
-																.addExtra(new TellrawPart(
-																		String.format("\nPlayername: %s\n",
-																				(player != null ? player.getName()
-																						: sender.getName())))
-																								.setColor(Color.Aqua))
-																.addExtra(new TellrawPart(String.format("World: %s\n",
-																		(player != null ? player.getWorld().getName()
-																				: "-"))))
-																.addExtra(
-																		new TellrawPart(String.format("Respect: %s%s%s",
-																				(mp != null ? (mp.getFCount()
-																						/ (double) mp.getFDeaths())
-																						: "Infinite"),
-																				(mp != null && mp.getUserName() != null
-																						&& !mp.getUserName().isEmpty()
-																								? "\nUserName: "
-																										+ mp.getUserName()
-																								: ""),
-																				(mp != null && mp.getPlayerName()
-																						.equals("\nAlpha_Bacca44")
-																								? "\nDeaths: "
-																										+ PlayerListener.AlphaDeaths
-																								: ""))))
-																.addExtra(new TellrawPart("\nFor more, do /u info "
-																		+ sender.getName())))));
-		json.addExtra(new TellrawPart("> "));
+		TellrawPart json = createTellraw(sender, message, player, mp, channelidentifier);
 		long combinetime = System.nanoTime();
-		ChatFormatter.Combine(formatters, formattedmessage, json);
+		ChatFormatter.Combine(formatters, message, json);
 		combinetime = System.nanoTime() - combinetime;
-		Gson gson = new GsonBuilder()
-				.registerTypeHierarchyAdapter(TellrawSerializableEnum.class, new TellrawSerializer.TwEnum())
-				.registerTypeHierarchyAdapter(Collection.class, new TellrawSerializer.TwCollection())
-				.registerTypeAdapter(Boolean.class, new TellrawSerializer.TwBool())
-				.registerTypeAdapter(boolean.class, new TellrawSerializer.TwBool()).disableHtmlEscaping().create();
-		String jsonstr = gson.toJson(json);
+		String jsonstr = toJson(json);
 		if (jsonstr.length() >= 32767) {
 			sender.sendMessage(
 					"§cError: Message too long. Try shortening it, or remove hashtags and other formatting.");
 			return true;
 		}
 		DebugCommand.SendDebugMessage(jsonstr);
-		if (currentchannel.equals(Channel.TownChat) || currentchannel.equals(Channel.NationChat)) {
+		if (channel.equals(Channel.TownChat) || channel.equals(Channel.NationChat)) {
 			if (player == null) {
 				sender.sendMessage("§cYou are not a player!");
 				return true;
@@ -274,13 +133,13 @@ public class ChatProcessing {
 					if (resident != null && !resident.getName().equals(player.getName())
 							&& resident.getModes().contains("spy"))
 						Bukkit.getPlayer(resident.getName()).sendMessage(String.format("[SPY-%s] - %s: %s",
-								currentchannel.DisplayName, player.getDisplayName(), message));
+								channel.DisplayName, player.getDisplayName(), message));
 				} catch (Exception e) {
 				}
 			}
 		}
 		try {
-			if (currentchannel.equals(Channel.TownChat)) {
+			if (channel.equals(Channel.TownChat)) {
 				Town town = null;
 				try {
 					final Resident resident = PluginMain.Instance.TU.getResidentMap()
@@ -311,7 +170,7 @@ public class ChatProcessing {
 				}
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 						String.format("tellraw @a[score_town=%d,score_town_min=%d] %s", index, index, jsonstr));
-			} else if (currentchannel.equals(Channel.NationChat)) {
+			} else if (channel.equals(Channel.NationChat)) {
 				Town town = null;
 				try {
 					final Resident resident = PluginMain.Instance.TU.getResidentMap()
@@ -350,7 +209,7 @@ public class ChatProcessing {
 				}
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 						String.format("tellraw @a[score_nation=%d,score_nation_min=%d] %s", index, index, jsonstr));
-			} else if (currentchannel.equals(Channel.AdminChat)) {
+			} else if (channel.equals(Channel.AdminChat)) {
 				if (player != null && !player.isOp()) {
 					player.sendMessage("§cYou need to be an OP to use this channel.");
 					return true;
@@ -364,7 +223,7 @@ public class ChatProcessing {
 				}
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 						String.format("tellraw @a[score_admin=%d,score_admin_min=%d] %s", 1, 1, jsonstr));
-			} else if (currentchannel.equals(Channel.ModChat)) {
+			} else if (channel.equals(Channel.ModChat)) {
 				if (player != null && !PluginMain.permission.playerInGroup(player, "mod")) {
 					player.sendMessage("§cYou need to be a mod to use this channel.");
 					return true;
@@ -392,5 +251,162 @@ public class ChatProcessing {
 				"-- Full ChatProcessing time: " + (System.nanoTime() - processstart) / 1000000f + " ms");
 		DebugCommand.SendDebugMessage("-- ChatFormatter.Combine time: " + combinetime / 1000000f + " ms");
 		return false;
+	}
+
+	static String toJson(TellrawPart json) {
+		String jsonstr = gson.toJson(json);
+		return jsonstr;
+	}
+
+	static TellrawPart createTellraw(CommandSender sender, String message, Player player, ChatPlayer mp,
+			final String channelidentifier) {
+		TellrawPart json = new TellrawPart("");
+		if (mp != null && mp.ChatOnly) {
+			json.addExtra(new TellrawPart("[C]").setHoverEvent(
+					TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT, "Chat only")));
+		}
+		json.addExtra(
+				new TellrawPart(channelidentifier)
+						.setHoverEvent(
+								TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
+										new TellrawPart((sender instanceof IDiscordSender ? "From Discord\n" : "")
+												+ "Copy message").setColor(Color.Blue)))
+						.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAC,
+								TellrawEvent.ClickAction.SUGGEST_COMMAND, message)));
+		json.addExtra(new TellrawPart(" <"));
+		json.addExtra(
+				new TellrawPart(
+						(player != null ? player.getDisplayName() : sender.getName()))
+								.setHoverEvent(
+										TellrawEvent
+												.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
+														new TellrawPart("")
+																.addExtra(new TellrawPart(String.format("Flair: %s",
+																		(mp != null ? mp.GetFormattedFlair() : "-"))))
+																.addExtra(new TellrawPart(
+																		String.format("\nPlayername: %s\n",
+																				(player != null ? player.getName()
+																						: sender.getName())))
+																								.setColor(Color.Aqua))
+																.addExtra(new TellrawPart(String.format("World: %s\n",
+																		(player != null ? player.getWorld().getName()
+																				: "-"))))
+																.addExtra(new TellrawPart(String.format(
+																		"Respect: %s%s%s",
+																		(mp != null ? (mp.FCount().getOrDefault(0)
+																				/ (double) mp.FDeaths().getOrDefault(0))
+																				: "Infinite"),
+																		(mp != null && mp.UserName().get() != null
+																				&& !mp.UserName().get().isEmpty()
+																						? "\nUserName: "
+																								+ mp.UserName().get()
+																						: ""),
+																		(mp != null && mp.PlayerName().get()
+																				.equals("\nAlpha_Bacca44")
+																						? "\nDeaths: "
+																								+ PlayerListener.AlphaDeaths
+																						: ""))))
+																.addExtra(new TellrawPart("\nFor more, do /u info "
+																		+ sender.getName())))));
+		json.addExtra(new TellrawPart("> "));
+		return json;
+	}
+
+	static String getChannelID(Channel channel, CommandSender sender, ChatPlayer mp) {
+		final String channelidentifier = ("[" + (sender instanceof IDiscordSender ? "d|" : "") + channel.DisplayName)
+				+ "]" + (mp != null && !mp.RPMode ? "[OOC]" : "");
+		return channelidentifier;
+	}
+
+	static ArrayList<ChatFormatter> addFormatters(Color colormode) {
+		@SuppressWarnings("unchecked")
+		ArrayList<ChatFormatter> formatters = (ArrayList<ChatFormatter>) commonFormatters.clone();
+
+		formatters.add(new ChatFormatterBuilder().setRegex(ENTIRE_MESSAGE_PATTERN).setColor(colormode)
+				.setPriority(Priority.Low).build());
+
+		if (Bukkit.getOnlinePlayers().size() > 0) {
+			StringBuilder namesb = new StringBuilder("(?i)(");
+			for (Player p : Bukkit.getOnlinePlayers())
+				namesb.append(p.getName()).append("|");
+			namesb.deleteCharAt(namesb.length() - 1);
+			namesb.append(")");
+			StringBuilder nicksb = new StringBuilder("(?i)(");
+			boolean addNickFormatter = false;
+			final int size = Bukkit.getOnlinePlayers().size();
+			int index = 0;
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				final String nick = PlayerListener.nicknames.inverse().get(p.getUniqueId());
+				if (nick != null) {
+					nicksb.append(nick);
+					if (index < size - 1) {
+						nicksb.append("|");
+						addNickFormatter = true;
+					}
+				}
+				index++;
+			}
+			nicksb.append(")");
+
+			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(namesb.toString())).setColor(Color.Aqua)
+					.setOnmatch((String match) -> {
+						Player p = Bukkit.getPlayer(match);
+						if (p == null) {
+							PluginMain.Instance.getLogger()
+									.warning("Error: Can't find player " + match + " but was reported as online.");
+							return "§c" + match + "§r";
+						}
+						ChatPlayer mpp = TBMCPlayer.getPlayer(p.getUniqueId(), ChatPlayer.class);
+						if (PlayerListener.NotificationSound == null)
+							p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
+						else
+							p.playSound(p.getLocation(), PlayerListener.NotificationSound, 1.0f,
+									(float) PlayerListener.NotificationPitch);
+						String color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
+						return color + p.getName() + "§r";
+					}).setPriority(Priority.High).build());
+
+			if (addNickFormatter)
+				formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(nicksb.toString()))
+						.setColor(Color.Aqua).setOnmatch((String match) -> {
+							if (PlayerListener.nicknames.containsKey(match)) {
+								Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(match));
+								if (p == null) {
+									PluginMain.Instance.getLogger().warning("Error: Can't find player nicknamed "
+											+ match + " but was reported as online.");
+									return "§c" + match + "§r";
+								}
+								if (PlayerListener.NotificationSound == null)
+									p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f);
+								else
+									p.playSound(p.getLocation(), PlayerListener.NotificationSound, 1.0f,
+											(float) PlayerListener.NotificationPitch);
+								return PluginMain.essentials.getUser(p).getNickname();
+							}
+							Bukkit.getServer().getLogger().warning("Player nicknamed " + match
+									+ " not found in nickname map but was reported as online.");
+							return "§c" + match + "§r";
+						}).setPriority(Priority.High).build());
+		}
+		return formatters;
+	}
+
+	static void doFunStuff(CommandSender sender, String message) {
+		if (PlayerListener.ActiveF && !PlayerListener.Fs.contains(sender) && message.equalsIgnoreCase("F"))
+			PlayerListener.Fs.add(sender);
+
+		String msg = message.toLowerCase();
+		if (msg.contains("lol")) {
+			UnlolCommand.Lastlolornot = true;
+			UnlolCommand.Lastlol = sender;
+		} else {
+			for (int i = 0; i < PlayerListener.LaughStrings.length; i++) {
+				if (msg.contains(PlayerListener.LaughStrings[i])) {
+					UnlolCommand.Lastlol = sender;
+					UnlolCommand.Lastlolornot = false;
+					break;
+				}
+			}
+		}
 	}
 }

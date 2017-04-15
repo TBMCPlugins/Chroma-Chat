@@ -4,8 +4,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import buttondevteam.chat.ChatPlayer;
-import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.TBMCCommandBase;
+import buttondevteam.lib.player.TBMCPlayer;
 
 public final class OOCCommand extends TBMCCommandBase {
 
@@ -22,7 +22,7 @@ public final class OOCCommand extends TBMCCommandBase {
 		if (args.length == 0) {
 			return false;
 		} else {
-			final ChatPlayer cp = TBMCPlayer.getPlayerAs(player, ChatPlayer.class);
+			final ChatPlayer cp = TBMCPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class);
 			cp.RPMode = false;
 			String message = "";
 			for (String arg : args)

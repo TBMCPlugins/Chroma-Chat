@@ -6,70 +6,43 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import buttondevteam.lib.TBMCPlayer;
 import buttondevteam.lib.chat.*;
+import buttondevteam.lib.player.EnumPlayerData;
+import buttondevteam.lib.player.PlayerClass;
+import buttondevteam.lib.player.PlayerData;
+import buttondevteam.lib.player.TBMCPlayerBase;
 
-public class ChatPlayer extends TBMCPlayer {
-	public String getUserName() {
-		return getData();
+@PlayerClass(pluginname = "ButtonChat")
+public class ChatPlayer extends TBMCPlayerBase {
+	public PlayerData<String> UserName() {
+		return data();
 	}
 
-	public void setUserName(String name) {
-		setData(name);
+	public List<String> UserNames() {
+		PlayerData<List<String>> data = data();
+		if (data.get() == null)
+			data.set(new ArrayList<String>());
+		return data.get();
 	}
 
-	public List<String> getUserNames() {
-		List<String> data = getData();
-		if (data == null)
-			setUserNames(data = new ArrayList<String>());
-		return data;
+	public PlayerData<Integer> FlairTime() {
+		return data();
 	}
 
-	public void setUserNames(List<String> names) {
-		setData(names);
+	public EnumPlayerData<FlairStates> FlairState() {
+		return dataEnum(FlairStates.class);
 	}
 
-	public short getFlairTime() {
-		return getIntData(Short.class).orElse(FlairTimeNone);
+	public PlayerData<Integer> FCount() {
+		return data();
 	}
 
-	private void setFlairTime(short time) {
-		setIntData(time);
+	public PlayerData<Integer> FDeaths() {
+		return data();
 	}
 
-	public FlairStates getFlairState() {
-		FlairStates data = getEnumData(FlairStates.class);
-		if (data == null)
-			setFlairState(data = FlairStates.NoComment);
-		return data;
-	}
-
-	public void setFlairState(FlairStates state) {
-		setEnumData(state);
-	}
-
-	public int getFCount() {
-		return getIntData(Integer.class).orElse(0);
-	}
-
-	public void setFCount(int count) {
-		setIntData(count);
-	}
-
-	public int getFDeaths() {
-		return getIntData(Integer.class).orElse(0);
-	}
-
-	public void setFDeaths(int count) {
-		setIntData(count);
-	}
-
-	public boolean getFlairCheater() {
-		return getBoolData();
-	}
-
-	private void setFlairCheater(boolean cheater) {
-		setData(cheater);
+	public PlayerData<Boolean> FlairCheater() {
+		return data();
 	}
 
 	public boolean RPMode = true;
@@ -83,9 +56,9 @@ public class ChatPlayer extends TBMCPlayer {
 	public boolean ChatOnly = false;
 	public int LoginWarningCount = 0;
 
-	public static final short FlairTimeNonPresser = -1;
-	public static final short FlairTimeCantPress = -2;
-	public static final short FlairTimeNone = -3;
+	public static final int FlairTimeNonPresser = -1;
+	public static final int FlairTimeCantPress = -2;
+	public static final int FlairTimeNone = -3;
 
 	/**
 	 * Gets the player's flair, optionally formatting for Minecraft.
@@ -95,14 +68,15 @@ public class ChatPlayer extends TBMCPlayer {
 	 * @return The flair
 	 */
 	public String GetFormattedFlair(boolean noformats) {
-		if (getFlairTime() == FlairTimeCantPress)
+		int time = FlairTime().getOrDefault(FlairTimeNone);
+		if (time == FlairTimeCantPress)
 			return String.format(noformats ? "(can't press)" : "§r(--s)§r");
-		if (getFlairTime() == FlairTimeNonPresser)
+		if (time == FlairTimeNonPresser)
 			return String.format(noformats ? "(non-presser)" : "§7(--s)§r");
-		if (getFlairTime() == FlairTimeNone)
+		if (time == FlairTimeNone)
 			return "";
-		return noformats ? String.format("(%ss)", getFlairTime())
-				: String.format("§%x(%ss)§r", GetFlairColor(), getFlairTime());
+		return noformats ? String.format("(%ss)", FlairTime().get())
+				: String.format("§%x(%ss)§r", GetFlairColor(), FlairTime().get());
 	}
 
 	/**
@@ -114,14 +88,14 @@ public class ChatPlayer extends TBMCPlayer {
 		return GetFormattedFlair(false);
 	}
 
-	public void SetFlair(short time) {
-		setFlairTime(time);
+	public void SetFlair(int time) {
+		FlairTime().set(time);
 		FlairUpdate();
 	}
 
-	public void SetFlair(short time, boolean cheater) {
-		setFlairTime(time);
-		setFlairCheater(cheater);
+	public void SetFlair(int time, boolean cheater) {
+		FlairTime().set(time);
+		FlairCheater().set(cheater);
 		FlairUpdate();
 	}
 
@@ -129,29 +103,29 @@ public class ChatPlayer extends TBMCPlayer {
 
 		// Flairs from Command Block The Button - Teams
 		// PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard().getTeams().add()
-		Player p = Bukkit.getPlayer(getUuid());
+		Player p = Bukkit.getPlayer(uuid);
 		if (p != null)
 			p.setPlayerListName(String.format("%s%s", p.getName(), GetFormattedFlair()));
 	}
 
 	public short GetFlairColor() {
-		if (getFlairCheater())
+		if (FlairCheater().get())
 			return 0x5;
-		if (getFlairTime() == -1)
+		if (FlairTime().get() == -1)
 			return 0x7;
-		else if (getFlairTime() == -2)
+		else if (FlairTime().get() == -2)
 			return 0xf;
-		else if (getFlairTime() <= 60 && getFlairTime() >= 52)
+		else if (FlairTime().get() <= 60 && FlairTime().get() >= 52)
 			return 0x5;
-		else if (getFlairTime() <= 51 && getFlairTime() >= 42)
+		else if (FlairTime().get() <= 51 && FlairTime().get() >= 42)
 			return 0x9;
-		else if (getFlairTime() <= 41 && getFlairTime() >= 32)
+		else if (FlairTime().get() <= 41 && FlairTime().get() >= 32)
 			return 0xa;
-		else if (getFlairTime() <= 31 && getFlairTime() >= 22)
+		else if (FlairTime().get() <= 31 && FlairTime().get() >= 22)
 			return 0xe;
-		else if (getFlairTime() <= 21 && getFlairTime() >= 11)
+		else if (FlairTime().get() <= 21 && FlairTime().get() >= 11)
 			return 0x6;
-		else if (getFlairTime() <= 11 && getFlairTime() >= 0)
+		else if (FlairTime().get() <= 11 && FlairTime().get() >= 0)
 			return 0xc;
 		return 0xf;
 	}

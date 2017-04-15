@@ -11,6 +11,9 @@ class FormattedSection {
 	short RemCharFromStart;
 	short RemCharFromEnd;
 	ArrayList<Integer> RemCharPos = new ArrayList<Integer>();
+	/**
+	 * Is it a 1-long section indicating a start or an end
+	 */
 	boolean IsRange;
 
 	FormattedSection(ChatFormatter formatter, int start, int end, ArrayList<String> matches, short remcharfromstart,
