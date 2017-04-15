@@ -221,8 +221,8 @@ public class PlayerListener implements Listener {
 				public void run() {
 					if (ActiveF) {
 						ActiveF = false;
-						if (FPlayer != null && FPlayer.FCount().get() < Integer.MAX_VALUE - 1)
-							FPlayer.FCount().set(FPlayer.FCount().get() + Fs.size());
+						if (FPlayer != null && FPlayer.FCount().getOrDefault(0) < Integer.MAX_VALUE - 1)
+							FPlayer.FCount().set(FPlayer.FCount().getOrDefault(0) + Fs.size());
 						Bukkit.broadcastMessage("§b" + Fs.size() + " " + (Fs.size() == 1 ? "person" : "people")
 								+ " paid their respects.§r");
 						Fs.clear();

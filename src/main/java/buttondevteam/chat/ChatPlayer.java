@@ -75,8 +75,7 @@ public class ChatPlayer extends TBMCPlayerBase {
 			return String.format(noformats ? "(non-presser)" : "§7(--s)§r");
 		if (time == FlairTimeNone)
 			return "";
-		return noformats ? String.format("(%ss)", FlairTime().get())
-				: String.format("§%x(%ss)§r", GetFlairColor(), FlairTime().get());
+		return noformats ? String.format("(%ds)", time) : String.format("§%x(%ds)§r", GetFlairColor(), time);
 	}
 
 	/**
@@ -109,23 +108,24 @@ public class ChatPlayer extends TBMCPlayerBase {
 	}
 
 	public short GetFlairColor() {
-		if (FlairCheater().get())
+		if (FlairCheater().getOrDefault(false))
 			return 0x5;
-		if (FlairTime().get() == -1)
+		final int flairTime = FlairTime().getOrDefault(FlairTimeNone);
+		if (flairTime == FlairTimeNonPresser)
 			return 0x7;
-		else if (FlairTime().get() == -2)
+		else if (flairTime == FlairTimeCantPress)
 			return 0xf;
-		else if (FlairTime().get() <= 60 && FlairTime().get() >= 52)
+		else if (flairTime <= 60 && flairTime >= 52)
 			return 0x5;
-		else if (FlairTime().get() <= 51 && FlairTime().get() >= 42)
+		else if (flairTime <= 51 && flairTime >= 42)
 			return 0x9;
-		else if (FlairTime().get() <= 41 && FlairTime().get() >= 32)
+		else if (flairTime <= 41 && flairTime >= 32)
 			return 0xa;
-		else if (FlairTime().get() <= 31 && FlairTime().get() >= 22)
+		else if (flairTime <= 31 && flairTime >= 22)
 			return 0xe;
-		else if (FlairTime().get() <= 21 && FlairTime().get() >= 11)
+		else if (flairTime <= 21 && flairTime >= 11)
 			return 0x6;
-		else if (FlairTime().get() <= 11 && FlairTime().get() >= 0)
+		else if (flairTime <= 11 && flairTime >= 0)
 			return 0xc;
 		return 0xf;
 	}
