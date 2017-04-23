@@ -54,9 +54,4 @@ public class CCommand extends UCommandBase {
 		return true;
 	}
 
-	@Override
-	public String GetUCommandPath() {
-		return "c";
-	}
-
 }

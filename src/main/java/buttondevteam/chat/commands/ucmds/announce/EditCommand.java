@@ -42,9 +42,4 @@ public class EditCommand extends AnnounceCommandBase {
 		return true;
 	}
 
-	@Override
-	public String GetAnnounceCommandPath() {
-		return "edit";
-	}
-
 }

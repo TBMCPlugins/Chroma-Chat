@@ -5,8 +5,10 @@ import java.net.URLEncoder;
 
 import org.bukkit.command.CommandSender;
 
+import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.TBMCCommandBase;
 
+@CommandClass(modOnly = false)
 public class MWikiCommand extends TBMCCommandBase {
 
 	@Override
@@ -35,21 +37,6 @@ public class MWikiCommand extends TBMCCommandBase {
 			e.printStackTrace();
 		}
 		return true;
-	}
-
-	@Override
-	public String GetCommandPath() {
-		return "mwiki";
-	}
-
-	@Override
-	public boolean GetPlayerOnly() {
-		return false;
-	}
-
-	@Override
-	public boolean GetModOnly() {
-		return false;
 	}
 
 }

@@ -20,9 +20,4 @@ public class SaveCommand extends AdminCommandBase {
 		return true;
 	}
 
-	@Override
-	public String GetAdminCommandPath() {
-		return "save";
-	}
-
 }

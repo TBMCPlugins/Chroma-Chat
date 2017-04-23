@@ -6,8 +6,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.TBMCCommandBase;
 
+@CommandClass(modOnly = false)
 public final class UnlolCommand extends TBMCCommandBase {
 
 	public static CommandSender Lastlol = null;
@@ -34,20 +36,5 @@ public final class UnlolCommand extends TBMCCommandBase {
 			Lastlol = null;
 		}
 		return true;
-	}
-
-	@Override
-	public String GetCommandPath() {
-		return "unlol";
-	}
-
-	@Override
-	public boolean GetPlayerOnly() {
-		return false;
-	}
-
-	@Override
-	public boolean GetModOnly() {
-		return false;
 	}
 }

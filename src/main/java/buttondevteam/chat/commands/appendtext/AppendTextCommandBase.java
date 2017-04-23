@@ -6,10 +6,12 @@ import org.bukkit.entity.Player;
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.lib.chat.Channel;
+import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.chat.TBMCCommandBase;
 import buttondevteam.lib.player.TBMCPlayer;
 
+@CommandClass(modOnly = false)
 public abstract class AppendTextCommandBase extends TBMCCommandBase {
 
 	public abstract String[] GetHelpText(String alias);
@@ -30,15 +32,5 @@ public abstract class AppendTextCommandBase extends TBMCCommandBase {
 		else
 			TBMCChatAPI.SendChatMessage(Channel.GlobalChat, sender, msg);
 		return true;
-	}
-
-	@Override
-	public boolean GetPlayerOnly() {
-		return false;
-	}
-
-	@Override
-	public boolean GetModOnly() {
-		return false;
 	}
 }

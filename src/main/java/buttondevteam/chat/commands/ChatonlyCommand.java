@@ -8,7 +8,7 @@ import buttondevteam.chat.ChatPlayer;
 import buttondevteam.lib.chat.TBMCCommandBase;
 import buttondevteam.lib.player.TBMCPlayer;
 
-public final class ChatonlyCommand extends TBMCCommandBase {
+public final class ChatonlyCommand extends TBMCCommandBase { //TODO: Add annotation
 
 	@Override
 	public String[] GetHelpText(String alias) {
@@ -27,21 +27,6 @@ public final class ChatonlyCommand extends TBMCCommandBase {
 		player.setGameMode(GameMode.SPECTATOR);
 		player.sendMessage("§bChat-only mode enabled. You are now invincible.");
 		return true;
-	}
-
-	@Override
-	public String GetCommandPath() {
-		return "chatonly";
-	}
-
-	@Override
-	public boolean GetPlayerOnly() {
-		return false;
-	}
-
-	@Override
-	public boolean GetModOnly() {
-		return false;
 	}
 
 }

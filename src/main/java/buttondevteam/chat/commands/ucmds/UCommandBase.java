@@ -1,25 +1,13 @@
 package buttondevteam.chat.commands.ucmds;
 
-import buttondevteam.lib.chat.TBMCCommandBase;
+import buttondevteam.lib.chat.CommandClass;
+import buttondevteam.lib.chat.OptionallyPlayerCommandBase;
+import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
 
-public abstract class UCommandBase extends TBMCCommandBase {
+@CommandClass(modOnly = false, path = "u")
+@OptionallyPlayerCommandClass(playerOnly = false)
+public abstract class UCommandBase extends OptionallyPlayerCommandBase {
 
 	public abstract String[] GetHelpText(String alias);
 
-	@Override
-	public String GetCommandPath() {
-		return "u " + GetUCommandPath();
-	}
-
-	public abstract String GetUCommandPath();
-
-	@Override
-	public boolean GetPlayerOnly() {
-		return true;
-	}
-
-	@Override
-	public boolean GetModOnly() {
-		return false;
-	}
 }

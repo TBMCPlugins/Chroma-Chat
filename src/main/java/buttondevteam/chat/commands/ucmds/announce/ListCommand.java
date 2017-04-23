@@ -25,9 +25,4 @@ public class ListCommand extends AnnounceCommandBase {
 		return true;
 	}
 
-	@Override
-	public String GetAnnounceCommandPath() {
-		return "list";
-	}
-
 }

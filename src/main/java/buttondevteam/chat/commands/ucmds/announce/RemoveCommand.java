@@ -27,9 +27,4 @@ public class RemoveCommand extends AnnounceCommandBase {
 		return true;
 	}
 
-	@Override
-	public String GetAnnounceCommandPath() {
-		return "remove";
-	}
-
 }

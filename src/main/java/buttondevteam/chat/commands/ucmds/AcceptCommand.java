@@ -10,8 +10,12 @@ import buttondevteam.chat.FlairStates;
 import buttondevteam.chat.PlayerJoinTimerTask;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.TBMCCoreAPI;
+import buttondevteam.lib.chat.CommandClass;
+import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
 import buttondevteam.lib.player.TBMCPlayer;
 
+@CommandClass(modOnly = false)
+@OptionallyPlayerCommandClass(playerOnly = false)
 public class AcceptCommand extends UCommandBase {
 
 	@Override
@@ -90,11 +94,6 @@ public class AcceptCommand extends UCommandBase {
 		tt.mp = p;
 		timer.schedule(tt, 20);
 		return true;
-	}
-
-	@Override
-	public String GetUCommandPath() {
-		return "accept";
 	}
 
 }
