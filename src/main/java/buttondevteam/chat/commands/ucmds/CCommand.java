@@ -8,6 +8,8 @@ import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.chat.*;
 import buttondevteam.lib.player.TBMCPlayer;
 
+@CommandClass(modOnly = false)
+@OptionallyPlayerCommandClass(playerOnly = true)
 public class CCommand extends UCommandBase {
 
 	@Override

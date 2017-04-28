@@ -168,7 +168,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 				errorcount++;
 				if (errorcount >= 10) {
 					errorcount = 0;
-					TBMCCoreAPI.SendException("Error while getting flairs from Reddit!", e);
+					if (!e.getMessage().contains("Server returned HTTP response code"))
+						TBMCCoreAPI.SendException("Error while getting flairs from Reddit!", e);
 				}
 			}
 		}

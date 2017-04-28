@@ -5,8 +5,12 @@ import org.bukkit.entity.Player;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.FlairStates;
+import buttondevteam.lib.chat.CommandClass;
+import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
 import buttondevteam.lib.player.TBMCPlayer;
 
+@CommandClass(modOnly = false)
+@OptionallyPlayerCommandClass(playerOnly = true)
 public final class IgnoreCommand extends UCommandBase {
 
 	@Override
@@ -36,11 +40,6 @@ public final class IgnoreCommand extends UCommandBase {
 		} else
 			player.sendMessage("§cYou already ignored the message.§r");
 		return true;
-	}
-
-	@Override
-	public String GetUCommandPath() {
-		return "ignore";
 	}
 
 }

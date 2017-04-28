@@ -15,7 +15,7 @@ import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
 import buttondevteam.lib.player.TBMCPlayer;
 
 @CommandClass(modOnly = false)
-@OptionallyPlayerCommandClass(playerOnly = false)
+@OptionallyPlayerCommandClass(playerOnly = true)
 public class AcceptCommand extends UCommandBase {
 
 	@Override

@@ -6,9 +6,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import buttondevteam.chat.PluginMain;
+import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.chat.TBMCCommandBase;
 
+@CommandClass(modOnly = false)
 public final class HelpCommand extends UCommandBase {
 
 	@Override
@@ -35,8 +37,8 @@ public final class HelpCommand extends UCommandBase {
 			ArrayList<String> text = new ArrayList<String>();
 			text.add("§6---- Command list ----");
 			for (TBMCCommandBase cmd : TBMCChatAPI.GetCommands().values())
-				if (!cmd.GetModOnly() || PluginMain.permission.has(sender, "tbmc.admin"))
-					if (!cmd.GetPlayerOnly() || sender instanceof Player)
+				if (!cmd.getClass().getAnnotation(CommandClass.class).modOnly() || PluginMain.permission.has(sender, "tbmc.admin"))
+					if (!cmd.isPlayerOnly() || sender instanceof Player)
 						if (!cmd.GetCommandPath().contains(" "))
 							text.add("/" + cmd.GetCommandPath());
 						else {
@@ -78,15 +80,5 @@ public final class HelpCommand extends UCommandBase {
 		}
 		return true;
 
-	}
-
-	@Override
-	public String GetUCommandPath() {
-		return "help";
-	}
-
-	@Override
-	public boolean GetPlayerOnly() {
-		return false;
 	}
 }
