@@ -23,6 +23,7 @@ import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.formatting.*;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Channel;
+import buttondevteam.lib.chat.Channel.RecipientTestResult;
 import buttondevteam.lib.chat.TellrawSerializableEnum;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerBase;
@@ -122,125 +123,31 @@ public class ChatProcessing {
 			return true;
 		}
 		DebugCommand.SendDebugMessage(jsonstr);
-		if (channel.equals(Channel.TownChat) || channel.equals(Channel.NationChat)) {
-			if (player == null) {
-				sender.sendMessage("§cYou are not a player!");
-				return true;
-			}
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				try {
-					Resident resident = PluginMain.Instance.TU.getResidentMap().get(p.getName().toLowerCase());
-					if (resident != null && !resident.getName().equals(player.getName())
-							&& resident.getModes().contains("spy"))
-						Bukkit.getPlayer(resident.getName()).sendMessage(String.format("[SPY-%s] - %s: %s",
-								channel.DisplayName, player.getDisplayName(), message));
-				} catch (Exception e) {
-				}
-			}
-		}
+
 		try {
-			if (channel.equals(Channel.TownChat)) {
-				Town town = null;
-				try {
-					final Resident resident = PluginMain.Instance.TU.getResidentMap()
-							.get(player.getName().toLowerCase());
-					if (resident != null && resident.hasTown())
-						town = resident.getTown();
-				} catch (NotRegisteredException e) {
-				}
-				if (town == null) {
-					player.sendMessage("§cYou aren't in a town or an error occured.");
-					return true;
-				}
-				int index = PluginMain.Instance.Towns.indexOf(town);
-				if (index < 0) {
-					PluginMain.Instance.Towns.add(town);
-					index = PluginMain.Instance.Towns.size() - 1;
-				}
-				Objective obj = PluginMain.SB.getObjective("town");
-				for (Player p : Bukkit.getOnlinePlayers()) {
-					try {
-						if (town.getResidents().stream().anyMatch(r -> r.getName().equalsIgnoreCase(p.getName())))
-							obj.getScore(p.getName()).setScore(index);
+			if (channel.filteranderrormsg != null) {
+				Objective obj = PluginMain.SB.getObjective(channel.ID);
+				RecipientTestResult result = channel.filteranderrormsg.apply(player);
+				if (result.errormessage != null)
+					player.sendMessage("§c" + result.errormessage);
+				else
+					for (Player p : Bukkit.getOnlinePlayers()) {
+						if (p == player)
+							continue;
+						result = channel.filteranderrormsg.apply(p);
+						if (result.errormessage == null)
+							obj.getScore(p.getName()).setScore(result.score);
 						else
 							obj.getScore(p.getName()).setScore(-1);
-					} catch (Exception e) {
-						obj.getScore(p.getName()).setScore(-1);
 					}
-				}
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-						String.format("tellraw @a[score_town=%d,score_town_min=%d] %s", index, index, jsonstr));
-			} else if (channel.equals(Channel.NationChat)) {
-				Town town = null;
-				try {
-					final Resident resident = PluginMain.Instance.TU.getResidentMap()
-							.get(player.getName().toLowerCase());
-					if (resident != null && resident.hasTown())
-						town = resident.getTown();
-				} catch (NotRegisteredException e) {
-				}
-				if (town == null) {
-					player.sendMessage("§cYou aren't in a town or an error occured.");
-					return true;
-				}
-				Nation nation = null;
-				try {
-					nation = town.getNation();
-				} catch (NotRegisteredException e) {
-				}
-				if (nation == null) {
-					player.sendMessage("§cYour town isn't in a nation or an error occured.");
-					return true;
-				}
-				int index = PluginMain.Instance.Nations.indexOf(nation);
-				if (index < 0) {
-					PluginMain.Instance.Nations.add(nation);
-					index = PluginMain.Instance.Nations.size() - 1;
-				}
-				Objective obj = PluginMain.SB.getObjective("nation");
-				for (Player p : Bukkit.getOnlinePlayers()) {
-					try {
-						if (nation.getResidents().stream().anyMatch(r -> r.getName().equalsIgnoreCase(p.getName())))
-							obj.getScore(p.getName()).setScore(index);
-						else
-							obj.getScore(p.getName()).setScore(-1);
-					} catch (Exception e) {
-					}
-				}
-				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-						String.format("tellraw @a[score_nation=%d,score_nation_min=%d] %s", index, index, jsonstr));
-			} else if (channel.equals(Channel.AdminChat)) {
-				if (player != null && !player.isOp()) {
-					player.sendMessage("§cYou need to be an OP to use this channel.");
-					return true;
-				}
-				Objective obj = PluginMain.SB.getObjective("admin");
-				for (Player p : Bukkit.getOnlinePlayers()) {
-					if (p.isOp())
-						obj.getScore(p.getName()).setScore(1);
-					else
-						obj.getScore(p.getName()).setScore(0);
-				}
-				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-						String.format("tellraw @a[score_admin=%d,score_admin_min=%d] %s", 1, 1, jsonstr));
-			} else if (channel.equals(Channel.ModChat)) {
-				if (player != null && !PluginMain.permission.playerInGroup(player, "mod")) {
-					player.sendMessage("§cYou need to be a mod to use this channel.");
-					return true;
-				}
-				Objective obj = PluginMain.SB.getObjective("mod");
-				for (Player p : Bukkit.getOnlinePlayers()) {
-					if (PluginMain.permission.playerInGroup(p, "mod"))
-						obj.getScore(p.getName()).setScore(1);
-					else
-						obj.getScore(p.getName()).setScore(0);
-				}
-				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-						String.format("tellraw @a[score_mod=%d,score_mod_min=%d] %s", 1, 1, jsonstr));
+						String.format("tellraw @a[score_%s=%d,score_%s_min=%d] %s", channel.ID, result.score, jsonstr));
 			} else
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 						String.format("tellraw @a %s", jsonstr));
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			TBMCCoreAPI.SendException("An error occured while sending a chat message!", e);
 			player.sendMessage("§cAn error occured while sending the message.");
 			return true;

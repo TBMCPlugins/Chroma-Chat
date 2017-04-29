@@ -1,37 +1,23 @@
 package buttondevteam.chat.listener;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
-
-import com.palmergames.bukkit.towny.Towny;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import org.bukkit.event.*;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerChatTabCompleteEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import buttondevteam.chat.ChatPlayer;
-import buttondevteam.chat.ChatProcessing;
-import buttondevteam.chat.PluginMain;
+import buttondevteam.chat.*;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Channel;
+import buttondevteam.lib.chat.ChatChannelRegisterEvent;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerGetInfoEvent;
@@ -39,13 +25,6 @@ import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.object.Resident;
-import com.palmergames.bukkit.towny.object.Town;
-import com.palmergames.bukkit.towny.object.TownBlock;
-import com.palmergames.bukkit.towny.object.TownyUniverse;
-import com.palmergames.bukkit.towny.war.eventwar.War;
-import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
 
@@ -86,7 +65,7 @@ public class PlayerListener implements Listener {
 		if (index == -1) {
 			cmd = event.getMessage().substring(1);
 			for (Channel channel : Channel.getChannels()) {
-				if (cmd.equalsIgnoreCase(channel.Command)) {
+				if (cmd.equalsIgnoreCase(channel.ID)) {
 					if (mp.CurrentChannel.equals(channel))
 						mp.CurrentChannel = Channel.GlobalChat;
 					else
@@ -99,7 +78,7 @@ public class PlayerListener implements Listener {
 		} else {
 			cmd = event.getMessage().substring(1, index);
 			for (Channel channel : Channel.getChannels()) {
-				if (cmd.equalsIgnoreCase(channel.Command)) {
+				if (cmd.equalsIgnoreCase(channel.ID)) {
 					event.setCancelled(true);
 					Channel c = mp.CurrentChannel;
 					mp.CurrentChannel = channel;
@@ -119,42 +98,7 @@ public class PlayerListener implements Listener {
 				}
 			}
 		}
-		if (cmd.equalsIgnoreCase("sethome")) { // TODO: Move out?
-			TownyUniverse tu = PluginMain.Instance.TU;
-			try {
-				TownBlock tb = WorldCoord.parseWorldCoord(event.getPlayer()).getTownBlock();
-				if (tb.hasTown()) {
-					Town town = tb.getTown();
-					if (town.hasNation()) {
-						Resident res = tu.getResidentMap().get(event.getPlayer().getName());
-						if (res != null && res.hasTown()) {
-							Town town2 = res.getTown();
-							if (town2.hasNation()) {
-								if (town.getNation().getEnemies().contains(town2.getNation())) {
-									event.getPlayer().sendMessage("§cYou cannot set homes in enemy territory.");
-									event.setCancelled(true);
-									return;
-								}
-							}
-						}
-					}
-				}
-			} catch (NotRegisteredException e) {
-				return;
-			}
-		} else if (cmd.equalsIgnoreCase("home") || cmd.equalsIgnoreCase("tpa") || cmd.equalsIgnoreCase("tp")) {
-			String currentWorld = event.getPlayer().getLocation().getWorld().getName();
-			Location currentLocation = event.getPlayer().getLocation();
-			TownyUniverse universe = Towny.getPlugin(Towny.class).getTownyUniverse();
-			if (TownyUniverse.isWarTime()) {
-				War war = universe.getWarEvent();
-				if (war.isWarZone(
-						new WorldCoord(currentWorld, currentLocation.getBlockX(), currentLocation.getBlockZ()))) {
-					event.getPlayer().sendMessage("§cError: You can't teleport out of a war zone!");
-					event.setCancelled(true);
-				}
-			}
-		} else if (cmd.toLowerCase().startsWith("un")) {
+		if (cmd.toLowerCase().startsWith("un")) {
 			for (HelpTopic ht : PluginMain.Instance.getServer().getHelpMap().getHelpTopics()) {
 				if (ht.getName().equalsIgnoreCase("/" + cmd))
 					return;
@@ -172,15 +116,6 @@ public class PlayerListener implements Listener {
 					Bukkit.broadcastMessage(
 							event.getPlayer().getDisplayName() + " un" + s + "'d " + target.getDisplayName());
 					event.setCancelled(true);
-				}
-			}
-		}
-		if (cmd.equalsIgnoreCase("f")) {
-			String[] args = event.getMessage().substring(index + 1).split(" ");
-			if (args.length > 1) {
-				if (args[0].toLowerCase().equals("enemy") && args[1].equalsIgnoreCase("newhaven")) {
-					event.setCancelled(true);
-					event.getPlayer().sendMessage("§cYou are not allowed to set New Haven as your enemy faction.");
 				}
 			}
 		}
@@ -274,7 +209,7 @@ public class PlayerListener implements Listener {
 		if (index == -1) {
 			cmd = event.getCommand();
 			for (Channel channel : Channel.getChannels()) {
-				if (cmd.equalsIgnoreCase(channel.Command)) {
+				if (cmd.equalsIgnoreCase(channel.ID)) {
 					if (ConsoleChannel.equals(channel))
 						ConsoleChannel = Channel.GlobalChat;
 					else
@@ -287,7 +222,7 @@ public class PlayerListener implements Listener {
 		} else {
 			cmd = event.getCommand().substring(0, index);
 			for (Channel channel : Channel.getChannels()) {
-				if (cmd.equalsIgnoreCase(channel.Command)) {
+				if (cmd.equalsIgnoreCase(channel.ID)) {
 					Channel c = ConsoleChannel;
 					ConsoleChannel = channel;
 					TBMCChatAPI.SendChatMessage(PlayerListener.ConsoleChannel, Bukkit.getConsoleSender(),
@@ -348,5 +283,11 @@ public class PlayerListener implements Listener {
 						+ "> " + e.getMessage());
 			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex);
 		}
+	}
+
+	@EventHandler
+	public void onChannelRegistered(ChatChannelRegisterEvent e) {
+		if (e.getChannel().filteranderrormsg != null && PluginMain.SB.getObjective(e.getChannel().ID) == null) // Not global chat and doesn't exist yet
+			PluginMain.SB.registerNewObjective(e.getChannel().ID, "dummy");
 	}
 }

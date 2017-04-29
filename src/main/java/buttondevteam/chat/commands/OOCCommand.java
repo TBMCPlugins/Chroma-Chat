@@ -1,12 +1,10 @@
 package buttondevteam.chat.commands;
 
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.PlayerCommandBase;
-import buttondevteam.lib.chat.TBMCCommandBase;
 import buttondevteam.lib.player.TBMCPlayer;
 
 @CommandClass(modOnly = false)

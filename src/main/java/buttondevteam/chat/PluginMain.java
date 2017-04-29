@@ -47,11 +47,13 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	// https://www.reddit.com/r/thebutton/comments/31c32v/i_pressed_the_button_without_really_thinking/
 	public static PluginMain Instance;
 	public static ConsoleCommandSender Console;
-	public static Scoreboard SB;
 	public final static String FlairThreadURL = "https://www.reddit.com/r/Chromagamers/comments/51ys94/flair_thread_for_the_mc_server/";
-	public TownyUniverse TU;
-	public ArrayList<Town> Towns;
-	public ArrayList<Nation> Nations;
+
+	public static Scoreboard SB;
+	public static TownyUniverse TU;
+	public static ArrayList<Town> Towns;
+	public static ArrayList<Nation> Nations;
+
 	/**
 	 * <p>
 	 * This variable is used as a cache for flair state checking when reading the flair thread.
@@ -72,37 +74,17 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		Console = this.getServer().getConsoleSender();
 		LoadFiles();
 
-		SB = PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard(); // Main can be detected with @a[score_...]
-		if (SB.getObjective("town") == null)
-			SB.registerNewObjective("town", "dummy");
-		if (SB.getObjective("nation") == null)
-			SB.registerNewObjective("nation", "dummy");
-		if (SB.getObjective("admin") == null)
-			SB.registerNewObjective("admin", "dummy");
-		if (SB.getObjective("mod") == null)
-			SB.registerNewObjective("mod", "dummy");
+		SB = getServer().getScoreboardManager().getMainScoreboard(); // Main can be detected with @a[score_...]
 		TU = ((Towny) Bukkit.getPluginManager().getPlugin("Towny")).getTownyUniverse();
-		Towns = new ArrayList<Town>(TU.getTownsMap().values());
-		Nations = new ArrayList<Nation>(TU.getNationsMap().values());
+		Towns = new ArrayList<Town>(TU.getTownsMap().values()); // Creates a snapshot of towns, new towns will be added when needed
+		Nations = new ArrayList<Nation>(TU.getNationsMap().values()); // Same here but with nations
 
 		setupChat();
 		setupEconomy();
 		setupPermissions();
 
-		Runnable r = new Runnable() {
-			public void run() {
-				FlairGetterThreadMethod();
-			}
-		};
-		Thread t = new Thread(r);
-		t.start();
-		r = new Runnable() {
-			public void run() {
-				AnnouncerThread.Run();
-			}
-		};
-		t = new Thread(r);
-		t.start();
+		new Thread(() -> FlairGetterThreadMethod()).start();
+		new Thread(() -> AnnouncerThread.Run()).start();
 	}
 
 	public Boolean stop = false;

@@ -28,7 +28,7 @@ public final class UnlolCommand extends TBMCCommandBase {
 		if (Lastlol != null) {
 			if (Lastlol instanceof Player)
 				((Player) Lastlol)
-						.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 5, false, false));
+						.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 2 * 20, 5, false, false));
 			String msg = (sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName())
 					+ (Lastlolornot ? " unlolled " : " unlaughed ")
 					+ (Lastlol instanceof Player ? ((Player) Lastlol).getDisplayName() : Lastlol.getName());
