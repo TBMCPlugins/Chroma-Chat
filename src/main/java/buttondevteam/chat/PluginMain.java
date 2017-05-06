@@ -5,6 +5,7 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -17,7 +18,10 @@ import org.htmlcleaner.TagNode;
 import buttondevteam.chat.commands.YeehawCommand;
 import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.lib.TBMCCoreAPI;
+import buttondevteam.lib.chat.Channel;
+import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.TBMCChatAPI;
+import buttondevteam.lib.chat.Channel.RecipientTestResult;
 import buttondevteam.lib.player.TBMCPlayerBase;
 
 import com.earth2me.essentials.Essentials;
@@ -25,7 +29,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.palmergames.bukkit.towny.Towny;
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
+import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
 
@@ -54,6 +60,9 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	public static ArrayList<Town> Towns;
 	public static ArrayList<Nation> Nations;
 
+	public static Channel TownChat;
+	public static Channel NationChat;
+
 	/**
 	 * <p>
 	 * This variable is used as a cache for flair state checking when reading the flair thread.
@@ -79,12 +88,17 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		Towns = new ArrayList<Town>(TU.getTownsMap().values()); // Creates a snapshot of towns, new towns will be added when needed
 		Nations = new ArrayList<Nation>(TU.getNationsMap().values()); // Same here but with nations
 
+		TBMCChatAPI.RegisterChatChannel(
+				TownChat = new Channel("§3TC§f", Color.DarkAqua, "tc", s -> checkTownNationChat(s, false)));
+		TBMCChatAPI.RegisterChatChannel(
+				NationChat = new Channel("§6NC§f", Color.Gold, "nc", s -> checkTownNationChat(s, true)));
+
 		setupChat();
 		setupEconomy();
 		setupPermissions();
 
 		new Thread(() -> FlairGetterThreadMethod()).start();
-		new Thread(() -> AnnouncerThread.Run()).start();
+		new Thread(new AnnouncerThread()).start();
 	}
 
 	public Boolean stop = false;
@@ -305,5 +319,48 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		}
 
 		return (economy != null);
+	}
+
+	/**
+	 * Return the error message for the message sender if they can't send it and the score
+	 */
+	private static RecipientTestResult checkTownNationChat(CommandSender sender, boolean nationchat) {
+		if (!(sender instanceof Player))
+			return new RecipientTestResult("§cYou are not a player!");
+		try {
+			Resident resident = PluginMain.TU.getResidentMap().get(sender.getName().toLowerCase());
+			if (resident != null && resident.getModes().contains("spy"))
+				return null;
+			/*
+			 * p.sendMessage(String.format("[SPY-%s] - %s: %s", channel.DisplayName, ((Player) sender).getDisplayName(), message));
+			 */
+			Town town = null;
+			if (resident != null && resident.hasTown())
+				town = resident.getTown();
+			if (town == null)
+				return new RecipientTestResult("You aren't in a town.");
+			Nation nation = null;
+			int index = -1;
+			if (nationchat) {
+				if (town.hasNation())
+					nation = town.getNation();
+				if (nation == null)
+					return new RecipientTestResult("Your town isn't in a nation.");
+				index = PluginMain.Nations.indexOf(nation);
+				if (index < 0) {
+					PluginMain.Nations.add(nation);
+					index = PluginMain.Nations.size() - 1;
+				}
+			} else {
+				index = PluginMain.Towns.indexOf(town);
+				if (index < 0) {
+					PluginMain.Towns.add(town);
+					index = PluginMain.Towns.size() - 1;
+				}
+			}
+			return new RecipientTestResult(index);
+		} catch (NotRegisteredException e) {
+			return new RecipientTestResult("You (probably) aren't knwon by Towny! (Not in a town)");
+		}
 	}
 }

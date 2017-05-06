@@ -13,17 +13,12 @@ import org.bukkit.scoreboard.Objective;
 import com.earth2me.essentials.Essentials;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.object.Nation;
-import com.palmergames.bukkit.towny.object.Resident;
-import com.palmergames.bukkit.towny.object.Town;
-
 import buttondevteam.chat.commands.UnlolCommand;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.formatting.*;
+import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Channel;
-import buttondevteam.lib.chat.Channel.RecipientTestResult;
 import buttondevteam.lib.chat.TellrawSerializableEnum;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerBase;
@@ -83,8 +78,10 @@ public class ChatProcessing {
 				.registerTypeAdapter(boolean.class, new TellrawSerializer.TwBool()).disableHtmlEscaping().create();
 	}
 
-	// Returns e.setCancelled for custom event
-	public static boolean ProcessChat(Channel channel, CommandSender sender, String message) {
+	public static boolean ProcessChat(TBMCChatEvent e) {
+		Channel channel = e.getChannel();
+		CommandSender sender = e.getSender();
+		String message = e.getMessage();
 		long processstart = System.nanoTime();
 		if (PluginMain.essentials == null)
 			PluginMain.essentials = (Essentials) (Bukkit.getPluginManager().getPlugin("Essentials"));
@@ -127,28 +124,20 @@ public class ChatProcessing {
 		try {
 			if (channel.filteranderrormsg != null) {
 				Objective obj = PluginMain.SB.getObjective(channel.ID);
-				RecipientTestResult result = channel.filteranderrormsg.apply(player);
-				if (result.errormessage != null)
-					player.sendMessage("§c" + result.errormessage);
-				else
-					for (Player p : Bukkit.getOnlinePlayers()) {
-						if (p == player)
-							continue;
-						result = channel.filteranderrormsg.apply(p);
-						if (result.errormessage == null)
-							obj.getScore(p.getName()).setScore(result.score);
-						else
-							obj.getScore(p.getName()).setScore(-1);
-					}
-				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-						String.format("tellraw @a[score_%s=%d,score_%s_min=%d] %s", channel.ID, result.score, jsonstr));
+				int score;
+				obj.getScore(player.getUniqueId().toString()).setScore(score = e.getMCScore(player));
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					if (player == p)
+						continue;
+					obj.getScore(p.getUniqueId().toString()).setScore(e.getMCScore(p));
+				}
+				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console, String.format(
+						"tellraw @a[score_%s=%d,score_%s_min=%d] %s", channel.ID, score, channel.ID, score, jsonstr));
 			} else
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 						String.format("tellraw @a %s", jsonstr));
-		} catch (
-
-		Exception e) {
-			TBMCCoreAPI.SendException("An error occured while sending a chat message!", e);
+		} catch (Exception ex) {
+			TBMCCoreAPI.SendException("An error occured while sending a chat message!", ex);
 			player.sendMessage("§cAn error occured while sending the message.");
 			return true;
 		}

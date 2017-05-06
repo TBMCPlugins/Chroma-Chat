@@ -274,7 +274,7 @@ public class PlayerListener implements Listener {
 		try {
 			if (e.isCancelled())
 				return;
-			e.setCancelled(ChatProcessing.ProcessChat(e.getChannel(), e.getSender(), e.getMessage()));
+			e.setCancelled(ChatProcessing.ProcessChat(e));
 		} catch (Exception ex) {
 			for (Player p : Bukkit.getOnlinePlayers())
 				p.sendMessage("§c!§r["
