@@ -124,12 +124,9 @@ public class ChatProcessing {
 		try {
 			if (channel.filteranderrormsg != null) {
 				Objective obj = PluginMain.SB.getObjective(channel.ID);
-				int score;
-				obj.getScore(player.getUniqueId().toString()).setScore(score = e.getMCScore(player));
+				int score = -1;
 				for (Player p : Bukkit.getOnlinePlayers()) {
-					if (player == p)
-						continue;
-					obj.getScore(p.getUniqueId().toString()).setScore(e.getMCScore(p));
+					obj.getScore(p.getUniqueId().toString()).setScore(score = e.getMCScore(p));
 				}
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console, String.format(
 						"tellraw @a[score_%s=%d,score_%s_min=%d] %s", channel.ID, score, channel.ID, score, jsonstr));
@@ -138,7 +135,7 @@ public class ChatProcessing {
 						String.format("tellraw @a %s", jsonstr));
 		} catch (Exception ex) {
 			TBMCCoreAPI.SendException("An error occured while sending a chat message!", ex);
-			player.sendMessage("§cAn error occured while sending the message.");
+			sender.sendMessage("§cAn error occured while sending the message.");
 			return true;
 		}
 		PluginMain.Instance.getServer().getConsoleSender().sendMessage(String.format("%s <%s> %s", channelidentifier,
