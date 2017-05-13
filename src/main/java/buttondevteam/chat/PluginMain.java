@@ -40,6 +40,7 @@ import java.lang.String;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -149,24 +150,20 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 						}
 						PlayersWithFlairs.add(ign); // Don't redownload even if flair isn't accepted
 					}
-					try {
-						Thread.sleep(10);
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-				}
-				try {
-					Thread.sleep(10000);
-				} catch (InterruptedException ex) {
-					Thread.currentThread().interrupt();
 				}
 			} catch (Exception e) {
 				errorcount++;
 				if (errorcount >= 10) {
 					errorcount = 0;
-					if (!e.getMessage().contains("Server returned HTTP response code"))
+					if (!e.getMessage().contains("Server returned HTTP response code")
+							&& !(e instanceof UnknownHostException))
 						TBMCCoreAPI.SendException("Error while getting flairs from Reddit!", e);
 				}
+			}
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
 			}
 		}
 	}

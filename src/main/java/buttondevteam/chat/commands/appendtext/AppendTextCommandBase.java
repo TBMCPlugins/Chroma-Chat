@@ -11,7 +11,7 @@ import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.chat.TBMCCommandBase;
 import buttondevteam.lib.player.TBMCPlayer;
 
-@CommandClass(modOnly = false)
+@CommandClass(modOnly = false, excludeFromPath = true)
 public abstract class AppendTextCommandBase extends TBMCCommandBase {
 
 	public abstract String[] GetHelpText(String alias);
