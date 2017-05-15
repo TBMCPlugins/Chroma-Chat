@@ -1,13 +1,14 @@
 package buttondevteam.chat.commands;
 
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import buttondevteam.chat.ChatPlayer;
-import buttondevteam.lib.chat.TBMCCommandBase;
+import buttondevteam.lib.chat.CommandClass;
+import buttondevteam.lib.chat.PlayerCommandBase;
 import buttondevteam.lib.player.TBMCPlayer;
 
-public final class OOCCommand extends TBMCCommandBase {
+@CommandClass(modOnly = false)
+public final class OOCCommand extends PlayerCommandBase {
 
 	@Override
 	public String[] GetHelpText(String alias) {
@@ -17,8 +18,7 @@ public final class OOCCommand extends TBMCCommandBase {
 	}
 
 	@Override
-	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
-		Player player = (Player) sender;
+	public boolean OnCommand(Player player, String alias, String[] args) {
 		if (args.length == 0) {
 			return false;
 		} else {
@@ -31,21 +31,6 @@ public final class OOCCommand extends TBMCCommandBase {
 			cp.RPMode = true;
 		}
 		return true;
-	}
-
-	@Override
-	public String GetCommandPath() {
-		return "ooc";
-	}
-
-	@Override
-	public boolean GetPlayerOnly() {
-		return true;
-	}
-
-	@Override
-	public boolean GetModOnly() {
-		return false;
 	}
 
 }

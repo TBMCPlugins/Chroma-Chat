@@ -39,9 +39,4 @@ public class UpdatePlugin extends AdminCommandBase {
 		}
 	}
 
-	@Override
-	public String GetAdminCommandPath() {
-		return "updateplugin";
-	}
-
 }

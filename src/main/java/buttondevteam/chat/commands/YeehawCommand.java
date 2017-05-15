@@ -4,9 +4,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.TBMCCommandBase;
 import buttondevteam.lib.player.TBMCYEEHAWEvent;
 
+@CommandClass(modOnly = false)
 public class YeehawCommand extends TBMCCommandBase {
 
 	@Override
@@ -25,20 +27,5 @@ public class YeehawCommand extends TBMCCommandBase {
 		Bukkit.broadcastMessage(message);
 		Bukkit.getPluginManager().callEvent(new TBMCYEEHAWEvent(sender));
 		return true;
-	}
-
-	@Override
-	public String GetCommandPath() {
-		return "yeehaw";
-	}
-
-	@Override
-	public boolean GetPlayerOnly() {
-		return false;
-	}
-
-	@Override
-	public boolean GetModOnly() {
-		return false;
 	}
 }

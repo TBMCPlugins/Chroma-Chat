@@ -14,11 +14,6 @@ public class DebugCommand extends AdminCommandBase {
 	}
 
 	@Override
-	public String GetAdminCommandPath() {
-		return "debug";
-	}
-
-	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		sender.sendMessage("§eDebug mode " + ((DebugMode = !DebugMode) ? "§aenabled." : "§cdisabled."));
 		return true;

@@ -30,9 +30,4 @@ public class SetTimeCommand extends AnnounceCommandBase {
 		return true;
 	}
 
-	@Override
-	public String GetAnnounceCommandPath() {
-		return "settime";
-	}
-
 }

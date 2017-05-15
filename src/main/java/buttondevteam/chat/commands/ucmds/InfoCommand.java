@@ -3,10 +3,12 @@ package buttondevteam.chat.commands.ucmds;
 import org.bukkit.command.CommandSender;
 
 import buttondevteam.lib.TBMCCoreAPI;
+import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
 import buttondevteam.lib.player.TBMCPlayerBase;
 
+@CommandClass(modOnly = false)
 public class InfoCommand extends UCommandBase {
 
 	@Override
@@ -16,11 +18,6 @@ public class InfoCommand extends UCommandBase {
 				"Get some information known about the user.", //
 				"Usage: /" + alias + " info <playername>" //
 		};
-	}
-
-	@Override
-	public String GetUCommandPath() {
-		return "info";
 	}
 
 	@Override
@@ -43,10 +40,5 @@ public class InfoCommand extends UCommandBase {
 			sender.sendMessage("§cError while getting player information!");
 		}
 		return true;
-	}
-
-	@Override
-	public boolean GetPlayerOnly() {
-		return false;
 	}
 }

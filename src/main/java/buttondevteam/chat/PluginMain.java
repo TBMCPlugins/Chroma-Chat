@@ -5,6 +5,7 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -17,7 +18,10 @@ import org.htmlcleaner.TagNode;
 import buttondevteam.chat.commands.YeehawCommand;
 import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.lib.TBMCCoreAPI;
+import buttondevteam.lib.chat.Channel;
+import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.TBMCChatAPI;
+import buttondevteam.lib.chat.Channel.RecipientTestResult;
 import buttondevteam.lib.player.TBMCPlayerBase;
 
 import com.earth2me.essentials.Essentials;
@@ -25,7 +29,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.palmergames.bukkit.towny.Towny;
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
+import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
 
@@ -34,6 +40,7 @@ import java.lang.String;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -47,11 +54,16 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	// https://www.reddit.com/r/thebutton/comments/31c32v/i_pressed_the_button_without_really_thinking/
 	public static PluginMain Instance;
 	public static ConsoleCommandSender Console;
-	public static Scoreboard SB;
 	public final static String FlairThreadURL = "https://www.reddit.com/r/Chromagamers/comments/51ys94/flair_thread_for_the_mc_server/";
-	public TownyUniverse TU;
-	public ArrayList<Town> Towns;
-	public ArrayList<Nation> Nations;
+
+	public static Scoreboard SB;
+	public static TownyUniverse TU;
+	public static ArrayList<Town> Towns;
+	public static ArrayList<Nation> Nations;
+
+	public static Channel TownChat;
+	public static Channel NationChat;
+
 	/**
 	 * <p>
 	 * This variable is used as a cache for flair state checking when reading the flair thread.
@@ -72,37 +84,22 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		Console = this.getServer().getConsoleSender();
 		LoadFiles();
 
-		SB = PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard(); // Main can be detected with @a[score_...]
-		if (SB.getObjective("town") == null)
-			SB.registerNewObjective("town", "dummy");
-		if (SB.getObjective("nation") == null)
-			SB.registerNewObjective("nation", "dummy");
-		if (SB.getObjective("admin") == null)
-			SB.registerNewObjective("admin", "dummy");
-		if (SB.getObjective("mod") == null)
-			SB.registerNewObjective("mod", "dummy");
+		SB = getServer().getScoreboardManager().getMainScoreboard(); // Main can be detected with @a[score_...]
 		TU = ((Towny) Bukkit.getPluginManager().getPlugin("Towny")).getTownyUniverse();
-		Towns = new ArrayList<Town>(TU.getTownsMap().values());
-		Nations = new ArrayList<Nation>(TU.getNationsMap().values());
+		Towns = new ArrayList<Town>(TU.getTownsMap().values()); // Creates a snapshot of towns, new towns will be added when needed
+		Nations = new ArrayList<Nation>(TU.getNationsMap().values()); // Same here but with nations
+
+		TBMCChatAPI.RegisterChatChannel(
+				TownChat = new Channel("§3TC§f", Color.DarkAqua, "tc", s -> checkTownNationChat(s, false)));
+		TBMCChatAPI.RegisterChatChannel(
+				NationChat = new Channel("§6NC§f", Color.Gold, "nc", s -> checkTownNationChat(s, true)));
 
 		setupChat();
 		setupEconomy();
 		setupPermissions();
 
-		Runnable r = new Runnable() {
-			public void run() {
-				FlairGetterThreadMethod();
-			}
-		};
-		Thread t = new Thread(r);
-		t.start();
-		r = new Runnable() {
-			public void run() {
-				AnnouncerThread.Run();
-			}
-		};
-		t = new Thread(r);
-		t.start();
+		new Thread(() -> FlairGetterThreadMethod()).start();
+		new Thread(new AnnouncerThread()).start();
 	}
 
 	public Boolean stop = false;
@@ -153,23 +150,20 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 						}
 						PlayersWithFlairs.add(ign); // Don't redownload even if flair isn't accepted
 					}
-					try {
-						Thread.sleep(10);
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-				}
-				try {
-					Thread.sleep(10000);
-				} catch (InterruptedException ex) {
-					Thread.currentThread().interrupt();
 				}
 			} catch (Exception e) {
 				errorcount++;
 				if (errorcount >= 10) {
 					errorcount = 0;
-					TBMCCoreAPI.SendException("Error while getting flairs from Reddit!", e);
+					if (!e.getMessage().contains("Server returned HTTP response code")
+							&& !(e instanceof UnknownHostException))
+						TBMCCoreAPI.SendException("Error while getting flairs from Reddit!", e);
 				}
+			}
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
 			}
 		}
 	}
@@ -322,5 +316,48 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		}
 
 		return (economy != null);
+	}
+
+	/**
+	 * Return the error message for the message sender if they can't send it and the score
+	 */
+	private static RecipientTestResult checkTownNationChat(CommandSender sender, boolean nationchat) {
+		if (!(sender instanceof Player))
+			return new RecipientTestResult("§cYou are not a player!");
+		try {
+			Resident resident = PluginMain.TU.getResidentMap().get(sender.getName().toLowerCase());
+			if (resident != null && resident.getModes().contains("spy"))
+				return null;
+			/*
+			 * p.sendMessage(String.format("[SPY-%s] - %s: %s", channel.DisplayName, ((Player) sender).getDisplayName(), message));
+			 */
+			Town town = null;
+			if (resident != null && resident.hasTown())
+				town = resident.getTown();
+			if (town == null)
+				return new RecipientTestResult("You aren't in a town.");
+			Nation nation = null;
+			int index = -1;
+			if (nationchat) {
+				if (town.hasNation())
+					nation = town.getNation();
+				if (nation == null)
+					return new RecipientTestResult("Your town isn't in a nation.");
+				index = PluginMain.Nations.indexOf(nation);
+				if (index < 0) {
+					PluginMain.Nations.add(nation);
+					index = PluginMain.Nations.size() - 1;
+				}
+			} else {
+				index = PluginMain.Towns.indexOf(town);
+				if (index < 0) {
+					PluginMain.Towns.add(town);
+					index = PluginMain.Towns.size() - 1;
+				}
+			}
+			return new RecipientTestResult(index);
+		} catch (NotRegisteredException e) {
+			return new RecipientTestResult("You (probably) aren't knwon by Towny! (Not in a town)");
+		}
 	}
 }

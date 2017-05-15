@@ -1,25 +1,13 @@
 package buttondevteam.chat.commands.ucmds.announce;
 
 import buttondevteam.chat.commands.ucmds.UCommandBase;
+import buttondevteam.lib.chat.CommandClass;
+import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
 
+@CommandClass(modOnly = true)
+@OptionallyPlayerCommandClass(playerOnly = false)
 public abstract class AnnounceCommandBase extends UCommandBase {
 
 	public abstract String[] GetHelpText(String alias);
 
-	@Override
-	public String GetUCommandPath() {
-		return "announce " + GetAnnounceCommandPath();
-	}
-
-	public abstract String GetAnnounceCommandPath();
-
-	@Override
-	public boolean GetPlayerOnly() {
-		return false;
-	}
-
-	@Override
-	public boolean GetModOnly() {
-		return true;
-	}
 }

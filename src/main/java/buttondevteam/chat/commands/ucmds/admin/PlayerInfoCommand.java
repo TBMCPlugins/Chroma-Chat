@@ -40,9 +40,4 @@ public class PlayerInfoCommand extends AdminCommandBase {
 		return true;
 	}
 
-	@Override
-	public String GetAdminCommandPath() {
-		return "playerinfo";
-	}
-
 }

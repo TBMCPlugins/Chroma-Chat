@@ -34,9 +34,4 @@ public class AddCommand extends AnnounceCommandBase {
 		return true;
 	}
 
-	@Override
-	public String GetAnnounceCommandPath() {
-		return "add";
-	}
-
 }

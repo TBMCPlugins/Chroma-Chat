@@ -2,10 +2,11 @@ package buttondevteam.chat;
 
 import org.bukkit.Bukkit;
 
-public class AnnouncerThread {
+public class AnnouncerThread implements Runnable {
 	private static int AnnounceMessageIndex = 0;
 
-	public static void Run() {
+	@Override
+	public void run() {
 		while (!PluginMain.Instance.stop) {
 			try {
 				Thread.sleep(PluginMain.AnnounceTime);

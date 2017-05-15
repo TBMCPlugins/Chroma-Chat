@@ -68,9 +68,4 @@ public class SetFlairCommand extends AdminCommandBase {
 		return true;
 	}
 
-	@Override
-	public String GetAdminCommandPath() {
-		return "setflair";
-	}
-
 }
