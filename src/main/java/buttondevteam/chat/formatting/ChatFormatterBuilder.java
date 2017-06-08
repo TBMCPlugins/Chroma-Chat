@@ -17,12 +17,11 @@ public class ChatFormatterBuilder {
 	private String openlink;
 	private Priority priority;
 	private short removecharcount = 0;
-	private short removecharpos = -1;
 	private boolean range = false;
 
 	public ChatFormatter build() {
 		return new ChatFormatter(regex, italic, bold, underlined, strikethrough, obfuscated, color, onmatch, openlink,
-				priority, removecharcount, removecharpos, range);
+				priority, removecharcount, range);
 	}
 
 	public Pattern getRegex() {
@@ -126,20 +125,6 @@ public class ChatFormatterBuilder {
 	 */
 	public ChatFormatterBuilder setRemoveCharCount(short removecharcount) {
 		this.removecharcount = removecharcount;
-		return this;
-	}
-
-	public short getRemoveCharPos() {
-		return removecharpos;
-	}
-
-	/**
-	 * Sets the position where a single character should be removed. Setting -1 will disable it.
-	 * 
-	 * @return This instance
-	 */
-	public ChatFormatterBuilder setRemoveCharPos(short removecharpos) {
-		this.removecharpos = removecharpos;
 		return this;
 	}
 
