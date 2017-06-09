@@ -209,25 +209,34 @@ public final class ChatFormatter {
 				 * (short) (thirdFormattedSection.RemCharFromEnd - rc2end); firstSection.RemCharFromStart = rc1start; section.RemCharFromStart = rc2start; thirdFormattedSection.RemCharFromEnd =
 				 * rc3end; firstSection.RemCharFromEnd = thirdFormattedSection.RemCharFromStart = 0;
 				 */
-				BiPredicate<int[], Integer> isBetween = (arr, num) -> arr[0] <= num && arr[1] >= num;
-				if (isBetween.test(rc[0][0], section.Start)) {
+				// BiPredicate<int[], Integer> isBetween = (arr, num) -> arr[0] <= num && arr[1] >= num;
+				if (rc[0][0][0] <= section.Start && rc[0][0][1] >= section.Start) {
 					rc[1][0] = new int[] { section.Start, rc[0][0][1] };
 					rc[0][0][1] = section.Start - 1;
 				}
-				if (isBetween.test(rc[0][1], section.End)) {
-					rc[1][1] = new int[] { section.End, rc[0][1][1] };
+				if (rc[0][1][0] >= section.End && rc[0][1][1] <= section.End) {
+					rc[1][1] = new int[] { rc[0][1][1], section.End };
 					rc[0][1][1] = section.End - 1;
 				}
-				Function<int[], Integer> getRemChar = arr -> arr[1] - arr[0];
-				firstSection.RemCharFromStart = (short) (int) getRemChar.apply(rc[0][0]);
-				firstSection.RemCharFromEnd = (short) (int) getRemChar.apply(rc[0][1]);
-				section.RemCharFromStart = (short) (int) getRemChar.apply(rc[1][0]);
-				section.RemCharFromEnd = (short) (int) getRemChar.apply(rc[1][1]);
-				thirdFormattedSection.RemCharFromStart = (short) (int) getRemChar.apply(rc[2][0]);
-				thirdFormattedSection.RemCharFromEnd = (short) (int) getRemChar.apply(rc[2][1]);
+				if (rc[2][0][0] <= section.Start && rc[2][0][1] >= section.Start) { // TODO
+					rc[1][0] = new int[] { section.Start, rc[2][0][1] };
+					rc[2][0][1] = section.Start - 1;
+				}
+				if (rc[2][1][0] >= section.End && rc[2][1][1] <= section.End) { // TODO
+					rc[1][1] = new int[] { rc[2][1][1], section.End };
+					rc[2][1][1] = section.End - 1;
+				}
+				Function<int[], Integer> getRemCharStart = arr -> arr[1] - arr[0];
+				Function<int[], Integer> getRemCharEnd = arr -> arr[0] - arr[1];
+				firstSection.RemCharFromStart = (short) (int) getRemCharStart.apply(rc[0][0]);
+				firstSection.RemCharFromEnd = (short) (int) getRemCharEnd.apply(rc[0][1]);
+				section.RemCharFromStart = (short) (int) getRemCharStart.apply(rc[1][0]);
+				section.RemCharFromEnd = (short) (int) getRemCharEnd.apply(rc[1][1]);
+				thirdFormattedSection.RemCharFromStart = (short) (int) getRemCharStart.apply(rc[2][0]);
+				thirdFormattedSection.RemCharFromEnd = (short) (int) getRemCharEnd.apply(rc[2][1]);
 
 				ArrayList<FormattedSection> sts = sections;
-				Predicate<FormattedSection> removeIfNeede = s -> {
+				Predicate<FormattedSection> removeIfNeeded = s -> {
 					if (s.Start < 0 || s.End < 0 || s.Start > s.End || s.RemCharFromStart < 0 || s.RemCharFromEnd < 0) {
 						DebugCommand.SendDebugMessage("Removing section: " + s);
 						sendMessageWithPointer(str, s.Start, s.End);
@@ -238,15 +247,15 @@ public final class ChatFormatter {
 				};
 
 				DebugCommand.SendDebugMessage("To sections");
-				if (!removeIfNeede.test(firstSection)) {
-					DebugCommand.SendDebugMessage("1:" + firstSection + "");
+				if (!removeIfNeeded.test(firstSection)) {
+					DebugCommand.SendDebugMessage("  1:" + firstSection + "");
 					sendMessageWithPointer(str, firstSection.Start, firstSection.End);
 				}
-				if (!removeIfNeede.test(section)) {
+				if (!removeIfNeeded.test(section)) {
 					DebugCommand.SendDebugMessage("  2:" + section + "");
 					sendMessageWithPointer(str, section.Start, section.End);
 				}
-				if (!removeIfNeede.test(thirdFormattedSection)) {
+				if (!removeIfNeeded.test(thirdFormattedSection)) {
 					DebugCommand.SendDebugMessage("  3:" + thirdFormattedSection);
 					sendMessageWithPointer(str, thirdFormattedSection.Start, thirdFormattedSection.End);
 				}
