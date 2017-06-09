@@ -51,12 +51,14 @@ public final class ChatFormatter {
 		/*
 		 * This method assumes that there is always a global formatter
 		 */
+		header("ChatFormatter.Combine begin");
 		ArrayList<FormattedSection> sections = new ArrayList<FormattedSection>();
 		for (ChatFormatter formatter : formatters) {
 			Matcher matcher = formatter.regex.matcher(str);
 			while (matcher.find()) {
 				DebugCommand.SendDebugMessage("Found match from " + matcher.start() + " to " + (matcher.end() - 1));
 				DebugCommand.SendDebugMessage("With formatter:" + formatter);
+				sendMessageWithPointer(str, matcher.start(), matcher.end() - 1);
 				ArrayList<String> groups = new ArrayList<String>();
 				for (int i = 0; i < matcher.groupCount(); i++)
 					groups.add(matcher.group(i + 1));
@@ -71,6 +73,8 @@ public final class ChatFormatter {
 				? s1.End == s2.End ? Integer.compare(s2.Formatters.get(0).priority.GetValue(),
 						s1.Formatters.get(0).priority.GetValue()) : Integer.compare(s2.End, s1.End)
 				: Integer.compare(s1.Start, s2.Start));
+
+		header("Range section conversion");
 		ArrayList<FormattedSection> combined = new ArrayList<>();
 		Map<ChatFormatter, FormattedSection> nextSection = new HashMap<>();
 		boolean escaped = false;
@@ -85,12 +89,14 @@ public final class ChatFormatter {
 					section.RemCharFromStart = 1;
 				combined.add(section);
 				DebugCommand.SendDebugMessage("Added " + (!escaped ? "not " : "") + "escaped section: " + section);
+				sendMessageWithPointer(str, section.Start, section.End);
 				continue;
 			}
 			if (!escaped) {
 				if (combined.stream().anyMatch(s -> s.IsRange && (s.Start == section.Start
 						|| (s.Start < section.Start ? s.End >= section.Start : s.Start <= section.End)))) {
 					DebugCommand.SendDebugMessage("Range " + section + " overlaps with a combined section, ignoring.");
+					sendMessageWithPointer(str, section.Start, section.End);
 					continue;
 				}
 				if (section.Start == takenStart || (section.Start > takenStart && section.Start < takenEnd)) {
@@ -98,13 +104,15 @@ public final class ChatFormatter {
 					 * if (nextSection.containsKey(section.Formatters.get(0)) ? section.RemCharFromStart <= takenEnd - takenStart : section.RemCharFromStart > takenEnd - takenStart) {
 					 */
 					if (section.RemCharFromStart < takenEnd - takenStart) {
-						System.out.println("Lose: " + section);
-						System.out.println("And win: " + takenFormatter);
+						DebugCommand.SendDebugMessage("Lose: " + section);
+						sendMessageWithPointer(str, section.Start, section.End);
+						DebugCommand.SendDebugMessage("And win: " + takenFormatter);
 						continue; // The current section loses
 					}
 					nextSection.remove(takenFormatter); // The current section wins
-					System.out.println("Win: " + section);
-					System.out.println("And lose: " + takenFormatter);
+					DebugCommand.SendDebugMessage("Win: " + section);
+					sendMessageWithPointer(str, section.Start, section.End);
+					DebugCommand.SendDebugMessage("And lose: " + takenFormatter);
 				}
 				takenStart = section.Start;
 				takenEnd = section.Start + section.RemCharFromStart;
@@ -115,17 +123,23 @@ public final class ChatFormatter {
 					// s.IsRange = false; // IsRange means it's a 1 long section indicating a start or an end
 					combined.add(s);
 					DebugCommand.SendDebugMessage("Finished section: " + s);
+					sendMessageWithPointer(str, s.Start, s.End);
 				} else {
 					DebugCommand.SendDebugMessage("Adding next section: " + section);
+					sendMessageWithPointer(str, section.Start, section.End);
 					nextSection.put(section.Formatters.get(0), section);
 				}
 				DebugCommand
 						.SendDebugMessage("New area taken: (" + takenStart + "-" + takenEnd + ") " + takenFormatter);
+				sendMessageWithPointer(str, takenStart, takenEnd);
 			} else {
 				DebugCommand.SendDebugMessage("Skipping section: " + section);
+				sendMessageWithPointer(str, section.Start, section.End);
 				escaped = false; // Reset escaping if applied, like if we're at the '*' in '\*'
 			}
 		}
+
+		header("Section combining");
 		sections = combined;
 		boolean cont = true;
 		boolean found = false;
@@ -203,6 +217,8 @@ public final class ChatFormatter {
 					cont = false;
 			}
 		}
+
+		header("Section applying");
 		for (int i = 0; i < sections.size(); i++) {
 			FormattedSection section = sections.get(i);
 			DebugCommand.SendDebugMessage("Applying section: " + section);
@@ -252,6 +268,7 @@ public final class ChatFormatter {
 			}
 			tp.addExtra(newtp);
 		}
+		header("ChatFormatter.Combine done");
 	}
 
 	@Override
@@ -261,5 +278,28 @@ public final class ChatFormatter {
 						+ (strikethrough ? "strikethrough" : "") + (obfuscated ? "obfuscated" : ""))
 				.append(", ").append(openlink).append(", ").append(priority).append(", ").append(regex).append(")")
 				.toString();
+	}
+
+	/**
+	 * 
+	 * @param str
+	 * @param pointer
+	 *            This must be ordered ascending
+	 */
+	private static void sendMessageWithPointer(String str, int... pointer) {
+		DebugCommand.SendDebugMessage(str);
+		StringBuilder sb = new StringBuilder(str.length());
+		for (int i = 0; i < pointer.length; i++) {
+			for (int j = 0; j < pointer[i] - (i > 0 ? pointer[i - 1] + 1 : 0); j++)
+				sb.append(' ');
+			if (pointer[i] == (i > 0 ? pointer[i - 1] : -1))
+				continue;
+			sb.append('^');
+		}
+		DebugCommand.SendDebugMessage(sb.toString());
+	}
+
+	private static void header(String message) {
+		DebugCommand.SendDebugMessage("\n--------\n" + message + "\n--------\n");
 	}
 }
