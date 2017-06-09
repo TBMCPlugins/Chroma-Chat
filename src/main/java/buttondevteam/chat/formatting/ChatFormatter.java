@@ -67,12 +67,10 @@ public final class ChatFormatter {
 				sections.add(section);
 			}
 		}
-		sections.sort((s1, s2) -> {
-			if (s1.Start == s2.Start)
-				return Integer.compare(s1.End, s2.End);
-			else
-				return Integer.compare(s1.Start, s2.Start);
-		});
+		sections.sort((s1, s2) -> s1.Start == s2.Start
+				? s1.End == s2.End ? Integer.compare(s2.Formatters.get(0).priority.GetValue(),
+						s1.Formatters.get(0).priority.GetValue()) : Integer.compare(s2.End, s1.End)
+				: Integer.compare(s1.Start, s2.Start));
 		ArrayList<FormattedSection> combined = new ArrayList<>();
 		Map<ChatFormatter, FormattedSection> nextSection = new HashMap<>();
 		boolean escaped = false;
@@ -90,8 +88,16 @@ public final class ChatFormatter {
 				continue;
 			}
 			if (!escaped) {
-				if (section.Start >= takenStart && section.Start <= takenEnd) {
-					if (section.RemCharFromStart <= takenEnd - takenStart) {
+				if (combined.stream().anyMatch(s -> s.IsRange && (s.Start == section.Start
+						|| (s.Start < section.Start ? s.End >= section.Start : s.Start <= section.End)))) {
+					DebugCommand.SendDebugMessage("Range " + section + " overlaps with a combined section, ignoring.");
+					continue;
+				}
+				if (section.Start == takenStart || (section.Start > takenStart && section.Start < takenEnd)) {
+					/*
+					 * if (nextSection.containsKey(section.Formatters.get(0)) ? section.RemCharFromStart <= takenEnd - takenStart : section.RemCharFromStart > takenEnd - takenStart) {
+					 */
+					if (section.RemCharFromStart < takenEnd - takenStart) {
 						System.out.println("Lose: " + section);
 						System.out.println("And win: " + takenFormatter);
 						continue; // The current section loses
@@ -106,7 +112,7 @@ public final class ChatFormatter {
 				if (nextSection.containsKey(section.Formatters.get(0))) {
 					FormattedSection s = nextSection.remove(section.Formatters.get(0));
 					s.End = section.Start + section.RemCharFromStart - 1;
-					s.IsRange = false; // IsRange means it's a 1 long section indicating a start or an end
+					// s.IsRange = false; // IsRange means it's a 1 long section indicating a start or an end
 					combined.add(s);
 					DebugCommand.SendDebugMessage("Finished section: " + s);
 				} else {
@@ -176,7 +182,8 @@ public final class ChatFormatter {
 				found = true;
 			}
 			for (int j = i - 1; j <= i + 1; j++) {
-				if (j < sections.size() && sections.get(j).End < sections.get(j).Start) {
+				if (j < sections.size() && sections.get(j).End - sections.get(j).RemCharFromEnd < sections.get(j).Start
+						+ sections.get(j).RemCharFromStart) {
 					DebugCommand.SendDebugMessage("Removing section: " + sections.get(j));
 					sections.remove(j);
 					found = true;
@@ -188,12 +195,10 @@ public final class ChatFormatter {
 				if (found) {
 					i = 1;
 					found = false;
-					sections.sort((s1, s2) -> {
-						if (s1.Start == s2.Start)
-							return Integer.compare(s1.End, s2.End);
-						else
-							return Integer.compare(s1.Start, s2.Start);
-					});
+					sections.sort((s1, s2) -> s1.Start == s2.Start
+							? s1.End == s2.End ? Integer.compare(s2.Formatters.get(0).priority.GetValue(),
+									s1.Formatters.get(0).priority.GetValue()) : Integer.compare(s2.End, s1.End)
+							: Integer.compare(s1.Start, s2.Start));
 				} else
 					cont = false;
 			}
@@ -203,6 +208,7 @@ public final class ChatFormatter {
 			DebugCommand.SendDebugMessage("Applying section: " + section);
 			String originaltext;
 			int start = section.Start + section.RemCharFromStart, end = section.End + 1 - section.RemCharFromEnd; // TODO: RemCharPos
+			DebugCommand.SendDebugMessage("Start: " + start + " - End: " + end);
 			StringBuilder textsb = new StringBuilder(str.substring(start, end));
 			originaltext = textsb.toString();
 			DebugCommand.SendDebugMessage("Section text: " + originaltext);

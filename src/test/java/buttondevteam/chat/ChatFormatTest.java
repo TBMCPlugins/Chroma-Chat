@@ -21,11 +21,11 @@ public class ChatFormatTest extends TestCase {
 		DebugCommand.DebugMode = true;
 		testMessage(sender, "*test*", new TellrawPart("test").setItalic(true).setColor(Color.White));
 		testMessage(sender, "**test**", new TellrawPart("test").setBold(true).setColor(Color.White));
-		/*testMessage(sender, "***test***", new TellrawPart("test").setBold(true).setItalic(true).setColor(Color.White));
+		testMessage(sender, "***test***", new TellrawPart("test").setBold(true).setItalic(true).setColor(Color.White));
 		testMessage(sender, "***_test_***",
 				new TellrawPart("test").setBold(true).setItalic(true).setUnderlined(true).setColor(Color.White));
 		testMessage(sender, "***_~~test~~_***", new TellrawPart("test").setBold(true).setItalic(true)
-				.setUnderlined(true).setStrikethrough(true).setColor(Color.White));*/
+				.setUnderlined(true).setStrikethrough(true).setColor(Color.White));
 	}
 
 	void testMessage(final CommandSender sender, final String message, TellrawPart... extras) {

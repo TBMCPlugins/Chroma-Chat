@@ -50,7 +50,7 @@ public class ChatProcessing {
 
 	static {
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setBold(true)
-				.setRemoveCharCount((short) 2).setRange(true).build());
+				.setRemoveCharCount((short) 2).setRange(true).setPriority(Priority.High).build());
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setItalic(true)
 				.setRemoveCharCount((short) 1).setRange(true).build());
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN).setUnderlined(true)
