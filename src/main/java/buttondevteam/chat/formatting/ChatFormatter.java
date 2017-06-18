@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -170,11 +169,11 @@ public final class ChatFormatter {
 				int[][][] rc = new int[3][2][2]; // Remove characters - Section start/end positions
 				// [section number][start/end][remchar start/end]
 				rc[0][0] = new int[] { firstSection.Start, firstSection.Start + firstSection.RemCharFromStart };
-				rc[0][1] = new int[] { firstSection.End, firstSection.End - firstSection.RemCharFromEnd };
+				rc[0][1] = new int[] { firstSection.End - firstSection.RemCharFromEnd, firstSection.End }; // Keep it in ascending order
 				// The third section doesn't have characters to remove yet
 				rc[2] = new int[][] {
 						{ sections.get(i).Start, sections.get(i).Start + sections.get(i).RemCharFromStart },
-						{ sections.get(i).End, sections.get(i).End - sections.get(i).RemCharFromEnd } };
+						{ sections.get(i).End - sections.get(i).RemCharFromEnd, sections.get(i).End } }; // Keep it in ascending order
 				int origend = firstSection.End;
 				firstSection.End = sections.get(i).Start - 1;
 				int origend2 = sections.get(i).End;
@@ -200,40 +199,30 @@ public final class ChatFormatter {
 				}
 				thirdFormattedSection.Start = origend + 1;
 				thirdFormattedSection.End = origend2;
-				// rc1start = (short) Math.min(section.Start - firstSection.Start, firstSection.RemCharFromStart);
-				/*
-				 * rc1end = rc1start == firstSection.RemCharFromStart ? Math.min(section.Start - firstSection.End, firstSection.RemCharFromEnd) : 0;
-				 */
-				/*
-				 * rc2start = (short) (firstSection.RemCharFromStart - rc1start); rc2end = (short) Math.min(thirdFormattedSection.End - section.End, thirdFormattedSection.RemCharFromEnd); rc3end =
-				 * (short) (thirdFormattedSection.RemCharFromEnd - rc2end); firstSection.RemCharFromStart = rc1start; section.RemCharFromStart = rc2start; thirdFormattedSection.RemCharFromEnd =
-				 * rc3end; firstSection.RemCharFromEnd = thirdFormattedSection.RemCharFromStart = 0;
-				 */
-				// BiPredicate<int[], Integer> isBetween = (arr, num) -> arr[0] <= num && arr[1] >= num;
-				if (rc[0][0][0] <= section.Start && rc[0][0][1] >= section.Start) {
-					rc[1][0] = new int[] { section.Start, rc[0][0][1] };
-					rc[0][0][1] = section.Start - 1;
-				}
-				if (rc[0][1][0] >= section.End && rc[0][1][1] <= section.End) {
-					rc[1][1] = new int[] { rc[0][1][1], section.End };
-					rc[0][1][1] = section.End - 1;
-				}
-				if (rc[2][0][0] <= section.Start && rc[2][0][1] >= section.Start) { // TODO
-					rc[1][0] = new int[] { section.Start, rc[2][0][1] };
-					rc[2][0][1] = section.Start - 1;
-				}
-				if (rc[2][1][0] >= section.End && rc[2][1][1] <= section.End) { // TODO
-					rc[1][1] = new int[] { rc[2][1][1], section.End };
-					rc[2][1][1] = section.End - 1;
-				}
-				Function<int[], Integer> getRemCharStart = arr -> arr[1] - arr[0];
-				Function<int[], Integer> getRemCharEnd = arr -> arr[0] - arr[1];
+				System.out.println("RC start");
+				for (short ii = 0; ii < 3; ii += 2) // Only check first and third section
+					for (short iii = 0; iii < 2; iii++) {
+						final int startorend = iii == 0 ? section.Start : section.End;
+						if (rc[ii][iii][0] <= startorend && rc[ii][iii][1] >= startorend) {
+							final String startorendText = iii == 0 ? "Start" : "End";
+							System.out.println("rc[" + ii + "][" + iii + "][0] <= section." + startorendText + " && rc["
+									+ ii + "][" + iii + "][1] >= section." + startorendText);
+							System.out.println(rc[ii][iii][0] + " <= " + startorend + " && " + rc[ii][iii][1] + " >= "
+									+ startorend);
+							rc[1][iii] = new int[] { startorend, rc[ii][iii][1] };
+							rc[ii][iii][1] = startorend - 1;
+							System.out.println("rc[1][" + iii + "]: " + rc[1][iii][0] + " " + rc[1][iii][1]);
+							System.out.println("rc[" + ii + "][" + iii + "][1]: " + rc[ii][iii][1]);
+						}
+					}
+				System.out.println("RC done");
+				Function<int[], Integer> getRemCharStart = arr -> arr[1] - arr[0] < 0 ? 0 : arr[1] - arr[0];
 				firstSection.RemCharFromStart = (short) (int) getRemCharStart.apply(rc[0][0]);
-				firstSection.RemCharFromEnd = (short) (int) getRemCharEnd.apply(rc[0][1]);
+				firstSection.RemCharFromEnd = (short) (int) getRemCharStart.apply(rc[0][1]);
 				section.RemCharFromStart = (short) (int) getRemCharStart.apply(rc[1][0]);
-				section.RemCharFromEnd = (short) (int) getRemCharEnd.apply(rc[1][1]);
+				section.RemCharFromEnd = (short) (int) getRemCharStart.apply(rc[1][1]);
 				thirdFormattedSection.RemCharFromStart = (short) (int) getRemCharStart.apply(rc[2][0]);
-				thirdFormattedSection.RemCharFromEnd = (short) (int) getRemCharEnd.apply(rc[2][1]);
+				thirdFormattedSection.RemCharFromEnd = (short) (int) getRemCharStart.apply(rc[2][1]);
 
 				ArrayList<FormattedSection> sts = sections;
 				Predicate<FormattedSection> removeIfNeeded = s -> {
