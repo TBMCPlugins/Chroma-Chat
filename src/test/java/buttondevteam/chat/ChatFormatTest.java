@@ -1,10 +1,14 @@
 package buttondevteam.chat;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
+import buttondevteam.chat.ObjectTestRunner.Objects;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.formatting.ChatFormatter;
 import buttondevteam.chat.formatting.TellrawPart;
@@ -13,22 +17,43 @@ import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.Color;
 import junit.framework.TestCase;
 
+@RunWith(ObjectTestRunner.class)
 public class ChatFormatTest extends TestCase {
-	@Test
-	public void test() {
+	@Objects
+	public static List<Object> data() {
 		TestPrepare.PrepareServer();
 		final CommandSender sender = Mockito.mock(CommandSender.class);
 		DebugCommand.DebugMode = true;
-		testMessage(sender, "*test*", new TellrawPart("test").setItalic(true).setColor(Color.White));
-		testMessage(sender, "**test**", new TellrawPart("test").setBold(true).setColor(Color.White));
-		testMessage(sender, "***test***", new TellrawPart("test").setBold(true).setItalic(true).setColor(Color.White));
-		testMessage(sender, "***_test_***",
-				new TellrawPart("test").setBold(true).setItalic(true).setUnderlined(true).setColor(Color.White));
-		testMessage(sender, "***_~~test~~_***", new TellrawPart("test").setBold(true).setItalic(true)
-				.setUnderlined(true).setStrikethrough(true).setColor(Color.White));
+
+		List<Object> list = new ArrayList<Object>();
+
+		list.add(new ChatFormatTest(sender, "*test*", new TellrawPart("test").setItalic(true).setColor(Color.White)));
+		list.add(new ChatFormatTest(sender, "**test**", new TellrawPart("test").setBold(true).setColor(Color.White)));
+		list.add(new ChatFormatTest(sender, "***test***",
+				new TellrawPart("test").setBold(true).setItalic(true).setColor(Color.White)));
+		list.add(new ChatFormatTest(sender, "***_test_***",
+				new TellrawPart("test").setBold(true).setItalic(true).setUnderlined(true).setColor(Color.White)));
+		list.add(new ChatFormatTest(sender, "***_~~test~~_***", new TellrawPart("test").setBold(true).setItalic(true)
+				.setUnderlined(true).setStrikethrough(true).setColor(Color.White)));
+		list.add(new ChatFormatTest(sender, "¯\\\\\\_(ツ)\\_/¯", new TellrawPart("¯").setColor(Color.White),
+				new TellrawPart("\\").setColor(Color.White), new TellrawPart("_(ツ)").setColor(Color.White),
+				new TellrawPart("_/¯").setColor(Color.White)));
+
+		return list;
 	}
 
-	void testMessage(final CommandSender sender, final String message, TellrawPart... extras) {
+	private final CommandSender sender;
+	private final String message;
+	private final TellrawPart[] extras;
+
+	public ChatFormatTest(CommandSender sender, String message, TellrawPart... extras) {
+		this.sender = sender;
+		this.message = message;
+		this.extras = extras;
+	}
+
+	@Test
+	public void testMessage() {
 		ArrayList<ChatFormatter> cfs = ChatProcessing.addFormatters(Color.White);
 		final String chid = ChatProcessing.getChannelID(Channel.GlobalChat, sender, null);
 		final TellrawPart tp = ChatProcessing.createTellraw(sender, message, null, null, chid);
