@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import buttondevteam.chat.PluginMain;
+import buttondevteam.lib.PluginUpdater;
 import buttondevteam.lib.TBMCCoreAPI;
 
 public class UpdatePlugin extends AdminCommandBase {
@@ -20,23 +21,21 @@ public class UpdatePlugin extends AdminCommandBase {
 
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
-		if (args.length == 0) {
-			sender.sendMessage("Downloading plugin names...");
-			boolean first = true;
-			for (String plugin : TBMCCoreAPI.GetPluginNames()) {
-				if (first) {
-					sender.sendMessage("§6---- Plugin names ----");
-					first = false;
+		Bukkit.getScheduler().runTaskAsynchronously(PluginMain.Instance, () -> {
+			if (args.length == 0) {
+				sender.sendMessage("Downloading plugin names...");
+				boolean first = true;
+				for (String plugin : PluginUpdater.GetPluginNames()) {
+					if (first) {
+						sender.sendMessage("§6---- Plugin names ----");
+						first = false;
+					}
+					sender.sendMessage("- " + plugin);
 				}
-				sender.sendMessage("- " + plugin);
-			}
-			return true;
-		} else {
-			Bukkit.getScheduler().runTaskAsynchronously(PluginMain.Instance, () -> {
+			} else
 				TBMCCoreAPI.UpdatePlugin(args[0], sender, args.length == 1 ? "master" : args[1]);
-			});
-			return true;
-		}
+		});
+		return true;
 	}
 
 }
