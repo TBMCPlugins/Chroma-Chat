@@ -186,8 +186,9 @@ public class ChatProcessing {
 																				: "-"))))
 																.addExtra(new TellrawPart(String.format(
 																		"Respect: %s%s%s",
-																		(mp != null ? (mp.FCount().getOrDefault(0)
-																				/ (double) mp.FDeaths().getOrDefault(0))
+																		(mp != null
+																				? (mp.FCount().get()
+																						/ (double) mp.FDeaths().get())
 																				: "Infinite"),
 																		(mp != null && mp.UserName().get() != null
 																				&& !mp.UserName().get().isEmpty()

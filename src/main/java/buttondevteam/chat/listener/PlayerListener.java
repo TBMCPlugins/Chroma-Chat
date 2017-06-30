@@ -156,8 +156,8 @@ public class PlayerListener implements Listener {
 				public void run() {
 					if (ActiveF) {
 						ActiveF = false;
-						if (FPlayer != null && FPlayer.FCount().getOrDefault(0) < Integer.MAX_VALUE - 1)
-							FPlayer.FCount().set(FPlayer.FCount().getOrDefault(0) + Fs.size());
+						if (FPlayer != null && FPlayer.FCount().get() < Integer.MAX_VALUE - 1)
+							FPlayer.FCount().set(FPlayer.FCount().get() + Fs.size());
 						Bukkit.broadcastMessage("§b" + Fs.size() + " " + (Fs.size() == 1 ? "person" : "people")
 								+ " paid their respects.§r");
 						Fs.clear();
@@ -263,7 +263,7 @@ public class PlayerListener implements Listener {
 			final String flair = cp.GetFormattedFlair(e.getTarget() != InfoTarget.MCCommand);
 			if (flair.length() > 0)
 				e.addInfo("/r/TheButton flair: " + flair);
-			e.addInfo("Respect: " + (double) cp.FCount().getOrDefault(0) / (double) cp.FDeaths().getOrDefault(0));
+			e.addInfo("Respect: " + (double) cp.FCount().get() / (double) cp.FDeaths().get());
 		} catch (Exception ex) {
 			TBMCCoreAPI.SendException("Error while providing chat info for player " + e.getPlayer().getFileName(), ex);
 		}
