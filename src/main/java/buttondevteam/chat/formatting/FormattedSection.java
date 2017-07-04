@@ -10,33 +10,30 @@ class FormattedSection {
 	ArrayList<String> Matches = new ArrayList<String>();
 	short RemCharFromStart;
 	short RemCharFromEnd;
-	ArrayList<Integer> RemCharPos = new ArrayList<Integer>();
 	/**
 	 * Is it a 1-long section indicating a start or an end
 	 */
 	boolean IsRange;
 
 	FormattedSection(ChatFormatter formatter, int start, int end, ArrayList<String> matches, short remcharfromstart,
-			short remcharfromend, int remcharpos, boolean isrange) {
+			short remcharfromend, boolean isrange) {
 		Start = start;
 		End = end;
 		Formatters.add(formatter);
 		Matches.addAll(matches);
 		RemCharFromStart = remcharfromstart;
 		RemCharFromEnd = remcharfromend;
-		RemCharPos.add(remcharpos);
 		IsRange = isrange;
 	}
 
 	FormattedSection(Collection<ChatFormatter> formatters, int start, int end, ArrayList<String> matches,
-			short remcharfromstart, short remcharfromend, Collection<Integer> remcharpos, boolean isrange) {
+			short remcharfromstart, short remcharfromend, boolean isrange) {
 		Start = start;
 		End = end;
 		Formatters.addAll(formatters);
 		Matches.addAll(matches);
 		RemCharFromStart = remcharfromstart;
 		RemCharFromEnd = remcharfromend;
-		RemCharPos.addAll(remcharpos);
 		IsRange = isrange;
 	}
 
@@ -44,7 +41,7 @@ class FormattedSection {
 	public String toString() {
 		return new StringBuilder("Section(").append(Start).append(", ").append(End).append(", formatters: ")
 				.append(Formatters.toString()).append(", matches: ").append(Matches.toString()).append(", RemChars: ")
-				.append(RemCharFromStart).append(", ").append(RemCharFromEnd).append(", ").append(RemCharPos)
-				.append(", ").append(IsRange).append(")").toString();
+				.append(RemCharFromStart).append(", ").append(RemCharFromEnd).append(", ").append(IsRange).append(")")
+				.toString();
 	}
 }

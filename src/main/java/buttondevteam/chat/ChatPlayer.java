@@ -15,34 +15,31 @@ import buttondevteam.lib.player.TBMCPlayerBase;
 @PlayerClass(pluginname = "ButtonChat")
 public class ChatPlayer extends TBMCPlayerBase {
 	public PlayerData<String> UserName() {
-		return data();
+		return data(null);
 	}
 
 	public List<String> UserNames() {
-		PlayerData<List<String>> data = data();
-		if (data.get() == null)
-			data.set(new ArrayList<String>());
-		return data.get();
+		return data(new ArrayList<String>()).get();
 	}
 
 	public PlayerData<Integer> FlairTime() {
-		return data();
+		return data(FlairTimeNone);
 	}
 
 	public EnumPlayerData<FlairStates> FlairState() {
-		return dataEnum(FlairStates.class);
+		return dataEnum(FlairStates.class, FlairStates.NoComment);
 	}
 
 	public PlayerData<Integer> FCount() {
-		return data();
+		return data(0);
 	}
 
 	public PlayerData<Integer> FDeaths() {
-		return data();
+		return data(0);
 	}
 
 	public PlayerData<Boolean> FlairCheater() {
-		return data();
+		return data(false);
 	}
 
 	public boolean RPMode = true;
@@ -68,7 +65,7 @@ public class ChatPlayer extends TBMCPlayerBase {
 	 * @return The flair
 	 */
 	public String GetFormattedFlair(boolean noformats) {
-		int time = FlairTime().getOrDefault(FlairTimeNone);
+		int time = FlairTime().get();
 		if (time == FlairTimeCantPress)
 			return String.format(noformats ? "(can't press)" : "§r(--s)§r");
 		if (time == FlairTimeNonPresser)
@@ -108,9 +105,9 @@ public class ChatPlayer extends TBMCPlayerBase {
 	}
 
 	public short GetFlairColor() {
-		if (FlairCheater().getOrDefault(false))
+		if (FlairCheater().get())
 			return 0x5;
-		final int flairTime = FlairTime().getOrDefault(FlairTimeNone);
+		final int flairTime = FlairTime().get();
 		if (flairTime == FlairTimeNonPresser)
 			return 0x7;
 		else if (flairTime == FlairTimeCantPress)

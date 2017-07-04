@@ -5,7 +5,7 @@ commands:
   u:
     description: Auto-flair system. Accept or ignore flair.
   ooc:
-    description: Send message in Out-of-Character.
+    description: Send message Out-of-Character.
     alias: nrp
   unlol:
     description: Unlaugh the last laugh.
@@ -24,15 +24,13 @@ commands:
   yeehaw:
     description: This command makes you yeehaw.
   waitwhat:
-    description: Wait what.
+    description: Wait what
     aliases: ww
 author: NorbiPeti
 depend:
 - Essentials
 - Towny
 - Votifier
-- WorldGuard
-- WorldEdit
 - Vault
 - ButtonCore
 soft-depend:

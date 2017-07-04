@@ -144,7 +144,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 						 */
 						if (!mp.UserNames().contains(author))
 							mp.UserNames().add(author);
-						if (mp.FlairState().getOrDefault(FlairStates.NoComment).equals(FlairStates.NoComment)) {
+						if (mp.FlairState().get().equals(FlairStates.NoComment)) {
 							mp.FlairState().set(FlairStates.Commented);
 							ConfirmUserMessage(mp);
 						}

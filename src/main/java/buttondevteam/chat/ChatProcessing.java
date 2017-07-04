@@ -50,7 +50,7 @@ public class ChatProcessing {
 
 	static {
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setBold(true)
-				.setRemoveCharCount((short) 2).setRange(true).build());
+				.setRemoveCharCount((short) 2).setRange(true).setPriority(Priority.High).build());
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setItalic(true)
 				.setRemoveCharCount((short) 1).setRange(true).build());
 		commonFormatters.add(new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN).setUnderlined(true)
@@ -186,8 +186,9 @@ public class ChatProcessing {
 																				: "-"))))
 																.addExtra(new TellrawPart(String.format(
 																		"Respect: %s%s%s",
-																		(mp != null ? (mp.FCount().getOrDefault(0)
-																				/ (double) mp.FDeaths().getOrDefault(0))
+																		(mp != null
+																				? (mp.FCount().get()
+																						/ (double) mp.FDeaths().get())
 																				: "Infinite"),
 																		(mp != null && mp.UserName().get() != null
 																				&& !mp.UserName().get().isEmpty()
