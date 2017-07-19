@@ -112,12 +112,16 @@
 		</repository>
 		<!-- <repository> <id>WorldEdit</id> <url>http://maven.sk89q.com/artifactory/repo</url> 
 			</repository> -->
+		<repository>
+			<id>projectlombok.org</id>
+			<url>http://projectlombok.org/mavenrepo</url>
+		</repository>
 	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.9.2-R0.1-SNAPSHOT</version>
+			<version>1.12-R0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.TBMCPlugins.ButtonCore</groupId>
@@ -157,6 +161,12 @@
 			<groupId>net.milkbowl.vault</groupId>
 			<artifactId>VaultAPI</artifactId>
 			<version>1.6</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.16.16</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

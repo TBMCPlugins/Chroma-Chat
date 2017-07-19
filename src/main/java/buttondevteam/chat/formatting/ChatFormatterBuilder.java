@@ -1,12 +1,15 @@
 package buttondevteam.chat.formatting;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.SerializationUtils;
-
 import buttondevteam.lib.chat.*;
+import lombok.SneakyThrows;
 
 public class ChatFormatterBuilder implements Serializable {
 	private static final long serialVersionUID = -6115913400749778686L;
@@ -23,8 +26,12 @@ public class ChatFormatterBuilder implements Serializable {
 	short removecharcount = 0;
 	boolean range = false;
 
+	@SneakyThrows
 	public ChatFormatter build() {
-		return new ChatFormatter((ChatFormatterBuilder) SerializationUtils.clone(this));
+		final ByteArrayOutputStream str = new ByteArrayOutputStream();
+		new ObjectOutputStream(str).writeObject(this);
+		return new ChatFormatter(
+				(ChatFormatterBuilder) new ObjectInputStream(new ByteArrayInputStream(str.toByteArray())).readObject());
 	}
 
 	public Pattern getRegex() {
