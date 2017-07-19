@@ -26,12 +26,12 @@ public class ChatFormatterBuilder implements Serializable {
 	short removecharcount = 0;
 	boolean range = false;
 
+	/**
+	 * The returned object is backed by this builder. All changes made to this object affets the returned one.
+	 */
 	@SneakyThrows
 	public ChatFormatter build() {
-		final ByteArrayOutputStream str = new ByteArrayOutputStream();
-		new ObjectOutputStream(str).writeObject(this);
-		return new ChatFormatter(
-				(ChatFormatterBuilder) new ObjectInputStream(new ByteArrayInputStream(str.toByteArray())).readObject());
+		return new ChatFormatter(this);
 	}
 
 	public Pattern getRegex() {
