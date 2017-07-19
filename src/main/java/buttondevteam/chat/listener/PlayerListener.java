@@ -277,10 +277,11 @@ public class PlayerListener implements Listener {
 			e.setCancelled(ChatProcessing.ProcessChat(e));
 		} catch (Exception ex) {
 			for (Player p : Bukkit.getOnlinePlayers())
-				p.sendMessage("§c!§r["
-						+ e.getChannel().DisplayName + "] <" + (e.getSender() instanceof Player
-								? ((Player) e.getSender()).getDisplayName() : e.getSender().getName())
-						+ "> " + e.getMessage());
+				if (e.shouldSendTo(p))
+					p.sendMessage("§c!§r["
+							+ e.getChannel().DisplayName + "] <" + (e.getSender() instanceof Player
+									? ((Player) e.getSender()).getDisplayName() : e.getSender().getName())
+							+ "> " + e.getMessage());
 			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex);
 		}
 	}

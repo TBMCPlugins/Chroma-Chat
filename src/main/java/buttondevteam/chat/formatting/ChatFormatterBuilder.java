@@ -1,27 +1,30 @@
 package buttondevteam.chat.formatting;
 
-import java.util.function.Function;
+import java.io.Serializable;
+import java.util.function.BiFunction;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang.SerializationUtils;
 
 import buttondevteam.lib.chat.*;
 
-public class ChatFormatterBuilder {
-	private Pattern regex;
-	private boolean italic;
-	private boolean bold;
-	private boolean underlined;
-	private boolean strikethrough;
-	private boolean obfuscated;
-	private Color color;
-	private Function<String, String> onmatch;
-	private String openlink;
-	private Priority priority;
-	private short removecharcount = 0;
-	private boolean range = false;
+public class ChatFormatterBuilder implements Serializable {
+	private static final long serialVersionUID = -6115913400749778686L;
+	Pattern regex;
+	boolean italic;
+	boolean bold;
+	boolean underlined;
+	boolean strikethrough;
+	boolean obfuscated;
+	Color color;
+	BiFunction<String, ChatFormatterBuilder, String> onmatch;
+	String openlink;
+	Priority priority = Priority.Normal;
+	short removecharcount = 0;
+	boolean range = false;
 
 	public ChatFormatter build() {
-		return new ChatFormatter(regex, italic, bold, underlined, strikethrough, obfuscated, color, onmatch, openlink,
-				priority, removecharcount, range);
+		return new ChatFormatter((ChatFormatterBuilder) SerializationUtils.clone(this));
 	}
 
 	public Pattern getRegex() {
@@ -87,11 +90,14 @@ public class ChatFormatterBuilder {
 		return this;
 	}
 
-	public Function<String, String> getOnmatch() {
+	public BiFunction<String, ChatFormatterBuilder, String> getOnmatch() {
 		return onmatch;
 	}
 
-	public ChatFormatterBuilder setOnmatch(Function<String, String> onmatch) {
+	/**
+	 * Making any changes here using the builder will not affect the previous matches with the current design
+	 */
+	public ChatFormatterBuilder setOnmatch(BiFunction<String, ChatFormatterBuilder, String> onmatch) {
 		this.onmatch = onmatch;
 		return this;
 	}
@@ -110,7 +116,7 @@ public class ChatFormatterBuilder {
 	}
 
 	public ChatFormatterBuilder setPriority(Priority priority) {
-		this.priority = priority;
+		this.priority = priority == null ? Priority.Normal : priority;
 		return this;
 	}
 

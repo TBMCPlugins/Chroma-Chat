@@ -2,6 +2,7 @@ package buttondevteam.chat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
 
 import com.earth2me.essentials.Essentials;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import buttondevteam.chat.commands.UnlolCommand;
@@ -36,46 +38,45 @@ public class ChatProcessing {
 	private static final Pattern UNDERLINED_PATTERN = Pattern.compile("\\_");
 	private static final Pattern ITALIC_PATTERN = Pattern.compile("\\*");
 	private static final Pattern BOLD_PATTERN = Pattern.compile("\\*\\*");
-	private static final String[] RainbowPresserColors = new String[] { "red", "gold", "yellow", "green", "blue",
-			"dark_purple" }; // TODO
+	private static final Color[] RainbowPresserColors = new Color[] { Color.Red, Color.Gold, Color.Yellow, Color.Green,
+			Color.Blue, Color.DarkPurple };
 	private static boolean pingedconsole = false;
-
-	private static ArrayList<ChatFormatter> commonFormatters = new ArrayList<>();
-	private static Gson gson;
 
 	public static final ChatFormatter ESCAPE_FORMATTER = new ChatFormatterBuilder().setRegex(ESCAPE_PATTERN).build();
 
+	private static ArrayList<ChatFormatter> commonFormatters = Lists.newArrayList(
+			new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setBold(true).setRemoveCharCount((short) 2).setRange(true)
+					.setPriority(Priority.High).build(),
+			new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setItalic(true).setRemoveCharCount((short) 1)
+					.setRange(true).build(),
+			new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN).setUnderlined(true).setRemoveCharCount((short) 1)
+					.setRange(true).build(),
+			ESCAPE_FORMATTER,
+			new ChatFormatterBuilder().setRegex(URL_PATTERN).setUnderlined(true).setOpenlink("$1").setRange(true)
+					.build(),
+			new ChatFormatterBuilder().setRegex(NULL_MENTION_PATTERN).setColor(Color.DarkRed).build(), // Properly added a bug as a feature
+			new ChatFormatterBuilder().setRegex(CONSOLE_PING_PATTERN).setColor(Color.Aqua)
+					.setOnmatch((match, builder) ->
+
+					{
+						if (!pingedconsole) {
+							System.out.print("\007");
+							pingedconsole = true; // Will set it to false in ProcessChat
+						}
+						return match;
+					}).setPriority(Priority.High).build(),
+
+			new ChatFormatterBuilder().setRegex(HASHTAG_PATTERN).setColor(Color.Blue)
+					.setOpenlink("https://twitter.com/hashtag/$1").setPriority(Priority.High).build(),
+			new ChatFormatterBuilder().setRegex(CYAN_PATTERN).setColor(Color.Aqua).build() // #55
+	);
+	private static Gson gson = new GsonBuilder()
+			.registerTypeHierarchyAdapter(TellrawSerializableEnum.class, new TellrawSerializer.TwEnum())
+			.registerTypeHierarchyAdapter(Collection.class, new TellrawSerializer.TwCollection())
+			.registerTypeAdapter(Boolean.class, new TellrawSerializer.TwBool())
+			.registerTypeAdapter(boolean.class, new TellrawSerializer.TwBool()).disableHtmlEscaping().create();
+
 	private ChatProcessing() {
-	}
-
-	static {
-		commonFormatters.add(new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setBold(true)
-				.setRemoveCharCount((short) 2).setRange(true).setPriority(Priority.High).build());
-		commonFormatters.add(new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setItalic(true)
-				.setRemoveCharCount((short) 1).setRange(true).build());
-		commonFormatters.add(new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN).setUnderlined(true)
-				.setRemoveCharCount((short) 1).setRange(true).build());
-		commonFormatters.add(ESCAPE_FORMATTER);
-		commonFormatters.add(new ChatFormatterBuilder().setRegex(URL_PATTERN).setUnderlined(true).setOpenlink("$1")
-				.setRange(true).build());
-		commonFormatters.add(new ChatFormatterBuilder().setRegex(NULL_MENTION_PATTERN).setColor(Color.DarkRed).build()); // Properly added a bug as a feature
-		commonFormatters.add(new ChatFormatterBuilder().setRegex(CONSOLE_PING_PATTERN).setColor(Color.Aqua)
-				.setOnmatch((String match) -> {
-					if (!pingedconsole) {
-						System.out.print("\007");
-						pingedconsole = true; // Will set it to false in ProcessChat
-					}
-					return match;
-				}).setPriority(Priority.High).build());
-
-		commonFormatters.add(new ChatFormatterBuilder().setRegex(HASHTAG_PATTERN).setColor(Color.Blue)
-				.setOpenlink("https://twitter.com/hashtag/$1").setPriority(Priority.High).build());
-		commonFormatters.add(new ChatFormatterBuilder().setRegex(CYAN_PATTERN).setColor(Color.Aqua).build()); // #55
-		gson = new GsonBuilder()
-				.registerTypeHierarchyAdapter(TellrawSerializableEnum.class, new TellrawSerializer.TwEnum())
-				.registerTypeHierarchyAdapter(Collection.class, new TellrawSerializer.TwCollection())
-				.registerTypeAdapter(Boolean.class, new TellrawSerializer.TwBool())
-				.registerTypeAdapter(boolean.class, new TellrawSerializer.TwBool()).disableHtmlEscaping().create();
 	}
 
 	public static boolean ProcessChat(TBMCChatEvent e) {
@@ -99,13 +100,19 @@ public class ChatProcessing {
 		Color colormode = channel.color;
 		if (mp != null && mp.OtherColorMode != null)
 			colormode = mp.OtherColorMode;
-		if (mp != null && mp.RainbowPresserColorMode)
-			colormode = Color.RPC;
 		if (message.startsWith(">"))
 			colormode = Color.Green;
 		// If greentext, ignore channel or player colors
 
 		ArrayList<ChatFormatter> formatters = addFormatters(colormode);
+		if (colormode == channel.color && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
+			final AtomicInteger rpc = new AtomicInteger(0);
+			formatters.add(new ChatFormatterBuilder().setColor(colormode).setOnmatch((match, builder) -> {
+				builder.setColor(
+						RainbowPresserColors[rpc.getAndUpdate(i -> ++i < RainbowPresserColors.length ? i : 0)]);
+				return match;
+			}).build());
+		}
 		pingedconsole = false; // Will set it to true onmatch (static constructor)
 		final String channelidentifier = getChannelID(channel, sender, mp);
 
@@ -125,9 +132,8 @@ public class ChatProcessing {
 			if (channel.filteranderrormsg != null) {
 				Objective obj = PluginMain.SB.getObjective(channel.ID);
 				int score = -1;
-				for (Player p : Bukkit.getOnlinePlayers()) {
-					obj.getScore(p.getUniqueId().toString()).setScore(score = e.getMCScore(p));
-				}
+				for (Player p : Bukkit.getOnlinePlayers())
+					obj.getScore(p.getName()).setScore(score = e.getMCScore(p));
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console, String.format(
 						"tellraw @a[score_%s=%d,score_%s_min=%d] %s", channel.ID, score, channel.ID, score, jsonstr));
 			} else
@@ -243,7 +249,7 @@ public class ChatProcessing {
 			nicksb.append(")");
 
 			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(namesb.toString())).setColor(Color.Aqua)
-					.setOnmatch((String match) -> {
+					.setOnmatch((match, builder) -> {
 						Player p = Bukkit.getPlayer(match);
 						if (p == null) {
 							PluginMain.Instance.getLogger()
@@ -262,7 +268,7 @@ public class ChatProcessing {
 
 			if (addNickFormatter)
 				formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(nicksb.toString()))
-						.setColor(Color.Aqua).setOnmatch((String match) -> {
+						.setColor(Color.Aqua).setOnmatch((match, builder) -> {
 							if (PlayerListener.nicknames.containsKey(match)) {
 								Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(match));
 								if (p == null) {
