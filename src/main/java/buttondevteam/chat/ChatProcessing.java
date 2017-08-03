@@ -133,7 +133,8 @@ public class ChatProcessing {
 				Objective obj = PluginMain.SB.getObjective(channel.ID);
 				int score = -1;
 				for (Player p : Bukkit.getOnlinePlayers())
-					obj.getScore(p.getName()).setScore(score = e.getMCScore(p));
+					obj.getScore(p.getName())
+							.setScore(p.getUniqueId().equals(player) ? score = e.getMCScore(p) : e.getMCScore(p));
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console, String.format(
 						"tellraw @a[score_%s=%d,score_%s_min=%d] %s", channel.ID, score, channel.ID, score, jsonstr));
 			} else
