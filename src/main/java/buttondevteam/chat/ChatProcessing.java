@@ -52,8 +52,7 @@ public class ChatProcessing {
 			new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN).setUnderlined(true).setRemoveCharCount((short) 1)
 					.setRange(true).build(),
 			ESCAPE_FORMATTER,
-			new ChatFormatterBuilder().setRegex(URL_PATTERN).setUnderlined(true).setOpenlink("$1").setRange(true)
-					.build(),
+			new ChatFormatterBuilder().setRegex(URL_PATTERN).setUnderlined(true).setOpenlink("$1").build(),
 			new ChatFormatterBuilder().setRegex(NULL_MENTION_PATTERN).setColor(Color.DarkRed).build(), // Properly added a bug as a feature
 			new ChatFormatterBuilder().setRegex(CONSOLE_PING_PATTERN).setColor(Color.Aqua)
 					.setOnmatch((match, builder) ->
@@ -162,53 +161,60 @@ public class ChatProcessing {
 			final String channelidentifier) {
 		TellrawPart json = new TellrawPart("");
 		if (mp != null && mp.ChatOnly) {
-			json.addExtra(new TellrawPart("[C]").setHoverEvent(
-					TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT, "Chat only")));
+			json.addExtra(new TellrawPart("[C]")
+					.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, "Chat only")));
 		}
 		json.addExtra(
 				new TellrawPart(channelidentifier)
 						.setHoverEvent(
-								TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
+								TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT,
 										new TellrawPart((sender instanceof IDiscordSender ? "From Discord\n" : "")
 												+ "Copy message").setColor(Color.Blue)))
-						.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAC,
-								TellrawEvent.ClickAction.SUGGEST_COMMAND, message)));
+						.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAction.SUGGEST_COMMAND, message)));
 		json.addExtra(new TellrawPart(" <"));
 		json.addExtra(
 				new TellrawPart(
-						(player != null ? player.getDisplayName() : sender.getName()))
-								.setHoverEvent(
-										TellrawEvent
-												.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
-														new TellrawPart("")
-																.addExtra(new TellrawPart(String.format("Flair: %s",
-																		(mp != null ? mp.GetFormattedFlair() : "-"))))
-																.addExtra(new TellrawPart(
-																		String.format("\nPlayername: %s\n",
+						(player != null ? player.getDisplayName()
+								: sender.getName()))
+										.setHoverEvent(
+												TellrawEvent
+														.create(TellrawEvent.HoverAction.SHOW_TEXT,
+																new TellrawPart("")
+																		.addExtra(new TellrawPart(String.format(
+																				"Flair: %s",
+																				(mp != null ? mp.GetFormattedFlair()
+																						: "-"))))
+																		.addExtra(new TellrawPart(String.format(
+																				"\nPlayername: %s\n",
 																				(player != null ? player.getName()
 																						: sender.getName())))
 																								.setColor(Color.Aqua))
-																.addExtra(new TellrawPart(String.format("World: %s\n",
-																		(player != null ? player.getWorld().getName()
-																				: "-"))))
-																.addExtra(new TellrawPart(String.format(
-																		"Respect: %s%s%s",
-																		(mp != null
-																				? (mp.FCount().get()
+																		.addExtra(new TellrawPart(String.format(
+																				"World: %s\n",
+																				(player != null
+																						? player.getWorld().getName()
+																						: "-"))))
+																		.addExtra(new TellrawPart(String.format(
+																				"Respect: %s%s%s",
+																				(mp != null ? (mp.FCount().get()
 																						/ (double) mp.FDeaths().get())
-																				: "Infinite"),
-																		(mp != null && mp.UserName().get() != null
-																				&& !mp.UserName().get().isEmpty()
-																						? "\nUserName: "
-																								+ mp.UserName().get()
-																						: ""),
-																		(mp != null && mp.PlayerName().get()
-																				.equals("\nAlpha_Bacca44")
-																						? "\nDeaths: "
-																								+ PlayerListener.AlphaDeaths
-																						: ""))))
-																.addExtra(new TellrawPart("\nFor more, do /u info "
-																		+ sender.getName())))));
+																						: "Infinite"),
+																				(mp != null
+																						&& mp.UserName().get() != null
+																						&& !mp.UserName().get()
+																								.isEmpty()
+																										? "\nUserName: "
+																												+ mp.UserName()
+																														.get()
+																										: ""),
+																				(mp != null && mp.PlayerName().get()
+																						.equals("\nAlpha_Bacca44")
+																								? "\nDeaths: "
+																										+ PlayerListener.AlphaDeaths
+																								: ""))))
+																		.addExtra(new TellrawPart(
+																				"\nFor more, do /u info "
+																						+ sender.getName())))));
 		json.addExtra(new TellrawPart("> "));
 		return json;
 	}

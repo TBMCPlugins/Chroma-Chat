@@ -11,6 +11,9 @@ import org.mockito.Mockito;
 import buttondevteam.chat.ObjectTestRunner.Objects;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.formatting.ChatFormatter;
+import buttondevteam.chat.formatting.TellrawEvent;
+import buttondevteam.chat.formatting.TellrawEvent.ClickAction;
+import buttondevteam.chat.formatting.TellrawEvent.HoverAction;
 import buttondevteam.chat.formatting.TellrawPart;
 import buttondevteam.core.TestPrepare;
 import buttondevteam.lib.chat.Channel;
@@ -38,6 +41,11 @@ public class ChatFormatTest extends TestCase {
 		list.add(new ChatFormatTest(sender, "¯\\\\\\_(ツ)\\_/¯", new TellrawPart("¯").setColor(Color.White),
 				new TellrawPart("\\").setColor(Color.White), new TellrawPart("_(ツ)").setColor(Color.White),
 				new TellrawPart("_/¯").setColor(Color.White)));
+		list.add(new ChatFormatTest(sender, "https://google.hu/",
+				new TellrawPart("https://google.hu/").setColor(Color.White).setUnderlined(true)
+						.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
+								new TellrawPart("Click to open").setColor(Color.Blue)))
+						.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://google.hu/"))));
 
 		return list;
 	}
@@ -46,10 +54,10 @@ public class ChatFormatTest extends TestCase {
 	private final String message;
 	private final TellrawPart[] extras;
 
-	public ChatFormatTest(CommandSender sender, String message, TellrawPart... extras) {
+	public ChatFormatTest(CommandSender sender, String message, TellrawPart... expectedextras) {
 		this.sender = sender;
 		this.message = message;
-		this.extras = extras;
+		this.extras = expectedextras;
 	}
 
 	@Test

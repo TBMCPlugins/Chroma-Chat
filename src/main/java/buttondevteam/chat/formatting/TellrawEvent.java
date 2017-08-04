@@ -10,27 +10,24 @@ public final class TellrawEvent<T extends TellrawEvent.Action> implements Serial
 	private T action;
 	private Object value;
 
-	private TellrawEvent(Class<T> cl, T action, String value) {
-		this.hoverEvent = HoverAction.class.equals(cl);
+	private TellrawEvent(T action, String value) {
+		this.hoverEvent = action instanceof HoverAction;
 		this.action = action;
 		this.value = value;
 	}
 
-	private TellrawEvent(Class<T> cl, T action, TellrawPart value) {
-		this.hoverEvent = HoverAction.class.equals(cl);
+	private TellrawEvent(T action, TellrawPart value) {
+		this.hoverEvent = action instanceof HoverAction;
 		this.action = action;
 		this.value = value;
 	}
 
-	public static final Class<HoverAction> HoverAC = HoverAction.class;
-	public static final Class<ClickAction> ClickAC = ClickAction.class;
-
-	public static <V extends TellrawEvent.Action> TellrawEvent<V> create(Class<V> cl, V action, String value) {
-		return new TellrawEvent<>(cl, action, value);
+	public static <V extends TellrawEvent.Action> TellrawEvent<V> create(V action, String value) {
+		return new TellrawEvent<>(action, value);
 	}
 
-	public static <V extends TellrawEvent.Action> TellrawEvent<V> create(Class<V> cl, V action, TellrawPart value) {
-		return new TellrawEvent<>(cl, action, value);
+	public static <V extends TellrawEvent.Action> TellrawEvent<V> create(V action, TellrawPart value) {
+		return new TellrawEvent<>(action, value);
 	}
 
 	public boolean isHoverEvent() {

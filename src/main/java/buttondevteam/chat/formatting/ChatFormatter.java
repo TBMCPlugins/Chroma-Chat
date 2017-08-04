@@ -177,23 +177,23 @@ public final class ChatFormatter {
 				}
 				thirdFormattedSection.Start = origend + 1;
 				thirdFormattedSection.End = origend2;
-				System.out.println("RC start");
+				DebugCommand.SendDebugMessage("RC start");
 				for (short ii = 0; ii < 3; ii += 2) // Only check first and third section
 					for (short iii = 0; iii < 2; iii++) {
 						final int startorend = iii == 0 ? section.Start : section.End;
 						if (rc[ii][iii][0] <= startorend && rc[ii][iii][1] >= startorend) {
 							final String startorendText = iii == 0 ? "Start" : "End";
-							System.out.println("rc[" + ii + "][" + iii + "][0] <= section." + startorendText + " && rc["
-									+ ii + "][" + iii + "][1] >= section." + startorendText);
-							System.out.println(rc[ii][iii][0] + " <= " + startorend + " && " + rc[ii][iii][1] + " >= "
-									+ startorend);
+							DebugCommand.SendDebugMessage("rc[" + ii + "][" + iii + "][0] <= section." + startorendText
+									+ " && rc[" + ii + "][" + iii + "][1] >= section." + startorendText);
+							DebugCommand.SendDebugMessage(rc[ii][iii][0] + " <= " + startorend + " && " + rc[ii][iii][1]
+									+ " >= " + startorend);
 							rc[1][iii] = new int[] { startorend, rc[ii][iii][1] };
 							rc[ii][iii][1] = startorend - 1;
-							System.out.println("rc[1][" + iii + "]: " + rc[1][iii][0] + " " + rc[1][iii][1]);
-							System.out.println("rc[" + ii + "][" + iii + "][1]: " + rc[ii][iii][1]);
+							DebugCommand.SendDebugMessage("rc[1][" + iii + "]: " + rc[1][iii][0] + " " + rc[1][iii][1]);
+							DebugCommand.SendDebugMessage("rc[" + ii + "][" + iii + "][1]: " + rc[ii][iii][1]);
 						}
 					}
-				System.out.println("RC done");
+				DebugCommand.SendDebugMessage("RC done");
 				Function<int[], Integer> getRemCharStart = arr -> arr[1] - arr[0] < 0 ? 0 : arr[1] - arr[0];
 				firstSection.RemCharFromStart = (short) (int) getRemCharStart.apply(rc[0][0]);
 				firstSection.RemCharFromEnd = (short) (int) getRemCharStart.apply(rc[0][1]);
@@ -296,9 +296,9 @@ public final class ChatFormatter {
 			newtp.setStrikethrough(strikethrough);
 			newtp.setObfuscated(obfuscated);
 			if (openlink != null && openlink.length() > 0) {
-				newtp.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAC, TellrawEvent.ClickAction.OPEN_URL,
+				newtp.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAction.OPEN_URL,
 						(section.Matches.size() > 0 ? openlink.replace("$1", section.Matches.get(0)) : openlink)))
-						.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAC, TellrawEvent.HoverAction.SHOW_TEXT,
+						.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT,
 								new TellrawPart("Click to open").setColor(Color.Blue)));
 			}
 			tp.addExtra(newtp);

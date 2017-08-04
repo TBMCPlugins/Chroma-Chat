@@ -98,7 +98,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		setupEconomy();
 		setupPermissions();
 
-		new Thread(() -> FlairGetterThreadMethod()).start();
+		new Thread(this::FlairGetterThreadMethod).start();
 		new Thread(new AnnouncerThread()).start();
 	}
 
