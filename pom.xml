@@ -169,6 +169,12 @@
 			<version>1.16.16</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot</artifactId>
+			<version>1.12-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	<artifactId>ButtonChat</artifactId>
 	<organization>
