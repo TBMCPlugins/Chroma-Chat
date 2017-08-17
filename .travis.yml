@@ -1,3 +1,26 @@
+cache:
+  directories:
+  - $HOME/.m2/repository/org/
+before_install: | # Wget BuildTools and run if cached folder not found
+  if [ ! -d "$HOME/.m2/repository/org/spigotmc/spigot/1.12.1-R0.1-SNAPSHOT" ]; then
+  wget -O BuildTools.jar https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
+  # grep so that download counts don't appear in log files
+  java -jar BuildTools.jar --rev 1.12.1 | grep -vE "[^/ ]*/[^/ ]*\s*KB\s*$" | grep -v "^\s*$"
+  fi
 language: java
 jdk:
   - oraclejdk8
+sudo: true
+deploy:
+  # deploy develop to the staging environment
+  - provider: script
+    script: chmod +x deploy.sh && sh deploy.sh staging
+    on:
+      branch: dev
+    skip_cleanup: true
+  # deploy master to production
+  - provider: script
+    script: chmod +x deploy.sh && sh deploy.sh production
+    on:
+      branch: master
+    skip_cleanup: true
