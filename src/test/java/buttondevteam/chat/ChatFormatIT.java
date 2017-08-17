@@ -21,7 +21,7 @@ import buttondevteam.lib.chat.Color;
 import junit.framework.TestCase;
 
 @RunWith(ObjectTestRunner.class)
-public class ChatFormatTest extends TestCase {
+public class ChatFormatIT extends TestCase {
 	@Objects
 	public static List<Object> data() {
 		TestPrepare.PrepareServer();
@@ -30,18 +30,18 @@ public class ChatFormatTest extends TestCase {
 
 		List<Object> list = new ArrayList<Object>();
 
-		list.add(new ChatFormatTest(sender, "*test*", new TellrawPart("test").setItalic(true).setColor(Color.White)));
-		list.add(new ChatFormatTest(sender, "**test**", new TellrawPart("test").setBold(true).setColor(Color.White)));
-		list.add(new ChatFormatTest(sender, "***test***",
+		list.add(new ChatFormatIT(sender, "*test*", new TellrawPart("test").setItalic(true).setColor(Color.White)));
+		list.add(new ChatFormatIT(sender, "**test**", new TellrawPart("test").setBold(true).setColor(Color.White)));
+		list.add(new ChatFormatIT(sender, "***test***",
 				new TellrawPart("test").setBold(true).setItalic(true).setColor(Color.White)));
-		list.add(new ChatFormatTest(sender, "***_test_***",
+		list.add(new ChatFormatIT(sender, "***_test_***",
 				new TellrawPart("test").setBold(true).setItalic(true).setUnderlined(true).setColor(Color.White)));
-		list.add(new ChatFormatTest(sender, "***_~~test~~_***", new TellrawPart("test").setBold(true).setItalic(true)
+		list.add(new ChatFormatIT(sender, "***_~~test~~_***", new TellrawPart("test").setBold(true).setItalic(true)
 				.setUnderlined(true).setStrikethrough(true).setColor(Color.White)));
-		list.add(new ChatFormatTest(sender, "¯\\\\\\_(ツ)\\_/¯", new TellrawPart("¯").setColor(Color.White),
+		list.add(new ChatFormatIT(sender, "¯\\\\\\_(ツ)\\_/¯", new TellrawPart("¯").setColor(Color.White),
 				new TellrawPart("\\").setColor(Color.White), new TellrawPart("_(ツ)").setColor(Color.White),
 				new TellrawPart("_/¯").setColor(Color.White)));
-		list.add(new ChatFormatTest(sender, "https://google.hu/",
+		list.add(new ChatFormatIT(sender, "https://google.hu/",
 				new TellrawPart("https://google.hu/").setColor(Color.White).setUnderlined(true)
 						.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
 								new TellrawPart("Click to open").setColor(Color.Blue)))
@@ -54,7 +54,7 @@ public class ChatFormatTest extends TestCase {
 	private final String message;
 	private final TellrawPart[] extras;
 
-	public ChatFormatTest(CommandSender sender, String message, TellrawPart... expectedextras) {
+	public ChatFormatIT(CommandSender sender, String message, TellrawPart... expectedextras) {
 		this.sender = sender;
 		this.message = message;
 		this.extras = expectedextras;
@@ -62,7 +62,7 @@ public class ChatFormatTest extends TestCase {
 
 	@Test
 	public void testMessage() {
-		/*ArrayList<ChatFormatter> cfs = ChatProcessing.addFormatters(Color.White);
+		ArrayList<ChatFormatter> cfs = ChatProcessing.addFormatters(Color.White);
 		final String chid = ChatProcessing.getChannelID(Channel.GlobalChat, sender, null);
 		final TellrawPart tp = ChatProcessing.createTellraw(sender, message, null, null, chid);
 		ChatFormatter.Combine(cfs, message, tp);
@@ -72,7 +72,6 @@ public class ChatFormatTest extends TestCase {
 		// System.out.println("Raw: " + ChatProcessing.toJson(expectedtp));
 		for (TellrawPart extra : extras)
 			expectedtp.addExtra(extra);
-		assertEquals(ChatProcessing.toJson(expectedtp), ChatProcessing.toJson(tp));*/
-		assertTrue(true);
+		assertEquals(ChatProcessing.toJson(expectedtp), ChatProcessing.toJson(tp));
 	}
 }
