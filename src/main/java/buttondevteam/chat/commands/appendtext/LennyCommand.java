@@ -6,7 +6,7 @@ public final class LennyCommand extends AppendTextCommandBase {
 	public String[] GetHelpText(String alias) {
 		return new String[] { "§6---- Lenny ----", //
 				"This command appends a Lenny face after your message", //
-				"Or just sends ne", //
+				"Or just sends one", //
 				"Use either /" + alias + " <message> or just /" + alias }; //
 	}
 
