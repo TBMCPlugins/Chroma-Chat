@@ -134,8 +134,11 @@ public class ChatProcessing {
 				for (Player p : Bukkit.getOnlinePlayers()) {
 					final int mcScore = VanillaUtils.getMCScoreIfChatOn(p, e);
 					obj.getScore(p.getName())
-							.setScore(p.getUniqueId().equals(player.getUniqueId()) ? score = mcScore : mcScore);
+							.setScore(p.getUniqueId().equals(player == null ? null : player.getUniqueId()) // p.UniqueID==player?.UniqueID
+									? score = mcScore : mcScore);
 				}
+				if (player == null)
+					score = e.getMCScore(sender);
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console, String.format(
 						"tellraw @a[score_%s=%d,score_%s_min=%d] %s", channel.ID, score, channel.ID, score, jsonstr));
 			} else

@@ -62,7 +62,7 @@ public class PlayerListener implements Listener {
 		int index = event.getMessage().indexOf(" ");
 		ChatPlayer mp = TBMCPlayer.getPlayer(event.getPlayer().getUniqueId(), ChatPlayer.class);
 		String cmd = "";
-		if (index == -1) {
+		if (index == -1) { // Only the command is run
 			cmd = event.getMessage().substring(1);
 			for (Channel channel : Channel.getChannels()) {
 				if (cmd.equalsIgnoreCase(channel.ID)) {
@@ -75,29 +75,30 @@ public class PlayerListener implements Listener {
 					break;
 				}
 			}
-		} else {
+		} else { // We have arguments
 			cmd = event.getMessage().substring(1, index);
-			for (Channel channel : Channel.getChannels()) {
-				if (cmd.equalsIgnoreCase(channel.ID)) {
+			if (cmd.equalsIgnoreCase("tpahere")) {
+				Player player = Bukkit.getPlayer(event.getMessage().substring(index + 1));
+				if (player != null)
+					player.sendMessage("§b" + event.getPlayer().getDisplayName() + " §bis in this world: "
+							+ event.getPlayer().getWorld().getName());
+			} else if (cmd.equalsIgnoreCase("minecraft:me")) {
+				if (!PluginMain.essentials.getUser(event.getPlayer()).isMuted()) {
 					event.setCancelled(true);
-					Channel c = mp.CurrentChannel;
-					mp.CurrentChannel = channel;
-					event.getPlayer().chat(event.getMessage().substring(index + 1));
-					mp.CurrentChannel = c;
-				} else if (cmd.equalsIgnoreCase("tpahere")) {
-					Player player = Bukkit.getPlayer(event.getMessage().substring(index + 1));
-					if (player != null)
-						player.sendMessage("§b" + event.getPlayer().getDisplayName() + " §bis in this world: "
-								+ event.getPlayer().getWorld().getName());
-				} else if (cmd.equalsIgnoreCase("minecraft:me")) {
-					if (!PluginMain.essentials.getUser(event.getPlayer()).isMuted()) {
+					String message = event.getMessage().substring(index + 1);
+					Bukkit.broadcastMessage(String.format("* %s %s", event.getPlayer().getDisplayName(), message));
+				}
+			} else
+				for (Channel channel : Channel.getChannels()) {
+					if (cmd.equalsIgnoreCase(channel.ID)) {
 						event.setCancelled(true);
-						String message = event.getMessage().substring(index + 1);
-						Bukkit.broadcastMessage(String.format("* %s %s", event.getPlayer().getDisplayName(), message));
+						TBMCChatAPI.SendChatMessage(channel, event.getPlayer(),
+								event.getMessage().substring(index + 1));
 					}
 				}
-			}
+			// TODO: Target selectors
 		}
+		// We don't care if we have arguments
 		if (cmd.toLowerCase().startsWith("un")) {
 			for (HelpTopic ht : PluginMain.Instance.getServer().getHelpMap().getHelpTopics()) {
 				if (ht.getName().equalsIgnoreCase("/" + cmd))

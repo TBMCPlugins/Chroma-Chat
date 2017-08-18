@@ -26,6 +26,8 @@ commands:
   waitwhat:
     description: Wait what
     aliases: ww
+  lenny:
+    description: Lenny face.
 author: NorbiPeti
 depend:
 - Essentials
