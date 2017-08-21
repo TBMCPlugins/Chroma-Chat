@@ -1,19 +1,24 @@
 package buttondevteam.chat.commands;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import buttondevteam.lib.TBMCChatEventBase;
+import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.TBMCCommandBase;
+import lombok.Data;
 
 @CommandClass(modOnly = false)
 public final class UnlolCommand extends TBMCCommandBase {
 
-	public static CommandSender Lastlol = null;
-	public static boolean Lastlolornot;
+	public static Map<Channel, LastlolData> Lastlol = new HashMap<>();
 
 	@Override
 	public String[] GetHelpText(String alias) {
@@ -25,16 +30,26 @@ public final class UnlolCommand extends TBMCCommandBase {
 
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
-		if (Lastlol != null) {
-			if (Lastlol instanceof Player)
-				((Player) Lastlol)
-						.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 2 * 20, 5, false, false));
-			String msg = (sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName())
-					+ (Lastlolornot ? " unlolled " : " unlaughed ")
-					+ (Lastlol instanceof Player ? ((Player) Lastlol).getDisplayName() : Lastlol.getName());
-			Bukkit.broadcastMessage(msg);
-			Lastlol = null;
-		}
+		LastlolData lol = Lastlol.values().stream().filter(lld -> lld.Chatevent.shouldSendTo(sender))
+				.max((lld1, lld2) -> Long.compare(lld1.Loltime, lld2.Loltime)).orElse(null);
+		if (lol == null)
+			return true;
+		if (lol.Lolowner instanceof Player)
+			((Player) lol.Lolowner)
+					.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 2 * 20, 5, false, false));
+		String msg = (sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName())
+				+ (lol.Lolornot ? " unlolled " : " unlaughed ")
+				+ (lol.Lolowner instanceof Player ? ((Player) lol.Lolowner).getDisplayName() : lol.Lolowner.getName());
+		Bukkit.broadcastMessage(msg);
+		Lastlol.remove(lol.Chatevent.getChannel());
 		return true;
+	}
+
+	@Data
+	public static class LastlolData {
+		private boolean Lolornot;
+		private final CommandSender Lolowner;
+		private final TBMCChatEventBase Chatevent;
+		private final long Loltime;
 	}
 }

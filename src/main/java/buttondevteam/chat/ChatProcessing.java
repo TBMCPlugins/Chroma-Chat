@@ -19,11 +19,13 @@ import buttondevteam.chat.commands.UnlolCommand;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.formatting.*;
 import buttondevteam.lib.TBMCChatEvent;
+import buttondevteam.lib.TBMCChatEventBase;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.TellrawSerializableEnum;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerBase;
+import lombok.val;
 import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.lib.chat.*;
 
@@ -90,7 +92,7 @@ public class ChatProcessing {
 		if (player != null && PluginMain.essentials.getUser(player).isMuted())
 			return true;
 
-		doFunStuff(sender, message);
+		doFunStuff(sender, e, message);
 
 		ChatPlayer mp = null;
 		if (player != null)
@@ -132,6 +134,8 @@ public class ChatProcessing {
 				Objective obj = PluginMain.SB.getObjective(channel.ID);
 				int score = -1;
 				for (Player p : Bukkit.getOnlinePlayers()) {
+					if (PluginMain.essentials.getUser(p).isIgnoredPlayer(PluginMain.essentials.getUser(player)))
+						continue;
 					final int mcScore = VanillaUtils.getMCScoreIfChatOn(p, e);
 					obj.getScore(p.getName())
 							.setScore(p.getUniqueId().equals(player == null ? null : player.getUniqueId()) // p.UniqueID==player?.UniqueID
@@ -303,22 +307,24 @@ public class ChatProcessing {
 		return formatters;
 	}
 
-	static void doFunStuff(CommandSender sender, String message) {
+	static void doFunStuff(CommandSender sender, TBMCChatEventBase event, String message) {
 		if (PlayerListener.ActiveF && !PlayerListener.Fs.contains(sender) && message.equalsIgnoreCase("F"))
 			PlayerListener.Fs.add(sender);
 
 		String msg = message.toLowerCase();
-		if (msg.contains("lol")) {
-			UnlolCommand.Lastlolornot = true;
-			UnlolCommand.Lastlol = sender;
-		} else {
+		val lld = new UnlolCommand.LastlolData(sender, event, System.nanoTime());
+		boolean add = false;
+		if (add = msg.contains("lol"))
+			lld.setLolornot(true);
+		else {
 			for (int i = 0; i < PlayerListener.LaughStrings.length; i++) {
-				if (msg.contains(PlayerListener.LaughStrings[i])) {
-					UnlolCommand.Lastlol = sender;
-					UnlolCommand.Lastlolornot = false;
+				if (add = msg.contains(PlayerListener.LaughStrings[i])) {
+					lld.setLolornot(false);
 					break;
 				}
 			}
 		}
+		if (add)
+			UnlolCommand.Lastlol.put(event.getChannel(), lld);
 	}
 }

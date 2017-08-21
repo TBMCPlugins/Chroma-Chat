@@ -16,6 +16,7 @@ import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.FlairStates;
 import buttondevteam.chat.PlayerJoinTimerTask;
 import buttondevteam.chat.PluginMain;
+import buttondevteam.chat.commands.UnlolCommand;
 import buttondevteam.lib.player.TBMCPlayerJoinEvent;
 import buttondevteam.lib.player.TBMCPlayerLoadEvent;
 import buttondevteam.lib.player.TBMCPlayerSaveEvent;
@@ -111,6 +112,7 @@ public class PlayerJoinLeaveListener implements Listener {
 		}
 		if (deletenick != null)
 			PlayerListener.nicknames.remove(deletenick);
+		UnlolCommand.Lastlol.values().removeIf(lld -> lld.getLolowner().equals(event.getPlayer()));
 	}
 
 }

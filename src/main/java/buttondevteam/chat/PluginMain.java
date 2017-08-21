@@ -337,7 +337,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			if (town == null)
 				return new RecipientTestResult("You aren't in a town.");
 			Nation nation = null;
-			int index = -1;
+			int index;
 			if (nationchat) {
 				if (town.hasNation())
 					nation = town.getNation();
