@@ -134,17 +134,24 @@ public class ChatProcessing {
 				Objective obj = PluginMain.SB.getObjective(channel.ID);
 				int score = -1;
 				for (Player p : Bukkit.getOnlinePlayers()) {
-					if (PluginMain.essentials.getUser(p).isIgnoredPlayer(PluginMain.essentials.getUser(player)))
-						continue;
-					final int mcScore = VanillaUtils.getMCScoreIfChatOn(p, e);
+					final int mcScore;
+					if (player != null
+							&& PluginMain.essentials.getUser(p).isIgnoredPlayer(PluginMain.essentials.getUser(player)))
+						mcScore = -1; // Don't send the message to them
+					else
+						mcScore = VanillaUtils.getMCScoreIfChatOn(p, e);
 					obj.getScore(p.getName())
 							.setScore(p.getUniqueId().equals(player == null ? null : player.getUniqueId()) // p.UniqueID==player?.UniqueID
 									? score = mcScore : mcScore);
 				}
-				if (player == null)
+				if (score == -1) // Even if the player object isn't null, it may not be in OnlinePlayers
 					score = e.getMCScore(sender);
-				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console, String.format(
-						"tellraw @a[score_%s=%d,score_%s_min=%d] %s", channel.ID, score, channel.ID, score, jsonstr));
+				if (score < 0) // Never send messages to score below 0
+					sender.sendMessage("§cYou don't have permission to send this message or something went wrong");
+				else
+					PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
+							String.format("tellraw @a[score_%s=%d,score_%s_min=%d] %s", channel.ID, score, channel.ID,
+									score, jsonstr));
 			} else
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 						String.format("tellraw @a %s", jsonstr));

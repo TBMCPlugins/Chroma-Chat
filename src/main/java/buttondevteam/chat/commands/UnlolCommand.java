@@ -24,7 +24,7 @@ public final class UnlolCommand extends TBMCCommandBase {
 	public String[] GetHelpText(String alias) {
 		return new String[] { "§6---- Unlol/unlaugh ----",
 				"This command is based on a joke between NorbiPeti and Ghostise",
-				"It will make anyone saying one of the recognized laugh strings blind for a few seconds",
+				"It will make the last person saying one of the recognized laugh strings blind for a few seconds",
 				"Note that you can only unlaugh laughs that weren't unlaughed before" };
 	}
 
