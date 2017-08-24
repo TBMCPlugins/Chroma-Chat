@@ -92,12 +92,16 @@
 							<goal>integration-test</goal>
 							<goal>verify</goal>
 						</goals>
+						<phase>test</phase>
 					</execution>
 				</executions>
 				<configuration>
 					<testFailureIgnore>true</testFailureIgnore>
 				</configuration>
 			</plugin>
+			<!-- <plugin> <groupId>org.basepom.maven</groupId> <artifactId>duplicate-finder-maven-plugin</artifactId> 
+				<version>1.2.1</version> <executions> <execution> <goals> <goal>check</goal> 
+				</goals> </execution> </executions> </plugin> -->
 		</plugins>
 	</build>
 	<groupId>buttondevteam</groupId>

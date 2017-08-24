@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.lib.chat.*;
+import lombok.Builder;
+import lombok.Data;
 
 /**
  * A {@link ChatFormatter} shows what formatting to use based on regular expressions. {@link ChatFormatter#Combine(List, String, TellrawPart)} is used to turn it into a {@link TellrawPart}, combining
@@ -19,12 +24,24 @@ import buttondevteam.lib.chat.*;
  * @author NorbiPeti
  *
  */
+@Data
+@Builder
 public final class ChatFormatter {
-	private ChatFormatterBuilder builder;
-
-	public ChatFormatter(ChatFormatterBuilder builder) {
-		this.builder = builder;
-	}
+	Pattern regex;
+	boolean italic;
+	boolean bold;
+	boolean underlined;
+	boolean strikethrough;
+	boolean obfuscated;
+	Color color;
+	BiFunction<String, ChatFormatter, String> onmatch;
+	String openlink;
+	@Builder.Default
+	Priority priority = Priority.Normal;
+	@Builder.Default
+	short removeCharCount = 0;
+	@Builder.Default
+	boolean range = false;
 
 	public static void Combine(List<ChatFormatter> formatters, String str, TellrawPart tp) {
 		/*
@@ -33,7 +50,7 @@ public final class ChatFormatter {
 		header("ChatFormatter.Combine begin");
 		ArrayList<FormattedSection> sections = new ArrayList<FormattedSection>();
 		for (ChatFormatter formatter : formatters) {
-			Matcher matcher = formatter.builder.regex.matcher(str);
+			Matcher matcher = formatter.regex.matcher(str);
 			while (matcher.find()) {
 				DebugCommand.SendDebugMessage("Found match from " + matcher.start() + " to " + (matcher.end() - 1));
 				DebugCommand.SendDebugMessage("With formatter:" + formatter);
@@ -44,13 +61,13 @@ public final class ChatFormatter {
 				if (groups.size() > 0)
 					DebugCommand.SendDebugMessage("First group: " + groups.get(0));
 				FormattedSection section = new FormattedSection(formatter, matcher.start(), matcher.end() - 1, groups,
-						formatter.builder.removecharcount, formatter.builder.removecharcount, formatter.builder.range);
+						formatter.removeCharCount, formatter.removeCharCount, formatter.range);
 				sections.add(section);
 			}
 		}
 		sections.sort((s1, s2) -> s1.Start == s2.Start
-				? s1.End == s2.End ? Integer.compare(s2.Formatters.get(0).builder.priority.GetValue(),
-						s1.Formatters.get(0).builder.priority.GetValue()) : Integer.compare(s2.End, s1.End)
+				? s1.End == s2.End ? Integer.compare(s2.Formatters.get(0).priority.GetValue(),
+						s1.Formatters.get(0).priority.GetValue()) : Integer.compare(s2.End, s1.End)
 				: Integer.compare(s1.Start, s2.Start));
 
 		header("Range section conversion");
@@ -243,11 +260,10 @@ public final class ChatFormatter {
 				if (found) {
 					i = 1;
 					found = false;
-					sections.sort((s1,
-							s2) -> s1.Start == s2.Start ? s1.End == s2.End
-									? Integer.compare(s2.Formatters.get(0).builder.priority.GetValue(),
-											s1.Formatters.get(0).builder.priority.GetValue())
-									: Integer.compare(s2.End, s1.End) : Integer.compare(s1.Start, s2.Start));
+					sections.sort((s1, s2) -> s1.Start == s2.Start
+							? s1.End == s2.End ? Integer.compare(s2.Formatters.get(0).priority.GetValue(),
+									s1.Formatters.get(0).priority.GetValue()) : Integer.compare(s2.End, s1.End)
+							: Integer.compare(s1.Start, s2.Start));
 				} else
 					cont = false;
 			}
@@ -266,25 +282,25 @@ public final class ChatFormatter {
 			Color color = null;
 			boolean bold = false, italic = false, underlined = false, strikethrough = false, obfuscated = false;
 			String openlink = null;
-			section.Formatters.sort((cf2, cf1) -> cf1.builder.priority.compareTo(cf2.builder.priority));
+			section.Formatters.sort((cf2, cf1) -> cf1.priority.compareTo(cf2.priority));
 			for (ChatFormatter formatter : section.Formatters) {
 				DebugCommand.SendDebugMessage("Applying formatter: " + formatter);
-				if (formatter.builder.onmatch != null)
-					originaltext = formatter.builder.onmatch.apply(originaltext, formatter.builder);
-				if (formatter.builder.color != null)
-					color = formatter.builder.color;
-				if (formatter.builder.bold)
+				if (formatter.onmatch != null)
+					originaltext = formatter.onmatch.apply(originaltext, formatter);
+				if (formatter.color != null)
+					color = formatter.color;
+				if (formatter.bold)
 					bold = true;
-				if (formatter.builder.italic)
+				if (formatter.italic)
 					italic = true;
-				if (formatter.builder.underlined)
+				if (formatter.underlined)
 					underlined = true;
-				if (formatter.builder.strikethrough)
+				if (formatter.strikethrough)
 					strikethrough = true;
-				if (formatter.builder.obfuscated)
+				if (formatter.obfuscated)
 					obfuscated = true;
-				if (formatter.builder.openlink != null)
-					openlink = formatter.builder.openlink;
+				if (formatter.openlink != null)
+					openlink = formatter.openlink;
 			}
 			TellrawPart newtp = new TellrawPart("");
 			newtp.setText(originaltext);
@@ -304,16 +320,6 @@ public final class ChatFormatter {
 			tp.addExtra(newtp);
 		}
 		header("ChatFormatter.Combine done");
-	}
-
-	@Override
-	public String toString() {
-		return new StringBuilder("F(").append(builder.color).append(", ")
-				.append((builder.bold ? "bold" : "") + (builder.italic ? "italic" : "")
-						+ (builder.underlined ? "underlined" : "") + (builder.strikethrough ? "strikethrough" : "")
-						+ (builder.obfuscated ? "obfuscated" : ""))
-				.append(", ").append(builder.openlink).append(", ").append(builder.priority).append(", ")
-				.append(builder.regex).append(")").toString(); // TODO: Lombok
 	}
 
 	/**

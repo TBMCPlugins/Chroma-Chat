@@ -16,8 +16,7 @@ public final class IgnoreCommand extends UCommandBase {
 	@Override
 	public String[] GetHelpText(String alias) {
 		return new String[] { "§6---- Ignore flair ----",
-				"Stop the \"write your name in the thread\" message from showing up",
-				"Use /u ignore <username> if you commented from multiple accounts" };
+				"Stop the \"write your name in the thread\" message from showing up" };
 	}
 
 	@Override
