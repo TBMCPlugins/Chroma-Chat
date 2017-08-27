@@ -21,6 +21,7 @@ import buttondevteam.lib.chat.ChatChannelRegisterEvent;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerGetInfoEvent;
+import net.ess3.api.events.NickChangeEvent;
 import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
 
 import com.google.common.collect.BiMap;
@@ -291,5 +292,10 @@ public class PlayerListener implements Listener {
 	public void onChannelRegistered(ChatChannelRegisterEvent e) {
 		if (e.getChannel().filteranderrormsg != null && PluginMain.SB.getObjective(e.getChannel().ID) == null) // Not global chat and doesn't exist yet
 			PluginMain.SB.registerNewObjective(e.getChannel().ID, "dummy");
+	}
+
+	@EventHandler
+	public void onNickChange(NickChangeEvent e) {
+		nicknames.inverse().put(e.getAffected().getBase().getUniqueId(), e.getValue());
 	}
 }

@@ -2,6 +2,7 @@ package buttondevteam.chat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
@@ -115,7 +116,7 @@ public class ChatProcessing {
 			}).build());
 		}
 		pingedconsole = false; // Will set it to true onmatch (static constructor)
-		final String channelidentifier = getChannelID(channel, sender, mp);
+		final String channelidentifier = getChannelID(channel, sender);
 
 		TellrawPart json = createTellraw(sender, message, player, mp, channelidentifier);
 		long combinetime = System.nanoTime();
@@ -148,10 +149,18 @@ public class ChatProcessing {
 					score = e.getMCScore(sender);
 				if (score < 0) // Never send messages to score below 0
 					sender.sendMessage("§cYou don't have permission to send this message or something went wrong");
-				else
+				else {
 					PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 							String.format("tellraw @a[score_%s=%d,score_%s_min=%d] %s", channel.ID, score, channel.ID,
 									score, jsonstr));
+					if (e.getChannel().ID.equals(PluginMain.TownChat.ID)
+							|| e.getChannel().ID.equals(PluginMain.NationChat.ID)) {
+						((List<TellrawPart>) json.getExtra()).add(0, new TellrawPart("[SPY]"));
+						jsonstr = toJson(json);
+						Bukkit.getServer().dispatchCommand(PluginMain.Console, String.format(
+								"tellraw @a[score_%s=1000,score_%s_min=1000 %s", channel.ID, channel.ID, jsonstr));
+					}
+				}
 			} else
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 						String.format("tellraw @a %s", jsonstr));
@@ -235,9 +244,9 @@ public class ChatProcessing {
 		return json;
 	}
 
-	static String getChannelID(Channel channel, CommandSender sender, ChatPlayer mp) {
+	static String getChannelID(Channel channel, CommandSender sender) {
 		final String channelidentifier = ("[" + (sender instanceof IDiscordSender ? "d|" : "") + channel.DisplayName)
-				+ "]" + (mp != null && !mp.RPMode ? "[OOC]" : "");
+				+ "]";
 		return channelidentifier;
 	}
 
