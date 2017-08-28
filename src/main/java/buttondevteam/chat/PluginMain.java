@@ -339,8 +339,6 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	private static RecipientTestResult checkTownNationChatInternal(CommandSender sender, boolean nationchat,
 			Resident resident) {
 		try {
-			if (resident != null && resident.getModes().contains("spy"))
-				return new RecipientTestResult(1000); // There won't be more than a thousand towns/nations probably
 			/*
 			 * p.sendMessage(String.format("[SPY-%s] - %s: %s", channel.DisplayName, ((Player) sender).getDisplayName(), message));
 			 */

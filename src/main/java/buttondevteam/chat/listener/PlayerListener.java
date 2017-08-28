@@ -2,9 +2,12 @@ package buttondevteam.chat.listener;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -18,6 +21,7 @@ import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.ChatChannelRegisterEvent;
+import buttondevteam.lib.chat.ChatRoom;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerGetInfoEvent;
@@ -58,43 +62,67 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void PlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		if (event.getMessage().length() < 2)
-			return;
-		int index = event.getMessage().indexOf(" ");
-		ChatPlayer mp = TBMCPlayer.getPlayer(event.getPlayer().getUniqueId(), ChatPlayer.class);
+		if (!event.isCancelled())
+			event.setCancelled(onCommandPreprocess(event.getPlayer(), event.getMessage()));
+	}
+
+	private boolean onCommandPreprocess(CommandSender sender, String message) {
+		if (message.length() < 2)
+			return false;
+		int index = message.indexOf(" ");
+		ChatPlayer mp;
+		if (sender instanceof Player)
+			mp = TBMCPlayer.getPlayer(((Player) sender).getUniqueId(), ChatPlayer.class);
+		else
+			mp = null;
 		String cmd = "";
-		if (index == -1) { // Only the command is run
-			cmd = event.getMessage().substring(1);
+		if (index == -1 && (sender instanceof Player || sender instanceof ConsoleCommandSender)) { // Only the command is run
+			// ^^ We can only store player or console channels - Directly sending to channels would still work if they had an event
+			cmd = sender instanceof ConsoleCommandSender ? message : message.substring(1);
 			for (Channel channel : Channel.getChannels()) {
 				if (cmd.equalsIgnoreCase(channel.ID)) {
-					if (mp.CurrentChannel.equals(channel))
-						mp.CurrentChannel = Channel.GlobalChat;
-					else
-						mp.CurrentChannel = channel;
-					event.getPlayer().sendMessage("§6You are now talking in: §b" + mp.CurrentChannel.DisplayName);
-					event.setCancelled(true);
-					break;
+					Supplier<Channel> getch = () -> sender instanceof Player ? mp.CurrentChannel : ConsoleChannel;
+					Consumer<Channel> setch = ch -> {
+						if (sender instanceof Player)
+							mp.CurrentChannel = ch;
+						else
+							ConsoleChannel = ch;
+					};
+					Channel oldch = getch.get();
+					if (oldch instanceof ChatRoom)
+						((ChatRoom) oldch).leaveRoom(sender);
+					if (oldch.equals(channel))
+						setch.accept(Channel.GlobalChat);
+					else {
+						setch.accept(channel);
+						if (channel instanceof ChatRoom)
+							((ChatRoom) channel).joinRoom(sender);
+					}
+					sender.sendMessage("§6You are now talking in: §b" + getch.get().DisplayName);
+					return true;
 				}
 			}
 		} else { // We have arguments
-			cmd = event.getMessage().substring(1, index);
+			cmd = sender instanceof ConsoleCommandSender ? message.substring(0, index) : message.substring(1, index);
 			if (cmd.equalsIgnoreCase("tpahere")) {
-				Player player = Bukkit.getPlayer(event.getMessage().substring(index + 1));
-				if (player != null)
-					player.sendMessage("§b" + event.getPlayer().getDisplayName() + " §bis in this world: "
-							+ event.getPlayer().getWorld().getName());
+				Player player = Bukkit.getPlayer(message.substring(index + 1));
+				if (player != null && sender instanceof Player)
+					player.sendMessage("§b" + ((Player) sender).getDisplayName() + " §bis in this world: "
+							+ ((Player) sender).getWorld().getName());
 			} else if (cmd.equalsIgnoreCase("minecraft:me")) {
-				if (!PluginMain.essentials.getUser(event.getPlayer()).isMuted()) {
-					event.setCancelled(true);
-					String message = event.getMessage().substring(index + 1);
-					Bukkit.broadcastMessage(String.format("* %s %s", event.getPlayer().getDisplayName(), message));
+				if (!(sender instanceof Player) || !PluginMain.essentials.getUser((Player) sender).isMuted()) {
+					String msg = message.substring(index + 1);
+					Bukkit.broadcastMessage(String.format("* %s %s", ((Player) sender).getDisplayName(), msg));
+					return true;
+				} else {
+					sender.sendMessage("§cCan't use /minecraft:me while muted.");
+					return true;
 				}
 			} else
 				for (Channel channel : Channel.getChannels()) {
 					if (cmd.equalsIgnoreCase(channel.ID)) {
-						event.setCancelled(true);
-						TBMCChatAPI.SendChatMessage(channel, event.getPlayer(),
-								event.getMessage().substring(index + 1));
+						TBMCChatAPI.SendChatMessage(channel, sender, message.substring(index + 1));
+						return true;
 					}
 				}
 			// TODO: Target selectors
@@ -103,24 +131,24 @@ public class PlayerListener implements Listener {
 		if (cmd.toLowerCase().startsWith("un")) {
 			for (HelpTopic ht : PluginMain.Instance.getServer().getHelpMap().getHelpTopics()) {
 				if (ht.getName().equalsIgnoreCase("/" + cmd))
-					return;
+					return false;
 			}
-			if (PluginMain.permission.has(event.getPlayer(), "tbmc.admin")) {
+			if (PluginMain.permission.has(sender, "tbmc.admin")) {
 				String s = cmd.substring(2);
 				Player target = null;
-				target = Bukkit.getPlayer(event.getMessage().substring(index + 1));
+				target = Bukkit.getPlayer(message.substring(index + 1));
 				if (target == null) {
-					event.getPlayer().sendMessage("§cError: Player not found. (/un" + s + " <player>)");
-					event.setCancelled(true);
+					sender.sendMessage("§cError: Player not found. (/un" + s + " <player>)");
+					return true;
 				}
-				if (target != null) {
-					target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 5, false, false));
-					Bukkit.broadcastMessage(
-							event.getPlayer().getDisplayName() + " un" + s + "'d " + target.getDisplayName());
-					event.setCancelled(true);
-				}
+				target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 5, false, false));
+				Bukkit.broadcastMessage(
+						(sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName()) + " un" + s
+								+ "'d " + target.getDisplayName());
+				return true;
 			}
 		}
+		return false;
 	}
 
 	@EventHandler
@@ -204,54 +232,8 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onConsoleCommand(ServerCommandEvent event) {
-		if (event.getCommand().length() < 2)
-			return;
-		int index = event.getCommand().indexOf(" ");
-		String cmd = "";
-		if (index == -1) {
-			cmd = event.getCommand();
-			for (Channel channel : Channel.getChannels()) {
-				if (cmd.equalsIgnoreCase(channel.ID)) {
-					if (ConsoleChannel.equals(channel))
-						ConsoleChannel = Channel.GlobalChat;
-					else
-						ConsoleChannel = channel;
-					event.getSender().sendMessage("§6You are now talking in: §b" + ConsoleChannel.DisplayName);
-					event.setCommand("dontrunthiscmd");
-					break;
-				}
-			}
-		} else {
-			cmd = event.getCommand().substring(0, index);
-			for (Channel channel : Channel.getChannels()) {
-				if (cmd.equalsIgnoreCase(channel.ID)) {
-					Channel c = ConsoleChannel;
-					ConsoleChannel = channel;
-					TBMCChatAPI.SendChatMessage(PlayerListener.ConsoleChannel, Bukkit.getConsoleSender(),
-							event.getCommand().substring(index + 1));
-					ConsoleChannel = c;
-					event.setCommand("dontrunthiscmd");
-				}
-			}
-		}
-		if (cmd.toLowerCase().startsWith("un")) {
-			for (HelpTopic ht : PluginMain.Instance.getServer().getHelpMap().getHelpTopics()) {
-				if (ht.getName().equalsIgnoreCase("/" + cmd))
-					return;
-			}
-			String s = cmd.substring(2);
-			Player target = null;
-			target = Bukkit.getPlayer(event.getCommand().substring(index + 1));
-			if (target == null) {
-				event.getSender().sendMessage("§cError: Player not found. (/un" + s + " <player>)");
-				event.setCommand("dontrunthiscmd");
-			}
-			if (target != null) {
-				target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 5, false, false));
-				Bukkit.broadcastMessage(event.getSender().getName() + " un" + s + "'d " + target.getDisplayName());
-				event.setCommand("dontrunthiscmd");
-			}
-		}
+		if (onCommandPreprocess(event.getSender(), event.getCommand()))
+			event.setCommand("dontrunthiscmd");
 	}
 
 	@EventHandler

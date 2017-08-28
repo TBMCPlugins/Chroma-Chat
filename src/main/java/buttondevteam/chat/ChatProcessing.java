@@ -158,7 +158,7 @@ public class ChatProcessing {
 						((List<TellrawPart>) json.getExtra()).add(0, new TellrawPart("[SPY]"));
 						jsonstr = toJson(json);
 						Bukkit.getServer().dispatchCommand(PluginMain.Console, String.format(
-								"tellraw @a[score_%s=1000,score_%s_min=1000 %s", channel.ID, channel.ID, jsonstr));
+								"tellraw @a[score_%s=1000,score_%s_min=1000] %s", channel.ID, channel.ID, jsonstr));
 					}
 				}
 			} else
