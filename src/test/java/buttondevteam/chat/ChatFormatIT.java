@@ -63,7 +63,7 @@ public class ChatFormatIT extends TestCase {
 	@Test
 	public void testMessage() {
 		ArrayList<ChatFormatter> cfs = ChatProcessing.addFormatters(Color.White);
-		final String chid = ChatProcessing.getChannelID(Channel.GlobalChat, sender, null);
+		final String chid = ChatProcessing.getChannelID(Channel.GlobalChat, sender);
 		final TellrawPart tp = ChatProcessing.createTellraw(sender, message, null, null, chid);
 		ChatFormatter.Combine(cfs, message, tp);
 		System.out.println("Testing: " + message);

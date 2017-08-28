@@ -2,6 +2,7 @@ package buttondevteam.chat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
@@ -40,37 +41,38 @@ public class ChatProcessing {
 	private static final Pattern UNDERLINED_PATTERN = Pattern.compile("\\_");
 	private static final Pattern ITALIC_PATTERN = Pattern.compile("\\*");
 	private static final Pattern BOLD_PATTERN = Pattern.compile("\\*\\*");
+	private static final Pattern CODE_PATTERN = Pattern.compile("`");
+	private static final Pattern MASKED_LINK_PATTERN = Pattern.compile("\\[([^\\[\\]])\\]\\(([^\\(\\)])\\)");
 	private static final Color[] RainbowPresserColors = new Color[] { Color.Red, Color.Gold, Color.Yellow, Color.Green,
 			Color.Blue, Color.DarkPurple };
 	private static boolean pingedconsole = false;
 
-	public static final ChatFormatter ESCAPE_FORMATTER = new ChatFormatterBuilder().setRegex(ESCAPE_PATTERN).build();
+	public static final ChatFormatter ESCAPE_FORMATTER = ChatFormatter.builder().regex(ESCAPE_PATTERN).build();
 
 	private static ArrayList<ChatFormatter> commonFormatters = Lists.newArrayList(
-			new ChatFormatterBuilder().setRegex(BOLD_PATTERN).setBold(true).setRemoveCharCount((short) 2).setRange(true)
-					.setPriority(Priority.High).build(),
-			new ChatFormatterBuilder().setRegex(ITALIC_PATTERN).setItalic(true).setRemoveCharCount((short) 1)
-					.setRange(true).build(),
-			new ChatFormatterBuilder().setRegex(UNDERLINED_PATTERN).setUnderlined(true).setRemoveCharCount((short) 1)
-					.setRange(true).build(),
-			ESCAPE_FORMATTER,
-			new ChatFormatterBuilder().setRegex(URL_PATTERN).setUnderlined(true).setOpenlink("$1").build(),
-			new ChatFormatterBuilder().setRegex(NULL_MENTION_PATTERN).setColor(Color.DarkRed).build(), // Properly added a bug as a feature
-			new ChatFormatterBuilder().setRegex(CONSOLE_PING_PATTERN).setColor(Color.Aqua)
-					.setOnmatch((match, builder) ->
+			ChatFormatter.builder().regex(BOLD_PATTERN).bold(true).removeCharCount((short) 2).range(true)
+					.priority(Priority.High).build(),
+			ChatFormatter.builder().regex(ITALIC_PATTERN).italic(true).removeCharCount((short) 1).range(true).build(),
+			ChatFormatter.builder().regex(UNDERLINED_PATTERN).underlined(true).removeCharCount((short) 1).range(true)
+					.build(),
+			ESCAPE_FORMATTER, ChatFormatter.builder().regex(URL_PATTERN).underlined(true).openlink("$1").build(),
+			ChatFormatter.builder().regex(NULL_MENTION_PATTERN).color(Color.DarkRed).build(), // Properly added a bug as a feature
+			ChatFormatter.builder().regex(CONSOLE_PING_PATTERN).color(Color.Aqua).onmatch((match, builder) -> {
+				if (!pingedconsole) {
+					System.out.print("\007");
+					pingedconsole = true; // Will set it to false in ProcessChat
+				}
+				return match;
+			}).priority(Priority.High).build(),
 
-					{
-						if (!pingedconsole) {
-							System.out.print("\007");
-							pingedconsole = true; // Will set it to false in ProcessChat
-						}
-						return match;
-					}).setPriority(Priority.High).build(),
-
-			new ChatFormatterBuilder().setRegex(HASHTAG_PATTERN).setColor(Color.Blue)
-					.setOpenlink("https://twitter.com/hashtag/$1").setPriority(Priority.High).build(),
-			new ChatFormatterBuilder().setRegex(CYAN_PATTERN).setColor(Color.Aqua).build() // #55
-	);
+			ChatFormatter.builder().regex(HASHTAG_PATTERN).color(Color.Blue).openlink("https://twitter.com/hashtag/$1")
+					.priority(Priority.High).build(),
+			ChatFormatter.builder().regex(CYAN_PATTERN).color(Color.Aqua).build(), // #55
+			ChatFormatter.builder().regex(CODE_PATTERN).color(Color.DarkGray).removeCharCount((short) 1).range(true)
+					.build(),
+			ChatFormatter.builder().regex(MASKED_LINK_PATTERN).underlined(true).onmatch((match, builder) -> {
+				return match; // TODO!
+			}).build());
 	private static Gson gson = new GsonBuilder()
 			.registerTypeHierarchyAdapter(TellrawSerializableEnum.class, new TellrawSerializer.TwEnum())
 			.registerTypeHierarchyAdapter(Collection.class, new TellrawSerializer.TwCollection())
@@ -108,14 +110,13 @@ public class ChatProcessing {
 		ArrayList<ChatFormatter> formatters = addFormatters(colormode);
 		if (colormode == channel.color && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
 			final AtomicInteger rpc = new AtomicInteger(0);
-			formatters.add(new ChatFormatterBuilder().setColor(colormode).setOnmatch((match, builder) -> {
-				builder.setColor(
-						RainbowPresserColors[rpc.getAndUpdate(i -> ++i < RainbowPresserColors.length ? i : 0)]);
+			formatters.add(ChatFormatter.builder().color(colormode).onmatch((match, cf) -> {
+				cf.setColor(RainbowPresserColors[rpc.getAndUpdate(i -> ++i < RainbowPresserColors.length ? i : 0)]);
 				return match;
 			}).build());
 		}
 		pingedconsole = false; // Will set it to true onmatch (static constructor)
-		final String channelidentifier = getChannelID(channel, sender, mp);
+		final String channelidentifier = getChannelID(channel, sender);
 
 		TellrawPart json = createTellraw(sender, message, player, mp, channelidentifier);
 		long combinetime = System.nanoTime();
@@ -148,10 +149,18 @@ public class ChatProcessing {
 					score = e.getMCScore(sender);
 				if (score < 0) // Never send messages to score below 0
 					sender.sendMessage("§cYou don't have permission to send this message or something went wrong");
-				else
+				else {
 					PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 							String.format("tellraw @a[score_%s=%d,score_%s_min=%d] %s", channel.ID, score, channel.ID,
 									score, jsonstr));
+					if (e.getChannel().ID.equals(PluginMain.TownChat.ID)
+							|| e.getChannel().ID.equals(PluginMain.NationChat.ID)) {
+						((List<TellrawPart>) json.getExtra()).add(0, new TellrawPart("[SPY]"));
+						jsonstr = toJson(json);
+						Bukkit.getServer().dispatchCommand(PluginMain.Console, String.format(
+								"tellraw @a[score_%s=1000,score_%s_min=1000] %s", channel.ID, channel.ID, jsonstr));
+					}
+				}
 			} else
 				PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
 						String.format("tellraw @a %s", jsonstr));
@@ -235,9 +244,9 @@ public class ChatProcessing {
 		return json;
 	}
 
-	static String getChannelID(Channel channel, CommandSender sender, ChatPlayer mp) {
+	static String getChannelID(Channel channel, CommandSender sender) {
 		final String channelidentifier = ("[" + (sender instanceof IDiscordSender ? "d|" : "") + channel.DisplayName)
-				+ "]" + (mp != null && !mp.RPMode ? "[OOC]" : "");
+				+ "]";
 		return channelidentifier;
 	}
 
@@ -245,8 +254,8 @@ public class ChatProcessing {
 		@SuppressWarnings("unchecked")
 		ArrayList<ChatFormatter> formatters = (ArrayList<ChatFormatter>) commonFormatters.clone();
 
-		formatters.add(new ChatFormatterBuilder().setRegex(ENTIRE_MESSAGE_PATTERN).setColor(colormode)
-				.setPriority(Priority.Low).build());
+		formatters.add(
+				ChatFormatter.builder().regex(ENTIRE_MESSAGE_PATTERN).color(colormode).priority(Priority.Low).build());
 
 		if (Bukkit.getOnlinePlayers().size() > 0) {
 			StringBuilder namesb = new StringBuilder("(?i)(");
@@ -271,8 +280,8 @@ public class ChatProcessing {
 			}
 			nicksb.append(")");
 
-			formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(namesb.toString())).setColor(Color.Aqua)
-					.setOnmatch((match, builder) -> {
+			formatters.add(ChatFormatter.builder().regex(Pattern.compile(namesb.toString())).color(Color.Aqua)
+					.onmatch((match, builder) -> {
 						Player p = Bukkit.getPlayer(match);
 						if (p == null) {
 							PluginMain.Instance.getLogger()
@@ -287,11 +296,11 @@ public class ChatProcessing {
 									(float) PlayerListener.NotificationPitch);
 						String color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
 						return color + p.getName() + "§r";
-					}).setPriority(Priority.High).build());
+					}).priority(Priority.High).build());
 
 			if (addNickFormatter)
-				formatters.add(new ChatFormatterBuilder().setRegex(Pattern.compile(nicksb.toString()))
-						.setColor(Color.Aqua).setOnmatch((match, builder) -> {
+				formatters.add(ChatFormatter.builder().regex((Pattern.compile(nicksb.toString()))).color(Color.Aqua)
+						.onmatch((match, builder) -> {
 							if (PlayerListener.nicknames.containsKey(match)) {
 								Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(match));
 								if (p == null) {
@@ -309,7 +318,7 @@ public class ChatProcessing {
 							Bukkit.getServer().getLogger().warning("Player nicknamed " + match
 									+ " not found in nickname map but was reported as online.");
 							return "§c" + match + "§r";
-						}).setPriority(Priority.High).build());
+						}).priority(Priority.High).build());
 		}
 		return formatters;
 	}

@@ -23,7 +23,6 @@ import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.chat.Channel.RecipientTestResult;
 import buttondevteam.lib.player.TBMCPlayerBase;
-
 import com.earth2me.essentials.Essentials;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -63,6 +62,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 	public static Channel TownChat;
 	public static Channel NationChat;
+	public static Channel RPChannel;
 
 	/**
 	 * <p>
@@ -93,6 +93,11 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 				TownChat = new Channel("§3TC§f", Color.DarkAqua, "tc", s -> checkTownNationChat(s, false)));
 		TBMCChatAPI.RegisterChatChannel(
 				NationChat = new Channel("§6NC§f", Color.Gold, "nc", s -> checkTownNationChat(s, true)));
+		TBMCChatAPI.RegisterChatChannel(RPChannel = new Channel("§7RP§f", Color.Gray, "rp", Channel.noScoreResult(s -> {
+			if (s instanceof ConsoleCommandSender)
+				return true;
+			return true; // TODO: Allow hiding it
+		}, "You need to show the RP chat in order to speak in it.")));
 
 		setupChat();
 		setupEconomy();
@@ -324,10 +329,16 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	private static RecipientTestResult checkTownNationChat(CommandSender sender, boolean nationchat) {
 		if (!(sender instanceof Player))
 			return new RecipientTestResult("§cYou are not a player!");
+		Resident resident = PluginMain.TU.getResidentMap().get(sender.getName().toLowerCase());
+		RecipientTestResult result = checkTownNationChatInternal(sender, nationchat, resident);
+		if (result.errormessage != null && resident != null && resident.getModes().contains("spy")) // Only use spy if they wouldn't see it
+			result = new RecipientTestResult(1000); // There won't be more than a thousand towns/nations probably
+		return result;
+	}
+
+	private static RecipientTestResult checkTownNationChatInternal(CommandSender sender, boolean nationchat,
+			Resident resident) {
 		try {
-			Resident resident = PluginMain.TU.getResidentMap().get(sender.getName().toLowerCase());
-			if (resident != null && resident.getModes().contains("spy"))
-				return null;
 			/*
 			 * p.sendMessage(String.format("[SPY-%s] - %s: %s", channel.DisplayName, ((Player) sender).getDisplayName(), message));
 			 */

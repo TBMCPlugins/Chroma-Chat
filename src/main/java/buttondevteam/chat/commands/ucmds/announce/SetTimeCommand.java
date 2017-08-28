@@ -16,7 +16,7 @@ public class SetTimeCommand extends AnnounceCommandBase {
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias,
 			String[] args) {
-		if (args.length < 3) {
+		if (args.length < 1) {
 			return false;
 		}
 		try {

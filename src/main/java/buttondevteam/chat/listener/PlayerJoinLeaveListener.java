@@ -86,8 +86,6 @@ public class PlayerJoinLeaveListener implements Listener {
 			nwithoutformatting = p.getName();
 		PlayerListener.nicknames.put(nwithoutformatting, p.getUniqueId());
 
-		cp.RPMode = true;
-
 		cp.FlairUpdate();
 
 		if (cp.ChatOnly || p.getGameMode().equals(GameMode.SPECTATOR)) {
