@@ -155,8 +155,7 @@ public class PlayerListener implements Listener {
 	public void onTabComplete(PlayerChatTabCompleteEvent e) {
 		String name = e.getLastToken();
 		for (Entry<String, UUID> nicknamekv : nicknames.entrySet()) {
-			if (nicknamekv.getKey().startsWith(name)
-					&& !nicknamekv.getKey().equals(Bukkit.getPlayer(nicknamekv.getValue()).getName()))
+			if (nicknamekv.getKey().startsWith(name))
 				e.getTabCompletions().add(nicknamekv.getKey());
 		}
 	}

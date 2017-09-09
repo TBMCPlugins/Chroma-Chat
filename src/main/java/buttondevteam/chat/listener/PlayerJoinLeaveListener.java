@@ -1,8 +1,6 @@
 package buttondevteam.chat.listener;
 
 import java.util.Timer;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -100,16 +98,7 @@ public class PlayerJoinLeaveListener implements Listener {
 
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) {
-		String deletenick = null;
-		for (String nickname : PlayerListener.nicknames.keySet()) {
-			UUID uuid = PlayerListener.nicknames.get(nickname);
-			if (event.getPlayer().getUniqueId().equals(uuid)) {
-				deletenick = nickname;
-				break;
-			}
-		}
-		if (deletenick != null)
-			PlayerListener.nicknames.remove(deletenick);
+		PlayerListener.nicknames.inverse().remove(event.getPlayer().getUniqueId());
 		UnlolCommand.Lastlol.values().removeIf(lld -> lld.getLolowner().equals(event.getPlayer()));
 	}
 
