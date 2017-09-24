@@ -23,6 +23,8 @@ import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.chat.Channel.RecipientTestResult;
 import buttondevteam.lib.player.TBMCPlayerBase;
+import lombok.val;
+
 import com.earth2me.essentials.Essentials;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -42,11 +44,16 @@ import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	// A user, which flair isn't obtainable:
@@ -88,6 +95,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		TU = ((Towny) Bukkit.getPluginManager().getPlugin("Towny")).getTownyUniverse();
 		Towns = new ArrayList<Town>(TU.getTownsMap().values()); // Creates a snapshot of towns, new towns will be added when needed
 		Nations = new ArrayList<Nation>(TU.getNationsMap().values()); // Same here but with nations
+
+		TownColors.keySet().removeIf(t -> !TU.getTownsMap().containsKey(t.toLowerCase())); // Removes town colors for deleted/renamed towns
 
 		TBMCChatAPI.RegisterChatChannel(
 				TownChat = new Channel("§3TC§f", Color.DarkAqua, "tc", s -> checkTownNationChat(s, false)));
@@ -253,7 +262,9 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 	public static ArrayList<String> AnnounceMessages = new ArrayList<>();
 	public static int AnnounceTime = 15 * 60 * 1000;
+	public static Map<String, Color[]> TownColors = new HashMap<>();
 
+	@SuppressWarnings("unchecked")
 	public static void LoadFiles() {
 		PluginMain.Instance.getLogger().info("Loading files...");
 		try {
@@ -266,6 +277,11 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 				AnnounceTime = yc.getInt("announcetime");
 				AnnounceMessages.addAll(yc.getStringList("announcements"));
 				PlayerListener.AlphaDeaths = yc.getInt("alphadeaths");
+				val cs = yc.getConfigurationSection("towncolors");
+				if (cs != null)
+					TownColors.putAll(cs.getValues(true).entrySet().stream()
+							.collect(Collectors.toMap(k -> k.getKey(), v -> ((List<String>) v.getValue()).stream()
+									.map(c -> Color.valueOf(c)).toArray(Color[]::new))));
 			}
 			PluginMain.Instance.getLogger().info("Loaded files!");
 		} catch (Exception e) {
@@ -283,6 +299,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			yc.set("announcetime", AnnounceTime);
 			yc.set("announcements", AnnounceMessages);
 			yc.set("alphadeaths", PlayerListener.AlphaDeaths);
+			yc.createSection("towncolors", TownColors.entrySet().stream().collect(Collectors.toMap(k -> k.getKey(),
+					v -> Arrays.stream(v.getValue()).map(c -> c.toString()).toArray(String[]::new))));
 			yc.save(file);
 			PluginMain.Instance.getLogger().info("Saved files!");
 		} catch (Exception e) {

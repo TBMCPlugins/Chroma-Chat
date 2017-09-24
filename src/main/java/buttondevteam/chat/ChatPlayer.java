@@ -12,7 +12,7 @@ import buttondevteam.lib.player.PlayerClass;
 import buttondevteam.lib.player.PlayerData;
 import buttondevteam.lib.player.TBMCPlayerBase;
 
-@PlayerClass(pluginname = "ButtonChat")
+@PlayerClass(pluginname = "Button1Chat")
 public class ChatPlayer extends TBMCPlayerBase {
 	public PlayerData<String> UserName() {
 		return data(null);

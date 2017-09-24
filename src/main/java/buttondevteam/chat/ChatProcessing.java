@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -16,6 +17,8 @@ import com.earth2me.essentials.Essentials;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+
 import buttondevteam.chat.commands.UnlolCommand;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.formatting.*;
@@ -169,8 +172,8 @@ public class ChatProcessing {
 			sender.sendMessage("§cAn error occured while sending the message.");
 			return true;
 		}
-		PluginMain.Instance.getServer().getConsoleSender().sendMessage(String.format("%s <%s> %s", channelidentifier,
-				(player != null ? player.getDisplayName() : sender.getName()), message));
+		PluginMain.Instance.getServer().getConsoleSender()
+				.sendMessage(String.format("%s <%s§r> %s", channelidentifier, getSenderName(sender, player), message));
 		DebugCommand.SendDebugMessage(
 				"-- Full ChatProcessing time: " + (System.nanoTime() - processstart) / 1000000f + " ms");
 		DebugCommand.SendDebugMessage("-- ChatFormatter.Combine time: " + combinetime / 1000000f + " ms");
@@ -199,8 +202,8 @@ public class ChatProcessing {
 		json.addExtra(new TellrawPart(" <"));
 		json.addExtra(
 				new TellrawPart(
-						(player != null ? player.getDisplayName()
-								: sender.getName()))
+						getSenderName(
+								sender, player))
 										.setHoverEvent(
 												TellrawEvent
 														.create(TellrawEvent.HoverAction.SHOW_TEXT,
@@ -242,6 +245,30 @@ public class ChatProcessing {
 																						+ sender.getName())))));
 		json.addExtra(new TellrawPart("> "));
 		return json;
+	}
+
+	private static String getSenderName(CommandSender sender, Player player) {
+		if (player == null)
+			return sender.getName();
+		val res = PluginMain.TU.getResidentMap().get(player.getName().toLowerCase());
+		if (res == null || !res.hasTown())
+			return player.getDisplayName();
+		try {
+			val clrs = PluginMain.TownColors.get(res.getTown().getName().toLowerCase());
+			if (clrs == null)
+				return player.getDisplayName();
+			String ret = "";
+			String name = ChatColor.stripColor(player.getDisplayName());
+			int len = name.length() / clrs.length;
+			// val bounds = new int[clrs.length - 1];
+			// for (int i = 0; i < clrs.length; i++)
+			for (int i = 0; i < clrs.length; i++)
+				ret += "§" + Integer.toHexString(clrs[i].ordinal()) // 'Odds' are the last character is chopped off so we make sure to include all chars at the end
+						+ (i + 1 == clrs.length ? name.substring(len * i) : name.substring(len * i, len * i + len));
+			return ret;
+		} catch (NotRegisteredException e) {
+			return player.getDisplayName();
+		}
 	}
 
 	static String getChannelID(Channel channel, CommandSender sender) {
