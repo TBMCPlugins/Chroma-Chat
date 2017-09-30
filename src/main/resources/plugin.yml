@@ -35,6 +35,7 @@ depend:
 - Votifier
 - Vault
 - ButtonCore
+- Dynmap-Towny
 soft-depend:
 - Minigames
 permissions:

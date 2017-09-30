@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
+import org.dynmap.towny.DTBridge;
+import org.dynmap.towny.DynmapTownyPlugin;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 
@@ -53,6 +55,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
@@ -107,6 +110,21 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 				return true;
 			return true; // TODO: Allow hiding it
 		}, "You need to show the RP chat in order to speak in it.")));
+
+		Bukkit.getScheduler().runTask(this, () -> {
+			val dtp = (DynmapTownyPlugin) Bukkit.getPluginManager().getPlugin("Dynmap-Towny");
+			if (dtp == null)
+				return;
+			for (val entry : TownColors.entrySet()) {
+				Function<Color, Integer> c2i = c -> c.getRed() << 4 | c.getGreen() << 2 | c.getBlue();
+				try {
+					DTBridge.setTownColor(dtp, entry.getKey(), c2i.apply(entry.getValue()[0]),
+							c2i.apply(entry.getValue().length > 1 ? entry.getValue()[1] : entry.getValue()[0]));
+				} catch (Exception e) {
+					TBMCCoreAPI.SendException("Failed to set town color for town " + entry.getKey() + "!", e);
+				}
+			}
+		});
 
 		setupChat();
 		setupEconomy();
