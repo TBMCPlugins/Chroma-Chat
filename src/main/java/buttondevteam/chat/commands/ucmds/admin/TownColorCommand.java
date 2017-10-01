@@ -2,7 +2,9 @@ package buttondevteam.chat.commands.ucmds.admin;
 
 import java.util.Arrays;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.dynmap.towny.DynmapTownyPlugin;
 
 import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.chat.Color;
@@ -23,9 +25,13 @@ public class TownColorCommand extends AdminCommandBase {
 
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
+		return SetTownColor(sender, alias, args);
+	}
+
+	public static boolean SetTownColor(CommandSender sender, String alias, String[] args) {
 		if (args.length < 2)
 			return false;
-		if (!PluginMain.TU.getTownsMap().containsKey(args[0])) {
+		if (!PluginMain.TU.getTownsMap().containsKey(args[0].toLowerCase())) {
 			sender.sendMessage("§cThe town '" + args[0] + "' cannot be found.");
 			return true;
 		}
@@ -39,7 +45,13 @@ public class TownColorCommand extends AdminCommandBase {
 			}
 			clrs[i - 1] = c.get();
 		}
-		PluginMain.TownColors.put(args[0], clrs);
+		PluginMain.TownColors.put(args[0].toLowerCase(), clrs);
+		val dtp = (DynmapTownyPlugin) Bukkit.getPluginManager().getPlugin("Dynmap-Towny");
+		if (dtp == null) {
+			sender.sendMessage("§cDynmap-Towny couldn'5 be found to set town color.");
+			return true;
+		}
+		PluginMain.setTownColor(dtp, args[0].toLowerCase(), clrs);
 		sender.sendMessage("§bColor(s) set.");
 		return true;
 	}

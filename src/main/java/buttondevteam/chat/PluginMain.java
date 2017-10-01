@@ -18,6 +18,7 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 
 import buttondevteam.chat.commands.YeehawCommand;
+import buttondevteam.chat.commands.ucmds.TownColorCommand;
 import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Channel;
@@ -115,15 +116,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			val dtp = (DynmapTownyPlugin) Bukkit.getPluginManager().getPlugin("Dynmap-Towny");
 			if (dtp == null)
 				return;
-			for (val entry : TownColors.entrySet()) {
-				Function<Color, Integer> c2i = c -> c.getRed() << 4 | c.getGreen() << 2 | c.getBlue();
-				try {
-					DTBridge.setTownColor(dtp, entry.getKey(), c2i.apply(entry.getValue()[0]),
-							c2i.apply(entry.getValue().length > 1 ? entry.getValue()[1] : entry.getValue()[0]));
-				} catch (Exception e) {
-					TBMCCoreAPI.SendException("Failed to set town color for town " + entry.getKey() + "!", e);
-				}
-			}
+			for (val entry : TownColors.entrySet())
+				setTownColor(dtp, entry.getKey(), entry.getValue());
 		});
 
 		setupChat();
@@ -132,6 +126,16 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 		new Thread(this::FlairGetterThreadMethod).start();
 		new Thread(new AnnouncerThread()).start();
+	}
+
+	public static void setTownColor(DynmapTownyPlugin dtp, String town, Color[] colors) {
+		Function<Color, Integer> c2i = c -> c.getRed() << 16 | c.getGreen() << 8 | c.getBlue();
+		try {
+			DTBridge.setTownColor(dtp, town, c2i.apply(colors[0]),
+					c2i.apply(colors.length > 1 ? colors[1] : colors[0]));
+		} catch (Exception e) {
+			TBMCCoreAPI.SendException("Failed to set town color for town " + town + "!", e);
+		}
 	}
 
 	public Boolean stop = false;
@@ -300,6 +304,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					TownColors.putAll(cs.getValues(true).entrySet().stream()
 							.collect(Collectors.toMap(k -> k.getKey(), v -> ((List<String>) v.getValue()).stream()
 									.map(c -> Color.valueOf(c)).toArray(Color[]::new))));
+				TownColorCommand.ColorCount = (byte) yc.getInt("towncolorcount", 1);
 			}
 			PluginMain.Instance.getLogger().info("Loaded files!");
 		} catch (Exception e) {
@@ -319,6 +324,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			yc.set("alphadeaths", PlayerListener.AlphaDeaths);
 			yc.createSection("towncolors", TownColors.entrySet().stream().collect(Collectors.toMap(k -> k.getKey(),
 					v -> Arrays.stream(v.getValue()).map(c -> c.toString()).toArray(String[]::new))));
+			yc.set("towncolorcount", TownColorCommand.ColorCount);
 			yc.save(file);
 			PluginMain.Instance.getLogger().info("Saved files!");
 		} catch (Exception e) {
