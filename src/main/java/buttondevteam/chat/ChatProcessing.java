@@ -1,9 +1,11 @@
 package buttondevteam.chat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
@@ -259,12 +261,18 @@ public class ChatProcessing {
 				return player.getDisplayName();
 			String ret = "";
 			String name = ChatColor.stripColor(player.getDisplayName());
+			BiFunction<Integer, Integer, String> coloredNamePart = (len, i) -> "§"
+					+ Integer.toHexString(clrs[i].ordinal()) // 'Odds' are the last character is chopped off so we make sure to include all chars at the end
+					+ (i + 1 == clrs.length ? name.substring(len * i) : name.substring(len * i, len * i + len));
 			int len = name.length() / clrs.length;
-			// val bounds = new int[clrs.length - 1];
-			// for (int i = 0; i < clrs.length; i++)
+			int[] ncl = ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations().get()
+					.toArray();
+			if (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length) {
+				System.out.println("Name length changed: " + Arrays.stream(ncl).sum() + " -> " + name.length());
+				ncl = null; // Reset if name length changed
+			}
 			for (int i = 0; i < clrs.length; i++)
-				ret += "§" + Integer.toHexString(clrs[i].ordinal()) // 'Odds' are the last character is chopped off so we make sure to include all chars at the end
-						+ (i + 1 == clrs.length ? name.substring(len * i) : name.substring(len * i, len * i + len));
+				ret += coloredNamePart.apply(ncl == null ? len : ncl[i], i);
 			return ret;
 		} catch (NotRegisteredException e) {
 			return player.getDisplayName();

@@ -11,6 +11,7 @@ import buttondevteam.lib.player.EnumPlayerData;
 import buttondevteam.lib.player.PlayerClass;
 import buttondevteam.lib.player.PlayerData;
 import buttondevteam.lib.player.TBMCPlayerBase;
+import gnu.trove.list.array.TIntArrayList;
 
 @PlayerClass(pluginname = "Button1Chat")
 public class ChatPlayer extends TBMCPlayerBase {
@@ -40,6 +41,10 @@ public class ChatPlayer extends TBMCPlayerBase {
 
 	public PlayerData<Boolean> FlairCheater() {
 		return data(false);
+	}
+
+	public PlayerData<TIntArrayList> NameColorLocations() { // No byte[]
+		return data(null);
 	}
 
 	public Location SavedLocation;
