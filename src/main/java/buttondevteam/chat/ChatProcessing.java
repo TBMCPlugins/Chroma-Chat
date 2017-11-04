@@ -259,21 +259,25 @@ public class ChatProcessing {
 			val clrs = PluginMain.TownColors.get(res.getTown().getName().toLowerCase());
 			if (clrs == null)
 				return player.getDisplayName();
-			String ret = "";
+			StringBuilder ret = new StringBuilder();
 			String name = ChatColor.stripColor(player.getDisplayName());
+			AtomicInteger prevlen = new AtomicInteger();
 			BiFunction<Integer, Integer, String> coloredNamePart = (len, i) -> "§"
 					+ Integer.toHexString(clrs[i].ordinal()) // 'Odds' are the last character is chopped off so we make sure to include all chars at the end
-					+ (i + 1 == clrs.length ? name.substring(len * i) : name.substring(len * i, len * i + len));
+					+ (i + 1 == clrs.length ? name.substring(prevlen.get())
+							: name.substring(prevlen.get(), prevlen.addAndGet(len)));
 			int len = name.length() / clrs.length;
-			int[] ncl = ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations().get().stream()
-					.mapToInt(Integer::intValue).toArray();
-			if (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length) {
-				System.out.println("Name length changed: " + Arrays.stream(ncl).sum() + " -> " + name.length());
+			val nclar = ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations().get();
+			int[] ncl = nclar == null ? null : nclar.stream().mapToInt(Integer::intValue).toArray();
+			if (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length)
 				ncl = null; // Reset if name length changed
+			if (name.charAt(0) == '~') { // Ignore ~ in nicknames
+				prevlen.incrementAndGet();
+				ret.append("~");
 			}
 			for (int i = 0; i < clrs.length; i++)
-				ret += coloredNamePart.apply(ncl == null ? len : ncl[i], i);
-			return ret;
+				ret.append(coloredNamePart.apply(ncl == null ? len : ncl[i], i));
+			return ret.toString();
 		} catch (NotRegisteredException e) {
 			return player.getDisplayName();
 		}
