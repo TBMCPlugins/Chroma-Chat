@@ -269,7 +269,7 @@ public class ChatProcessing {
 			int len = name.length() / clrs.length;
 			val nclar = ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations().get();
 			int[] ncl = nclar == null ? null : nclar.stream().mapToInt(Integer::intValue).toArray();
-			if (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length)
+			if (ncl != null && Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length)
 				ncl = null; // Reset if name length changed
 			if (name.charAt(0) == '~') { // Ignore ~ in nicknames
 				prevlen.incrementAndGet();
