@@ -1,22 +1,13 @@
 package buttondevteam.chat.commands.ucmds;
 
-import java.util.Arrays;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.dynmap.towny.DynmapTownyPlugin;
-
-import com.mysql.fabric.xmlrpc.base.Array;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 
 import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
-import lombok.val;
 
 @CommandClass // TODO: /u u when annotation not present
 @OptionallyPlayerCommandClass(playerOnly = true)

@@ -1,9 +1,11 @@
 package buttondevteam.chat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
@@ -257,15 +259,25 @@ public class ChatProcessing {
 			val clrs = PluginMain.TownColors.get(res.getTown().getName().toLowerCase());
 			if (clrs == null)
 				return player.getDisplayName();
-			String ret = "";
+			StringBuilder ret = new StringBuilder();
 			String name = ChatColor.stripColor(player.getDisplayName());
+			AtomicInteger prevlen = new AtomicInteger();
+			BiFunction<Integer, Integer, String> coloredNamePart = (len, i) -> "§"
+					+ Integer.toHexString(clrs[i].ordinal()) // 'Odds' are the last character is chopped off so we make sure to include all chars at the end
+					+ (i + 1 == clrs.length ? name.substring(prevlen.get())
+							: name.substring(prevlen.get(), prevlen.addAndGet(len)));
 			int len = name.length() / clrs.length;
-			// val bounds = new int[clrs.length - 1];
-			// for (int i = 0; i < clrs.length; i++)
+			val nclar = ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations().get();
+			int[] ncl = nclar == null ? null : nclar.stream().mapToInt(Integer::intValue).toArray();
+			if (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length)
+				ncl = null; // Reset if name length changed
+			if (name.charAt(0) == '~') { // Ignore ~ in nicknames
+				prevlen.incrementAndGet();
+				ret.append("~");
+			}
 			for (int i = 0; i < clrs.length; i++)
-				ret += "§" + Integer.toHexString(clrs[i].ordinal()) // 'Odds' are the last character is chopped off so we make sure to include all chars at the end
-						+ (i + 1 == clrs.length ? name.substring(len * i) : name.substring(len * i, len * i + len));
-			return ret;
+				ret.append(coloredNamePart.apply(ncl == null ? len : ncl[i], i));
+			return ret.toString();
 		} catch (NotRegisteredException e) {
 			return player.getDisplayName();
 		}

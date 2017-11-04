@@ -42,6 +42,10 @@ public class ChatPlayer extends TBMCPlayerBase {
 		return data(false);
 	}
 
+	public PlayerData<ArrayList<Integer>> NameColorLocations() { // No byte[], no TIntArrayList
+		return data(null);
+	}
+
 	public Location SavedLocation;
 	public boolean Working;
 	// public int Tables = 10;
