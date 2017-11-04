@@ -1,6 +1,8 @@
 package buttondevteam.chat.commands.ucmds;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -13,7 +15,6 @@ import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
-import gnu.trove.list.array.TIntArrayList;
 
 @OptionallyPlayerCommandClass(playerOnly = true)
 @CommandClass
@@ -69,8 +70,8 @@ public class NColorCommand extends UCommandBase {
 			return true;
 		}
 		ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations()
-				.set(TIntArrayList.wrap(Arrays.stream(nameparts).mapToInt(np -> np.length()).toArray())); // No byte[]
-		player.sendMessage("§bName colors set."); // TODO: ArrayList is what it becomes I think
+				.set(new ArrayList<>(Arrays.stream(nameparts).map(np -> np.length()).collect(Collectors.toList()))); // No byte[], no TIntArrayList
+		player.sendMessage("§bName colors set.");
 		return true;
 	}
 }

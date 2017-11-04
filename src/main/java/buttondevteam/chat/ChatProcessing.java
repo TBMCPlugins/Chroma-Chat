@@ -265,8 +265,8 @@ public class ChatProcessing {
 					+ Integer.toHexString(clrs[i].ordinal()) // 'Odds' are the last character is chopped off so we make sure to include all chars at the end
 					+ (i + 1 == clrs.length ? name.substring(len * i) : name.substring(len * i, len * i + len));
 			int len = name.length() / clrs.length;
-			int[] ncl = ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations().get()
-					.toArray();
+			int[] ncl = ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations().get().stream()
+					.mapToInt(Integer::intValue).toArray();
 			if (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length) {
 				System.out.println("Name length changed: " + Arrays.stream(ncl).sum() + " -> " + name.length());
 				ncl = null; // Reset if name length changed
