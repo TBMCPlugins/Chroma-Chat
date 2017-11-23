@@ -258,7 +258,7 @@ public class PlayerListener implements Listener {
 			if (e.isCancelled())
 				return;
 			e.setCancelled(ChatProcessing.ProcessChat(e));
-		} catch (Exception ex) {
+		} catch (NoClassDefFoundError | Exception ex) { // Weird things can happen
 			for (Player p : Bukkit.getOnlinePlayers())
 				if (e.shouldSendTo(p))
 					p.sendMessage("§c!§r["
