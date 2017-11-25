@@ -1,6 +1,7 @@
 package buttondevteam.chat.formatting;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,10 +66,11 @@ public final class ChatFormatter {
 				sections.add(section);
 			}
 		}
-		sections.sort((s1, s2) -> s1.Start == s2.Start
-				? s1.End == s2.End ? Integer.compare(s2.Formatters.get(0).priority.GetValue(),
-						s1.Formatters.get(0).priority.GetValue()) : Integer.compare(s2.End, s1.End)
-				: Integer.compare(s1.Start, s2.Start));
+		sections.sort(
+				(s1, s2) -> s1.Start == s2.Start
+						? s1.End == s2.End ? Integer.compare(s2.Formatters.get(0).priority.GetValue(),
+								s1.Formatters.get(0).priority.GetValue()) : Integer.compare(s2.End, s1.End)
+						: Integer.compare(s1.Start, s2.Start));
 
 		header("Range section conversion");
 		ArrayList<FormattedSection> combined = new ArrayList<>();
@@ -83,8 +85,8 @@ public final class ChatFormatter {
 				escaped = section.Formatters.contains(ChatProcessing.ESCAPE_FORMATTER) && !escaped; // Enable escaping on first \, disable on second
 				if (escaped) // Don't add the escape character
 					section.RemCharFromStart = 1;
-				combined.add(section);
-				DebugCommand.SendDebugMessage("Added " + (!escaped ? "not " : "") + "escaped section: " + section);
+				combined.add(section); // This will delete the \
+				DebugCommand.SendDebugMessage("Added " + (!escaped ? "not " : "") + "escaper section: " + section);
 				sendMessageWithPointer(str, section.Start, section.End);
 				continue;
 			}
@@ -129,7 +131,7 @@ public final class ChatFormatter {
 						.SendDebugMessage("New area taken: (" + takenStart + "-" + takenEnd + ") " + takenFormatter);
 				sendMessageWithPointer(str, takenStart, takenEnd);
 			} else {
-				DebugCommand.SendDebugMessage("Skipping section: " + section);
+				DebugCommand.SendDebugMessage("Skipping section: " + section); // This will keep the text (character)
 				sendMessageWithPointer(str, section.Start, section.End);
 				escaped = false; // Reset escaping if applied, like if we're at the '*' in '\*'
 			}
@@ -165,7 +167,7 @@ public final class ChatFormatter {
 				// [section number][start/end][remchar start/end]
 				rc[0][0] = new int[] { firstSection.Start, firstSection.Start + firstSection.RemCharFromStart };
 				rc[0][1] = new int[] { firstSection.End - firstSection.RemCharFromEnd, firstSection.End }; // Keep it in ascending order
-				// The third section doesn't have characters to remove yet
+				// The second section doesn't have characters to remove yet
 				rc[2] = new int[][] {
 						{ sections.get(i).Start, sections.get(i).Start + sections.get(i).RemCharFromStart },
 						{ sections.get(i).End - sections.get(i).RemCharFromEnd, sections.get(i).End } }; // Keep it in ascending order
@@ -204,20 +206,24 @@ public final class ChatFormatter {
 									+ " && rc[" + ii + "][" + iii + "][1] >= section." + startorendText);
 							DebugCommand.SendDebugMessage(rc[ii][iii][0] + " <= " + startorend + " && " + rc[ii][iii][1]
 									+ " >= " + startorend);
-							rc[1][iii] = new int[] { startorend, rc[ii][iii][1] };
-							rc[ii][iii][1] = startorend - 1;
+							sendMessageWithPointer(str, rc[ii][iii][0], startorend, rc[ii][iii][1], startorend);
+							rc[1][iii] = iii == 0 ? new int[] { startorend, rc[ii][iii][1] }
+									: new int[] { rc[ii][iii][0], startorend };
+							rc[ii][iii][1] = startorend + (iii == 0 ? -1 : +1);
 							DebugCommand.SendDebugMessage("rc[1][" + iii + "]: " + rc[1][iii][0] + " " + rc[1][iii][1]);
+							sendMessageWithPointer(str, rc[1][iii][0], rc[1][iii][1]);
 							DebugCommand.SendDebugMessage("rc[" + ii + "][" + iii + "][1]: " + rc[ii][iii][1]);
+							sendMessageWithPointer(str, rc[ii][iii][1]);
 						}
 					}
 				DebugCommand.SendDebugMessage("RC done");
-				Function<int[], Integer> getRemCharStart = arr -> arr[1] - arr[0] < 0 ? 0 : arr[1] - arr[0];
-				firstSection.RemCharFromStart = (short) (int) getRemCharStart.apply(rc[0][0]);
-				firstSection.RemCharFromEnd = (short) (int) getRemCharStart.apply(rc[0][1]);
-				section.RemCharFromStart = (short) (int) getRemCharStart.apply(rc[1][0]);
-				section.RemCharFromEnd = (short) (int) getRemCharStart.apply(rc[1][1]);
-				thirdFormattedSection.RemCharFromStart = (short) (int) getRemCharStart.apply(rc[2][0]);
-				thirdFormattedSection.RemCharFromEnd = (short) (int) getRemCharStart.apply(rc[2][1]);
+				Function<int[], Integer> getRemChar = arr -> arr[1] - arr[0] < 0 ? 0 : arr[1] - arr[0]; // The second value is always higher or equal normally
+				firstSection.RemCharFromStart = (short) (int) getRemChar.apply(rc[0][0]);
+				firstSection.RemCharFromEnd = (short) (int) getRemChar.apply(rc[0][1]);
+				section.RemCharFromStart = (short) (int) getRemChar.apply(rc[1][0]);
+				section.RemCharFromEnd = (short) (int) getRemChar.apply(rc[1][1]);
+				thirdFormattedSection.RemCharFromStart = (short) (int) getRemChar.apply(rc[2][0]);
+				thirdFormattedSection.RemCharFromEnd = (short) (int) getRemChar.apply(rc[2][1]);
 
 				ArrayList<FormattedSection> sts = sections;
 				Predicate<FormattedSection> removeIfNeeded = s -> {
@@ -260,10 +266,13 @@ public final class ChatFormatter {
 				if (found) {
 					i = 1;
 					found = false;
-					sections.sort((s1, s2) -> s1.Start == s2.Start
-							? s1.End == s2.End ? Integer.compare(s2.Formatters.get(0).priority.GetValue(),
-									s1.Formatters.get(0).priority.GetValue()) : Integer.compare(s2.End, s1.End)
-							: Integer.compare(s1.Start, s2.Start));
+					sections.sort(
+							(s1, s2) -> s1.Start == s2.Start
+									? s1.End == s2.End
+											? Integer.compare(s2.Formatters.get(0).priority.GetValue(),
+													s1.Formatters.get(0).priority.GetValue())
+											: Integer.compare(s2.End, s1.End)
+									: Integer.compare(s1.Start, s2.Start));
 				} else
 					cont = false;
 			}
@@ -322,15 +331,10 @@ public final class ChatFormatter {
 		header("ChatFormatter.Combine done");
 	}
 
-	/**
-	 * 
-	 * @param str
-	 * @param pointer
-	 *            This must be ordered ascending
-	 */
 	private static void sendMessageWithPointer(String str, int... pointer) {
 		DebugCommand.SendDebugMessage(str);
 		StringBuilder sb = new StringBuilder(str.length());
+		Arrays.sort(pointer);
 		for (int i = 0; i < pointer.length; i++) {
 			for (int j = 0; j < pointer[i] - (i > 0 ? pointer[i - 1] + 1 : 0); j++)
 				sb.append(' ');

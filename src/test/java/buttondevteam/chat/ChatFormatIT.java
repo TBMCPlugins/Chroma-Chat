@@ -1,5 +1,7 @@
 package buttondevteam.chat;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,10 +20,9 @@ import buttondevteam.chat.formatting.TellrawPart;
 import buttondevteam.core.TestPrepare;
 import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.Color;
-import junit.framework.TestCase;
 
 @RunWith(ObjectTestRunner.class)
-public class ChatFormatIT extends TestCase {
+public class ChatFormatIT {
 	@Objects
 	public static List<Object> data() {
 		TestPrepare.PrepareServer();
