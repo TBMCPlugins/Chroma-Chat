@@ -16,6 +16,7 @@ import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.lib.chat.*;
 import lombok.Builder;
 import lombok.Data;
+import lombok.val;
 
 /**
  * A {@link ChatFormatter} shows what formatting to use based on regular expressions. {@link ChatFormatter#Combine(List, String, TellrawPart)} is used to turn it into a {@link TellrawPart}, combining
@@ -62,7 +63,7 @@ public final class ChatFormatter {
 				if (groups.size() > 0)
 					DebugCommand.SendDebugMessage("First group: " + groups.get(0));
 				FormattedSection section = new FormattedSection(formatter, matcher.start(), matcher.end() - 1, groups,
-						formatter.removeCharCount, formatter.removeCharCount, formatter.range);
+						formatter.range);
 				sections.add(section);
 			}
 		}
@@ -71,6 +72,15 @@ public final class ChatFormatter {
 						? s1.End == s2.End ? Integer.compare(s2.Formatters.get(0).priority.GetValue(),
 								s1.Formatters.get(0).priority.GetValue()) : Integer.compare(s2.End, s1.End)
 						: Integer.compare(s1.Start, s2.Start));
+		header("Adding remove chars (RC)");
+		/**
+		 * 0: Start - 1: End
+		 */
+		val remchars = new ArrayList<int[]>();
+		sections.stream().flatMap(fs -> fs.Formatters.stream().mapToInt(cf -> cf.removeCharCount)
+				.mapToObj(rcc -> new int[] { fs.Start + rcc, fs.End - rcc })).forEach(rc -> remchars.add(rc));
+		DebugCommand.SendDebugMessage("Added remchars:");
+		DebugCommand.SendDebugMessage(remchars.toString());
 
 		header("Range section conversion");
 		ArrayList<FormattedSection> combined = new ArrayList<>();
@@ -84,7 +94,7 @@ public final class ChatFormatter {
 			if (!section.IsRange) {
 				escaped = section.Formatters.contains(ChatProcessing.ESCAPE_FORMATTER) && !escaped; // Enable escaping on first \, disable on second
 				if (escaped) // Don't add the escape character
-					section.RemCharFromStart = 1;
+					remchars.add(new int[] { section.Start, section.Start + 1 });
 				combined.add(section); // This will delete the \
 				DebugCommand.SendDebugMessage("Added " + (!escaped ? "not " : "") + "escaper section: " + section);
 				sendMessageWithPointer(str, section.Start, section.End);
@@ -101,7 +111,7 @@ public final class ChatFormatter {
 					/*
 					 * if (nextSection.containsKey(section.Formatters.get(0)) ? section.RemCharFromStart <= takenEnd - takenStart : section.RemCharFromStart > takenEnd - takenStart) {
 					 */
-					if (section.RemCharFromStart < takenEnd - takenStart) {
+					if (0 < takenEnd - takenStart) {
 						DebugCommand.SendDebugMessage("Lose: " + section);
 						sendMessageWithPointer(str, section.Start, section.End);
 						DebugCommand.SendDebugMessage("And win: " + takenFormatter);
@@ -113,11 +123,11 @@ public final class ChatFormatter {
 					DebugCommand.SendDebugMessage("And lose: " + takenFormatter);
 				}
 				takenStart = section.Start;
-				takenEnd = section.Start + section.RemCharFromStart;
+				takenEnd = section.Start;
 				takenFormatter = section.Formatters.get(0);
 				if (nextSection.containsKey(section.Formatters.get(0))) {
 					FormattedSection s = nextSection.remove(section.Formatters.get(0));
-					s.End = section.Start + section.RemCharFromStart - 1;
+					s.End = section.Start - 1;
 					// s.IsRange = false; // IsRange means it's a 1 long section indicating a start or an end
 					combined.add(s);
 					DebugCommand.SendDebugMessage("Finished section: " + s);
@@ -154,23 +164,11 @@ public final class ChatFormatter {
 			if (firstSection.Start == sections.get(i).Start && firstSection.End == sections.get(i).End) {
 				firstSection.Formatters.addAll(sections.get(i).Formatters);
 				firstSection.Matches.addAll(sections.get(i).Matches);
-				if (firstSection.RemCharFromStart < sections.get(i).RemCharFromStart)
-					firstSection.RemCharFromStart = sections.get(i).RemCharFromStart;
-				if (firstSection.RemCharFromEnd < sections.get(i).RemCharFromEnd)
-					firstSection.RemCharFromEnd = sections.get(i).RemCharFromEnd;
 				DebugCommand.SendDebugMessage("To section " + firstSection);
 				sendMessageWithPointer(str, firstSection.Start, firstSection.End);
 				sections.remove(i);
 				found = true;
 			} else if (firstSection.End > sections.get(i).Start && firstSection.Start < sections.get(i).End) {
-				int[][][] rc = new int[3][2][2]; // Remove characters - Section start/end positions
-				// [section number][start/end][remchar start/end]
-				rc[0][0] = new int[] { firstSection.Start, firstSection.Start + firstSection.RemCharFromStart };
-				rc[0][1] = new int[] { firstSection.End - firstSection.RemCharFromEnd, firstSection.End }; // Keep it in ascending order
-				// The second section doesn't have characters to remove yet
-				rc[2] = new int[][] {
-						{ sections.get(i).Start, sections.get(i).Start + sections.get(i).RemCharFromStart },
-						{ sections.get(i).End - sections.get(i).RemCharFromEnd, sections.get(i).End } }; // Keep it in ascending order
 				int origend = firstSection.End;
 				firstSection.End = sections.get(i).Start - 1;
 				int origend2 = sections.get(i).End;
@@ -182,7 +180,7 @@ public final class ChatFormatter {
 				}
 				// int rc1start, rc1end, rc2start, rc2end, rc3start, rc3end; // Remove characters - TODO: Store positions
 				FormattedSection section = new FormattedSection(firstSection.Formatters, sections.get(i).Start, origend,
-						firstSection.Matches, (short) 0, (short) 0, false);
+						firstSection.Matches, false);
 				section.Formatters.addAll(sections.get(i).Formatters);
 				section.Matches.addAll(sections.get(i).Matches); // TODO: Clean
 				sections.add(i, section);
@@ -196,38 +194,10 @@ public final class ChatFormatter {
 				}
 				thirdFormattedSection.Start = origend + 1;
 				thirdFormattedSection.End = origend2;
-				DebugCommand.SendDebugMessage("RC start");
-				for (short ii = 0; ii < 3; ii += 2) // Only check first and third section
-					for (short iii = 0; iii < 2; iii++) {
-						final int startorend = iii == 0 ? section.Start : section.End;
-						if (rc[ii][iii][0] <= startorend && rc[ii][iii][1] >= startorend) {
-							final String startorendText = iii == 0 ? "Start" : "End";
-							DebugCommand.SendDebugMessage("rc[" + ii + "][" + iii + "][0] <= section." + startorendText
-									+ " && rc[" + ii + "][" + iii + "][1] >= section." + startorendText);
-							DebugCommand.SendDebugMessage(rc[ii][iii][0] + " <= " + startorend + " && " + rc[ii][iii][1]
-									+ " >= " + startorend);
-							sendMessageWithPointer(str, rc[ii][iii][0], startorend, rc[ii][iii][1], startorend);
-							rc[1][iii] = iii == 0 ? new int[] { startorend, rc[ii][iii][1] }
-									: new int[] { rc[ii][iii][0], startorend };
-							rc[ii][iii][1] = startorend + (iii == 0 ? -1 : +1);
-							DebugCommand.SendDebugMessage("rc[1][" + iii + "]: " + rc[1][iii][0] + " " + rc[1][iii][1]);
-							sendMessageWithPointer(str, rc[1][iii][0], rc[1][iii][1]);
-							DebugCommand.SendDebugMessage("rc[" + ii + "][" + iii + "][1]: " + rc[ii][iii][1]);
-							sendMessageWithPointer(str, rc[ii][iii][1]);
-						}
-					}
-				DebugCommand.SendDebugMessage("RC done");
-				Function<int[], Integer> getRemChar = arr -> arr[1] - arr[0] < 0 ? 0 : arr[1] - arr[0]; // The second value is always higher or equal normally
-				firstSection.RemCharFromStart = (short) (int) getRemChar.apply(rc[0][0]);
-				firstSection.RemCharFromEnd = (short) (int) getRemChar.apply(rc[0][1]);
-				section.RemCharFromStart = (short) (int) getRemChar.apply(rc[1][0]);
-				section.RemCharFromEnd = (short) (int) getRemChar.apply(rc[1][1]);
-				thirdFormattedSection.RemCharFromStart = (short) (int) getRemChar.apply(rc[2][0]);
-				thirdFormattedSection.RemCharFromEnd = (short) (int) getRemChar.apply(rc[2][1]);
 
 				ArrayList<FormattedSection> sts = sections;
 				Predicate<FormattedSection> removeIfNeeded = s -> {
-					if (s.Start < 0 || s.End < 0 || s.Start > s.End || s.RemCharFromStart < 0 || s.RemCharFromEnd < 0) {
+					if (s.Start < 0 || s.End < 0 || s.Start > s.End) {
 						DebugCommand.SendDebugMessage("Removing section: " + s);
 						sendMessageWithPointer(str, s.Start, s.End);
 						sts.remove(s);
@@ -252,8 +222,7 @@ public final class ChatFormatter {
 				found = true;
 			}
 			for (int j = i - 1; j <= i + 1; j++) {
-				if (j < sections.size() && sections.get(j).End - sections.get(j).RemCharFromEnd < sections.get(j).Start
-						+ sections.get(j).RemCharFromStart) {
+				if (j < sections.size() && sections.get(j).End < sections.get(j).Start) {
 					DebugCommand.SendDebugMessage("Removing section: " + sections.get(j));
 					sendMessageWithPointer(str, sections.get(j).Start, sections.get(j).End);
 					sections.remove(j);
@@ -283,10 +252,17 @@ public final class ChatFormatter {
 			FormattedSection section = sections.get(i);
 			DebugCommand.SendDebugMessage("Applying section: " + section);
 			String originaltext;
-			int start = section.Start + section.RemCharFromStart, end = section.End + 1 - section.RemCharFromEnd;
+			int start = section.Start, end = section.End + 1;
 			DebugCommand.SendDebugMessage("Start: " + start + " - End: " + end);
 			sendMessageWithPointer(str, start, end);
-			originaltext = str.substring(start, end);
+			val rcs = remchars.stream().filter(rc -> rc[0] <= start && start <= rc[1]).findAny();
+			val rce = remchars.stream().filter(rc -> rc[0] <= end && end <= rc[1]).findAny();
+			int s = start, e = end;
+			if (rcs.isPresent())
+				s = rcs.get()[1];
+			if (rce.isPresent())
+				e = rce.get()[0];
+			originaltext = str.substring(s, e);
 			DebugCommand.SendDebugMessage("Section text: " + originaltext);
 			Color color = null;
 			boolean bold = false, italic = false, underlined = false, strikethrough = false, obfuscated = false;
