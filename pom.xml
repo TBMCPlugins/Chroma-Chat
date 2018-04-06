@@ -51,11 +51,6 @@
 									<include>org.javassist:javassist</include>
 								</includes>
 							</artifactSet>
-							<pluginExecution>
-								<action>
-									<execute />
-								</action>
-							</pluginExecution>
 						</configuration>
 					</execution>
 				</executions>

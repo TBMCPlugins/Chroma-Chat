@@ -1,37 +1,40 @@
 package buttondevteam.chat.listener;
 
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.event.*;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.*;
-import org.bukkit.event.server.ServerCommandEvent;
-import org.bukkit.help.HelpTopic;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import buttondevteam.chat.*;
+import buttondevteam.chat.ChatPlayer;
+import buttondevteam.chat.ChatProcessing;
+import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.ChatChannelRegisterEvent;
 import buttondevteam.lib.chat.ChatRoom;
 import buttondevteam.lib.chat.TBMCChatAPI;
+import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerGetInfoEvent;
-import net.ess3.api.events.NickChangeEvent;
-import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
-
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
+import net.ess3.api.events.NickChangeEvent;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.event.server.ServerCommandEvent;
+import org.bukkit.help.HelpTopic;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class PlayerListener implements Listener {
 	/**
@@ -199,7 +202,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	@SuppressWarnings("deprecation")
-	public void onVotifierEvent(VotifierEvent event) {
+	public void onVotifierEvent(VotifierEvent event) { //TODO: Move to teh Core eh
 		Vote vote = event.getVote();
 		PluginMain.Instance.getLogger().info("Vote: " + vote);
 		org.bukkit.OfflinePlayer op = Bukkit.getOfflinePlayer(vote.getUsername());

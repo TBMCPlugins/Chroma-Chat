@@ -1,9 +1,28 @@
 package buttondevteam.chat;
 
+import buttondevteam.chat.commands.YeehawCommand;
+import buttondevteam.chat.commands.ucmds.TownColorCommand;
+import buttondevteam.chat.listener.PlayerListener;
+import buttondevteam.lib.TBMCCoreAPI;
+import buttondevteam.lib.chat.Channel;
+import buttondevteam.lib.chat.Channel.RecipientTestResult;
+import buttondevteam.lib.chat.Color;
+import buttondevteam.lib.chat.TBMCChatAPI;
+import buttondevteam.lib.player.TBMCPlayerBase;
+import com.earth2me.essentials.Essentials;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.palmergames.bukkit.towny.Towny;
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+import com.palmergames.bukkit.towny.object.Nation;
+import com.palmergames.bukkit.towny.object.Resident;
+import com.palmergames.bukkit.towny.object.Town;
+import com.palmergames.bukkit.towny.object.TownyUniverse;
+import lombok.val;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -17,45 +36,15 @@ import org.dynmap.towny.DynmapTownyPlugin;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 
-import buttondevteam.chat.commands.YeehawCommand;
-import buttondevteam.chat.commands.ucmds.TownColorCommand;
-import buttondevteam.chat.listener.PlayerListener;
-import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.chat.Channel;
-import buttondevteam.lib.chat.Color;
-import buttondevteam.lib.chat.TBMCChatAPI;
-import buttondevteam.lib.chat.Channel.RecipientTestResult;
-import buttondevteam.lib.player.TBMCPlayerBase;
-import lombok.val;
-
-import com.earth2me.essentials.Essentials;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.palmergames.bukkit.towny.Towny;
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.object.Nation;
-import com.palmergames.bukkit.towny.object.Resident;
-import com.palmergames.bukkit.towny.object.Town;
-import com.palmergames.bukkit.towny.object.TownyUniverse;
-
-import java.io.*;
-import java.lang.String;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -120,9 +109,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 				setTownColor(dtp, entry.getKey(), entry.getValue());
 		});
 
-		setupChat();
-		setupEconomy();
-		setupPermissions();
+		if (!setupChat() || !setupEconomy() || !setupPermissions())
+			getLogger().warning("Failed to set up chat or economy or permissions!");
 
 		new Thread(this::FlairGetterThreadMethod).start();
 		new Thread(new AnnouncerThread()).start();
@@ -296,17 +284,18 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 				yc.load(file);
 				PlayerListener.NotificationSound = yc.getString("notificationsound");
 				PlayerListener.NotificationPitch = yc.getDouble("notificationpitch");
-				AnnounceTime = yc.getInt("announcetime");
+				AnnounceTime = yc.getInt("announcetime", 15 * 60 * 1000);
 				AnnounceMessages.addAll(yc.getStringList("announcements"));
 				PlayerListener.AlphaDeaths = yc.getInt("alphadeaths");
 				val cs = yc.getConfigurationSection("towncolors");
 				if (cs != null)
 					TownColors.putAll(cs.getValues(true).entrySet().stream()
-							.collect(Collectors.toMap(k -> k.getKey(), v -> ((List<String>) v.getValue()).stream()
-									.map(c -> Color.valueOf(c)).toArray(Color[]::new))));
+							.collect(Collectors.toMap(Map.Entry::getKey, v -> ((List<String>) v.getValue()).stream()
+									.map(Color::valueOf).toArray(Color[]::new))));
 				TownColorCommand.ColorCount = (byte) yc.getInt("towncolorcount", 1);
-			}
-			PluginMain.Instance.getLogger().info("Loaded files!");
+				PluginMain.Instance.getLogger().info("Loaded files!");
+			} else
+				PluginMain.Instance.getLogger().info("No files to load, first run probably.");
 		} catch (Exception e) {
 			TBMCCoreAPI.SendException("Error while loading chat files!", e);
 		}
@@ -323,7 +312,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			yc.set("announcements", AnnounceMessages);
 			yc.set("alphadeaths", PlayerListener.AlphaDeaths);
 			yc.createSection("towncolors", TownColors.entrySet().stream().collect(Collectors.toMap(k -> k.getKey(),
-					v -> Arrays.stream(v.getValue()).map(c -> c.toString()).toArray(String[]::new))));
+					v -> Arrays.stream(v.getValue()).map(Enum::toString).toArray(String[]::new))));
 			yc.set("towncolorcount", TownColorCommand.ColorCount);
 			yc.save(file);
 			PluginMain.Instance.getLogger().info("Saved files!");
