@@ -79,7 +79,9 @@ public class PlayerListener implements Listener {
 		else
 			mp = null;
 		String cmd = "";
-		if (index == -1 && (sender instanceof Player || sender instanceof ConsoleCommandSender)) { // Only the command is run
+		if (index == -1) { // Only the command is run
+			if (!(sender instanceof Player || sender instanceof ConsoleCommandSender))
+				return false;
 			// ^^ We can only store player or console channels - Directly sending to channels would still work if they had an event
 			cmd = sender instanceof ConsoleCommandSender ? message : message.substring(1);
 			for (Channel channel : Channel.getChannels()) {

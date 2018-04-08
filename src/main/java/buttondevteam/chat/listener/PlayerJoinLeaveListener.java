@@ -1,15 +1,5 @@
 package buttondevteam.chat.listener;
 
-import java.util.Timer;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
-
-import com.earth2me.essentials.Essentials;
-
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.FlairStates;
 import buttondevteam.chat.PlayerJoinTimerTask;
@@ -18,6 +8,15 @@ import buttondevteam.chat.commands.UnlolCommand;
 import buttondevteam.lib.player.TBMCPlayerJoinEvent;
 import buttondevteam.lib.player.TBMCPlayerLoadEvent;
 import buttondevteam.lib.player.TBMCPlayerSaveEvent;
+import com.earth2me.essentials.Essentials;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
+
+import java.util.Timer;
 
 public class PlayerJoinLeaveListener implements Listener {
 
@@ -46,9 +45,7 @@ public class PlayerJoinLeaveListener implements Listener {
 			tt.mp = cp;
 			timer.schedule(tt, 1000);
 		} else {
-			if (cp.FlairTime().get() == 0x00)
-				cp.SetFlair(ChatPlayer.FlairTimeNone);
-			Timer timer = new Timer();
+			/*Timer timer = new Timer();
 			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
 
 				@Override
@@ -70,10 +67,13 @@ public class PlayerJoinLeaveListener implements Listener {
 				}
 			};
 			tt.mp = cp;
-			timer.schedule(tt, 15 * 1000);
+			timer.schedule(tt, 15 * 1000);*/ //TODO: Better Reddit integration (OAuth)
 		}
 
 		String nwithoutformatting = PluginMain.essentials.getUser(p).getNickname();
+
+        p.setDisplayName();
+
 		int index;
 		if (nwithoutformatting != null) {
 			while ((index = nwithoutformatting.indexOf("§k")) != -1)
