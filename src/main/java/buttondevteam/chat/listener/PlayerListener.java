@@ -114,22 +114,31 @@ public class PlayerListener implements Listener {
 				if (player != null && sender instanceof Player)
 					player.sendMessage("§b" + ((Player) sender).getDisplayName() + " §bis in this world: "
 							+ ((Player) sender).getWorld().getName());
-			} else if (cmd.equalsIgnoreCase("minecraft:me")) {
-				if (!(sender instanceof Player) || !PluginMain.essentials.getUser((Player) sender).isMuted()) {
-					String msg = message.substring(index + 1);
-					Bukkit.broadcastMessage(String.format("* %s %s", ((Player) sender).getDisplayName(), msg));
-					return true;
-				} else {
-					sender.sendMessage("§cCan't use /minecraft:me while muted.");
-					return true;
-				}
-			} else
-				for (Channel channel : Channel.getChannels()) {
-					if (cmd.equalsIgnoreCase(channel.ID)) {
-						TBMCChatAPI.SendChatMessage(channel, sender, message.substring(index + 1));
-						return true;
-					}
-				}
+            } else if (cmd.equalsIgnoreCase("minecraft:me")) {
+                if (!(sender instanceof Player) || !PluginMain.essentials.getUser((Player) sender).isMuted()) {
+                    String msg = message.substring(index + 1);
+                    Bukkit.broadcastMessage(String.format("* %s %s", sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName(), msg));
+                    return true;
+                } else {
+                    sender.sendMessage("§cCan't use /minecraft:me while muted.");
+                    return true;
+                }
+            } else if (cmd.equalsIgnoreCase("me")) { //Take over for Discord broadcast
+                if (!(sender instanceof Player) || !PluginMain.essentials.getUser((Player) sender).isMuted()) {
+                    String msg = message.substring(index + 1);
+                    Bukkit.broadcastMessage(String.format("§5* %s %s", sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName(), msg));
+                    return true;
+                } else {
+                    sender.sendMessage("§cCan't use /me while muted.");
+                    return true;
+                }
+            } else
+                for (Channel channel : Channel.getChannels()) {
+                    if (cmd.equalsIgnoreCase(channel.ID)) {
+                        TBMCChatAPI.SendChatMessage(channel, sender, message.substring(index + 1));
+                        return true;
+                    }
+                }
 			// TODO: Target selectors
 		}
 		// We don't care if we have arguments

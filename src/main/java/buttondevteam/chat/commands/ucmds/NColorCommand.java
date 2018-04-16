@@ -1,20 +1,19 @@
 package buttondevteam.chat.commands.ucmds;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
-import com.palmergames.bukkit.towny.object.Resident;
-import com.palmergames.bukkit.towny.object.Town;
-
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
+import buttondevteam.chat.listener.PlayerJoinLeaveListener;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
+import com.palmergames.bukkit.towny.object.Resident;
+import com.palmergames.bukkit.towny.object.Town;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @OptionallyPlayerCommandClass(playerOnly = true)
 @CommandClass
@@ -46,6 +45,7 @@ public class NColorCommand extends UCommandBase {
 		}
 		if (args.length == 0)
 			return false;
+        String arg = player.getDisplayName().startsWith("~") ? "~" + args[0] : args[0]; //Add ~ for nicknames
 		if (!args[0].replace("|", "").equalsIgnoreCase(ChatColor.stripColor(player.getDisplayName()))) {
 			player.sendMessage("§cThe name you gave doesn't match your name. Make sure to use "
 					+ ChatColor.stripColor(player.getDisplayName()) + "§c with added vertical lines (|).");
@@ -71,7 +71,8 @@ public class NColorCommand extends UCommandBase {
 		}
 		ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations()
 				.set(new ArrayList<>(Arrays.stream(nameparts).map(np -> np.length()).collect(Collectors.toList()))); // No byte[], no TIntArrayList
-		player.sendMessage("§bName colors set.");
+        PlayerJoinLeaveListener.updatePlayerColors(player);
+        player.sendMessage("§bName colors set: " + player.getDisplayName());
 		return true;
 	}
 }

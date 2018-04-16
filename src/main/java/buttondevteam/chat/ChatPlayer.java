@@ -1,16 +1,17 @@
 package buttondevteam.chat;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-
-import buttondevteam.lib.chat.*;
+import buttondevteam.lib.chat.Channel;
+import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.player.EnumPlayerData;
 import buttondevteam.lib.player.PlayerClass;
 import buttondevteam.lib.player.PlayerData;
 import buttondevteam.lib.player.TBMCPlayerBase;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @PlayerClass(pluginname = "Button1Chat")
 public class ChatPlayer extends TBMCPlayerBase {
@@ -104,7 +105,7 @@ public class ChatPlayer extends TBMCPlayerBase {
 		// PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard().getTeams().add()
 		Player p = Bukkit.getPlayer(uuid);
 		if (p != null)
-			p.setPlayerListName(String.format("%s%s", p.getName(), GetFormattedFlair()));
+            p.setPlayerListName(String.format("%s%s", p.getDisplayName(), GetFormattedFlair()));
 	}
 
 	public short GetFlairColor() {

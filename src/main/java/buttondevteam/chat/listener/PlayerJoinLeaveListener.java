@@ -9,14 +9,20 @@ import buttondevteam.lib.player.TBMCPlayerJoinEvent;
 import buttondevteam.lib.player.TBMCPlayerLoadEvent;
 import buttondevteam.lib.player.TBMCPlayerSaveEvent;
 import com.earth2me.essentials.Essentials;
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+import lombok.val;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.Arrays;
 import java.util.Timer;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 
 public class PlayerJoinLeaveListener implements Listener {
 
@@ -72,7 +78,7 @@ public class PlayerJoinLeaveListener implements Listener {
 
 		String nwithoutformatting = PluginMain.essentials.getUser(p).getNickname();
 
-        p.setDisplayName();
+        updatePlayerColors(p);
 
 		int index;
 		if (nwithoutformatting != null) {
@@ -102,4 +108,40 @@ public class PlayerJoinLeaveListener implements Listener {
 		UnlolCommand.Lastlol.values().removeIf(lld -> lld.getLolowner().equals(event.getPlayer()));
 	}
 
+    private static String getPlayerDisplayName(Player player) {
+        String nickname = PluginMain.essentials.getUser(player).getNick(true);
+        val res = PluginMain.TU.getResidentMap().get(player.getName().toLowerCase());
+        if (res == null || !res.hasTown())
+            return nickname;
+        try {
+            val clrs = PluginMain.TownColors.get(res.getTown().getName().toLowerCase());
+            if (clrs == null)
+                return nickname;
+            StringBuilder ret = new StringBuilder();
+            String name = ChatColor.stripColor(nickname);
+            AtomicInteger prevlen = new AtomicInteger();
+            BiFunction<Integer, Integer, String> coloredNamePart = (len, i) -> "§"
+                    + Integer.toHexString(clrs[i].ordinal()) // 'Odds' are the last character is chopped off so we make sure to include all chars at the end
+                    + (i + 1 == clrs.length ? name.substring(prevlen.get())
+                    : name.substring(prevlen.get(), prevlen.addAndGet(len)));
+            int len = name.length() / clrs.length;
+            val nclar = ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations().get();
+            int[] ncl = nclar == null ? null : nclar.stream().mapToInt(Integer::intValue).toArray();
+            if (ncl != null && (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length))
+                ncl = null; // Reset if name length changed
+            if (name.charAt(0) == '~') { // Ignore ~ in nicknames
+                prevlen.incrementAndGet();
+                ret.append("~");
+            }
+            for (int i = 0; i < clrs.length; i++)
+                ret.append(coloredNamePart.apply(ncl == null ? len : ncl[i], i));
+            return ret.toString();
+        } catch (NotRegisteredException e) {
+            return nickname;
+        }
+    }
+
+    public static void updatePlayerColors(Player player) {
+        player.setDisplayName(getPlayerDisplayName(player));
+    }
 }

@@ -18,21 +18,17 @@ import com.earth2me.essentials.Essentials;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import lombok.val;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
 public class ChatProcessing {
@@ -214,35 +210,7 @@ public class ChatProcessing {
     private static String getSenderName(CommandSender sender, Player player) {
         if (player == null)
             return sender.getName();
-        val res = PluginMain.TU.getResidentMap().get(player.getName().toLowerCase());
-        if (res == null || !res.hasTown())
-            return player.getDisplayName();
-        try {
-            val clrs = PluginMain.TownColors.get(res.getTown().getName().toLowerCase());
-            if (clrs == null)
-                return player.getDisplayName();
-            StringBuilder ret = new StringBuilder();
-            String name = ChatColor.stripColor(player.getDisplayName());
-            AtomicInteger prevlen = new AtomicInteger();
-            BiFunction<Integer, Integer, String> coloredNamePart = (len, i) -> "§"
-                    + Integer.toHexString(clrs[i].ordinal()) // 'Odds' are the last character is chopped off so we make sure to include all chars at the end
-                    + (i + 1 == clrs.length ? name.substring(prevlen.get())
-                    : name.substring(prevlen.get(), prevlen.addAndGet(len)));
-            int len = name.length() / clrs.length;
-            val nclar = ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations().get();
-            int[] ncl = nclar == null ? null : nclar.stream().mapToInt(Integer::intValue).toArray();
-            if (ncl != null && (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length))
-                ncl = null; // Reset if name length changed
-            if (name.charAt(0) == '~') { // Ignore ~ in nicknames
-                prevlen.incrementAndGet();
-                ret.append("~");
-            }
-            for (int i = 0; i < clrs.length; i++)
-                ret.append(coloredNamePart.apply(ncl == null ? len : ncl[i], i));
-            return ret.toString();
-        } catch (NotRegisteredException e) {
-            return player.getDisplayName();
-        }
+        return player.getDisplayName();
     }
 
     static String getChannelID(Channel channel, CommandSender sender) {
