@@ -1,23 +1,19 @@
 package buttondevteam.chat.formatting;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import buttondevteam.chat.ChatProcessing;
+import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
+import buttondevteam.lib.chat.Color;
+import buttondevteam.lib.chat.Priority;
+import lombok.Builder;
+import lombok.Data;
+import lombok.val;
+
+import java.util.*;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import buttondevteam.chat.ChatProcessing;
-import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
-import buttondevteam.lib.chat.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.val;
 
 /**
  * A {@link ChatFormatter} shows what formatting to use based on regular expressions. {@link ChatFormatter#Combine(List, String, TellrawPart)} is used to turn it into a {@link TellrawPart}, combining
@@ -279,8 +275,8 @@ public final class ChatFormatter {
 			if (rce.isPresent())
 				e = rce.get()[0];
 			DebugCommand.SendDebugMessage("After RC - Start: " + s + " - End: " + e);
-			if (e - s < 1) {
-				DebugCommand.SendDebugMessage("Skipping section because of remchars (length would be " + (e - s) + ")");
+            if (e - s < 0) { //e-s==0 means the end char is the same as start char, so one char message
+                DebugCommand.SendDebugMessage("Skipping section because of remchars (length would be " + (e - s + 1) + ")");
 				continue;
 			}
 			originaltext = str.substring(s, e + 1);

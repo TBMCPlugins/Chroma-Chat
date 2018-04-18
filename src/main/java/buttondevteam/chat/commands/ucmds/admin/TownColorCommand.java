@@ -45,6 +45,7 @@ public class TownColorCommand extends AdminCommandBase {
             if (!c.isPresent()) { //^^ Skip black
                 sender.sendMessage("§cThe color '" + args[i] + "' cannot be found."); //ˇˇ Skip black
                 sender.sendMessage("§cAvailable colors: " + Arrays.stream(Color.values()).skip(1).map(col -> String.format("§%x%s§r", col.ordinal(), col.getName())).collect(Collectors.joining(", ")));
+                sender.sendMessage("§cMake sure to type them exactly as shown above.");
                 return true;
             }
             clrs[i - 1] = c.get();

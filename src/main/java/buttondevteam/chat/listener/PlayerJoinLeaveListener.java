@@ -45,7 +45,7 @@ public class PlayerJoinLeaveListener implements Listener {
 			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
 				@Override
 				public void run() {
-					p.setPlayerListName(p.getName() + mp.GetFormattedFlair());
+                    mp.FlairUpdate();
 				}
 			};
 			tt.mp = cp;
@@ -78,8 +78,6 @@ public class PlayerJoinLeaveListener implements Listener {
 
 		String nwithoutformatting = PluginMain.essentials.getUser(p).getNickname();
 
-        updatePlayerColors(p);
-
 		int index;
 		if (nwithoutformatting != null) {
 			while ((index = nwithoutformatting.indexOf("§k")) != -1)
@@ -90,7 +88,9 @@ public class PlayerJoinLeaveListener implements Listener {
 			nwithoutformatting = p.getName();
 		PlayerListener.nicknames.put(nwithoutformatting, p.getUniqueId());
 
-		cp.FlairUpdate();
+        Bukkit.getScheduler().runTask(PluginMain.Instance, () -> {
+            updatePlayerColors(p, cp); //TODO: Doesn't have effect
+        });
 
 		if (cp.ChatOnly || p.getGameMode().equals(GameMode.SPECTATOR)) {
 			cp.ChatOnly = false;
@@ -141,7 +141,12 @@ public class PlayerJoinLeaveListener implements Listener {
         }
     }
 
-    public static void updatePlayerColors(Player player) {
+    public static void updatePlayerColors(Player player) { //Probably while ingame (/u ncolor)
+        updatePlayerColors(player, ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class));
+    }
+
+    public static void updatePlayerColors(Player player, ChatPlayer cp) { //Probably at join
         player.setDisplayName(getPlayerDisplayName(player));
+        cp.FlairUpdate(); //Update in list
     }
 }

@@ -58,15 +58,15 @@ public class NColorCommand extends UCommandBase {
 			return true;
 		}
 		if (nameparts.length < towncolors.length) {
-			player.sendMessage("§cYou need more vertical lines (|) in your name.");
+            player.sendMessage("§cYou need more vertical lines (|) in your name. (Should have " + (towncolors.length - 1) + ")");
 			return true;
 		}
 		if (nameparts.length > towncolors.length * 2) {
-			player.sendMessage("§cYou have waay too many vertical lines (|) in your name.");
+            player.sendMessage("§cYou have waay too many vertical lines (|) in your name. (Should have " + (towncolors.length - 1) + ")");
 			return true;
 		}
 		if (nameparts.length > towncolors.length) {
-			player.sendMessage("§cYou have too many vertical lines (|) in your name.");
+            player.sendMessage("§cYou have too many vertical lines (|) in your name. (Should have " + (towncolors.length - 1) + ")");
 			return true;
 		}
 		ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations()
