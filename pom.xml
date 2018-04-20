@@ -111,7 +111,7 @@
 		</repository>
 		<repository>
 			<id>Essentials</id>
-			<url>http://repo.ess3.net/</url>
+			<url>http://repo.ess3.net/content/repositories/essrel/</url>
 		</repository>
 		<repository>
 			<id>Votifier</id>

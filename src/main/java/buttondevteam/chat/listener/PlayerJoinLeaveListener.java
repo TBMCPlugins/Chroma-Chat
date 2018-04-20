@@ -9,6 +9,7 @@ import buttondevteam.lib.player.TBMCPlayerJoinEvent;
 import buttondevteam.lib.player.TBMCPlayerLoadEvent;
 import buttondevteam.lib.player.TBMCPlayerSaveEvent;
 import com.earth2me.essentials.Essentials;
+import com.earth2me.essentials.User;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import lombok.val;
 import org.bukkit.Bukkit;
@@ -88,9 +89,9 @@ public class PlayerJoinLeaveListener implements Listener {
 			nwithoutformatting = p.getName();
 		PlayerListener.nicknames.put(nwithoutformatting, p.getUniqueId());
 
-        Bukkit.getScheduler().runTask(PluginMain.Instance, () -> {
+        Bukkit.getScheduler().runTaskLater(PluginMain.Instance, () -> {
             updatePlayerColors(p, cp); //TODO: Doesn't have effect
-        });
+        }, 5);
 
 		if (cp.ChatOnly || p.getGameMode().equals(GameMode.SPECTATOR)) {
 			cp.ChatOnly = false;
@@ -108,8 +109,10 @@ public class PlayerJoinLeaveListener implements Listener {
 		UnlolCommand.Lastlol.values().removeIf(lld -> lld.getLolowner().equals(event.getPlayer()));
 	}
 
-    private static String getPlayerDisplayName(Player player) {
-        String nickname = PluginMain.essentials.getUser(player).getNick(true);
+    private static String getPlayerNickname(Player player, User user) {
+        String nickname = user.getNick(true);
+        if (nickname.contains("~")) //StartsWith doesn't work because of color codes
+            nickname = nickname.replace("~", ""); //It gets stacked otherwise
         val res = PluginMain.TU.getResidentMap().get(player.getName().toLowerCase());
         if (res == null || !res.hasTown())
             return nickname;
@@ -129,10 +132,6 @@ public class PlayerJoinLeaveListener implements Listener {
             int[] ncl = nclar == null ? null : nclar.stream().mapToInt(Integer::intValue).toArray();
             if (ncl != null && (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length))
                 ncl = null; // Reset if name length changed
-            if (name.charAt(0) == '~') { // Ignore ~ in nicknames
-                prevlen.incrementAndGet();
-                ret.append("~");
-            }
             for (int i = 0; i < clrs.length; i++)
                 ret.append(coloredNamePart.apply(ncl == null ? len : ncl[i], i));
             return ret.toString();
@@ -145,8 +144,10 @@ public class PlayerJoinLeaveListener implements Listener {
         updatePlayerColors(player, ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class));
     }
 
-    public static void updatePlayerColors(Player player, ChatPlayer cp) { //Probably at join
-        player.setDisplayName(getPlayerDisplayName(player));
+    public static void updatePlayerColors(Player player, ChatPlayer cp) { //Probably at join - nop, nicknames
+        User user = PluginMain.essentials.getUser(player);
+        user.setNickname(getPlayerNickname(player, user));
+        user.setDisplayNick(); //These won't fire the nick change event
         cp.FlairUpdate(); //Update in list
     }
 }

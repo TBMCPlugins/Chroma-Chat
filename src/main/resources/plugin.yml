@@ -28,6 +28,8 @@ commands:
     aliases: ww
   lenny:
     description: Lenny face.
+  ftop:
+    description: Top respect.
 author: NorbiPeti
 depend:
 - Essentials

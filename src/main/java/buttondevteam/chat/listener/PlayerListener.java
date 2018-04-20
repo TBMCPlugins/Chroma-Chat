@@ -292,5 +292,10 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onNickChange(NickChangeEvent e) {
 		nicknames.inverse().put(e.getAffected().getBase().getUniqueId(), e.getValue());
+        //PlayerJoinLeaveListener.updatePlayerColors(e.getAffected().getBase()); //Won't fire this event again
+
+        Bukkit.getScheduler().runTaskLater(PluginMain.Instance, () -> {
+            PlayerJoinLeaveListener.updatePlayerColors(e.getAffected().getBase()); //TODO: Doesn't have effect
+        }, 1);
 	}
 }
