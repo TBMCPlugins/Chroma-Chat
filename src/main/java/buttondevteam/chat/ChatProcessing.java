@@ -197,6 +197,12 @@ public class ChatProcessing {
                                         new TellrawPart((sender instanceof IDiscordSender ? "From Discord\n" : "")
                                                 + "Copy message").setColor(Color.Blue)))
                         .setClickEvent(TellrawEvent.create(TellrawEvent.ClickAction.SUGGEST_COMMAND, message)));
+        if (PluginMain.permission.has(player, "tbmc.badge.diamond"))
+            json.addExtra(new TellrawPart("[P]").setColor(Color.Aqua).setBold(true)
+                    .setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, "Diamond Patreon supporter")));
+        else if (PluginMain.permission.has(player, "tbmc.badge.gold"))
+            json.addExtra(new TellrawPart("[P]").setColor(Color.Gold).setBold(true)
+                    .setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, "Gold Patreon supporter")));
         json.addExtra(new TellrawPart(" <"));
         TellrawPart hovertp = new TellrawPart("");
         if (mp != null)

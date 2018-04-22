@@ -109,8 +109,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 				setTownColor(dtp, entry.getKey(), entry.getValue());
 		});
 
-		if (!setupChat() || !setupEconomy() || !setupPermissions())
-			getLogger().warning("Failed to set up chat or economy or permissions!");
+		if (!setupEconomy() || !setupPermissions())
+			TBMCCoreAPI.SendException("We're in trouble", new Exception("Failed to set up economy or permissions!"));
 
 		new Thread(this::FlairGetterThreadMethod).start();
 		new Thread(new AnnouncerThread()).start();

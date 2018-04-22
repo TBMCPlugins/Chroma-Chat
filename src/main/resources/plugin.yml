@@ -45,3 +45,9 @@ permissions:
     description: Gives access to /un- commands and /u admin commands
   tbmc.rainbow:
     description: Gives access to rainbow colors (/u c).
+  tbmc.badge.gold:
+    description: Gives a patron badge.
+    default: false
+  tbmc.badge.diamond:
+    description: Gives a cool patron badge.
+    default: false

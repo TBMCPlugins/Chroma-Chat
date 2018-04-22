@@ -115,7 +115,7 @@
 		</repository>
 		<repository>
 			<id>Votifier</id>
-			<url>http://repo.howaner.de/</url>
+            <url>https://dl.bintray.com/nuvotifier/maven/</url>
 		</repository>
 		<repository>
 			<id>Minigames</id>
@@ -167,8 +167,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.vexsoftware</groupId>
-			<artifactId>votifier</artifactId>
-			<version>1.9</version>
+            <artifactId>nuvotifier-universal</artifactId>
+            <version>2.3.4</version>
 		</dependency>
 		<!-- <dependency> <groupId>au.com.mineauz</groupId> <artifactId>Minigames</artifactId> 
 			<version>1.8.0</version> </dependency> -->
