@@ -1,15 +1,5 @@
 package buttondevteam.chat.listener;
 
-import java.util.Timer;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
-
-import com.earth2me.essentials.Essentials;
-
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.FlairStates;
 import buttondevteam.chat.PlayerJoinTimerTask;
@@ -18,6 +8,22 @@ import buttondevteam.chat.commands.UnlolCommand;
 import buttondevteam.lib.player.TBMCPlayerJoinEvent;
 import buttondevteam.lib.player.TBMCPlayerLoadEvent;
 import buttondevteam.lib.player.TBMCPlayerSaveEvent;
+import com.earth2me.essentials.Essentials;
+import com.earth2me.essentials.User;
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+import lombok.val;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
+
+import java.util.Arrays;
+import java.util.Timer;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 
 public class PlayerJoinLeaveListener implements Listener {
 
@@ -40,15 +46,13 @@ public class PlayerJoinLeaveListener implements Listener {
 			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
 				@Override
 				public void run() {
-					p.setPlayerListName(p.getName() + mp.GetFormattedFlair());
+                    mp.FlairUpdate();
 				}
 			};
 			tt.mp = cp;
 			timer.schedule(tt, 1000);
 		} else {
-			if (cp.FlairTime().get() == 0x00)
-				cp.SetFlair(ChatPlayer.FlairTimeNone);
-			Timer timer = new Timer();
+			/*Timer timer = new Timer();
 			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
 
 				@Override
@@ -70,10 +74,11 @@ public class PlayerJoinLeaveListener implements Listener {
 				}
 			};
 			tt.mp = cp;
-			timer.schedule(tt, 15 * 1000);
+			timer.schedule(tt, 15 * 1000);*/ //TODO: Better Reddit integration (OAuth)
 		}
 
 		String nwithoutformatting = PluginMain.essentials.getUser(p).getNickname();
+
 		int index;
 		if (nwithoutformatting != null) {
 			while ((index = nwithoutformatting.indexOf("§k")) != -1)
@@ -84,7 +89,9 @@ public class PlayerJoinLeaveListener implements Listener {
 			nwithoutformatting = p.getName();
 		PlayerListener.nicknames.put(nwithoutformatting, p.getUniqueId());
 
-		cp.FlairUpdate();
+        Bukkit.getScheduler().runTaskLater(PluginMain.Instance, () -> {
+            updatePlayerColors(p, cp); //TODO: Doesn't have effect
+        }, 5);
 
 		if (cp.ChatOnly || p.getGameMode().equals(GameMode.SPECTATOR)) {
 			cp.ChatOnly = false;
@@ -102,4 +109,45 @@ public class PlayerJoinLeaveListener implements Listener {
 		UnlolCommand.Lastlol.values().removeIf(lld -> lld.getLolowner().equals(event.getPlayer()));
 	}
 
+    private static String getPlayerNickname(Player player, User user) {
+        String nickname = user.getNick(true);
+        if (nickname.contains("~")) //StartsWith doesn't work because of color codes
+            nickname = nickname.replace("~", ""); //It gets stacked otherwise
+        val res = PluginMain.TU.getResidentMap().get(player.getName().toLowerCase());
+        if (res == null || !res.hasTown())
+            return nickname;
+        try {
+            val clrs = PluginMain.TownColors.get(res.getTown().getName().toLowerCase());
+            if (clrs == null)
+                return nickname;
+            StringBuilder ret = new StringBuilder();
+            String name = ChatColor.stripColor(nickname);
+            AtomicInteger prevlen = new AtomicInteger();
+            BiFunction<Integer, Integer, String> coloredNamePart = (len, i) -> "§"
+                    + Integer.toHexString(clrs[i].ordinal()) // 'Odds' are the last character is chopped off so we make sure to include all chars at the end
+                    + (i + 1 == clrs.length ? name.substring(prevlen.get())
+                    : name.substring(prevlen.get(), prevlen.addAndGet(len)));
+            int len = name.length() / clrs.length;
+            val nclar = ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations().get();
+            int[] ncl = nclar == null ? null : nclar.stream().mapToInt(Integer::intValue).toArray();
+            if (ncl != null && (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length))
+                ncl = null; // Reset if name length changed
+            for (int i = 0; i < clrs.length; i++)
+                ret.append(coloredNamePart.apply(ncl == null ? len : ncl[i], i));
+            return ret.toString();
+        } catch (NotRegisteredException e) {
+            return nickname;
+        }
+    }
+
+    public static void updatePlayerColors(Player player) { //Probably while ingame (/u ncolor)
+        updatePlayerColors(player, ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class));
+    }
+
+    public static void updatePlayerColors(Player player, ChatPlayer cp) { //Probably at join - nop, nicknames
+        User user = PluginMain.essentials.getUser(player);
+        user.setNickname(getPlayerNickname(player, user));
+        user.setDisplayNick(); //These won't fire the nick change event
+        cp.FlairUpdate(); //Update in list
+    }
 }

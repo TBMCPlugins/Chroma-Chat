@@ -1,37 +1,40 @@
 package buttondevteam.chat.listener;
 
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.event.*;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.*;
-import org.bukkit.event.server.ServerCommandEvent;
-import org.bukkit.help.HelpTopic;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import buttondevteam.chat.*;
+import buttondevteam.chat.ChatPlayer;
+import buttondevteam.chat.ChatProcessing;
+import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.ChatChannelRegisterEvent;
 import buttondevteam.lib.chat.ChatRoom;
 import buttondevteam.lib.chat.TBMCChatAPI;
+import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerGetInfoEvent;
-import net.ess3.api.events.NickChangeEvent;
-import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
-
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
+import net.ess3.api.events.NickChangeEvent;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.event.server.ServerCommandEvent;
+import org.bukkit.help.HelpTopic;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class PlayerListener implements Listener {
 	/**
@@ -76,7 +79,9 @@ public class PlayerListener implements Listener {
 		else
 			mp = null;
 		String cmd = "";
-		if (index == -1 && (sender instanceof Player || sender instanceof ConsoleCommandSender)) { // Only the command is run
+		if (index == -1) { // Only the command is run
+			if (!(sender instanceof Player || sender instanceof ConsoleCommandSender))
+				return false;
 			// ^^ We can only store player or console channels - Directly sending to channels would still work if they had an event
 			cmd = sender instanceof ConsoleCommandSender ? message : message.substring(1);
 			for (Channel channel : Channel.getChannels()) {
@@ -109,22 +114,31 @@ public class PlayerListener implements Listener {
 				if (player != null && sender instanceof Player)
 					player.sendMessage("§b" + ((Player) sender).getDisplayName() + " §bis in this world: "
 							+ ((Player) sender).getWorld().getName());
-			} else if (cmd.equalsIgnoreCase("minecraft:me")) {
-				if (!(sender instanceof Player) || !PluginMain.essentials.getUser((Player) sender).isMuted()) {
-					String msg = message.substring(index + 1);
-					Bukkit.broadcastMessage(String.format("* %s %s", ((Player) sender).getDisplayName(), msg));
-					return true;
-				} else {
-					sender.sendMessage("§cCan't use /minecraft:me while muted.");
-					return true;
-				}
-			} else
-				for (Channel channel : Channel.getChannels()) {
-					if (cmd.equalsIgnoreCase(channel.ID)) {
-						TBMCChatAPI.SendChatMessage(channel, sender, message.substring(index + 1));
-						return true;
-					}
-				}
+            } else if (cmd.equalsIgnoreCase("minecraft:me")) {
+                if (!(sender instanceof Player) || !PluginMain.essentials.getUser((Player) sender).isMuted()) {
+                    String msg = message.substring(index + 1);
+                    Bukkit.broadcastMessage(String.format("* %s %s", sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName(), msg));
+                    return true;
+                } else {
+                    sender.sendMessage("§cCan't use /minecraft:me while muted.");
+                    return true;
+                }
+            } else if (cmd.equalsIgnoreCase("me")) { //Take over for Discord broadcast
+                if (!(sender instanceof Player) || !PluginMain.essentials.getUser((Player) sender).isMuted()) {
+                    String msg = message.substring(index + 1);
+                    Bukkit.broadcastMessage(String.format("§5* %s %s", sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName(), msg));
+                    return true;
+                } else {
+                    sender.sendMessage("§cCan't use /me while muted.");
+                    return true;
+                }
+            } else
+                for (Channel channel : Channel.getChannels()) {
+                    if (cmd.equalsIgnoreCase(channel.ID)) {
+                        TBMCChatAPI.SendChatMessage(channel, sender, message.substring(index + 1));
+                        return true;
+                    }
+                }
 			// TODO: Target selectors
 		}
 		// We don't care if we have arguments
@@ -199,7 +213,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	@SuppressWarnings("deprecation")
-	public void onVotifierEvent(VotifierEvent event) {
+	public void onVotifierEvent(VotifierEvent event) { //TODO: Move to teh Core eh
 		Vote vote = event.getVote();
 		PluginMain.Instance.getLogger().info("Vote: " + vote);
 		org.bukkit.OfflinePlayer op = Bukkit.getOfflinePlayer(vote.getUsername());
@@ -278,5 +292,10 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onNickChange(NickChangeEvent e) {
 		nicknames.inverse().put(e.getAffected().getBase().getUniqueId(), e.getValue());
+        //PlayerJoinLeaveListener.updatePlayerColors(e.getAffected().getBase()); //Won't fire this event again
+
+        Bukkit.getScheduler().runTaskLater(PluginMain.Instance, () -> {
+            PlayerJoinLeaveListener.updatePlayerColors(e.getAffected().getBase()); //TODO: Doesn't have effect
+        }, 1);
 	}
 }

@@ -51,11 +51,6 @@
 									<include>org.javassist:javassist</include>
 								</includes>
 							</artifactSet>
-							<pluginExecution>
-								<action>
-									<execute />
-								</action>
-							</pluginExecution>
 						</configuration>
 					</execution>
 				</executions>
@@ -111,16 +106,16 @@
 			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 		</repository>
 		<repository>
-			<id>jitpack.io</id>
+			<id>jitpack</id>
 			<url>https://jitpack.io/</url>
 		</repository>
 		<repository>
 			<id>Essentials</id>
-			<url>http://repo.ess3.net/</url>
+			<url>http://repo.ess3.net/content/repositories/essrel/</url>
 		</repository>
 		<repository>
 			<id>Votifier</id>
-			<url>http://repo.howaner.de/</url>
+            <url>https://dl.bintray.com/nuvotifier/maven/</url>
 		</repository>
 		<repository>
 			<id>Minigames</id>
@@ -172,8 +167,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.vexsoftware</groupId>
-			<artifactId>votifier</artifactId>
-			<version>1.9</version>
+            <artifactId>nuvotifier-universal</artifactId>
+            <version>2.3.4</version>
 		</dependency>
 		<!-- <dependency> <groupId>au.com.mineauz</groupId> <artifactId>Minigames</artifactId> 
 			<version>1.8.0</version> </dependency> -->
@@ -203,7 +198,14 @@
 		<dependency>
 			<groupId>com.github.webbukkit</groupId>
 			<artifactId>Dynmap</artifactId>
-			<version>master-SNAPSHOT</version>
+			<version>v2.5</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/junit/junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<artifactId>ButtonChat</artifactId>
