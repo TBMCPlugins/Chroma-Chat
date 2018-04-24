@@ -25,6 +25,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -183,7 +184,7 @@ public class ChatProcessing {
         return gson.toJson(json);
     }
 
-    static TellrawPart createTellraw(CommandSender sender, String message, Player player, ChatPlayer mp,
+    static TellrawPart createTellraw(CommandSender sender, String message, @Nullable Player player, @Nullable ChatPlayer mp,
                                      final String channelidentifier) {
         TellrawPart json = new TellrawPart("");
         if (mp != null && mp.ChatOnly) {
@@ -197,10 +198,10 @@ public class ChatProcessing {
                                         new TellrawPart((sender instanceof IDiscordSender ? "From Discord\n" : "")
                                                 + "Copy message").setColor(Color.Blue)))
                         .setClickEvent(TellrawEvent.create(TellrawEvent.ClickAction.SUGGEST_COMMAND, message)));
-        if (PluginMain.permission.has(player, "tbmc.badge.diamond"))
+        if (PluginMain.permission.has(sender, "tbmc.badge.diamond"))
             json.addExtra(new TellrawPart("[P]").setColor(Color.Aqua).setBold(true)
                     .setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, "Diamond Patreon supporter")));
-        else if (PluginMain.permission.has(player, "tbmc.badge.gold"))
+        else if (PluginMain.permission.has(sender, "tbmc.badge.gold"))
             json.addExtra(new TellrawPart("[P]").setColor(Color.Gold).setBold(true)
                     .setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, "Gold Patreon supporter")));
         json.addExtra(new TellrawPart(" <"));

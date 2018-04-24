@@ -71,9 +71,9 @@ public class ChatPlayer extends TBMCPlayerBase {
 	public String GetFormattedFlair(boolean noformats) {
 		int time = FlairTime().get();
 		if (time == FlairTimeCantPress)
-			return String.format(noformats ? "(can't press)" : "§r(--s)§r");
+			return noformats ? "(can't press)" : "§r(--s)§r";
 		if (time == FlairTimeNonPresser)
-			return String.format(noformats ? "(non-presser)" : "§7(--s)§r");
+			return noformats ? "(non-presser)" : "§7(--s)§r";
 		if (time == FlairTimeNone)
 			return "";
 		return noformats ? String.format("(%ds)", time) : String.format("§%x(%ds)§r", GetFlairColor(), time);
@@ -129,5 +129,9 @@ public class ChatPlayer extends TBMCPlayerBase {
 		else if (flairTime <= 11 && flairTime >= 0)
 			return 0xc;
 		return 0xf;
+	}
+
+	public double getF() {
+		return (double) FCount().get() / (double) FDeaths().get();
 	}
 }

@@ -78,7 +78,7 @@ public class PlayerListener implements Listener {
 			mp = TBMCPlayer.getPlayer(((Player) sender).getUniqueId(), ChatPlayer.class);
 		else
 			mp = null;
-		String cmd = "";
+		String cmd;
 		if (index == -1) { // Only the command is run
 			if (!(sender instanceof Player || sender instanceof ConsoleCommandSender))
 				return false;
@@ -149,8 +149,7 @@ public class PlayerListener implements Listener {
 			}
 			if (PluginMain.permission.has(sender, "tbmc.admin")) {
 				String s = cmd.substring(2);
-				Player target = null;
-				target = Bukkit.getPlayer(message.substring(index + 1));
+				Player target = Bukkit.getPlayer(message.substring(index + 1));
 				if (target == null) {
 					sender.sendMessage("§cError: Player not found. (/un" + s + " <player>)");
 					return true;
@@ -260,7 +259,7 @@ public class PlayerListener implements Listener {
 			final String flair = cp.GetFormattedFlair(e.getTarget() != InfoTarget.MCCommand);
 			if (flair.length() > 0)
 				e.addInfo("/r/TheButton flair: " + flair);
-			e.addInfo("Respect: " + (double) cp.FCount().get() / (double) cp.FDeaths().get());
+			e.addInfo("Respect: " + cp.getF());
 		} catch (Exception ex) {
 			TBMCCoreAPI.SendException("Error while providing chat info for player " + e.getPlayer().getFileName(), ex);
 		}
