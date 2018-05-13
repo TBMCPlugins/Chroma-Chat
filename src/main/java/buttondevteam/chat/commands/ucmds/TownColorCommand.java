@@ -41,7 +41,7 @@ public class TownColorCommand extends UCommandBase {
 			return true;
 		}
 		if (args.length > ColorCount) {
-			player.sendMessage("You can only use " + ColorCount + " color" + (ColorCount > 1 ? "(s)" : "") + ".");
+			player.sendMessage("You can only use " + ColorCount + " color" + (ColorCount > 1 ? "s" : "") + ".");
 			return true;
 		}
 		String[] a = new String[args.length + 1];

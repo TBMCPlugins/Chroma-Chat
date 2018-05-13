@@ -12,12 +12,11 @@ import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerGetInfoEvent;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import net.ess3.api.events.NickChangeEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -31,17 +30,14 @@ import org.bukkit.help.HelpTopic;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class PlayerListener implements Listener {
-	/**
-	 * Does not contain format codes
-	 */
-	public static BiMap<String, UUID> nicknames = HashBiMap.create();
-
 	public static boolean Enable = false;
 
 	public static int LoginWarningCountTotal = 5;
@@ -168,9 +164,10 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onTabComplete(PlayerChatTabCompleteEvent e) {
 		String name = e.getLastToken();
-		for (Entry<String, UUID> nicknamekv : nicknames.entrySet()) {
-			if (nicknamekv.getKey().startsWith(name))
-				e.getTabCompletions().add(nicknamekv.getKey());
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            String displayName = ChatColor.stripColor(p.getDisplayName());
+            if (displayName.startsWith(name))
+                e.getTabCompletions().add(displayName);
 		}
 	}
 
@@ -291,7 +288,6 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onNickChange(NickChangeEvent e) {
-		nicknames.inverse().put(e.getAffected().getBase().getUniqueId(), e.getValue());
         //PlayerJoinLeaveListener.updatePlayerColors(e.getAffected().getBase()); //Won't fire this event again
 
         Bukkit.getScheduler().runTaskLater(PluginMain.Instance, () -> {
