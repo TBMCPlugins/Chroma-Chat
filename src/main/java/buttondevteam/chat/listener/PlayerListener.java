@@ -30,10 +30,8 @@ import org.bukkit.help.HelpTopic;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -75,13 +73,14 @@ public class PlayerListener implements Listener {
 		else
 			mp = null;
 		String cmd = "";
+		final BiPredicate<Channel, String> checkchid = (chan, cmd1) -> cmd1.equalsIgnoreCase(chan.ID) || (chan.IDs != null && Arrays.stream(chan.IDs).anyMatch(cmd1::equalsIgnoreCase));
 		if (index == -1) { // Only the command is run
 			if (!(sender instanceof Player || sender instanceof ConsoleCommandSender))
 				return false;
 			// ^^ We can only store player or console channels - Directly sending to channels would still work if they had an event
 			cmd = sender instanceof ConsoleCommandSender ? message : message.substring(1);
 			for (Channel channel : Channel.getChannels()) {
-				if (cmd.equalsIgnoreCase(channel.ID)) {
+				if (checkchid.test(channel, cmd)) {
 					Supplier<Channel> getch = () -> sender instanceof Player ? mp.CurrentChannel : ConsoleChannel;
 					Consumer<Channel> setch = ch -> {
 						if (sender instanceof Player)
@@ -130,7 +129,7 @@ public class PlayerListener implements Listener {
                 }
             } else
                 for (Channel channel : Channel.getChannels()) {
-                    if (cmd.equalsIgnoreCase(channel.ID)) {
+					if (checkchid.test(channel, cmd)) { //Apparently method references don't require final variables
                         TBMCChatAPI.SendChatMessage(channel, sender, message.substring(index + 1));
                         return true;
                     }
