@@ -12,12 +12,11 @@ import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerGetInfoEvent;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import net.ess3.api.events.NickChangeEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -32,16 +31,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
-import java.util.Map.Entry;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class PlayerListener implements Listener {
-	/**
-	 * Does not contain format codes
-	 */
-	public static BiMap<String, UUID> nicknames = HashBiMap.create();
-
 	public static boolean Enable = false;
 
 	public static int LoginWarningCountTotal = 5;
@@ -79,13 +73,14 @@ public class PlayerListener implements Listener {
 		else
 			mp = null;
 		String cmd;
+		final BiPredicate<Channel, String> checkchid = (chan, cmd1) -> cmd1.equalsIgnoreCase(chan.ID) || (chan.IDs != null && Arrays.stream(chan.IDs).anyMatch(cmd1::equalsIgnoreCase));
 		if (index == -1) { // Only the command is run
 			if (!(sender instanceof Player || sender instanceof ConsoleCommandSender))
 				return false;
 			// ^^ We can only store player or console channels - Directly sending to channels would still work if they had an event
 			cmd = sender instanceof ConsoleCommandSender ? message : message.substring(1);
 			for (Channel channel : Channel.getChannels()) {
-				if (cmd.equalsIgnoreCase(channel.ID)) {
+				if (checkchid.test(channel, cmd)) {
 					Supplier<Channel> getch = () -> sender instanceof Player ? mp.CurrentChannel : ConsoleChannel;
 					Consumer<Channel> setch = ch -> {
 						if (sender instanceof Player)
@@ -134,7 +129,7 @@ public class PlayerListener implements Listener {
                 }
             } else
                 for (Channel channel : Channel.getChannels()) {
-                    if (cmd.equalsIgnoreCase(channel.ID)) {
+					if (checkchid.test(channel, cmd)) { //Apparently method references don't require final variables
                         TBMCChatAPI.SendChatMessage(channel, sender, message.substring(index + 1));
                         return true;
                     }
@@ -167,9 +162,10 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onTabComplete(PlayerChatTabCompleteEvent e) {
 		String name = e.getLastToken();
-		for (Entry<String, UUID> nicknamekv : nicknames.entrySet()) {
-			if (nicknamekv.getKey().startsWith(name))
-				e.getTabCompletions().add(nicknamekv.getKey());
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            String displayName = ChatColor.stripColor(p.getDisplayName());
+            if (displayName.startsWith(name))
+                e.getTabCompletions().add(displayName);
 		}
 	}
 
@@ -290,7 +286,6 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onNickChange(NickChangeEvent e) {
-		nicknames.inverse().put(e.getAffected().getBase().getUniqueId(), e.getValue());
         //PlayerJoinLeaveListener.updatePlayerColors(e.getAffected().getBase()); //Won't fire this event again
 
         Bukkit.getScheduler().runTaskLater(PluginMain.Instance, () -> {
