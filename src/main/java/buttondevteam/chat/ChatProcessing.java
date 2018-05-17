@@ -276,11 +276,11 @@ public class ChatProcessing {
             if (addNickFormatter)
                 formatters.add(ChatFormatter.builder().regex((Pattern.compile(nicksb.toString()))).color(Color.Aqua)
                         .onmatch((match, builder) -> {
-                            if (PlayerListener.nicknames.containsKey(match)) {
-                                Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(match));
+                            if (PlayerListener.nicknames.containsKey(match.toLowerCase())) { //Made a stream and all that but I can actually store it lowercased
+                                Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(match.toLowerCase()));
                                 if (p == null) {
                                     PluginMain.Instance.getLogger().warning("Error: Can't find player nicknamed "
-                                            + match + " but was reported as online.");
+                                            + match.toLowerCase() + " but was reported as online.");
                                     return "§c" + match + "§r";
                                 }
                                 if (PlayerListener.NotificationSound == null)
@@ -290,7 +290,7 @@ public class ChatProcessing {
                                             (float) PlayerListener.NotificationPitch);
                                 return PluginMain.essentials.getUser(p).getNickname();
                             }
-                            Bukkit.getServer().getLogger().warning("Player nicknamed " + match
+                            Bukkit.getServer().getLogger().warning("Player nicknamed " + match.toLowerCase()
                                     + " not found in nickname map but was reported as online.");
                             return "§c" + match + "§r";
                         }).priority(Priority.High).build());

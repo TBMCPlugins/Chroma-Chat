@@ -128,7 +128,7 @@ public class ChatPlayer extends TBMCPlayerBase {
 			return 0x6;
 		else if (flairTime <= 11 && flairTime >= 0)
 			return 0xc;
-		return 0xf;
+		return 0x00; //Return 0 if none or too high, so names will get aqua default color, not white
 	}
 
 	public double getF() {

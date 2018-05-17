@@ -12,6 +12,8 @@ import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerGetInfoEvent;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import net.ess3.api.events.NickChangeEvent;
@@ -31,11 +33,17 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class PlayerListener implements Listener {
+	/**
+	 * Does not contain format codes, lowercased
+	 */
+	public static BiMap<String, UUID> nicknames = HashBiMap.create();
+
 	public static boolean Enable = false;
 
 	public static int LoginWarningCountTotal = 5;
@@ -109,31 +117,31 @@ public class PlayerListener implements Listener {
 				if (player != null && sender instanceof Player)
 					player.sendMessage("§b" + ((Player) sender).getDisplayName() + " §bis in this world: "
 							+ ((Player) sender).getWorld().getName());
-            } else if (cmd.equalsIgnoreCase("minecraft:me")) {
-                if (!(sender instanceof Player) || !PluginMain.essentials.getUser((Player) sender).isMuted()) {
-                    String msg = message.substring(index + 1);
-                    Bukkit.broadcastMessage(String.format("* %s %s", sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName(), msg));
-                    return true;
-                } else {
-                    sender.sendMessage("§cCan't use /minecraft:me while muted.");
-                    return true;
-                }
-            } else if (cmd.equalsIgnoreCase("me")) { //Take over for Discord broadcast
-                if (!(sender instanceof Player) || !PluginMain.essentials.getUser((Player) sender).isMuted()) {
-                    String msg = message.substring(index + 1);
-                    Bukkit.broadcastMessage(String.format("§5* %s %s", sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName(), msg));
-                    return true;
-                } else {
-                    sender.sendMessage("§cCan't use /me while muted.");
-                    return true;
-                }
-            } else
-                for (Channel channel : Channel.getChannels()) {
+			} else if (cmd.equalsIgnoreCase("minecraft:me")) {
+				if (!(sender instanceof Player) || !PluginMain.essentials.getUser((Player) sender).isMuted()) {
+					String msg = message.substring(index + 1);
+					Bukkit.broadcastMessage(String.format("* %s %s", sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName(), msg));
+					return true;
+				} else {
+					sender.sendMessage("§cCan't use /minecraft:me while muted.");
+					return true;
+				}
+			} else if (cmd.equalsIgnoreCase("me")) { //Take over for Discord broadcast
+				if (!(sender instanceof Player) || !PluginMain.essentials.getUser((Player) sender).isMuted()) {
+					String msg = message.substring(index + 1);
+					Bukkit.broadcastMessage(String.format("§5* %s %s", sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName(), msg));
+					return true;
+				} else {
+					sender.sendMessage("§cCan't use /me while muted.");
+					return true;
+				}
+			} else
+				for (Channel channel : Channel.getChannels()) {
 					if (checkchid.test(channel, cmd)) { //Apparently method references don't require final variables
-                        TBMCChatAPI.SendChatMessage(channel, sender, message.substring(index + 1));
-                        return true;
-                    }
-                }
+						TBMCChatAPI.SendChatMessage(channel, sender, message.substring(index + 1));
+						return true;
+					}
+				}
 			// TODO: Target selectors
 		}
 		// We don't care if we have arguments
@@ -162,10 +170,9 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onTabComplete(PlayerChatTabCompleteEvent e) {
 		String name = e.getLastToken();
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            String displayName = ChatColor.stripColor(p.getDisplayName());
-            if (displayName.startsWith(name))
-                e.getTabCompletions().add(displayName);
+		for (Entry<String, UUID> nicknamekv : nicknames.entrySet()) {
+			if (nicknamekv.getKey().startsWith(name.toLowerCase()))
+				e.getTabCompletions().add(Bukkit.getPlayer(nicknamekv.getValue()).getName()); //Tabcomplete with the correct case
 		}
 	}
 
@@ -272,7 +279,7 @@ public class PlayerListener implements Listener {
 				if (e.shouldSendTo(p))
 					p.sendMessage("§c!§r["
 							+ e.getChannel().DisplayName + "] <" + (e.getSender() instanceof Player
-									? ((Player) e.getSender()).getDisplayName() : e.getSender().getName())
+							? ((Player) e.getSender()).getDisplayName() : e.getSender().getName())
 							+ "> " + e.getMessage());
 			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex);
 		}
@@ -286,10 +293,11 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onNickChange(NickChangeEvent e) {
-        //PlayerJoinLeaveListener.updatePlayerColors(e.getAffected().getBase()); //Won't fire this event again
+		nicknames.inverse().forcePut(e.getAffected().getBase().getUniqueId(), ChatColor.stripColor(e.getValue()).toLowerCase());
+		//PlayerJoinLeaveListener.updatePlayerColors(e.getAffected().getBase()); //Won't fire this event again
 
-        Bukkit.getScheduler().runTaskLater(PluginMain.Instance, () -> {
-            PlayerJoinLeaveListener.updatePlayerColors(e.getAffected().getBase()); //TODO: Doesn't have effect
-        }, 1);
+		Bukkit.getScheduler().runTaskLater(PluginMain.Instance, () -> {
+			PlayerJoinLeaveListener.updatePlayerColors(e.getAffected().getBase()); //TODO: Doesn't have effect
+		}, 1);
 	}
 }

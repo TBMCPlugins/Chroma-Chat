@@ -87,7 +87,7 @@ public class PlayerJoinLeaveListener implements Listener {
 				nwithoutformatting = nwithoutformatting.replace("§" + nwithoutformatting.charAt(index + 1), "");
 		} else
 			nwithoutformatting = p.getName();
-		PlayerListener.nicknames.put(nwithoutformatting, p.getUniqueId());
+		PlayerListener.nicknames.forcePut(nwithoutformatting.toLowerCase(), p.getUniqueId());
 
         Bukkit.getScheduler().runTaskLater(PluginMain.Instance, () -> {
             updatePlayerColors(p, cp); //TODO: Doesn't have effect
