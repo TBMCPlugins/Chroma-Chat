@@ -53,7 +53,7 @@ public class PlayerListener implements Listener {
 
 	public static boolean ShowRPTag = false;
 
-	public final static String[] LaughStrings = new String[] { "xd", "lel", "lawl", "kek", "lmao", "hue", "hah" };
+    public final static String[] LaughStrings = new String[]{"xd", "lel", "lawl", "kek", "lmao", "hue", "hah", "rofl"};
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
@@ -262,7 +262,7 @@ public class PlayerListener implements Listener {
 			final String flair = cp.GetFormattedFlair(e.getTarget() != InfoTarget.MCCommand);
 			if (flair.length() > 0)
 				e.addInfo("/r/TheButton flair: " + flair);
-			e.addInfo("Respect: " + cp.getF());
+            e.addInfo(String.format("Respect: %.2f", cp.getF()));
 		} catch (Exception ex) {
 			TBMCCoreAPI.SendException("Error while providing chat info for player " + e.getPlayer().getFileName(), ex);
 		}

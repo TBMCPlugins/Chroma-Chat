@@ -106,7 +106,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			if (dtp == null)
 				return;
 			for (val entry : TownColors.entrySet())
-				setTownColor(dtp, entry.getKey(), entry.getValue());
+                setTownColor(dtp, buttondevteam.chat.commands.ucmds.admin.TownColorCommand.getTownNameCased(entry.getKey()), entry.getValue());
 		});
 
 		if (!setupEconomy() || !setupPermissions())
@@ -116,15 +116,22 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		new Thread(new AnnouncerThread()).start();
 	}
 
-	public static void setTownColor(DynmapTownyPlugin dtp, String town, Color[] colors) {
-		Function<Color, Integer> c2i = c -> c.getRed() << 16 | c.getGreen() << 8 | c.getBlue();
-		try {
-			DTBridge.setTownColor(dtp, town, c2i.apply(colors[0]),
-					c2i.apply(colors.length > 1 ? colors[1] : colors[0]));
-		} catch (Exception e) {
-			TBMCCoreAPI.SendException("Failed to set town color for town " + town + "!", e);
-		}
-	}
+    /**
+     * Sets a town's color on Dynmap.
+     *
+     * @param dtp    A reference for the Dynmap-Towny plugin
+     * @param town   The town's name using the correct casing
+     * @param colors The town's colors
+     */
+    public static void setTownColor(DynmapTownyPlugin dtp, String town, Color[] colors) {
+        Function<Color, Integer> c2i = c -> c.getRed() << 16 | c.getGreen() << 8 | c.getBlue();
+        try {
+            DTBridge.setTownColor(dtp, town, c2i.apply(colors[0]),
+                    c2i.apply(colors.length > 1 ? colors[1] : colors[0]));
+        } catch (Exception e) {
+            TBMCCoreAPI.SendException("Failed to set town color for town " + town + "!", e);
+        }
+    }
 
 	public Boolean stop = false;
 	public static Essentials essentials = null;
@@ -272,7 +279,10 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 	public static ArrayList<String> AnnounceMessages = new ArrayList<>();
 	public static int AnnounceTime = 15 * 60 * 1000;
-	public static Map<String, Color[]> TownColors = new HashMap<>();
+    /**
+     * Names lowercased
+     */
+    public static Map<String, Color[]> TownColors = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
 	public static void LoadFiles() {

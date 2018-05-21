@@ -1,16 +1,15 @@
 package org.dynmap.towny;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
-
+import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.dynmap.bukkit.DynmapPlugin;
 import org.dynmap.markers.MarkerAPI;
 
-import lombok.val;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 public class DTBridge {
 	/**
@@ -19,7 +18,7 @@ public class DTBridge {
 	 * @param dtp
 	 *            The Dynmap-Towny plugin
 	 * @param townname
-	 *            The name of the town
+     *            The name of the town, using correct casing
 	 * @param strokecolor
 	 *            The stroke color in RGB format
 	 * @param fillcolor
@@ -32,14 +31,14 @@ public class DTBridge {
 			IllegalAccessException, NoSuchMethodException, InstantiationException, InvocationTargetException {
 		Class<?> cl = Class.forName(DynmapTownyPlugin.class.getName() + "$AreaStyle");
 		Field field = DynmapTownyPlugin.class.getDeclaredField("cusstyle");
-		field.setAccessible(true); // DOesn't allow accessing it from the same package, if it's from a different plugin
+        field.setAccessible(true); // Doesn't allow accessing it from the same package, if it's from a different plugin
 		@SuppressWarnings("unchecked")
 		val map = (Map<String, Object>) field.get(dtp);
 		Object style = map.get(townname);
 		if (style == null) {
 			Constructor<?> c = cl.getDeclaredConstructor(FileConfiguration.class, String.class, MarkerAPI.class);
 			c.setAccessible(true);
-			style = c.newInstance(dtp.getConfig(), "custstyle" + townname,
+            style = c.newInstance(dtp.getConfig(), "custstyle." + townname,
 					((DynmapPlugin) Bukkit.getPluginManager().getPlugin("dynmap")).getMarkerAPI());
 			map.put(townname, style);
 		}

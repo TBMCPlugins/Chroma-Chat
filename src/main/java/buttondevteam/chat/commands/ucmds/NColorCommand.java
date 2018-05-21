@@ -45,28 +45,29 @@ public class NColorCommand extends UCommandBase {
 		}
 		if (args.length == 0)
 			return false;
-        String arg = player.getDisplayName().startsWith("~") ? "~" + args[0] : args[0]; //Add ~ for nicknames
-		if (!args[0].replace("|", "").equalsIgnoreCase(ChatColor.stripColor(player.getDisplayName()))) {
+        final String name = ChatColor.stripColor(player.getDisplayName());
+        String arg = name.startsWith("~") ? "~" + args[0] : args[0]; //Add ~ for nicknames
+        if (!arg.replace("|", "").replace(":", "").equalsIgnoreCase(name)) {
 			player.sendMessage("§cThe name you gave doesn't match your name. Make sure to use "
-					+ ChatColor.stripColor(player.getDisplayName()) + "§c with added vertical lines (|).");
+                    + name + "§c with added vertical lines (|) or colons (:).");
 			return true;
 		}
-		String[] nameparts = args[0].split("\\|");
+        String[] nameparts = arg.split("\\|");
 		Color[] towncolors = PluginMain.TownColors.get(town.getName().toLowerCase());
 		if (towncolors == null) {
 			player.sendMessage("§cYour town doesn't have a color set. The town mayor can set it using /u towncolor.");
 			return true;
 		}
 		if (nameparts.length < towncolors.length) {
-            player.sendMessage("§cYou need more vertical lines (|) in your name. (Should have " + (towncolors.length - 1) + ")");
+            player.sendMessage("§cYou need more vertical lines (|) or colons (:) in your name. (Should have " + (towncolors.length - 1) + ")");
 			return true;
 		}
 		if (nameparts.length > towncolors.length * 2) {
-            player.sendMessage("§cYou have waay too many vertical lines (|) in your name. (Should have " + (towncolors.length - 1) + ")");
+            player.sendMessage("§cYou have waay too many vertical lines (|) or colons (:) in your name. (Should have " + (towncolors.length - 1) + ")");
 			return true;
 		}
 		if (nameparts.length > towncolors.length) {
-            player.sendMessage("§cYou have too many vertical lines (|) in your name. (Should have " + (towncolors.length - 1) + ")");
+            player.sendMessage("§cYou have too many vertical lines (|) or colons (:) in your name. (Should have " + (towncolors.length - 1) + ")");
 			return true;
 		}
 		ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations()

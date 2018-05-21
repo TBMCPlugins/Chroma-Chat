@@ -36,8 +36,16 @@ public class FTopCommand extends TBMCCommandBase {
         Bukkit.getScheduler().runTaskAsynchronously(PluginMain.Instance, () -> {
             if (cached == null || lastcache < System.nanoTime() - 60000000000L) { // 1m - (no guarantees of nanoTime's relation to 0, so we need the null check too)
                 cached = Arrays.stream(Objects.requireNonNull(playerdir.listFiles())).sequential()
-                        .map(f -> TBMCPlayerBase.getPlayer(
-                                UUID.fromString(f.getName().substring(0, f.getName().length() - 4)), ChatPlayer.class))
+                        .filter(f -> f.getName().length() > 4)
+                        .map(f -> {
+                            try {
+                                return TBMCPlayerBase.getPlayer(
+                                        UUID.fromString(f.getName().substring(0, f.getName().length() - 4)), ChatPlayer.class);
+                            } catch (Exception e) {
+                                return null;
+                            }
+                        })
+                        .filter(Objects::nonNull)
                         .sorted((cp1, cp2) -> Double.compare(cp2.getF(), cp1.getF()))
                         .toArray(ChatPlayer[]::new); // TODO: Properly implement getting all players
                 lastcache = System.nanoTime();

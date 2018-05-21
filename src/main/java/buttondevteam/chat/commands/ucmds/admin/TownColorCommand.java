@@ -67,8 +67,12 @@ public class TownColorCommand extends AdminCommandBase {
             PluginMain.Instance.getLogger().warning("Dynmap-Towny not found for setting town color!");
             return true;
         }
-        PluginMain.setTownColor(dtp, args[0].toLowerCase(), clrs);
+        PluginMain.setTownColor(dtp, getTownNameCased(args[0]), clrs);
         sender.sendMessage("§bColor(s) set.");
         return true;
+    }
+
+    public static String getTownNameCased(String name) {
+        return PluginMain.TU.getTownsMap().get(name.toLowerCase()).getName();
     }
 }
