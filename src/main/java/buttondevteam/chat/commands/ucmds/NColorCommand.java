@@ -45,14 +45,14 @@ public class NColorCommand extends UCommandBase {
 		}
 		if (args.length == 0)
 			return false;
-        final String name = ChatColor.stripColor(player.getDisplayName());
-        String arg = name.startsWith("~") ? "~" + args[0] : args[0]; //Add ~ for nicknames
+		final String name = ChatColor.stripColor(player.getDisplayName()).replace("~", ""); //Remove ~
+		String arg = args[0]; //Don't add ~ for nicknames
         if (!arg.replace("|", "").replace(":", "").equalsIgnoreCase(name)) {
 			player.sendMessage("§cThe name you gave doesn't match your name. Make sure to use "
                     + name + "§c with added vertical lines (|) or colons (:).");
 			return true;
 		}
-        String[] nameparts = arg.split("\\|");
+		String[] nameparts = arg.split("[|:]");
 		Color[] towncolors = PluginMain.TownColors.get(town.getName().toLowerCase());
 		if (towncolors == null) {
 			player.sendMessage("§cYour town doesn't have a color set. The town mayor can set it using /u towncolor.");
