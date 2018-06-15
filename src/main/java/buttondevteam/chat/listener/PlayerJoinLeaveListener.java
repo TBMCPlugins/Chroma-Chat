@@ -132,6 +132,7 @@ public class PlayerJoinLeaveListener implements Listener {
             int[] ncl = nclar == null ? null : nclar.stream().mapToInt(Integer::intValue).toArray();
             if (ncl != null && (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length))
                 ncl = null; // Reset if name length changed
+            //System.out.println("ncl: "+Arrays.toString(ncl)+" - sum: "+Arrays.stream(ncl).sum()+" - name len: "+name.length());
             for (int i = 0; i < clrs.length; i++)
                 ret.append(coloredNamePart.apply(ncl == null ? len : ncl[i], i));
             return ret.toString();

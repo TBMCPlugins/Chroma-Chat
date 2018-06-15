@@ -1,15 +1,5 @@
 package buttondevteam.chat;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.command.CommandSender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-
 import buttondevteam.chat.ObjectTestRunner.Objects;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.formatting.ChatFormatter;
@@ -20,6 +10,16 @@ import buttondevteam.chat.formatting.TellrawPart;
 import buttondevteam.core.TestPrepare;
 import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.Color;
+import net.milkbowl.vault.permission.Permission;
+import org.bukkit.command.CommandSender;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(ObjectTestRunner.class)
 public class ChatFormatIT {
@@ -28,6 +28,7 @@ public class ChatFormatIT {
 		TestPrepare.PrepareServer();
 		final CommandSender sender = Mockito.mock(CommandSender.class);
 		DebugCommand.DebugMode = true;
+		PluginMain.permission = Mockito.mock(Permission.class);
 
 		List<Object> list = new ArrayList<Object>();
 

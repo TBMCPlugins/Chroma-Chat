@@ -3,6 +3,7 @@ package buttondevteam.chat;
 import buttondevteam.chat.commands.YeehawCommand;
 import buttondevteam.chat.commands.ucmds.TownColorCommand;
 import buttondevteam.chat.listener.PlayerListener;
+import buttondevteam.chat.listener.TownyListener;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.Channel.RecipientTestResult;
@@ -80,6 +81,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		Instance = this;
 
 		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerListener(), this);
+		TBMCCoreAPI.RegisterEventsForExceptions(new TownyListener(), this);
 		TBMCChatAPI.AddCommands(this, YeehawCommand.class);
 		Console = this.getServer().getConsoleSender();
 		LoadFiles();
@@ -373,7 +375,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		Resident resident = PluginMain.TU.getResidentMap().get(sender.getName().toLowerCase());
 		RecipientTestResult result = checkTownNationChatInternal(sender, nationchat, resident);
 		if (result.errormessage != null && resident != null && resident.getModes().contains("spy")) // Only use spy if they wouldn't see it
-			result = new RecipientTestResult(1000); // There won't be more than a thousand towns/nations probably
+			result = new RecipientTestResult(1000, "allspies"); // There won't be more than a thousand towns/nations probably
 		return result;
 	}
 
@@ -407,7 +409,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					index = PluginMain.Towns.size() - 1;
 				}
 			}
-			return new RecipientTestResult(index);
+			return new RecipientTestResult(index, nationchat ? nation.getName() : town.getName());
 		} catch (NotRegisteredException e) {
 			return new RecipientTestResult("You (probably) aren't knwon by Towny! (Not in a town)");
 		}

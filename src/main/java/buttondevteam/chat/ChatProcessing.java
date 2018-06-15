@@ -221,7 +221,7 @@ public class ChatProcessing {
     }
 
     static String getChannelID(Channel channel, CommandSender sender) {
-        return ("[" + (sender instanceof IDiscordSender ? "§bD§r|" : "") + channel.DisplayName)
+        return ("[" + (sender instanceof IDiscordSender ? "§8D§r|" : "") + channel.DisplayName)
                 + "]";
     }
 

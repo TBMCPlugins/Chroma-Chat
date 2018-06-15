@@ -172,7 +172,7 @@ public class PlayerListener implements Listener {
 		String name = e.getLastToken();
 		for (Entry<String, UUID> nicknamekv : nicknames.entrySet()) {
 			if (nicknamekv.getKey().startsWith(name.toLowerCase()))
-				e.getTabCompletions().add(Bukkit.getPlayer(nicknamekv.getValue()).getName()); //Tabcomplete with the correct case
+                e.getTabCompletions().add(PluginMain.essentials.getUser(Bukkit.getPlayer(nicknamekv.getValue())).getNick(true)); //Tabcomplete with the correct case
 		}
 	}
 
@@ -293,11 +293,14 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onNickChange(NickChangeEvent e) {
-		nicknames.inverse().forcePut(e.getAffected().getBase().getUniqueId(), ChatColor.stripColor(e.getValue()).toLowerCase());
-		//PlayerJoinLeaveListener.updatePlayerColors(e.getAffected().getBase()); //Won't fire this event again
+        String nick = e.getValue();
+        if (nick == null)
+            nicknames.inverse().remove(e.getAffected().getBase().getUniqueId());
+        else
+            nicknames.inverse().forcePut(e.getAffected().getBase().getUniqueId(), ChatColor.stripColor(nick).toLowerCase());
 
 		Bukkit.getScheduler().runTaskLater(PluginMain.Instance, () -> {
-			PlayerJoinLeaveListener.updatePlayerColors(e.getAffected().getBase()); //TODO: Doesn't have effect
+            PlayerJoinLeaveListener.updatePlayerColors(e.getAffected().getBase()); //Won't fire this event again
 		}, 1);
 	}
 }
