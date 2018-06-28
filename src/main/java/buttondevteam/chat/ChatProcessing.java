@@ -15,6 +15,7 @@ import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerBase;
 import com.earth2me.essentials.Essentials;
+import com.earth2me.essentials.User;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -93,9 +94,13 @@ public class ChatProcessing {
         if (PluginMain.essentials == null)
             PluginMain.essentials = (Essentials) (Bukkit.getPluginManager().getPlugin("Essentials"));
         Player player = (sender instanceof Player ? (Player) sender : null);
+        User user = PluginMain.essentials.getUser(player);
 
-        if (player != null && PluginMain.essentials.getUser(player).isMuted())
-            return true;
+        if (player != null) {
+            user.updateActivity(true); //Could talk in a private channel, so broadcast
+            if (user.isMuted())
+                return true;
+        }
 
         doFunStuff(sender, e, message);
 
