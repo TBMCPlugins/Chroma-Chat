@@ -104,9 +104,11 @@ public class ChatProcessing {
 
         doFunStuff(sender, e, message);
 
-        ChatPlayer mp = null;
+        ChatPlayer mp;
         if (player != null)
             mp = TBMCPlayerBase.getPlayer(player.getUniqueId(), ChatPlayer.class);
+        else //Due to the online player map, getPlayer() can be more efficient than getAs()
+            mp = e.getUser().getAs(ChatPlayer.class); //May be null
 
         Color colormode = channel.color;
         if (mp != null && mp.OtherColorMode != null)
