@@ -128,7 +128,7 @@ public class ChatProcessing {
         pingedconsole = false; // Will set it to true onmatch (static constructor)
         final String channelidentifier = getChannelID(channel, sender);
 
-        TellrawPart json = createTellraw(sender, message, player, mp, channelidentifier);
+        TellrawPart json = createTellraw(sender, message, player, mp, e.getUser(), channelidentifier);
         long combinetime = System.nanoTime();
         ChatFormatter.Combine(formatters, message, json);
         combinetime = System.nanoTime() - combinetime;
@@ -191,8 +191,8 @@ public class ChatProcessing {
         return gson.toJson(json);
     }
 
-    static TellrawPart createTellraw(CommandSender sender, String message, @Nullable Player player, @Nullable ChatPlayer mp,
-                                     final String channelidentifier) {
+    static TellrawPart createTellraw(CommandSender sender, String message, @Nullable Player player,
+                                     @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier) {
         TellrawPart json = new TellrawPart("");
         if (mp != null && mp.ChatOnly) {
             json.addExtra(new TellrawPart("[C]")
@@ -213,8 +213,8 @@ public class ChatProcessing {
                     .setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, "Gold Patreon supporter")));
         json.addExtra(new TellrawPart(" <"));
         TellrawPart hovertp = new TellrawPart("");
-        if (mp != null)
-            hovertp.addExtra(new TellrawPart(mp.getInfo(ChromaGamerBase.InfoTarget.MCHover)));
+        if (cg != null)
+            hovertp.addExtra(new TellrawPart(cg.getInfo(ChromaGamerBase.InfoTarget.MCHover)));
         json.addExtra(new TellrawPart(getSenderName(sender, player))
                 .setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, hovertp)));
         json.addExtra(new TellrawPart("> "));
