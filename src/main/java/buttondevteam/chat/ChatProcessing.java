@@ -47,6 +47,7 @@ public class ChatProcessing {
     private static final Pattern CODE_PATTERN = Pattern.compile("`");
     private static final Pattern MASKED_LINK_PATTERN = Pattern.compile("\\[([^\\[\\]])\\]\\(([^()])\\)");
     private static final Pattern SOMEONE_PATTERN = Pattern.compile("@someone"); //TODO
+    private static final Pattern STRIKETHROUGH_PATTERN = Pattern.compile("~~");
     private static final Color[] RainbowPresserColors = new Color[]{Color.Red, Color.Gold, Color.Yellow, Color.Green,
             Color.Blue, Color.DarkPurple};
     private static boolean pingedconsole = false;
@@ -58,6 +59,8 @@ public class ChatProcessing {
                     .priority(Priority.High).build(),
             ChatFormatter.builder().regex(ITALIC_PATTERN).italic(true).removeCharCount((short) 1).range(true).build(),
             ChatFormatter.builder().regex(UNDERLINED_PATTERN).underlined(true).removeCharCount((short) 1).range(true)
+                    .build(),
+            ChatFormatter.builder().regex(STRIKETHROUGH_PATTERN).strikethrough(true).removeCharCount((short) 2).range(true)
                     .build(),
             ESCAPE_FORMATTER, ChatFormatter.builder().regex(URL_PATTERN).underlined(true).openlink("$1").build(),
             ChatFormatter.builder().regex(NULL_MENTION_PATTERN).color(Color.DarkRed).build(), // Properly added a bug as a feature
