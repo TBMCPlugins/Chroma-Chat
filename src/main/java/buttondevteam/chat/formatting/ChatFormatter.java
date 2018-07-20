@@ -71,7 +71,7 @@ public final class ChatFormatter {
 						: Integer.compare(s1.Start, s2.Start));
 
 		/**
-		 * 0: Start - 1: End
+		 * 0: Start - 1: End index
 		 */
 		val remchars = new ArrayList<int[]>();
 
@@ -87,7 +87,7 @@ public final class ChatFormatter {
 			if (!section.IsRange) {
 				escaped = section.Formatters.contains(ChatProcessing.ESCAPE_FORMATTER) && !escaped; // Enable escaping on first \, disable on second
 				if (escaped) // Don't add the escape character
-					remchars.add(new int[] { section.Start, section.Start + 1 });
+					remchars.add(new int[]{section.Start, section.Start});
 				combined.add(section); // This will delete the \
 				DebugCommand.SendDebugMessage("Added " + (!escaped ? "not " : "") + "escaper section: " + section);
 				sendMessageWithPointer(str, section.Start, section.End);
@@ -120,7 +120,8 @@ public final class ChatFormatter {
 				takenFormatter = section.Formatters.get(0);
 				if (nextSection.containsKey(section.Formatters.get(0))) {
 					FormattedSection s = nextSection.remove(section.Formatters.get(0));
-					s.End = section.Start; // section: the ending marker section - s: the to-be full section
+					// section: the ending marker section - s: the to-be full section
+					s.End = takenEnd - 1; //Take the remCharCount into account as well
 					// s.IsRange = false; // IsRange means it's a 1 long section indicating a start or an end
 					combined.add(s);
 					DebugCommand.SendDebugMessage("Finished section: " + s);
@@ -145,22 +146,22 @@ public final class ChatFormatter {
 			DebugCommand.SendDebugMessage("Finished unfinished section: " + sec);
 			sendMessageWithPointer(str, sec.Start, sec.End);
 		}
+		sections = combined;
 
 		header("Adding remove chars (RC)"); // Important to add after the range section conversion
 		sections.stream()
 				.flatMap(fs -> fs.Formatters.stream().filter(cf -> cf.removeCharCount > 0)
-						.mapToInt(cf -> cf.removeCharCount).mapToObj(rcc -> new int[] { fs.Start, fs.Start + rcc }))
+						.mapToInt(cf -> cf.removeCharCount).mapToObj(rcc -> new int[]{fs.Start, fs.Start + rcc - 1}))
 				.forEach(rc -> remchars.add(rc));
 		sections.stream()
 				.flatMap(fs -> fs.Formatters.stream().filter(cf -> cf.removeCharCount > 0)
-						.mapToInt(cf -> cf.removeCharCount).mapToObj(rcc -> new int[] { fs.End, fs.End - rcc }))
+						.mapToInt(cf -> cf.removeCharCount).mapToObj(rcc -> new int[]{fs.End - rcc + 1, fs.End}))
 				.forEach(rc -> remchars.add(rc));
 		DebugCommand.SendDebugMessage("Added remchars:");
 		DebugCommand
 				.SendDebugMessage(remchars.stream().map(rc -> Arrays.toString(rc)).collect(Collectors.joining("; ")));
 
 		header("Section combining");
-		sections = combined;
 		boolean cont = true;
 		boolean found = false;
 		for (int i = 1; cont;) {
@@ -190,7 +191,6 @@ public final class ChatFormatter {
 					origend = origend2;
 					origend2 = tmp;
 				}
-				// int rc1start, rc1end, rc2start, rc2end, rc3start, rc3end; // Remove characters - TODO: Store positions
 				FormattedSection section = new FormattedSection(firstSection.Formatters, sections.get(i).Start, origend,
 						firstSection.Matches, false);
 				section.Formatters.addAll(sections.get(i).Formatters);
@@ -271,9 +271,9 @@ public final class ChatFormatter {
 			val rce = remchars.stream().filter(rc -> rc[0] <= end && end <= rc[1]).findAny();
 			int s = start, e = end;
 			if (rcs.isPresent())
-				s = rcs.get()[1];
+				s = rcs.get()[1] + 1;
 			if (rce.isPresent())
-				e = rce.get()[0];
+				e = rce.get()[0] - 1;
 			DebugCommand.SendDebugMessage("After RC - Start: " + s + " - End: " + e);
             if (e - s < 0) { //e-s==0 means the end char is the same as start char, so one char message
                 DebugCommand.SendDebugMessage("Skipping section because of remchars (length would be " + (e - s + 1) + ")");

@@ -47,6 +47,7 @@ public class ChatProcessing {
     private static final Pattern CODE_PATTERN = Pattern.compile("`");
     private static final Pattern MASKED_LINK_PATTERN = Pattern.compile("\\[([^\\[\\]])\\]\\(([^()])\\)");
     private static final Pattern SOMEONE_PATTERN = Pattern.compile("@someone"); //TODO
+    private static final Pattern STRIKETHROUGH_PATTERN = Pattern.compile("~~");
     private static final Color[] RainbowPresserColors = new Color[]{Color.Red, Color.Gold, Color.Yellow, Color.Green,
             Color.Blue, Color.DarkPurple};
     private static boolean pingedconsole = false;
@@ -58,6 +59,8 @@ public class ChatProcessing {
                     .priority(Priority.High).build(),
             ChatFormatter.builder().regex(ITALIC_PATTERN).italic(true).removeCharCount((short) 1).range(true).build(),
             ChatFormatter.builder().regex(UNDERLINED_PATTERN).underlined(true).removeCharCount((short) 1).range(true)
+                    .build(),
+            ChatFormatter.builder().regex(STRIKETHROUGH_PATTERN).strikethrough(true).removeCharCount((short) 2).range(true)
                     .build(),
             ESCAPE_FORMATTER, ChatFormatter.builder().regex(URL_PATTERN).underlined(true).openlink("$1").build(),
             ChatFormatter.builder().regex(NULL_MENTION_PATTERN).color(Color.DarkRed).build(), // Properly added a bug as a feature
@@ -104,9 +107,11 @@ public class ChatProcessing {
 
         doFunStuff(sender, e, message);
 
-        ChatPlayer mp = null;
+        ChatPlayer mp;
         if (player != null)
             mp = TBMCPlayerBase.getPlayer(player.getUniqueId(), ChatPlayer.class);
+        else //Due to the online player map, getPlayer() can be more efficient than getAs()
+            mp = e.getUser().getAs(ChatPlayer.class); //May be null
 
         Color colormode = channel.color;
         if (mp != null && mp.OtherColorMode != null)
@@ -126,7 +131,7 @@ public class ChatProcessing {
         pingedconsole = false; // Will set it to true onmatch (static constructor)
         final String channelidentifier = getChannelID(channel, sender);
 
-        TellrawPart json = createTellraw(sender, message, player, mp, channelidentifier);
+        TellrawPart json = createTellraw(sender, message, player, mp, e.getUser(), channelidentifier);
         long combinetime = System.nanoTime();
         ChatFormatter.Combine(formatters, message, json);
         combinetime = System.nanoTime() - combinetime;
@@ -189,8 +194,8 @@ public class ChatProcessing {
         return gson.toJson(json);
     }
 
-    static TellrawPart createTellraw(CommandSender sender, String message, @Nullable Player player, @Nullable ChatPlayer mp,
-                                     final String channelidentifier) {
+    static TellrawPart createTellraw(CommandSender sender, String message, @Nullable Player player,
+                                     @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier) {
         TellrawPart json = new TellrawPart("");
         if (mp != null && mp.ChatOnly) {
             json.addExtra(new TellrawPart("[C]")
@@ -211,8 +216,8 @@ public class ChatProcessing {
                     .setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, "Gold Patreon supporter")));
         json.addExtra(new TellrawPart(" <"));
         TellrawPart hovertp = new TellrawPart("");
-        if (mp != null)
-            hovertp.addExtra(new TellrawPart(mp.getInfo(ChromaGamerBase.InfoTarget.MCHover)));
+        if (cg != null)
+            hovertp.addExtra(new TellrawPart(cg.getInfo(ChromaGamerBase.InfoTarget.MCHover)));
         json.addExtra(new TellrawPart(getSenderName(sender, player))
                 .setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, hovertp)));
         json.addExtra(new TellrawPart("> "));

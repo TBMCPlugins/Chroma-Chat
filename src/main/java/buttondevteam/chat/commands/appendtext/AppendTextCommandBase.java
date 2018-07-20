@@ -2,13 +2,12 @@ package buttondevteam.chat.commands.appendtext;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.listener.PlayerListener;
-import buttondevteam.lib.chat.Channel;
-import buttondevteam.lib.chat.CommandClass;
-import buttondevteam.lib.chat.TBMCChatAPI;
-import buttondevteam.lib.chat.TBMCCommandBase;
+import buttondevteam.lib.chat.*;
 import buttondevteam.lib.player.TBMCPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 @CommandClass(modOnly = false, excludeFromPath = true)
 public abstract class AppendTextCommandBase extends TBMCCommandBase {
@@ -22,14 +21,17 @@ public abstract class AppendTextCommandBase extends TBMCCommandBase {
 		String msg = GetAppendedText();
 		for (int i = args.length - 1; i >= 0; i--)
 			msg = args[i] + " " + msg;
+        ChatPlayer cp;
 		if (sender instanceof Player)
-			TBMCChatAPI.SendChatMessage(
-					TBMCPlayer.getPlayer(((Player) sender).getUniqueId(), ChatPlayer.class).CurrentChannel, sender,
-					msg, true);
+            TBMCChatAPI.SendChatMessage(ChatMessage.builder(
+                    (cp = TBMCPlayer.getPlayer(((Player) sender).getUniqueId(), ChatPlayer.class)).CurrentChannel, sender,
+                    cp, msg).fromCommand(true).build());
 		else if (sender.isOp())
-			TBMCChatAPI.SendChatMessage(PlayerListener.ConsoleChannel, sender, msg);
+            TBMCChatAPI.SendChatMessage(ChatMessage.builder(PlayerListener.ConsoleChannel, sender,
+                    (cp = TBMCPlayer.getPlayer(new UUID(0, 0), ChatPlayer.class)), msg).build());
 		else
-			TBMCChatAPI.SendChatMessage(Channel.GlobalChat, sender, msg);
+            TBMCChatAPI.SendChatMessage(ChatMessage.builder(Channel.GlobalChat, sender,
+                    (cp = TBMCPlayer.getPlayer(new UUID(0, 0), ChatPlayer.class)), msg).build()); //TODO
 		return true;
 	}
 }

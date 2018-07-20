@@ -5,10 +5,7 @@ import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.chat.Channel;
-import buttondevteam.lib.chat.ChatChannelRegisterEvent;
-import buttondevteam.lib.chat.ChatRoom;
-import buttondevteam.lib.chat.TBMCChatAPI;
+import buttondevteam.lib.chat.*;
 import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerGetInfoEvent;
@@ -59,9 +56,8 @@ public class PlayerListener implements Listener {
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		if (event.isCancelled())
 			return;
-		TBMCChatAPI.SendChatMessage(
-				TBMCPlayer.getPlayer(event.getPlayer().getUniqueId(), ChatPlayer.class).CurrentChannel,
-				event.getPlayer(), event.getMessage());
+		ChatPlayer cp = TBMCPlayer.getPlayer(event.getPlayer().getUniqueId(), ChatPlayer.class);
+		TBMCChatAPI.SendChatMessage(ChatMessage.builder(cp.CurrentChannel, event.getPlayer(), cp, event.getMessage()).build());
 		event.setCancelled(true); // The custom event should only be cancelled when muted or similar
 	}
 
@@ -79,7 +75,7 @@ public class PlayerListener implements Listener {
 		if (sender instanceof Player)
 			mp = TBMCPlayer.getPlayer(((Player) sender).getUniqueId(), ChatPlayer.class);
 		else
-			mp = null;
+			mp = TBMCPlayer.getPlayer(new UUID(0, 0), ChatPlayer.class); //Use 0, 0 for console and whatever - TODO: Refactor console stuff
 		String cmd;
 		final BiPredicate<Channel, String> checkchid = (chan, cmd1) -> cmd1.equalsIgnoreCase(chan.ID) || (chan.IDs != null && Arrays.stream(chan.IDs).anyMatch(cmd1::equalsIgnoreCase));
 		if (index == -1) { // Only the command is run
@@ -138,7 +134,7 @@ public class PlayerListener implements Listener {
 			} else
 				for (Channel channel : Channel.getChannels()) {
 					if (checkchid.test(channel, cmd)) { //Apparently method references don't require final variables
-						TBMCChatAPI.SendChatMessage(channel, sender, message.substring(index + 1));
+						TBMCChatAPI.SendChatMessage(ChatMessage.builder(channel, sender, mp, message.substring(index + 1)).build());
 						return true;
 					}
 				}
