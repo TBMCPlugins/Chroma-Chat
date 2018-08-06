@@ -40,14 +40,15 @@ public class ChatFormatIT {
 				new TellrawPart("test").setBold(true).setItalic(true).setUnderlined(true).setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "***_~~test~~_***", new TellrawPart("test").setBold(true).setItalic(true)
 				.setUnderlined(true).setStrikethrough(true).setColor(Color.White)));
-		list.add(new ChatFormatIT(sender, "¯\\\\\\_(ツ)\\_/¯", new TellrawPart("¯").setColor(Color.White),
-				new TellrawPart("\\").setColor(Color.White), new TellrawPart("_(ツ)").setColor(Color.White),
-				new TellrawPart("_/¯").setColor(Color.White)));
+        list.add(new ChatFormatIT(sender, "¯\\\\\\_(ツ)\\_/¯", new TellrawPart("¯\\_(ツ)_/¯").setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "https://google.hu/",
 				new TellrawPart("https://google.hu/").setColor(Color.White).setUnderlined(true)
 						.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
 								new TellrawPart("Click to open").setColor(Color.Blue)))
 						.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://google.hu/"))));
+        list.add(new ChatFormatIT(sender, "*test", new TellrawPart("*test").setColor(Color.White)));
+        list.add(new ChatFormatIT(sender, "**test*", new TellrawPart("*test").setItalic(true).setColor(Color.White)));
+        list.add(new ChatFormatIT(sender, "***test", new TellrawPart("*test").setColor(Color.White)));
 
 		return list;
 	}
