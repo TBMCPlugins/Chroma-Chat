@@ -40,13 +40,25 @@ public final class ChatFormatter {
 	@Builder.Default
 	short removeCharCount = 0;
 	@Builder.Default
-	boolean range = false;
+    Type type = Type.Normal;
+
+    public enum Type {
+        Normal,
+        /**
+         * Matches a start and an end section which gets converted to one section (for example see italics)
+         */
+        Range,
+        /**
+         * Exclude matching area from further processing (besides this formatter)
+         */
+        Excluder
+    }
 
 	public static void Combine(List<ChatFormatter> formatters, String str, TellrawPart tp) {
 		/*
 		 * This method assumes that there is always a global formatter
-		 */
-		header("ChatFormatter.Combine begin");
+         */
+        header("ChatFormatter.Combine begin"); //TODO: Handle excluder formatters first
 		ArrayList<FormattedSection> sections = new ArrayList<FormattedSection>();
 		for (ChatFormatter formatter : formatters) {
 			Matcher matcher = formatter.regex.matcher(str);
@@ -60,7 +72,7 @@ public final class ChatFormatter {
 				if (groups.size() > 0)
 					DebugCommand.SendDebugMessage("First group: " + groups.get(0));
 				FormattedSection section = new FormattedSection(formatter, matcher.start(), matcher.end() - 1, groups,
-						formatter.range);
+						formatter.type);
 				sections.add(section);
 			}
 		}
@@ -84,7 +96,7 @@ public final class ChatFormatter {
 		for (int i = 0; i < sections.size(); i++) {
 			// Set ending to -1 until closed with another 1 long "section" - only do this if IsRange is true
 			final FormattedSection section = sections.get(i);
-			if (!section.IsRange) {
+            if (section.type!=Type.Range) {
 				escaped = section.Formatters.contains(ChatProcessing.ESCAPE_FORMATTER) && !escaped; // Enable escaping on first \, disable on second
 				if (escaped) // Don't add the escape character
 					remchars.add(new int[]{section.Start, section.Start});
@@ -92,9 +104,9 @@ public final class ChatFormatter {
 				DebugCommand.SendDebugMessage("Added " + (!escaped ? "not " : "") + "escaper section: " + section);
 				sendMessageWithPointer(str, section.Start, section.End);
 				continue;
-			}
-			if (!escaped) {
-				if (combined.stream().anyMatch(s -> s.IsRange && (s.Start == section.Start
+            }
+            if (!escaped) {
+                if (combined.stream().anyMatch(s -> section.type != Type.Range && (s.Start == section.Start
 						|| (s.Start < section.Start ? s.End >= section.Start : s.Start <= section.End)))) {
 					DebugCommand.SendDebugMessage("Range " + section + " overlaps with a combined section, ignoring.");
 					sendMessageWithPointer(str, section.Start, section.End);
@@ -192,7 +204,7 @@ public final class ChatFormatter {
 					origend2 = tmp;
 				}
 				FormattedSection section = new FormattedSection(firstSection.Formatters, sections.get(i).Start, origend,
-						firstSection.Matches, false);
+                        firstSection.Matches, Type.Normal);
 				section.Formatters.addAll(sections.get(i).Formatters);
 				section.Matches.addAll(sections.get(i).Matches); // TODO: Clean
 				sections.add(i, section);
@@ -283,8 +295,8 @@ public final class ChatFormatter {
 			DebugCommand.SendDebugMessage("Section text: " + originaltext);
 			Color color = null;
 			boolean bold = false, italic = false, underlined = false, strikethrough = false, obfuscated = false;
-			String openlink = null;
-			section.Formatters.sort((cf2, cf1) -> cf1.priority.compareTo(cf2.priority));
+            String openlink = null;
+            section.Formatters.sort(Comparator.comparing(cf2 -> cf2.priority.GetValue())); //Apply the highest last, to overwrite previous ones
 			for (ChatFormatter formatter : section.Formatters) {
 				DebugCommand.SendDebugMessage("Applying formatter: " + formatter);
 				if (formatter.onmatch != null)

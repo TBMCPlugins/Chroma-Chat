@@ -49,6 +49,10 @@ public class ChatFormatIT {
         list.add(new ChatFormatIT(sender, "*test", new TellrawPart("*test").setColor(Color.White)));
         list.add(new ChatFormatIT(sender, "**test*", new TellrawPart("*test").setItalic(true).setColor(Color.White)));
         list.add(new ChatFormatIT(sender, "***test", new TellrawPart("*test").setColor(Color.White)));
+        list.add(new ChatFormatIT(sender, "Koiiev", new TellrawPart("§bKoiiev§r").setColor(Color.Aqua)));
+        list.add(new ChatFormatIT(sender, "NorbiPeti", new TellrawPart("§bNorbiPeti§r").setColor(Color.Aqua)));
+        list.add(new ChatFormatIT(sender, "Arsen_Derby_FTW", new TellrawPart("§bArsen_Derby_FTW§r").setColor(Color.Aqua)));
+        list.add(new ChatFormatIT(sender, "carrot_lynx", new TellrawPart("§bcarrot_lynx§r").setColor(Color.Aqua)));
 
 		return list;
 	}
