@@ -58,14 +58,41 @@ public final class ChatFormatter {
 		/*
 		 * This method assumes that there is always a global formatter
          */
-        header("ChatFormatter.Combine begin"); //TODO: Handle excluder formatters first
+        header("ChatFormatter.Combine begin");
 		ArrayList<FormattedSection> sections = new ArrayList<FormattedSection>();
+
+        for (ChatFormatter formatter : formatters) {
+            if (formatter.type != Type.Excluder)
+                continue;
+            Matcher matcher = formatter.regex.matcher(str);
+            while (matcher.find()) {
+                DebugCommand.SendDebugMessage("Found match from " + matcher.start() + " to " + (matcher.end() - 1));
+                DebugCommand.SendDebugMessage("With excluder formatter:" + formatter);
+                sendMessageWithPointer(str, matcher.start(), matcher.end() - 1);
+                ArrayList<String> groups = new ArrayList<String>();
+                for (int i = 0; i < matcher.groupCount(); i++)
+                    groups.add(matcher.group(i + 1));
+                if (groups.size() > 0)
+                    DebugCommand.SendDebugMessage("First group: " + groups.get(0));
+                FormattedSection section = new FormattedSection(formatter, matcher.start(), matcher.end() - 1, groups,
+                        formatter.type);
+                sections.add(section);
+            }
+        }
+
+        header("Section creation (excluders done)");
 		for (ChatFormatter formatter : formatters) {
+            if (formatter.type == Type.Excluder)
+                continue;
 			Matcher matcher = formatter.regex.matcher(str);
 			while (matcher.find()) {
 				DebugCommand.SendDebugMessage("Found match from " + matcher.start() + " to " + (matcher.end() - 1));
 				DebugCommand.SendDebugMessage("With formatter:" + formatter);
 				sendMessageWithPointer(str, matcher.start(), matcher.end() - 1);
+                if (formatter.regex != ChatProcessing.ENTIRE_MESSAGE_PATTERN && sections.stream().anyMatch(fs -> fs.type == Type.Excluder && (fs.End >= matcher.start() && fs.Start <= matcher.end() - 1))) {
+                    DebugCommand.SendDebugMessage("Ignoring formatter because of an excluder");
+                    continue; //Exclude areas matched by excluders - Range sections are correctly handled afterwards
+                }
 				ArrayList<String> groups = new ArrayList<String>();
 				for (int i = 0; i < matcher.groupCount(); i++)
 					groups.add(matcher.group(i + 1));
@@ -272,8 +299,7 @@ public final class ChatFormatter {
 		}
 
 		header("Section applying");
-		for (int i = 0; i < sections.size(); i++) {
-			FormattedSection section = sections.get(i);
+        for (FormattedSection section : sections) {
 			DebugCommand.SendDebugMessage("Applying section: " + section);
 			String originaltext;
 			int start = section.Start, end = section.End;

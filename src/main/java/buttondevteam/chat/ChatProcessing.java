@@ -39,7 +39,7 @@ public class ChatProcessing {
     private static final Pattern CONSOLE_PING_PATTERN = Pattern.compile("(?i)" + Pattern.quote("@console"));
     private static final Pattern HASHTAG_PATTERN = Pattern.compile("#(\\w+)");
     private static final Pattern URL_PATTERN = Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),]+)");
-    private static final Pattern ENTIRE_MESSAGE_PATTERN = Pattern.compile(".+");
+    public static final Pattern ENTIRE_MESSAGE_PATTERN = Pattern.compile(".+");
     private static final Pattern UNDERLINED_PATTERN = Pattern.compile("_");
     private static final Pattern ITALIC_PATTERN = Pattern.compile("\\*");
     private static final Pattern BOLD_PATTERN = Pattern.compile("\\*\\*");
@@ -61,7 +61,7 @@ public class ChatProcessing {
                     .build(),
             ChatFormatter.builder().regex(STRIKETHROUGH_PATTERN).strikethrough(true).removeCharCount((short) 2).type(ChatFormatter.Type.Range)
                     .build(),
-            ESCAPE_FORMATTER, ChatFormatter.builder().regex(URL_PATTERN).underlined(true).openlink("$1").build(),
+            ESCAPE_FORMATTER, ChatFormatter.builder().regex(URL_PATTERN).underlined(true).openlink("$1").type(ChatFormatter.Type.Excluder).build(),
             ChatFormatter.builder().regex(NULL_MENTION_PATTERN).color(Color.DarkRed).build(), // Properly added a bug as a feature
             ChatFormatter.builder().regex(CONSOLE_PING_PATTERN).color(Color.Aqua).onmatch((match, builder) -> {
                 if (!pingedconsole) {

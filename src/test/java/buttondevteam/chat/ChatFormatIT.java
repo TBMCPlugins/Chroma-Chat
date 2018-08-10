@@ -50,9 +50,20 @@ public class ChatFormatIT {
         list.add(new ChatFormatIT(sender, "**test*", new TellrawPart("*test").setItalic(true).setColor(Color.White)));
         list.add(new ChatFormatIT(sender, "***test", new TellrawPart("*test").setColor(Color.White)));
         list.add(new ChatFormatIT(sender, "Koiiev", new TellrawPart("§bKoiiev§r").setColor(Color.Aqua)));
-        list.add(new ChatFormatIT(sender, "NorbiPeti", new TellrawPart("§bNorbiPeti§r").setColor(Color.Aqua)));
+		list.add(new ChatFormatIT(sender, "norbipeti", new TellrawPart("§bNorbiPeti§r").setColor(Color.Aqua)));
         list.add(new ChatFormatIT(sender, "Arsen_Derby_FTW", new TellrawPart("§bArsen_Derby_FTW§r").setColor(Color.Aqua)));
-        list.add(new ChatFormatIT(sender, "carrot_lynx", new TellrawPart("§bcarrot_lynx§r").setColor(Color.Aqua)));
+		list.add(new ChatFormatIT(sender, "carrot_lynx", new TellrawPart("§bcarrot_lynx§r").setColor(Color.Aqua)));
+		list.add(new ChatFormatIT(sender, "*carrot_lynx*", new TellrawPart("§bcarrot_lynx§r").setItalic(true).setColor(Color.Aqua)));
+		list.add(new ChatFormatIT(sender, "https://norbipeti.github.io/", new TellrawPart("https://norbipeti.github.io/").setUnderlined(true)
+				.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
+						new TellrawPart("Click to open").setColor(Color.Blue)))
+				.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/"))));
+		list.add(new ChatFormatIT(sender, "*https://norbipeti.github.io/*", new TellrawPart("https://norbipeti.github.io/").setItalic(true).setUnderlined(true)
+				.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
+						new TellrawPart("Click to open").setColor(Color.Blue)))
+				.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/"))));
+		list.add(new ChatFormatIT(sender, "*test _test_ test*", new TellrawPart("test ").setItalic(true).setColor(Color.White),
+				new TellrawPart("test").setItalic(true).setUnderlined(true).setColor(Color.White), new TellrawPart(" test").setItalic(true).setColor(Color.White)));
 
 		return list;
 	}
