@@ -47,8 +47,8 @@ public class ChatFormatIT {
 								new TellrawPart("Click to open").setColor(Color.Blue)))
 						.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://google.hu/"))));
         list.add(new ChatFormatIT(sender, "*test", new TellrawPart("*test").setColor(Color.White)));
-        list.add(new ChatFormatIT(sender, "**test*", new TellrawPart("*test").setItalic(true).setColor(Color.White)));
-        list.add(new ChatFormatIT(sender, "***test", new TellrawPart("*test").setColor(Color.White)));
+		list.add(new ChatFormatIT(sender, "**test*", new TellrawPart("**test*").setColor(Color.White)));
+		list.add(new ChatFormatIT(sender, "***test", new TellrawPart("***test").setColor(Color.White)));
         list.add(new ChatFormatIT(sender, "Koiiev", new TellrawPart("§bKoiiev§r").setColor(Color.Aqua)));
 		list.add(new ChatFormatIT(sender, "norbipeti", new TellrawPart("§bNorbiPeti§r").setColor(Color.Aqua)));
         list.add(new ChatFormatIT(sender, "Arsen_Derby_FTW", new TellrawPart("§bArsen_Derby_FTW§r").setColor(Color.Aqua)));

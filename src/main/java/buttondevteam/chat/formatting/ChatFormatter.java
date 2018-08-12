@@ -125,10 +125,13 @@ public final class ChatFormatter {
 			final FormattedSection section = sections.get(i);
             if (section.type!=Type.Range) {
 				escaped = section.Formatters.contains(ChatProcessing.ESCAPE_FORMATTER) && !escaped; // Enable escaping on first \, disable on second
-				if (escaped) // Don't add the escape character
+	            if (escaped) {// Don't add the escape character
 					remchars.add(new int[]{section.Start, section.Start});
-				combined.add(section); // This will delete the \
-				DebugCommand.SendDebugMessage("Added " + (!escaped ? "not " : "") + "escaper section: " + section);
+		            DebugCommand.SendDebugMessage("Found escaper section: " + section);
+	            } else {
+		            combined.add(section); // The above will delete the \
+		            DebugCommand.SendDebugMessage("Added section: " + section);
+	            }
 				sendMessageWithPointer(str, section.Start, section.End);
 				continue;
             }
@@ -179,12 +182,7 @@ public final class ChatFormatter {
 				escaped = false; // Reset escaping if applied, like if we're at the '*' in '\*'
 			}
 		}
-		for (val sec : nextSection.values()) {
-			sec.End = str.length() - 1;
-			combined.add(sec);
-			DebugCommand.SendDebugMessage("Finished unfinished section: " + sec);
-			sendMessageWithPointer(str, sec.Start, sec.End);
-		}
+		//Do not finish unfinished sections, ignore them
 		sections = combined;
 
 		header("Adding remove chars (RC)"); // Important to add after the range section conversion
@@ -277,6 +275,7 @@ public final class ChatFormatter {
 					DebugCommand.SendDebugMessage("Removing section: " + sections.get(j));
 					sendMessageWithPointer(str, sections.get(j).Start, sections.get(j).End);
 					sections.remove(j);
+					j--;
 					found = true;
 				}
 			}
@@ -299,14 +298,16 @@ public final class ChatFormatter {
 		}
 
 		header("Section applying");
+		TellrawPart lasttp = null; String lastlink = null;
         for (FormattedSection section : sections) {
 			DebugCommand.SendDebugMessage("Applying section: " + section);
 			String originaltext;
 			int start = section.Start, end = section.End;
 			DebugCommand.SendDebugMessage("Start: " + start + " - End: " + end);
 			sendMessageWithPointer(str, start, end);
-			val rcs = remchars.stream().filter(rc -> rc[0] <= start && start <= rc[1]).findAny();
-			val rce = remchars.stream().filter(rc -> rc[0] <= end && end <= rc[1]).findAny();
+	        val rcs = remchars.stream().filter(rc -> rc[0] <= start && start <= rc[1]).findAny();
+	        val rce = remchars.stream().filter(rc -> rc[0] <= end && end <= rc[1]).findAny();
+	        val rci = remchars.stream().filter(rc -> start < rc[0] && rc[1] < end).toArray(int[][]::new);
 			int s = start, e = end;
 			if (rcs.isPresent())
 				s = rcs.get()[1] + 1;
@@ -318,39 +319,45 @@ public final class ChatFormatter {
 				continue;
 			}
 			originaltext = str.substring(s, e + 1);
+	        val sb = new StringBuilder(originaltext);
+	        for (int x = rci.length - 1; x >= 0; x--)
+		        sb.delete(rci[x][0] - start - 1, rci[x][1] - start); //Delete going backwards
+	        originaltext = sb.toString();
 			DebugCommand.SendDebugMessage("Section text: " + originaltext);
-			Color color = null;
-			boolean bold = false, italic = false, underlined = false, strikethrough = false, obfuscated = false;
-            String openlink = null;
+	        String openlink = null;
             section.Formatters.sort(Comparator.comparing(cf2 -> cf2.priority.GetValue())); //Apply the highest last, to overwrite previous ones
+	        TellrawPart newtp = new TellrawPart("");
 			for (ChatFormatter formatter : section.Formatters) {
 				DebugCommand.SendDebugMessage("Applying formatter: " + formatter);
 				if (formatter.onmatch != null)
 					originaltext = formatter.onmatch.apply(originaltext, formatter);
 				if (formatter.color != null)
-					color = formatter.color;
+					newtp.setColor(formatter.color);
 				if (formatter.bold)
-					bold = true;
+					newtp.setBold(formatter.bold);
 				if (formatter.italic)
-					italic = true;
+					newtp.setItalic(formatter.italic);
 				if (formatter.underlined)
-					underlined = true;
+					newtp.setUnderlined(formatter.underlined);
 				if (formatter.strikethrough)
-					strikethrough = true;
+					newtp.setStrikethrough(formatter.strikethrough);
 				if (formatter.obfuscated)
-					obfuscated = true;
+					newtp.setObfuscated(formatter.obfuscated);
 				if (formatter.openlink != null)
 					openlink = formatter.openlink;
 			}
-			TellrawPart newtp = new TellrawPart("");
+	        if (lasttp != null && newtp.getColor() == lasttp.getColor()
+			        && newtp.isBold() == lasttp.isBold()
+			        && newtp.isItalic() == lasttp.isItalic()
+			        && newtp.isUnderlined() == lasttp.isUnderlined()
+			        && newtp.isStrikethrough() == lasttp.isStrikethrough()
+			        && newtp.isObfuscated() == lasttp.isObfuscated()
+			        && (openlink == null ? lastlink == null : openlink.equals(lastlink))) {
+		        DebugCommand.SendDebugMessage("This part has the same properties as the previous one, combining.");
+		        lasttp.setText(lasttp.getText() + originaltext);
+		        continue; //Combine parts with the same properties
+	        }
 			newtp.setText(originaltext);
-			if (color != null)
-				newtp.setColor(color);
-			newtp.setBold(bold);
-			newtp.setItalic(italic);
-			newtp.setUnderlined(underlined);
-			newtp.setStrikethrough(strikethrough);
-			newtp.setObfuscated(obfuscated);
 			if (openlink != null && openlink.length() > 0) {
 				newtp.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAction.OPEN_URL,
 						(section.Matches.size() > 0 ? openlink.replace("$1", section.Matches.get(0)) : openlink)))
@@ -358,6 +365,7 @@ public final class ChatFormatter {
 								new TellrawPart("Click to open").setColor(Color.Blue)));
 			}
 			tp.addExtra(newtp);
+	        lasttp = newtp;
 		}
 		header("ChatFormatter.Combine done");
 	}

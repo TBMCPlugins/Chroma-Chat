@@ -280,7 +280,9 @@ public class ChatProcessing {
             formatters.add(ChatFormatter.builder().regex(Pattern.compile(namesb.toString())).color(Color.Aqua)
                     .onmatch((match, builder) -> {
                         Player p = Bukkit.getPlayer(match);
-                        if (nottest ? p == null : Arrays.stream(testPlayers).noneMatch(tp -> tp.equalsIgnoreCase(match))) {
+	                    Optional<String> pn = nottest ? Optional.empty()
+			                    : Arrays.stream(testPlayers).filter(tp -> tp.equalsIgnoreCase(match)).findAny();
+	                    if (nottest ? p == null : !pn.isPresent()) {
                             error.accept("Error: Can't find player " + match + " but was reported as online.");
                             return "§c" + match + "§r";
                         }
@@ -293,7 +295,7 @@ public class ChatProcessing {
                                         (float) PlayerListener.NotificationPitch);
                         }
                         String color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
-                        return color + (nottest ? p.getName() : match) + "§r"; //Fix name casing, except when testing
+	                    return color + (nottest ? p.getName() : pn.get()) + "§r"; //Fix name casing, except when testing
                     }).priority(Priority.High).type(ChatFormatter.Type.Excluder).build());
 
             if (addNickFormatter)
