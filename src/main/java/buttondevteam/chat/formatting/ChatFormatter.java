@@ -69,6 +69,10 @@ public final class ChatFormatter {
                 DebugCommand.SendDebugMessage("Found match from " + matcher.start() + " to " + (matcher.end() - 1));
                 DebugCommand.SendDebugMessage("With excluder formatter:" + formatter);
                 sendMessageWithPointer(str, matcher.start(), matcher.end() - 1);
+	            if (formatter.regex != ChatProcessing.ENTIRE_MESSAGE_PATTERN && sections.stream().anyMatch(fs -> fs.type == Type.Excluder && (fs.End >= matcher.start() && fs.Start <= matcher.end() - 1))) {
+		            DebugCommand.SendDebugMessage("Ignoring formatter because of an excluder");
+		            continue; //Exclude areas matched by excluders - Range sections are correctly handled afterwards
+	            }
                 ArrayList<String> groups = new ArrayList<String>();
                 for (int i = 0; i < matcher.groupCount(); i++)
                     groups.add(matcher.group(i + 1));
