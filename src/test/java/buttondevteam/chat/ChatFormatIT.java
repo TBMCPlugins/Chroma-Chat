@@ -40,14 +40,31 @@ public class ChatFormatIT {
 				new TellrawPart("test").setBold(true).setItalic(true).setUnderlined(true).setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "***_~~test~~_***", new TellrawPart("test").setBold(true).setItalic(true)
 				.setUnderlined(true).setStrikethrough(true).setColor(Color.White)));
-		list.add(new ChatFormatIT(sender, "¯\\\\\\_(ツ)\\_/¯", new TellrawPart("¯").setColor(Color.White),
-				new TellrawPart("\\").setColor(Color.White), new TellrawPart("_(ツ)").setColor(Color.White),
-				new TellrawPart("_/¯").setColor(Color.White)));
+        list.add(new ChatFormatIT(sender, "¯\\\\\\_(ツ)\\_/¯", new TellrawPart("¯\\_(ツ)_/¯").setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "https://google.hu/",
 				new TellrawPart("https://google.hu/").setColor(Color.White).setUnderlined(true)
 						.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
 								new TellrawPart("Click to open").setColor(Color.Blue)))
 						.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://google.hu/"))));
+        list.add(new ChatFormatIT(sender, "*test", new TellrawPart("*test").setColor(Color.White)));
+		list.add(new ChatFormatIT(sender, "**test*", new TellrawPart("**test*").setColor(Color.White)));
+		list.add(new ChatFormatIT(sender, "***test", new TellrawPart("***test").setColor(Color.White)));
+        list.add(new ChatFormatIT(sender, "Koiiev", new TellrawPart("§bKoiiev§r").setColor(Color.Aqua)));
+		list.add(new ChatFormatIT(sender, "norbipeti", new TellrawPart("§bNorbiPeti§r").setColor(Color.Aqua)));
+        list.add(new ChatFormatIT(sender, "Arsen_Derby_FTW", new TellrawPart("§bArsen_Derby_FTW§r").setColor(Color.Aqua)));
+		list.add(new ChatFormatIT(sender, "carrot_lynx", new TellrawPart("§bcarrot_lynx§r").setColor(Color.Aqua)));
+		list.add(new ChatFormatIT(sender, "*carrot_lynx*", new TellrawPart("§bcarrot_lynx§r").setItalic(true).setColor(Color.Aqua)));
+		list.add(new ChatFormatIT(sender, "https://norbipeti.github.io/", new TellrawPart("https://norbipeti.github.io/")
+				.setColor(Color.White).setUnderlined(true)
+				.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
+						new TellrawPart("Click to open").setColor(Color.Blue)))
+				.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/"))));
+		list.add(new ChatFormatIT(sender, "*https://norbipeti.github.io/ heh*", new TellrawPart("https://norbipeti.github.io/").setItalic(true).setUnderlined(true)
+				.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
+						new TellrawPart("Click to open").setColor(Color.Blue)))
+				.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/")), new TellrawPart(" heh").setItalic(true)));
+		list.add(new ChatFormatIT(sender, "*test _test_ test*", new TellrawPart("test ").setItalic(true).setColor(Color.White),
+				new TellrawPart("test").setItalic(true).setUnderlined(true).setColor(Color.White), new TellrawPart(" test").setItalic(true).setColor(Color.White)));
 
 		return list;
 	}
