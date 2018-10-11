@@ -163,7 +163,7 @@
 		<dependency>
 			<groupId>com.github.TBMCPlugins.ButtonCore</groupId>
 			<artifactId>Towny</artifactId>
-			<version>master-SNAPSHOT</version>
+			<version>8d3b6b6</version>
 		</dependency>
 		<dependency>
 			<groupId>com.vexsoftware</groupId>

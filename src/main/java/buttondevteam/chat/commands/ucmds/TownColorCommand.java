@@ -1,22 +1,21 @@
 package buttondevteam.chat.commands.ucmds;
 
-import org.bukkit.entity.Player;
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.object.Resident;
-
 import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+import com.palmergames.bukkit.towny.object.Resident;
+import org.bukkit.entity.Player;
 
 @CommandClass // TODO: /u u when annotation not present
 @OptionallyPlayerCommandClass(playerOnly = true)
 public class TownColorCommand extends UCommandBase {
 	@Override
 	public String GetHelpText(String alias)[] {
-		String cns = " <colorname1>";
+		StringBuilder cns = new StringBuilder(" <colorname1>");
 		for (int i = 2; i <= ColorCount; i++)
-			cns += " [colorname" + i + "]";
+			cns.append(" [colorname").append(i).append("]");
 		return new String[] { //
 				"§6---- Town Color ----", //
 				"This command allows setting a color for a town.", //
@@ -47,7 +46,7 @@ public class TownColorCommand extends UCommandBase {
 		String[] a = new String[args.length + 1];
 		System.arraycopy(args, 0, a, 1, args.length);
 		try {
-			a[0] = res.getTown().getName().toLowerCase();
+			a[0] = res.getTown().getName();
 		} catch (NotRegisteredException e) {
 			TBMCCoreAPI.SendException("Failed to set town color for player " + player + "!", e);
 			player.sendMessage("§cCouldn't find your town... Error reported.");

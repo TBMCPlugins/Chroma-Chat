@@ -51,31 +51,7 @@ public class PlayerJoinLeaveListener implements Listener {
 			};
 			tt.mp = cp;
 			timer.schedule(tt, 1000);
-		} else {
-			/*Timer timer = new Timer();
-			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
-
-				@Override
-				public void run() {
-					Player player = Bukkit.getPlayer(mp.PlayerName().get());
-					if (player == null)
-						return;
-
-					if (mp.FlairState().get().equals(FlairStates.NoComment)) {
-						String json = String.format(
-								"[\"\",{\"text\":\"If you're from Reddit and you'd like your /r/TheButton flair displayed ingame, write your Minecraft name to \",\"color\":\"aqua\"},{\"text\":\"[this thread].\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"Click here to go to the Reddit thread\",\"color\":\"aqua\"}]}}}]",
-								PluginMain.FlairThreadURL);
-						PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-								"tellraw " + mp.PlayerName() + " " + json);
-						json = "[\"\",{\"text\":\"If you aren't from Reddit or don't want the flair, type /u ignore to prevent this message after next login.\",\"color\":\"aqua\"}]";
-						PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-								"tellraw " + mp.PlayerName() + " " + json);
-					}
-				}
-			};
-			tt.mp = cp;
-			timer.schedule(tt, 15 * 1000);*/ //TODO: Better Reddit integration (OAuth)
-		}
+		} //TODO: Better Reddit integration (OAuth)
 
 		String nwithoutformatting = PluginMain.essentials.getUser(p).getNickname();
 
@@ -109,7 +85,7 @@ public class PlayerJoinLeaveListener implements Listener {
 		UnlolCommand.Lastlol.values().removeIf(lld -> lld.getLolowner().equals(event.getPlayer()));
 	}
 
-    private static String getPlayerNickname(Player player, User user) {
+	private static String getPlayerNickname(Player player, User user, ChatPlayer cp) {
         String nickname = user.getNick(true);
         if (nickname.contains("~")) //StartsWith doesn't work because of color codes
             nickname = nickname.replace("~", ""); //It gets stacked otherwise
@@ -128,7 +104,7 @@ public class PlayerJoinLeaveListener implements Listener {
                     + (i + 1 == clrs.length ? name.substring(prevlen.get())
                     : name.substring(prevlen.get(), prevlen.addAndGet(len)));
             int len = name.length() / clrs.length;
-            val nclar = ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations().get();
+	        val nclar = cp.NameColorLocations().get();
             int[] ncl = nclar == null ? null : nclar.stream().mapToInt(Integer::intValue).toArray();
             if (ncl != null && (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length))
                 ncl = null; // Reset if name length changed
@@ -145,10 +121,11 @@ public class PlayerJoinLeaveListener implements Listener {
         updatePlayerColors(player, ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class));
     }
 
-    public static void updatePlayerColors(Player player, ChatPlayer cp) { //Probably at join - nop, nicknames
-        User user = PluginMain.essentials.getUser(player);
-        user.setNickname(getPlayerNickname(player, user));
-        user.setDisplayNick(); //These won't fire the nick change event
-        cp.FlairUpdate(); //Update in list
-    }
+	@SuppressWarnings("WeakerAccess")
+	public static void updatePlayerColors(Player player, ChatPlayer cp) { //Probably at join - nop, nicknames
+		User user = PluginMain.essentials.getUser(player);
+		user.setNickname(getPlayerNickname(player, user, cp));
+		user.setDisplayNick(); //These won't fire the nick change event
+		cp.FlairUpdate(); //Update in list
+	}
 }

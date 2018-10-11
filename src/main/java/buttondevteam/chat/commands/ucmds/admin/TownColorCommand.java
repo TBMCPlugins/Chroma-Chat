@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.dynmap.towny.DynmapTownyPlugin;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TownColorCommand extends AdminCommandBase {
@@ -38,10 +39,21 @@ public class TownColorCommand extends AdminCommandBase {
             sender.sendMessage("§cThe town '" + args[0] + "' cannot be found.");
             return true;
         }
-        val clrs = new Color[args.length - 1];
-        for (int i = 1; i < args.length; i++) {
-            val ii = i;
-            val c = Arrays.stream(Color.values()).skip(1).filter(cc -> cc.getName().equalsIgnoreCase(args[ii])).findAny();
+	    Color[] clrs = null; //Add nation color as well
+	    Town targetTown = PluginMain.TU.getTownsMap().get(args[0].toLowerCase());
+	    try {
+		    Color c; //TODO: Add command for nation color
+		    if (targetTown.getNation() != null
+				    && (c = PluginMain.NationColor.get(targetTown.getNation().getName().toLowerCase())) != null) {
+			    clrs = new Color[args.length];
+			    clrs[0] = c;
+		    }
+	    } catch (NotRegisteredException ignored) {
+	    }
+	    if (clrs == null)
+		    clrs = new Color[args.length - 1];
+	    for (int i = 1; i < args.length; i++) {
+		    val c = getColor(args[i]);
             if (!c.isPresent()) { //^^ Skip black
                 sender.sendMessage("§cThe color '" + args[i] + "' cannot be found."); //ˇˇ Skip black
                 sender.sendMessage("§cAvailable colors: " + Arrays.stream(Color.values()).skip(1).map(col -> String.format("§%x%s§r", col.ordinal(), col.getName())).collect(Collectors.joining(", ")));
@@ -51,13 +63,12 @@ public class TownColorCommand extends AdminCommandBase {
             clrs[i - 1] = c.get();
         }
         PluginMain.TownColors.put(args[0].toLowerCase(), clrs);
-        //PluginMain.TU.getTownsMap().get(args[0].toLowerCase()).getResidents().forEach(r->{
         Bukkit.getOnlinePlayers().forEach(p -> {
             try {
                 Town t = PluginMain.TU.getResidentMap().get(p.getName().toLowerCase()).getTown();
                 if (t != null && t.getName().equalsIgnoreCase(args[0]))
                     PlayerJoinLeaveListener.updatePlayerColors(p);
-            } catch (NotRegisteredException e) {
+            } catch (NotRegisteredException ignored) {
             }
         });
 
@@ -72,7 +83,11 @@ public class TownColorCommand extends AdminCommandBase {
         return true;
     }
 
-    public static String getTownNameCased(String name) {
+	private static Optional<Color> getColor(String name) {
+		return Arrays.stream(Color.values()).skip(1).filter(cc -> cc.getName().equalsIgnoreCase(name)).findAny();
+	}
+
+	public static String getTownNameCased(String name) {
         return PluginMain.TU.getTownsMap().get(name.toLowerCase()).getName();
     }
 }
