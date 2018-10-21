@@ -3,7 +3,6 @@ package buttondevteam.chat.commands.ucmds.admin;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.listener.TownyListener;
 import buttondevteam.lib.chat.Color;
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Town;
 import lombok.val;
 import org.bukkit.Bukkit;
@@ -39,26 +38,13 @@ public class TownColorCommand extends AdminCommandBase {
             sender.sendMessage("§cThe town '" + args[0] + "' cannot be found.");
             return true;
         }
-	    Color[] clrs = null; //Add nation color as well
-	    boolean hasNationColor = false;
+	    Color[] clrs = new Color[args.length - 1];
 	    Town targetTown = PluginMain.TU.getTownsMap().get(args[0].toLowerCase());
-	    try {
-		    Color c; //TODO: Add command for nation color
-		    if (targetTown.getNation() != null
-				    && (c = PluginMain.NationColor.get(targetTown.getNation().getName().toLowerCase())) != null) {
-			    clrs = new Color[args.length];
-			    clrs[0] = c;
-			    hasNationColor = true;
-		    }
-	    } catch (NotRegisteredException ignored) {
-	    }
-	    if (!hasNationColor)
-		    clrs = new Color[args.length - 1];
 	    for (int i = 1; i < args.length; i++) {
 		    val c = getColorOrSendError(args[i], sender);
 		    if (!c.isPresent())
                 return true;
-		    clrs[hasNationColor ? i : i - 1] = c.get();
+		    clrs[i - 1] = c.get();
         }
         PluginMain.TownColors.put(args[0].toLowerCase(), clrs);
 	    TownyListener.updateTownMembers(targetTown);

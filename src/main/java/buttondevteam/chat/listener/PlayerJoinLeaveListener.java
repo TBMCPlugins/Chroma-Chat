@@ -5,6 +5,7 @@ import buttondevteam.chat.FlairStates;
 import buttondevteam.chat.PlayerJoinTimerTask;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.commands.UnlolCommand;
+import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.player.TBMCPlayerJoinEvent;
 import buttondevteam.lib.player.TBMCPlayerLoadEvent;
 import buttondevteam.lib.player.TBMCPlayerSaveEvent;
@@ -89,28 +90,41 @@ public class PlayerJoinLeaveListener implements Listener {
         String nickname = user.getNick(true);
         if (nickname.contains("~")) //StartsWith doesn't work because of color codes
             nickname = nickname.replace("~", ""); //It gets stacked otherwise
+		String name = ChatColor.stripColor(nickname); //Enforce "town colors" on non-members
         val res = PluginMain.TU.getResidentMap().get(player.getName().toLowerCase());
         if (res == null || !res.hasTown())
-            return nickname;
+	        return name;
         try {
             val clrs = PluginMain.TownColors.get(res.getTown().getName().toLowerCase());
             if (clrs == null)
-                return nickname;
+	            return name;
             StringBuilder ret = new StringBuilder();
-            String name = ChatColor.stripColor(nickname);
             AtomicInteger prevlen = new AtomicInteger();
-            BiFunction<Integer, Integer, String> coloredNamePart = (len, i) -> "§"
-                    + Integer.toHexString(clrs[i].ordinal()) // 'Odds' are the last character is chopped off so we make sure to include all chars at the end
-                    + (i + 1 == clrs.length ? name.substring(prevlen.get())
-                    : name.substring(prevlen.get(), prevlen.addAndGet(len)));
-            int len = name.length() / clrs.length;
+	        BiFunction<Color, Integer, String> anyColoredNamePart = (c, len) -> "§" //Len==0 if last part
+			        + Integer.toHexString(c.ordinal()) // 'Odds' are the last character is chopped off so we make sure to include all chars at the end
+			        + (len == 0 ? name.substring(prevlen.get())
+			        : name.substring(prevlen.get(), prevlen.addAndGet(len)));
+	        BiFunction<Integer, Integer, String> coloredNamePart = (len, i)
+			        -> anyColoredNamePart.apply(clrs[i], i + 1 == clrs.length ? 0 : len);
+	        final int len = name.length() / (clrs.length + 1); //The above param is needed because this isn't always passed
+	        Color nc;
+	        /*if(res.getTown().hasNation()
+			        &&(nc=PluginMain.NationColor.get(res.getTown().getNation().getName().toLowerCase()))!=null)
+	        	len = name.length() / (clrs.length+1);
+	        else
+	        	len = name.length() / clrs.length;*/
 	        val nclar = cp.NameColorLocations().get();
             int[] ncl = nclar == null ? null : nclar.stream().mapToInt(Integer::intValue).toArray();
             if (ncl != null && (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length))
                 ncl = null; // Reset if name length changed
             //System.out.println("ncl: "+Arrays.toString(ncl)+" - sum: "+Arrays.stream(ncl).sum()+" - name len: "+name.length());
+	        if (!res.getTown().hasNation()
+			        || (nc = PluginMain.NationColor.get(res.getTown().getNation().getName().toLowerCase())) == null)
+		        nc = Color.White;
+	        ret.append(anyColoredNamePart.apply(nc, ncl == null ? len : ncl[0])); //Make first color the nation color
             for (int i = 0; i < clrs.length; i++)
-                ret.append(coloredNamePart.apply(ncl == null ? len : ncl[i], i));
+	            //ret.append(coloredNamePart.apply(ncl == null ? len : (nc==null?ncl[i]:ncl[i+1]), i));
+	            ret.append(coloredNamePart.apply(ncl == null ? len : ncl[i + 1], i));
             return ret.toString();
         } catch (NotRegisteredException e) {
             return nickname;

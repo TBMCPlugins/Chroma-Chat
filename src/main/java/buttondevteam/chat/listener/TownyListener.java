@@ -1,7 +1,6 @@
 package buttondevteam.chat.listener;
 
 import buttondevteam.chat.PluginMain;
-import buttondevteam.chat.commands.ucmds.admin.TownColorCommand;
 import com.earth2me.essentials.User;
 import com.palmergames.bukkit.towny.event.*;
 import com.palmergames.bukkit.towny.object.Town;
@@ -29,17 +28,7 @@ public class TownyListener implements Listener {
 			PlayerJoinLeaveListener.updatePlayerColors(p);
 	}
 
-	@EventHandler //Gets called on town load as well
-	public void onNationJoin(NationAddTownEvent event) {
-		updateTownMembers(event.getTown());
-	}
-
-	@EventHandler //Gets called on town load as well
-	public void onNationLeave(NationRemoveTownEvent event) {
-		updateTownMembers(event.getTown());
-	}
-
-	public static void updateTownMembers(Town town) { //TODO: Update (or remove) nation color from town color
+	public static void updateTownMembers(Town town) {
 		town.getResidents().stream().map(r -> Bukkit.getPlayer(r.getName()))
 				.filter(Objects::nonNull).forEach(PlayerJoinLeaveListener::updatePlayerColors);
 	}
@@ -47,10 +36,13 @@ public class TownyListener implements Listener {
 	@EventHandler
 	public void onTownLeave(TownRemoveResidentEvent event) {
 		Player p = Bukkit.getPlayer(event.getResident().getName());
-		if (p != null) {
-			User user = PluginMain.essentials.getUser(p);
-			user.setNickname(ChatColor.stripColor(user.getNick(true).replace("~", "")));
-		}
+		if (p != null)
+			resetNameColor(p);
+	}
+
+	private void resetNameColor(Player p) {
+		User user = PluginMain.essentials.getUser(p);
+		user.setNickname(ChatColor.stripColor(user.getNick(true).replace("~", "")));
 	}
 
 	@EventHandler
@@ -76,42 +68,23 @@ public class TownyListener implements Listener {
 
 	@EventHandler //Gets called on town load as well
 	public void onNationJoin(NationAddTownEvent event) {
-		TownColorCommand.SetTownColor()
-	}
-
-	@EventHandler //Gets called on town load as well
-	public void onNationJoin(NationAddTownEvent event) {
 		updateTownMembers(event.getTown());
 	}
 
-	@EventHandler //Gets called on town load as well
+	@EventHandler
 	public void onNationLeave(NationRemoveTownEvent event) {
-		updateTownMembers(event.getTown());
-	}
-
-	private void updateTownMembers(Town town) {
-		town.getResidents().stream().map(r -> Bukkit.getPlayer(r.getName()))
-				.filter(Objects::nonNull).forEach(PlayerJoinLeaveListener::updatePlayerColors);
+		updateTownMembers(event.getTown()); //The town still has it's colours
 	}
 
 	@EventHandler
-	public void onTownLeave(TownRemoveResidentEvent event) {
-		Player p = Bukkit.getPlayer(event.getResident().getName());
-		if (p != null) {
-			User user = PluginMain.essentials.getUser(p);
-			user.setNickname(ChatColor.stripColor(user.getNick(true).replace("~", "")));
-		}
+	public void onNationDelete(DeleteNationEvent event) {
+		PluginMain.NationColor.remove(event.getNationName().toLowerCase());
 	}
 
 	@EventHandler
-	public void onTownDelete(DeleteTownEvent event) {
-		PluginMain.TownColors.remove(event.getTownName().toLowerCase());
-	}
-
-	@EventHandler
-	public void onTownCreate(NewTownEvent event) {
-		Player p = Bukkit.getPlayer(event.getTown().getMayor().getName());
+	public void onNationCreate(NewNationEvent event) {
+		Player p = Bukkit.getPlayer(event.getNation().getCapital().getMayor().getName());
 		if (p != null)
-			p.sendMessage("§6Use /u towncolor to set a color for the town.");
+			p.sendMessage("§6Use /u nationcolor to set a color for the nation.");
 	}
 }
