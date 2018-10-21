@@ -1,7 +1,7 @@
 package buttondevteam.chat.commands.ucmds.admin;
 
 import buttondevteam.chat.PluginMain;
-import buttondevteam.chat.listener.PlayerJoinLeaveListener;
+import buttondevteam.chat.listener.TownyListener;
 import buttondevteam.lib.chat.Color;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Town;
@@ -40,6 +40,7 @@ public class TownColorCommand extends AdminCommandBase {
             return true;
         }
 	    Color[] clrs = null; //Add nation color as well
+	    boolean hasNationColor = false;
 	    Town targetTown = PluginMain.TU.getTownsMap().get(args[0].toLowerCase());
 	    try {
 		    Color c; //TODO: Add command for nation color
@@ -47,30 +48,20 @@ public class TownColorCommand extends AdminCommandBase {
 				    && (c = PluginMain.NationColor.get(targetTown.getNation().getName().toLowerCase())) != null) {
 			    clrs = new Color[args.length];
 			    clrs[0] = c;
+			    hasNationColor = true;
 		    }
 	    } catch (NotRegisteredException ignored) {
 	    }
-	    if (clrs == null)
+	    if (!hasNationColor)
 		    clrs = new Color[args.length - 1];
 	    for (int i = 1; i < args.length; i++) {
-		    val c = getColor(args[i]);
-            if (!c.isPresent()) { //^^ Skip black
-                sender.sendMessage("§cThe color '" + args[i] + "' cannot be found."); //ˇˇ Skip black
-                sender.sendMessage("§cAvailable colors: " + Arrays.stream(Color.values()).skip(1).map(col -> String.format("§%x%s§r", col.ordinal(), col.getName())).collect(Collectors.joining(", ")));
-                sender.sendMessage("§cMake sure to type them exactly as shown above.");
+		    val c = getColorOrSendError(args[i], sender);
+		    if (!c.isPresent())
                 return true;
-            }
-            clrs[i - 1] = c.get();
+		    clrs[hasNationColor ? i : i - 1] = c.get();
         }
         PluginMain.TownColors.put(args[0].toLowerCase(), clrs);
-        Bukkit.getOnlinePlayers().forEach(p -> {
-            try {
-                Town t = PluginMain.TU.getResidentMap().get(p.getName().toLowerCase()).getTown();
-                if (t != null && t.getName().equalsIgnoreCase(args[0]))
-                    PlayerJoinLeaveListener.updatePlayerColors(p);
-            } catch (NotRegisteredException ignored) {
-            }
-        });
+	    TownyListener.updateTownMembers(targetTown);
 
         val dtp = (DynmapTownyPlugin) Bukkit.getPluginManager().getPlugin("Dynmap-Towny");
         if (dtp == null) {
@@ -78,13 +69,19 @@ public class TownColorCommand extends AdminCommandBase {
             PluginMain.Instance.getLogger().warning("Dynmap-Towny not found for setting town color!");
             return true;
         }
-        PluginMain.setTownColor(dtp, getTownNameCased(args[0]), clrs);
+	    PluginMain.setTownColor(dtp, targetTown.getName(), clrs);
         sender.sendMessage("§bColor(s) set.");
         return true;
     }
 
-	private static Optional<Color> getColor(String name) {
-		return Arrays.stream(Color.values()).skip(1).filter(cc -> cc.getName().equalsIgnoreCase(name)).findAny();
+	private static Optional<Color> getColorOrSendError(String name, CommandSender sender) {
+		val c = Arrays.stream(Color.values()).skip(1).filter(cc -> cc.getName().equalsIgnoreCase(name)).findAny();
+		if (!c.isPresent()) { //^^ Skip black
+			sender.sendMessage("§cThe color '" + name + "' cannot be found."); //ˇˇ Skip black
+			sender.sendMessage("§cAvailable colors: " + Arrays.stream(Color.values()).skip(1).map(col -> String.format("§%x%s§r", col.ordinal(), col.getName())).collect(Collectors.joining(", ")));
+			sender.sendMessage("§cMake sure to type them exactly as shown above.");
+		}
+		return c;
 	}
 
 	public static String getTownNameCased(String name) {
