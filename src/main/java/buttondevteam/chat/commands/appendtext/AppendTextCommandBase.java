@@ -28,10 +28,10 @@ public abstract class AppendTextCommandBase extends TBMCCommandBase {
                     cp, msg).fromCommand(true).build());
 		else if (sender.isOp())
             TBMCChatAPI.SendChatMessage(ChatMessage.builder(PlayerListener.ConsoleChannel, sender,
-                    (cp = TBMCPlayer.getPlayer(new UUID(0, 0), ChatPlayer.class)), msg).build());
+		            (cp = TBMCPlayer.getPlayer(new UUID(0, 0), ChatPlayer.class)), msg).fromCommand(true).build());
 		else
             TBMCChatAPI.SendChatMessage(ChatMessage.builder(Channel.GlobalChat, sender,
-                    (cp = TBMCPlayer.getPlayer(new UUID(0, 0), ChatPlayer.class)), msg).build()); //TODO
+		            (cp = TBMCPlayer.getPlayer(new UUID(0, 0), ChatPlayer.class)), msg).fromCommand(true).build()); //TODO
 		return true;
 	}
 }
