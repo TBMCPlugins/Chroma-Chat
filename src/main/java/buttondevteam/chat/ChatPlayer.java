@@ -1,6 +1,5 @@
 package buttondevteam.chat;
 
-import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.player.EnumPlayerData;
 import buttondevteam.lib.player.PlayerClass;
@@ -50,7 +49,6 @@ public class ChatPlayer extends TBMCPlayerBase {
 	public Location SavedLocation;
 	public boolean Working;
 	// public int Tables = 10;
-	public Channel CurrentChannel = Channel.GlobalChat;
 	public boolean SendingLink = false;
 	public boolean RainbowPresserColorMode = false;
 	public Color OtherColorMode = null;

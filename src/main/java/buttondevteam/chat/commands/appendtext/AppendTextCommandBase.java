@@ -1,13 +1,12 @@
 package buttondevteam.chat.commands.appendtext;
 
-import buttondevteam.chat.ChatPlayer;
-import buttondevteam.chat.listener.PlayerListener;
-import buttondevteam.lib.chat.*;
+import buttondevteam.lib.chat.ChatMessage;
+import buttondevteam.lib.chat.CommandClass;
+import buttondevteam.lib.chat.TBMCChatAPI;
+import buttondevteam.lib.chat.TBMCCommandBase;
+import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.TBMCPlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
-import java.util.UUID;
 
 @CommandClass(modOnly = false, excludeFromPath = true)
 public abstract class AppendTextCommandBase extends TBMCCommandBase {
@@ -18,20 +17,12 @@ public abstract class AppendTextCommandBase extends TBMCCommandBase {
 
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
-		String msg = GetAppendedText();
-		for (int i = args.length - 1; i >= 0; i--)
-			msg = args[i] + " " + msg;
-        ChatPlayer cp;
-		if (sender instanceof Player)
-            TBMCChatAPI.SendChatMessage(ChatMessage.builder(
-                    (cp = TBMCPlayer.getPlayer(((Player) sender).getUniqueId(), ChatPlayer.class)).CurrentChannel, sender,
-                    cp, msg).fromCommand(true).build());
-		else if (sender.isOp())
-            TBMCChatAPI.SendChatMessage(ChatMessage.builder(PlayerListener.ConsoleChannel, sender,
-		            (cp = TBMCPlayer.getPlayer(new UUID(0, 0), ChatPlayer.class)), msg).fromCommand(true).build());
-		else
-            TBMCChatAPI.SendChatMessage(ChatMessage.builder(Channel.GlobalChat, sender,
-		            (cp = TBMCPlayer.getPlayer(new UUID(0, 0), ChatPlayer.class)), msg).fromCommand(true).build()); //TODO
+		StringBuilder msg = new StringBuilder();
+		for (String arg : args) msg.append(arg).append(" ");
+		msg.append(GetAppendedText());
+		TBMCChatAPI.SendChatMessage(ChatMessage.builder(sender,
+				ChromaGamerBase.getFromSender(sender, TBMCPlayer.class), msg.toString())
+				.fromCommand(true).build());
 		return true;
 	}
 }
