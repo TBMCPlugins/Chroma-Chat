@@ -5,7 +5,6 @@ import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.chat.TBMCCommandBase;
 import buttondevteam.lib.player.ChromaGamerBase;
-import buttondevteam.lib.player.TBMCPlayer;
 import org.bukkit.command.CommandSender;
 
 @CommandClass(modOnly = false, excludeFromPath = true)
@@ -21,7 +20,7 @@ public abstract class AppendTextCommandBase extends TBMCCommandBase {
 		for (String arg : args) msg.append(arg).append(" ");
 		msg.append(GetAppendedText());
 		TBMCChatAPI.SendChatMessage(ChatMessage.builder(sender,
-				ChromaGamerBase.getFromSender(sender, TBMCPlayer.class), msg.toString())
+				ChromaGamerBase.getFromSender(sender), msg.toString())
 				.fromCommand(true).build());
 		return true;
 	}

@@ -75,7 +75,7 @@ public class PlayerListener implements Listener {
 		if (message.length() < 2)
 			return false;
 		int index = message.indexOf(" ");
-		val mp = ChromaGamerBase.getFromSender(sender, TBMCPlayer.class);
+		val mp = ChromaGamerBase.getFromSender(sender);
 		String cmd;
 		final BiPredicate<Channel, String> checkchid = (chan, cmd1) -> cmd1.equalsIgnoreCase(chan.ID) || (chan.IDs != null && Arrays.stream(chan.IDs).anyMatch(cmd1::equalsIgnoreCase));
 		if (index == -1) { // Only the command is run
