@@ -31,9 +31,6 @@ public class TownColorCommand extends UCommandBase {
 	@Override
 	public boolean OnCommand(Player player, String alias, String[] args) {
 		Resident res;
-		// System.out.println("contains: " + PluginMain.TU.getResidentMap().contains(player.getName().toLowerCase()));
-		// System.out.println("res: " + PluginMain.TU.getResidentMap().get(player.getName().toLowerCase()));
-		// System.out.println("mayor: " + PluginMain.TU.getResidentMap().get(player.getName().toLowerCase()).isMayor());
 		if (!(PluginMain.TU.getResidentMap().containsKey(player.getName().toLowerCase())
 				&& (res = PluginMain.TU.getResidentMap().get(player.getName().toLowerCase())).isMayor())) {
 			player.sendMessage("§cYou need to be the mayor of a town to set it's colors.");

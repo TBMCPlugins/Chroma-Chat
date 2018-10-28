@@ -60,14 +60,18 @@ public class TownColorCommand extends AdminCommandBase {
         return true;
     }
 
-	private static Optional<Color> getColorOrSendError(String name, CommandSender sender) {
+	public static Optional<Color> getColorOrSendError(String name, CommandSender sender) {
 		val c = Arrays.stream(Color.values()).skip(1).filter(cc -> cc.getName().equalsIgnoreCase(name)).findAny();
 		if (!c.isPresent()) { //^^ Skip black
 			sender.sendMessage("§cThe color '" + name + "' cannot be found."); //ˇˇ Skip black
-			sender.sendMessage("§cAvailable colors: " + Arrays.stream(Color.values()).skip(1).map(col -> String.format("§%x%s§r", col.ordinal(), col.getName())).collect(Collectors.joining(", ")));
+			sender.sendMessage("§cAvailable colors: " + Arrays.stream(Color.values()).skip(1).map(TownColorCommand::getColorText).collect(Collectors.joining(", ")));
 			sender.sendMessage("§cMake sure to type them exactly as shown above.");
 		}
 		return c;
+	}
+
+	public static String getColorText(Color col) {
+		return String.format("§%x%s§r", col.ordinal(), col.getName());
 	}
 
 	public static String getTownNameCased(String name) {

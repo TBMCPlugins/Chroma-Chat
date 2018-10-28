@@ -78,6 +78,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	@Override
 	public void onEnable() {
 		Instance = this;
+		PluginMain.essentials = (Essentials) (Bukkit.getPluginManager().getPlugin("Essentials"));
 
 		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerListener(), this);
 		TBMCCoreAPI.RegisterEventsForExceptions(new TownyListener(), this);

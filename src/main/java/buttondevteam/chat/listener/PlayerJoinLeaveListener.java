@@ -9,7 +9,6 @@ import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.player.TBMCPlayerJoinEvent;
 import buttondevteam.lib.player.TBMCPlayerLoadEvent;
 import buttondevteam.lib.player.TBMCPlayerSaveEvent;
-import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.User;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import lombok.val;
@@ -22,6 +21,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
@@ -36,8 +36,6 @@ public class PlayerJoinLeaveListener implements Listener {
 
 	@EventHandler
 	public void onPlayerTBMCJoin(TBMCPlayerJoinEvent e) {
-		if (PluginMain.essentials == null)
-			PluginMain.essentials = ((Essentials) Bukkit.getPluginManager().getPlugin("Essentials"));
 		ChatPlayer cp = e.GetPlayer().asPluginPlayer(ChatPlayer.class);
 		Player p = Bukkit.getPlayer(cp.getUUID());
 
@@ -95,9 +93,9 @@ public class PlayerJoinLeaveListener implements Listener {
         if (res == null || !res.hasTown())
 	        return name;
         try {
-            val clrs = PluginMain.TownColors.get(res.getTown().getName().toLowerCase());
-            if (clrs == null)
-	            return name;
+	        Color[] clrs = Optional.ofNullable(
+			        PluginMain.TownColors.get(res.getTown().getName().toLowerCase())
+	        ).orElse(new Color[]{Color.White}); //Use white as default town color
             StringBuilder ret = new StringBuilder();
             AtomicInteger prevlen = new AtomicInteger();
 	        BiFunction<Color, Integer, String> anyColoredNamePart = (c, len) -> "§" //Len==0 if last part
