@@ -62,7 +62,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 	public static Channel TownChat;
 	public static Channel NationChat;
-	private static Channel RPChannel; //TODO: Move to ButtonCore - or use the ch filter in the Discord plugin
+	private static Channel RPChannel;
 
 	/**
 	 * <p>
@@ -98,11 +98,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 				TownChat = new Channel("§3TC§f", Color.DarkAqua, "tc", s -> checkTownNationChat(s, false)));
 		TBMCChatAPI.RegisterChatChannel(
 				NationChat = new Channel("§6NC§f", Color.Gold, "nc", s -> checkTownNationChat(s, true)));
-		TBMCChatAPI.RegisterChatChannel(RPChannel = new Channel("§7RP§f", Color.Gray, "rp", Channel.noScoreResult(s -> {
-			if (s instanceof ConsoleCommandSender)
-				return true;
-			return true; // TODO: Allow hiding it
-		}, "You need to show the RP chat in order to speak in it.")));
+		TBMCChatAPI.RegisterChatChannel(RPChannel = new Channel("§7RP§f", Color.Gray, "rp", null)); //Since it's null, it's recognised as global
 
 		Bukkit.getScheduler().runTask(this, () -> {
 			val dtp = (DynmapTownyPlugin) Bukkit.getPluginManager().getPlugin("Dynmap-Towny");

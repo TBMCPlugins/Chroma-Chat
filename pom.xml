@@ -92,6 +92,8 @@
 				</executions>
 				<configuration>
 					<testFailureIgnore>true</testFailureIgnore>
+					<useSystemClassLoader>false
+					</useSystemClassLoader> <!-- https://stackoverflow.com/a/53012553/2703239 -->
 				</configuration>
 			</plugin>
 			<!-- <plugin> <groupId>org.basepom.maven</groupId> <artifactId>duplicate-finder-maven-plugin</artifactId> 
