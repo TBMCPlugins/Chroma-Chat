@@ -113,7 +113,7 @@ public class PlayerJoinLeaveListener implements Listener {
 	        	len = name.length() / clrs.length;*/
 	        val nclar = cp.NameColorLocations().get();
             int[] ncl = nclar == null ? null : nclar.stream().mapToInt(Integer::intValue).toArray();
-            if (ncl != null && (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length))
+	        if (ncl != null && (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length + 1)) //+1: Nation color
                 ncl = null; // Reset if name length changed
             //System.out.println("ncl: "+Arrays.toString(ncl)+" - sum: "+Arrays.stream(ncl).sum()+" - name len: "+name.length());
 	        if (!res.getTown().hasNation()
