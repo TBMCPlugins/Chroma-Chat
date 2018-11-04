@@ -40,7 +40,6 @@ import org.htmlcleaner.TagNode;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
@@ -54,16 +53,16 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	// https://www.reddit.com/r/thebutton/comments/31c32v/i_pressed_the_button_without_really_thinking/
 	public static PluginMain Instance;
 	public static ConsoleCommandSender Console;
-	public final static String FlairThreadURL = "https://www.reddit.com/r/Chromagamers/comments/51ys94/flair_thread_for_the_mc_server/";
+	private final static String FlairThreadURL = "https://www.reddit.com/r/Chromagamers/comments/51ys94/flair_thread_for_the_mc_server/";
 
 	public static Scoreboard SB;
 	public static TownyUniverse TU;
-	public static ArrayList<Town> Towns;
-	public static ArrayList<Nation> Nations;
+	private static ArrayList<Town> Towns;
+	private static ArrayList<Nation> Nations;
 
 	public static Channel TownChat;
 	public static Channel NationChat;
-	public static Channel RPChannel;
+	private static Channel RPChannel;
 
 	/**
 	 * <p>
@@ -79,6 +78,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 	@Override
 	public void onEnable() {
 		Instance = this;
+		PluginMain.essentials = (Essentials) (Bukkit.getPluginManager().getPlugin("Essentials"));
 
 		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerListener(), this);
 		TBMCCoreAPI.RegisterEventsForExceptions(new TownyListener(), this);
@@ -88,20 +88,17 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 		SB = getServer().getScoreboardManager().getMainScoreboard(); // Main can be detected with @a[score_...]
 		TU = ((Towny) Bukkit.getPluginManager().getPlugin("Towny")).getTownyUniverse();
-		Towns = new ArrayList<Town>(TU.getTownsMap().values()); // Creates a snapshot of towns, new towns will be added when needed
-		Nations = new ArrayList<Nation>(TU.getNationsMap().values()); // Same here but with nations
+		Towns = new ArrayList<>(TU.getTownsMap().values()); // Creates a snapshot of towns, new towns will be added when needed
+		Nations = new ArrayList<>(TU.getNationsMap().values()); // Same here but with nations
 
-		TownColors.keySet().removeIf(t -> !TU.getTownsMap().containsKey(t.toLowerCase())); // Removes town colors for deleted/renamed towns
+		TownColors.keySet().removeIf(t -> !TU.getTownsMap().containsKey(t)); // Removes town colors for deleted/renamed towns
+		NationColor.keySet().removeIf(n -> !TU.getNationsMap().containsKey(n)); // Removes nation colors for deleted/renamed nations
 
 		TBMCChatAPI.RegisterChatChannel(
 				TownChat = new Channel("§3TC§f", Color.DarkAqua, "tc", s -> checkTownNationChat(s, false)));
 		TBMCChatAPI.RegisterChatChannel(
 				NationChat = new Channel("§6NC§f", Color.Gold, "nc", s -> checkTownNationChat(s, true)));
-		TBMCChatAPI.RegisterChatChannel(RPChannel = new Channel("§7RP§f", Color.Gray, "rp", Channel.noScoreResult(s -> {
-			if (s instanceof ConsoleCommandSender)
-				return true;
-			return true; // TODO: Allow hiding it
-		}, "You need to show the RP chat in order to speak in it.")));
+		TBMCChatAPI.RegisterChatChannel(RPChannel = new Channel("§7RP§f", Color.Gray, "rp", null)); //Since it's null, it's recognised as global
 
 		Bukkit.getScheduler().runTask(this, () -> {
 			val dtp = (DynmapTownyPlugin) Bukkit.getPluginManager().getPlugin("Dynmap-Towny");
@@ -201,7 +198,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		}
 	}
 
-	public void DownloadFlair(ChatPlayer mp) throws MalformedURLException, IOException {
+	public void DownloadFlair(ChatPlayer mp) throws IOException {
 		String[] flairdata = TBMCCoreAPI
 				.DownloadString("http://karmadecay.com/thebutton-data.php?users=" + mp.UserName().get())
 				.replace("\"", "").split(":");
@@ -247,11 +244,11 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		p.SetFlair(Short.parseShort(text));
 	}
 
-	public static boolean CheckForJoinDate(ChatPlayer mp) throws Exception {
+	private static boolean CheckForJoinDate(ChatPlayer mp) throws Exception {
 		return JoinedBefore(mp, 2015, 4, 1);
 	}
 
-	public static boolean JoinedBefore(ChatPlayer mp, int year, int month, int day) throws Exception {
+	private static boolean JoinedBefore(ChatPlayer mp, int year, int month, int day) throws Exception {
 		URL url = new URL("https://www.reddit.com/u/" + mp.UserName());
 		URLConnection con = url.openConnection();
 		con.setRequestProperty("User-Agent", "TheButtonAutoFlair");
@@ -281,13 +278,17 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 	public static ArrayList<String> AnnounceMessages = new ArrayList<>();
 	public static int AnnounceTime = 15 * 60 * 1000;
-    /**
-     * Names lowercased
-     */
-    public static Map<String, Color[]> TownColors = new HashMap<>();
+	/**
+	 * Names lowercased
+	 */
+	public static Map<String, Color[]> TownColors = new HashMap<>();
+	/**
+	 * Names lowercased - nation color gets added to town colors when needed
+	 */
+	public static Map<String, Color> NationColor = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
-	public static void LoadFiles() {
+	private static void LoadFiles() {
 		PluginMain.Instance.getLogger().info("Loading files...");
 		try {
 			File file = new File("TBMC/chatsettings.yml");
@@ -305,6 +306,10 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 							.collect(Collectors.toMap(Map.Entry::getKey, v -> ((List<String>) v.getValue()).stream()
 									.map(Color::valueOf).toArray(Color[]::new))));
 				TownColorCommand.ColorCount = (byte) yc.getInt("towncolorcount", 1);
+				val ncs = yc.getConfigurationSection("nationcolors");
+				if (ncs != null)
+					NationColor.putAll(ncs.getValues(true).entrySet().stream()
+							.collect(Collectors.toMap(Map.Entry::getKey, v -> Color.valueOf((String) v.getValue()))));
 				PluginMain.Instance.getLogger().info("Loaded files!");
 			} else
 				PluginMain.Instance.getLogger().info("No files to load, first run probably.");
@@ -323,9 +328,11 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 			yc.set("announcetime", AnnounceTime);
 			yc.set("announcements", AnnounceMessages);
 			yc.set("alphadeaths", PlayerListener.AlphaDeaths);
-			yc.createSection("towncolors", TownColors.entrySet().stream().collect(Collectors.toMap(k -> k.getKey(),
+			yc.createSection("towncolors", TownColors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
 					v -> Arrays.stream(v.getValue()).map(Enum::toString).toArray(String[]::new))));
 			yc.set("towncolorcount", TownColorCommand.ColorCount);
+			yc.createSection("nationcolors", NationColor.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
+					v -> v.getValue().toString())));
 			yc.save(file);
 			PluginMain.Instance.getLogger().info("Saved files!");
 		} catch (Exception e) {

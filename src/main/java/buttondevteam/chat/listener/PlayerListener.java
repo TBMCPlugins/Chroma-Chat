@@ -6,6 +6,7 @@ import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.*;
+import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerGetInfoEvent;
@@ -13,6 +14,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
+import lombok.val;
 import net.ess3.api.events.NickChangeEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,12 +30,14 @@ import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map.Entry;
+import java.util.Random;
+import java.util.UUID;
 import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class PlayerListener implements Listener {
 	/**
@@ -57,7 +61,7 @@ public class PlayerListener implements Listener {
 		if (event.isCancelled())
 			return;
 		ChatPlayer cp = TBMCPlayer.getPlayer(event.getPlayer().getUniqueId(), ChatPlayer.class);
-		TBMCChatAPI.SendChatMessage(ChatMessage.builder(cp.CurrentChannel, event.getPlayer(), cp, event.getMessage()).build());
+		TBMCChatAPI.SendChatMessage(ChatMessage.builder(event.getPlayer(), cp, event.getMessage()).build());
 		event.setCancelled(true); // The custom event should only be cancelled when muted or similar
 	}
 
@@ -71,11 +75,7 @@ public class PlayerListener implements Listener {
 		if (message.length() < 2)
 			return false;
 		int index = message.indexOf(" ");
-		ChatPlayer mp;
-		if (sender instanceof Player)
-			mp = TBMCPlayer.getPlayer(((Player) sender).getUniqueId(), ChatPlayer.class);
-		else
-			mp = TBMCPlayer.getPlayer(new UUID(0, 0), ChatPlayer.class); //Use 0, 0 for console and whatever - TODO: Refactor console stuff
+		val mp = ChromaGamerBase.getFromSender(sender);
 		String cmd;
 		final BiPredicate<Channel, String> checkchid = (chan, cmd1) -> cmd1.equalsIgnoreCase(chan.ID) || (chan.IDs != null && Arrays.stream(chan.IDs).anyMatch(cmd1::equalsIgnoreCase));
 		if (index == -1) { // Only the command is run
@@ -85,24 +85,17 @@ public class PlayerListener implements Listener {
 			cmd = sender instanceof ConsoleCommandSender ? message : message.substring(1);
 			for (Channel channel : Channel.getChannels()) {
 				if (checkchid.test(channel, cmd)) {
-					Supplier<Channel> getch = () -> sender instanceof Player ? mp.CurrentChannel : ConsoleChannel;
-					Consumer<Channel> setch = ch -> {
-						if (sender instanceof Player)
-							mp.CurrentChannel = ch;
-						else
-							ConsoleChannel = ch;
-					};
-					Channel oldch = getch.get();
+					Channel oldch = mp.channel().get();
 					if (oldch instanceof ChatRoom)
 						((ChatRoom) oldch).leaveRoom(sender);
 					if (oldch.equals(channel))
-						setch.accept(Channel.GlobalChat);
+						mp.channel().set(Channel.GlobalChat);
 					else {
-						setch.accept(channel);
+						mp.channel().set(channel);
 						if (channel instanceof ChatRoom)
 							((ChatRoom) channel).joinRoom(sender);
 					}
-					sender.sendMessage("§6You are now talking in: §b" + getch.get().DisplayName);
+					sender.sendMessage("§6You are now talking in: §b" + mp.channel().get().DisplayName);
 					return true;
 				}
 			}
@@ -134,7 +127,7 @@ public class PlayerListener implements Listener {
 			} else
 				for (Channel channel : Channel.getChannels()) {
 					if (checkchid.test(channel, cmd)) { //Apparently method references don't require final variables
-						TBMCChatAPI.SendChatMessage(ChatMessage.builder(channel, sender, mp, message.substring(index + 1)).build());
+						TBMCChatAPI.SendChatMessage(ChatMessage.builder(sender, mp, message.substring(index + 1)).build(), channel);
 						return true;
 					}
 				}
@@ -174,7 +167,7 @@ public class PlayerListener implements Listener {
 
 	public static boolean ActiveF = false;
 	public static ChatPlayer FPlayer = null;
-	private Timer Ftimer;
+	public static BukkitTask Ftask = null;
 	public static int AlphaDeaths;
 	public static ArrayList<CommandSender> Fs = new ArrayList<>();
 
@@ -184,28 +177,26 @@ public class PlayerListener implements Listener {
 			AlphaDeaths++;
 		// MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(e.getEntity());
 		if (/* (mgp != null && !mgp.isInMinigame()) && */ new Random().nextBoolean()) { // Don't store Fs for NPCs
-			if (Ftimer != null)
-				Ftimer.cancel();
+			Runnable tt = () -> {
+				if (ActiveF) {
+					ActiveF = false;
+					if (FPlayer != null && FPlayer.FCount().get() < Integer.MAX_VALUE - 1)
+						FPlayer.FCount().set(FPlayer.FCount().get() + Fs.size());
+					Bukkit.broadcastMessage("§b" + Fs.size() + " " + (Fs.size() == 1 ? "person" : "people")
+							+ " paid their respects.§r");
+					Fs.clear();
+				}
+			};
+			if (Ftask != null) {
+				Ftask.cancel();
+				tt.run(); //Finish previous one
+			}
 			ActiveF = true;
 			Fs.clear();
 			FPlayer = TBMCPlayer.getPlayer(e.getEntity().getUniqueId(), ChatPlayer.class);
 			FPlayer.FDeaths().set(FPlayer.FDeaths().get() + 1);
 			Bukkit.broadcastMessage("§bPress F to pay respects.§r");
-			Ftimer = new Timer();
-			TimerTask tt = new TimerTask() {
-				@Override
-				public void run() {
-					if (ActiveF) {
-						ActiveF = false;
-						if (FPlayer != null && FPlayer.FCount().get() < Integer.MAX_VALUE - 1)
-							FPlayer.FCount().set(FPlayer.FCount().get() + Fs.size());
-						Bukkit.broadcastMessage("§b" + Fs.size() + " " + (Fs.size() == 1 ? "person" : "people")
-								+ " paid their respects.§r");
-						Fs.clear();
-					}
-				}
-			};
-			Ftimer.schedule(tt, 15 * 1000);
+			Bukkit.getScheduler().runTaskLaterAsynchronously(PluginMain.Instance, tt, 15 * 20);
 		}
 	}
 
@@ -238,8 +229,6 @@ public class PlayerListener implements Listener {
 			e.getPlayer().sendMessage("§cYou are not allowed to teleport while in chat-only mode.");
 		}
 	}
-
-	public static Channel ConsoleChannel = Channel.GlobalChat;
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onConsoleCommand(ServerCommandEvent event) {

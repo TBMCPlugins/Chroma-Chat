@@ -1,19 +1,19 @@
 package buttondevteam.chat.commands;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import buttondevteam.lib.TBMCChatEventBase;
+import buttondevteam.lib.chat.Channel;
+import buttondevteam.lib.chat.CommandClass;
+import buttondevteam.lib.chat.TBMCCommandBase;
+import lombok.Data;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import buttondevteam.lib.TBMCChatEventBase;
-import buttondevteam.lib.chat.Channel;
-import buttondevteam.lib.chat.CommandClass;
-import buttondevteam.lib.chat.TBMCCommandBase;
-import lombok.Data;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 @CommandClass(modOnly = false)
 public final class UnlolCommand extends TBMCCommandBase {
@@ -31,7 +31,7 @@ public final class UnlolCommand extends TBMCCommandBase {
 	@Override
 	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
 		LastlolData lol = Lastlol.values().stream().filter(lld -> lld.Chatevent.shouldSendTo(sender))
-				.max((lld1, lld2) -> Long.compare(lld1.Loltime, lld2.Loltime)).orElse(null);
+				.max(Comparator.comparingLong(lld -> lld.Loltime)).orElse(null);
 		if (lol == null)
 			return true;
 		if (lol.Lolowner instanceof Player)
