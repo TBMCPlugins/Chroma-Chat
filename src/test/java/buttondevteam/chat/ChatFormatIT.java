@@ -82,12 +82,12 @@ public class ChatFormatIT {
 	@Test
 	public void testMessage() {
 		ArrayList<ChatFormatter> cfs = ChatProcessing.addFormatters(Color.White);
-		final String chid = ChatProcessing.getChannelID(Channel.GlobalChat, sender);
-		final TellrawPart tp = ChatProcessing.createTellraw(sender, message, null, null, null, chid);
+		final String chid = ChatProcessing.getChannelID(Channel.GlobalChat, sender, ChatProcessing.MCORIGIN);
+		final TellrawPart tp = ChatProcessing.createTellraw(sender, message, null, null, null, chid, ChatProcessing.MCORIGIN);
 		ChatFormatter.Combine(cfs, message, tp);
 		System.out.println("Testing: " + message);
 		// System.out.println(ChatProcessing.toJson(tp));
-		final TellrawPart expectedtp = ChatProcessing.createTellraw(sender, message, null, null, null, chid);
+		final TellrawPart expectedtp = ChatProcessing.createTellraw(sender, message, null, null, null, chid, ChatProcessing.MCORIGIN);
 		// System.out.println("Raw: " + ChatProcessing.toJson(expectedtp));
 		for (TellrawPart extra : extras)
 			expectedtp.addExtra(extra);

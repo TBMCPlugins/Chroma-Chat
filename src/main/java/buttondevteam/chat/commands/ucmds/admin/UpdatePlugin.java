@@ -1,11 +1,10 @@
 package buttondevteam.chat.commands.ucmds.admin;
 
+import buttondevteam.chat.PluginMain;
+import buttondevteam.component.updater.PluginUpdater;
+import buttondevteam.lib.TBMCCoreAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-
-import buttondevteam.chat.PluginMain;
-import buttondevteam.lib.PluginUpdater;
-import buttondevteam.lib.TBMCCoreAPI;
 
 public class UpdatePlugin extends AdminCommandBase {
 
