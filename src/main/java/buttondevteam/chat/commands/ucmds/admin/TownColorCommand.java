@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.dynmap.towny.DynmapTownyPlugin;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,33 @@ public class TownColorCommand extends AdminCommandBase {
                 return true;
 		    clrs[i - 1] = c.get();
         }
+	    for (Map.Entry<String, Color[]> other : PluginMain.TownColors.entrySet()) {
+		    Color nc, tnc;
+		    try {
+			    nc = PluginMain.NationColor.get(PluginMain.TU.getTownsMap().get(other.getKey()).getNation().getName().toLowerCase());
+		    } catch (Exception e) { //Too lazy for lots of null-checks and it may throw exceptions anyways
+			    nc = null;
+		    }
+		    if (nc == null) nc = Color.White; //Default nation color
+		    try {
+			    tnc = PluginMain.NationColor.get(targetTown.getNation().getName().toLowerCase());
+		    } catch (Exception e) {
+			    tnc = null;
+		    }
+		    if (tnc == null) tnc = Color.White; //Default nation color - TODO: Make configurable
+		    if (nc.getName().equals(tnc.getName())) {
+			    int C = 0;
+			    if (clrs.length == other.getValue().length)
+				    for (int i = 0; i < clrs.length; i++)
+					    if (clrs[i].getName().equals(other.getValue()[i].getName()))
+						    C++;
+					    else break;
+			    if (C == clrs.length) {
+				    sender.sendMessage("§cThis town color combination is already used!");
+				    return true;
+			    }
+		    }
+	    }
         PluginMain.TownColors.put(args[0].toLowerCase(), clrs);
 	    TownyListener.updateTownMembers(targetTown);
 

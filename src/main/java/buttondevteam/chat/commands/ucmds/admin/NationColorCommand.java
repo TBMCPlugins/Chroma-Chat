@@ -2,6 +2,7 @@ package buttondevteam.chat.commands.ucmds.admin;
 
 import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.listener.TownyListener;
+import buttondevteam.lib.chat.Color;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import lombok.val;
@@ -37,6 +38,14 @@ public class NationColorCommand extends AdminCommandBase {
 		}
 		val c = TownColorCommand.getColorOrSendError(args[1], sender);
 		if (!c.isPresent()) return true;
+		if (!c.get().getName().equals(Color.White.getName())) { //Default nation color
+			for (val nc : PluginMain.NationColor.values()) {
+				if (nc.getName().equals(c.get().getName())) {
+					sender.sendMessage("§cAnother nation already uses this color!");
+					return true;
+				}
+			}
+		}
 		PluginMain.NationColor.put(args[0].toLowerCase(), c.get());
 		Bukkit.getScheduler().runTaskAsynchronously(PluginMain.Instance, () -> {
 			for (Town t : nation.getTowns())
