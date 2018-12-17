@@ -272,7 +272,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onChannelRegistered(ChatChannelRegisterEvent e) {
-		if (e.getChannel().filteranderrormsg != null && PluginMain.SB.getObjective(e.getChannel().ID) == null) // Not global chat and doesn't exist yet
+		if (!e.getChannel().isGlobal() && PluginMain.SB.getObjective(e.getChannel().ID) == null) // Not global chat and doesn't exist yet
 			PluginMain.SB.registerNewObjective(e.getChannel().ID, "dummy");
 	}
 

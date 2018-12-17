@@ -145,7 +145,7 @@ public class ChatProcessing {
         DebugCommand.SendDebugMessage(jsonstr);
 
         try {
-            if (channel.filteranderrormsg != null) {
+            if (!channel.isGlobal()) {
                 Objective obj = PluginMain.SB.getObjective(channel.ID);
                 int score = -1;
                 for (Player p : Bukkit.getOnlinePlayers()) {
