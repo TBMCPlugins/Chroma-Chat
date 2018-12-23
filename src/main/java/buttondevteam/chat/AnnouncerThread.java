@@ -13,6 +13,7 @@ public class AnnouncerThread implements Runnable {
 			} catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
 			}
+			if (Bukkit.getOnlinePlayers().size() == 0) continue; //Don't post to Discord if nobody is on
 			if (PluginMain.AnnounceMessages.size() > AnnounceMessageIndex) {
 				Bukkit.broadcastMessage(PluginMain.AnnounceMessages.get(AnnounceMessageIndex));
 				AnnounceMessageIndex++;
