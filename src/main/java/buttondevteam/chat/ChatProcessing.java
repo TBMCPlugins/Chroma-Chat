@@ -263,10 +263,9 @@ public class ChatProcessing {
                 final String nick = PlayerListener.nicknames.inverse().get(p.getUniqueId());
                 if (nick != null) {
                     nicksb.append(nick);
-                    if (index < size - 1) {
+                    if (index < size - 1)
                         nicksb.append("|");
-                        addNickFormatter = true;
-                    }
+                    addNickFormatter = true; //Add it even if there's only 1 player online (it was in the if)
                 }
                 index++;
             }
