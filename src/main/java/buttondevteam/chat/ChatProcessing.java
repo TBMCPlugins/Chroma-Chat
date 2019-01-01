@@ -40,7 +40,7 @@ public class ChatProcessing {
     private static final Pattern ESCAPE_PATTERN = Pattern.compile("\\\\");
     private static final Pattern CONSOLE_PING_PATTERN = Pattern.compile("(?i)" + Pattern.quote("@console"));
     private static final Pattern HASHTAG_PATTERN = Pattern.compile("#(\\w+)");
-    private static final Pattern URL_PATTERN = Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),]+)");
+	private static final Pattern URL_PATTERN = Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),&]+(?:#[\\w]+)?)");
     public static final Pattern ENTIRE_MESSAGE_PATTERN = Pattern.compile(".+");
     private static final Pattern UNDERLINED_PATTERN = Pattern.compile("_");
     private static final Pattern ITALIC_PATTERN = Pattern.compile("\\*");
