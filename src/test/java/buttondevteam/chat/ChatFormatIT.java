@@ -65,6 +65,11 @@ public class ChatFormatIT {
 				.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/")), new TellrawPart(" heh").setItalic(true)));
 		list.add(new ChatFormatIT(sender, "*test _test_ test*", new TellrawPart("test ").setItalic(true).setColor(Color.White),
 				new TellrawPart("test").setItalic(true).setUnderlined(true).setColor(Color.White), new TellrawPart(" test").setItalic(true).setColor(Color.White)));
+		list.add(new ChatFormatIT(sender, "https://norbipeti.github.io/test?test&test#test", new TellrawPart("https://norbipeti.github.io/test?test&test#test")
+				.setColor(Color.White).setUnderlined(true)
+				.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
+						new TellrawPart("Click to open").setColor(Color.Blue)))
+				.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/test?test&test#test"))));
 
 		return list;
 	}
@@ -82,12 +87,12 @@ public class ChatFormatIT {
 	@Test
 	public void testMessage() {
 		ArrayList<ChatFormatter> cfs = ChatProcessing.addFormatters(Color.White);
-		final String chid = ChatProcessing.getChannelID(Channel.GlobalChat, sender);
-		final TellrawPart tp = ChatProcessing.createTellraw(sender, message, null, null, null, chid);
+		final String chid = ChatProcessing.getChannelID(Channel.GlobalChat, sender, ChatProcessing.MCORIGIN);
+		final TellrawPart tp = ChatProcessing.createTellraw(sender, message, null, null, null, chid, ChatProcessing.MCORIGIN);
 		ChatFormatter.Combine(cfs, message, tp);
 		System.out.println("Testing: " + message);
 		// System.out.println(ChatProcessing.toJson(tp));
-		final TellrawPart expectedtp = ChatProcessing.createTellraw(sender, message, null, null, null, chid);
+		final TellrawPart expectedtp = ChatProcessing.createTellraw(sender, message, null, null, null, chid, ChatProcessing.MCORIGIN);
 		// System.out.println("Raw: " + ChatProcessing.toJson(expectedtp));
 		for (TellrawPart extra : extras)
 			expectedtp.addExtra(extra);

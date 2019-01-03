@@ -3,6 +3,7 @@ package buttondevteam.chat.listener;
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.PluginMain;
+import buttondevteam.chat.commands.ucmds.HistoryCommand;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.*;
@@ -258,6 +259,7 @@ public class PlayerListener implements Listener {
 		try {
 			if (e.isCancelled())
 				return;
+			HistoryCommand.addChatMessage(e.getCm(), e.getChannel());
 			e.setCancelled(ChatProcessing.ProcessChat(e));
 		} catch (NoClassDefFoundError | Exception ex) { // Weird things can happen
 			for (Player p : Bukkit.getOnlinePlayers())
@@ -272,7 +274,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onChannelRegistered(ChatChannelRegisterEvent e) {
-		if (e.getChannel().filteranderrormsg != null && PluginMain.SB.getObjective(e.getChannel().ID) == null) // Not global chat and doesn't exist yet
+		if (!e.getChannel().isGlobal() && PluginMain.SB.getObjective(e.getChannel().ID) == null) // Not global chat and doesn't exist yet
 			PluginMain.SB.registerNewObjective(e.getChannel().ID, "dummy");
 	}
 

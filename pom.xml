@@ -96,6 +96,46 @@
 					</useSystemClassLoader> <!-- https://stackoverflow.com/a/53012553/2703239 -->
 				</configuration>
 			</plugin>
+			<!-- <plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
+				<version>2.2.5</version>
+				<executions>
+					<execution>
+						<id>get-the-git-infos</id>
+						<goals>
+							<goal>revision</goal>
+						</goals>
+						*NOTE*: The default phase of revision is initialize, but in case you want to change it, you can do so by adding the phase here
+						<phase>initialize</phase>
+						<configuration>
+							<injectAllReactorProjects>true</injectAllReactorProjects>
+						</configuration>
+					</execution>
+					<execution>
+						<id>validate-the-git-infos</id>
+						<goals>
+							<goal>validateRevision</goal>
+						</goals>
+						*NOTE*: The default phase of validateRevision is verify, but in case you want to change it, you can do so by adding the phase here
+						<phase>package</phase>
+						<configuration>
+							<validationProperties>
+								- <validationProperty>
+									<name>validating git dirty</name>
+									<value>${git.branch}</value>
+									<shouldMatchTo>dev</shouldMatchTo>
+								</validationProperty> -
+							</validationProperties>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<injectAllReactorProjects>true</injectAllReactorProjects>
+					<verbose>true</verbose>
+					<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+				</configuration>
+			</plugin> -->
 			<!-- <plugin> <groupId>org.basepom.maven</groupId> <artifactId>duplicate-finder-maven-plugin</artifactId> 
 				<version>1.2.1</version> <executions> <execution> <goals> <goal>check</goal> 
 				</goals> </execution> </executions> </plugin> -->
@@ -143,7 +183,7 @@
 		<dependency>
 			<groupId>com.github.TBMCPlugins.ButtonCore</groupId>
 			<artifactId>ButtonCore</artifactId>
-			<version>master-SNAPSHOT</version>
+			<version>${env.TRAVIS_BRANCH}-SNAPSHOT</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/net.sourceforge.htmlcleaner/htmlcleaner -->
 		<dependency>

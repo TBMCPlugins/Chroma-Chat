@@ -10,7 +10,10 @@ import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCChatEventBase;
 import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.chat.*;
+import buttondevteam.lib.chat.Channel;
+import buttondevteam.lib.chat.Color;
+import buttondevteam.lib.chat.Priority;
+import buttondevteam.lib.chat.TellrawSerializableEnum;
 import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerBase;
@@ -37,7 +40,7 @@ public class ChatProcessing {
     private static final Pattern ESCAPE_PATTERN = Pattern.compile("\\\\");
     private static final Pattern CONSOLE_PING_PATTERN = Pattern.compile("(?i)" + Pattern.quote("@console"));
     private static final Pattern HASHTAG_PATTERN = Pattern.compile("#(\\w+)");
-    private static final Pattern URL_PATTERN = Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),]+)");
+	private static final Pattern URL_PATTERN = Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),&]+(?:#[\\w]+)?)");
     public static final Pattern ENTIRE_MESSAGE_PATTERN = Pattern.compile(".+");
     private static final Pattern UNDERLINED_PATTERN = Pattern.compile("_");
     private static final Pattern ITALIC_PATTERN = Pattern.compile("\\*");
@@ -84,6 +87,7 @@ public class ChatProcessing {
             .registerTypeAdapter(Boolean.class, new TellrawSerializer.TwBool())
             .registerTypeAdapter(boolean.class, new TellrawSerializer.TwBool()).disableHtmlEscaping().create();
     private static final String[] testPlayers = {"Koiiev", "iie", "Alisolarflare", "NorbiPeti", "Arsen_Derby_FTW", "carrot_lynx"};
+    static final String MCORIGIN = "Minecraft"; //Shouldn't change, like ever - TBMCPlayer.getFolderForType(TBMCPlayer.class) capitalized
 
     private ChatProcessing() {
     }
@@ -126,9 +130,9 @@ public class ChatProcessing {
             }).build());
         }
         pingedconsole = false; // Will set it to true onmatch (static constructor)
-        final String channelidentifier = getChannelID(channel, sender);
+        final String channelidentifier = getChannelID(channel, sender, e.getOrigin());
 
-        TellrawPart json = createTellraw(sender, message, player, mp, e.getUser(), channelidentifier);
+        TellrawPart json = createTellraw(sender, message, player, mp, e.getUser(), channelidentifier, e.getOrigin());
         long combinetime = System.nanoTime();
         ChatFormatter.Combine(formatters, message, json);
         combinetime = System.nanoTime() - combinetime;
@@ -141,7 +145,7 @@ public class ChatProcessing {
         DebugCommand.SendDebugMessage(jsonstr);
 
         try {
-            if (channel.filteranderrormsg != null) {
+            if (!channel.isGlobal()) {
                 Objective obj = PluginMain.SB.getObjective(channel.ID);
                 int score = -1;
                 for (Player p : Bukkit.getOnlinePlayers()) {
@@ -192,7 +196,8 @@ public class ChatProcessing {
     }
 
     static TellrawPart createTellraw(CommandSender sender, String message, @Nullable Player player,
-                                     @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier) {
+                                     @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier,
+                                     String origin) {
         TellrawPart json = new TellrawPart("");
         if (mp != null && mp.ChatOnly) {
             json.addExtra(new TellrawPart("[C]")
@@ -202,7 +207,7 @@ public class ChatProcessing {
                 new TellrawPart(channelidentifier)
                         .setHoverEvent(
                                 TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT,
-                                        new TellrawPart((sender instanceof IDiscordSender ? "From Discord\n" : "")
+                                        new TellrawPart((MCORIGIN.equals(origin) ? "" : "From " + origin + "n")
                                                 + "Copy message").setColor(Color.Blue)))
                         .setClickEvent(TellrawEvent.create(TellrawEvent.ClickAction.SUGGEST_COMMAND, message)));
         if (PluginMain.permission.has(sender, "tbmc.badge.diamond"))
@@ -227,8 +232,8 @@ public class ChatProcessing {
         return player.getDisplayName();
     }
 
-    static String getChannelID(Channel channel, CommandSender sender) {
-        return ("[" + (sender instanceof IDiscordSender ? "§8D§r|" : "") + channel.DisplayName)
+    static String getChannelID(Channel channel, CommandSender sender, String origin) {
+        return ("[" + (MCORIGIN.equals(origin) ? "" : "§8" + origin.substring(0, 1) + "§r|") + channel.DisplayName)
                 + "]";
     }
 
@@ -252,19 +257,16 @@ public class ChatProcessing {
             namesb.append(")");
             StringBuilder nicksb = new StringBuilder("(?i)(");
             boolean addNickFormatter = false;
-            final int size = Bukkit.getOnlinePlayers().size();
             int index = 0;
             for (Player p : Bukkit.getOnlinePlayers()) {
                 final String nick = PlayerListener.nicknames.inverse().get(p.getUniqueId());
                 if (nick != null) {
-                    nicksb.append(nick);
-                    if (index < size - 1) {
-                        nicksb.append("|");
-                        addNickFormatter = true;
-                    }
+	                nicksb.append(nick).append("|");
+                    addNickFormatter = true; //Add it even if there's only 1 player online (it was in the if)
                 }
                 index++;
             }
+	        nicksb.deleteCharAt(nicksb.length() - 1);
             nicksb.append(")");
 
             Consumer<String> error = message -> {

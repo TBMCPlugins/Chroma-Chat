@@ -58,16 +58,16 @@ public class NColorCommand extends UCommandBase {
 			player.sendMessage("§cYour town doesn't have a color set. The town mayor can set it using /u towncolor.");
 			return true;
 		}
-		if (nameparts.length < towncolors.length) {
-            player.sendMessage("§cYou need more vertical lines (|) or colons (:) in your name. (Should have " + (towncolors.length - 1) + ")");
+		if (nameparts.length < towncolors.length + 1) { //+1: Nation color
+			player.sendMessage("§cYou need more vertical lines (|) or colons (:) in your name. (Should have " + (towncolors.length - 1 + 1) + ")"); //Nation color
 			return true;
 		}
-		if (nameparts.length > towncolors.length * 2) {
-            player.sendMessage("§cYou have waay too many vertical lines (|) or colons (:) in your name. (Should have " + (towncolors.length - 1) + ")");
+		if (nameparts.length > (towncolors.length + 1) * 2) {
+			player.sendMessage("§cYou have waay too many vertical lines (|) or colons (:) in your name. (Should have " + (towncolors.length - 1 + 1) + ")");
 			return true;
 		}
-		if (nameparts.length > towncolors.length) {
-            player.sendMessage("§cYou have too many vertical lines (|) or colons (:) in your name. (Should have " + (towncolors.length - 1) + ")");
+		if (nameparts.length > towncolors.length + 1) {
+			player.sendMessage("§cYou have too many vertical lines (|) or colons (:) in your name. (Should have " + (towncolors.length - 1 + 1) + ")");
 			return true;
 		}
 		ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations()

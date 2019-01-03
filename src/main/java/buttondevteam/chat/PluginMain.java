@@ -2,6 +2,7 @@ package buttondevteam.chat;
 
 import buttondevteam.chat.commands.YeehawCommand;
 import buttondevteam.chat.commands.ucmds.TownColorCommand;
+import buttondevteam.chat.listener.PlayerJoinLeaveListener;
 import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.chat.listener.TownyListener;
 import buttondevteam.lib.TBMCCoreAPI;
@@ -81,6 +82,7 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 		PluginMain.essentials = (Essentials) (Bukkit.getPluginManager().getPlugin("Essentials"));
 
 		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerListener(), this);
+		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerJoinLeaveListener(), this);
 		TBMCCoreAPI.RegisterEventsForExceptions(new TownyListener(), this);
 		TBMCChatAPI.AddCommands(this, YeehawCommand.class);
 		Console = this.getServer().getConsoleSender();

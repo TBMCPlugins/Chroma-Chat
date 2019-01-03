@@ -5,6 +5,7 @@ import buttondevteam.chat.FlairStates;
 import buttondevteam.chat.PlayerJoinTimerTask;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.commands.UnlolCommand;
+import buttondevteam.chat.commands.ucmds.HistoryCommand;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.player.TBMCPlayerJoinEvent;
 import buttondevteam.lib.player.TBMCPlayerLoadEvent;
@@ -64,14 +65,14 @@ public class PlayerJoinLeaveListener implements Listener {
 			nwithoutformatting = p.getName();
 		PlayerListener.nicknames.forcePut(nwithoutformatting.toLowerCase(), p.getUniqueId());
 
-        Bukkit.getScheduler().runTaskLater(PluginMain.Instance, () -> {
-            updatePlayerColors(p, cp); //TODO: Doesn't have effect
-        }, 5);
+		updatePlayerColors(p, cp); //TO!DO: Doesn't have effect - It can help to register the listener
 
 		if (cp.ChatOnly || p.getGameMode().equals(GameMode.SPECTATOR)) {
 			cp.ChatOnly = false;
 			p.setGameMode(GameMode.SURVIVAL);
 		}
+
+		HistoryCommand.showHistory(e.getPlayer(), "u history", new String[0], null);
 	}
 
 	@EventHandler
