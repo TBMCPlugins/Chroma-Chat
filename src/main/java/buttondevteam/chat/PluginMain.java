@@ -58,8 +58,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 	public static Scoreboard SB;
 	public static TownyUniverse TU;
-	private static ArrayList<Town> Towns;
-	private static ArrayList<Nation> Nations;
+	private static ArrayList<String> Towns;
+	private static ArrayList<String> Nations;
 
 	public static Channel TownChat;
 	public static Channel NationChat;
@@ -90,8 +90,8 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 		SB = getServer().getScoreboardManager().getMainScoreboard(); // Main can be detected with @a[score_...]
 		TU = ((Towny) Bukkit.getPluginManager().getPlugin("Towny")).getTownyUniverse();
-		Towns = new ArrayList<>(TU.getTownsMap().values()); // Creates a snapshot of towns, new towns will be added when needed
-		Nations = new ArrayList<>(TU.getNationsMap().values()); // Same here but with nations
+		Towns = TU.getTownsMap().values().stream().map(Town::getName).collect(Collectors.toCollection(ArrayList::new)); // Creates a snapshot of towns, new towns will be added when needed
+		Nations = TU.getNationsMap().values().stream().map(Nation::getName).collect(Collectors.toCollection(ArrayList::new)); // Same here but with nations
 
 		TownColors.keySet().removeIf(t -> !TU.getTownsMap().containsKey(t)); // Removes town colors for deleted/renamed towns
 		NationColor.keySet().removeIf(n -> !TU.getNationsMap().containsKey(n)); // Removes nation colors for deleted/renamed nations
@@ -406,21 +406,22 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 					nation = town.getNation();
 				if (nation == null)
 					return new RecipientTestResult("Your town isn't in a nation.");
-				index = PluginMain.Nations.indexOf(nation);
-				if (index < 0) {
-					PluginMain.Nations.add(nation);
-					index = PluginMain.Nations.size() - 1;
-				}
-			} else {
-				index = PluginMain.Towns.indexOf(town);
-				if (index < 0) {
-					PluginMain.Towns.add(town);
-					index = PluginMain.Towns.size() - 1;
-				}
-			}
+				index = getTownNationIndex(nation.getName(), true);
+			} else
+				index = getTownNationIndex(town.getName(), false);
 			return new RecipientTestResult(index, nationchat ? nation.getName() : town.getName());
 		} catch (NotRegisteredException e) {
 			return new RecipientTestResult("You (probably) aren't knwon by Towny! (Not in a town)");
 		}
+	}
+
+	public static int getTownNationIndex(String name, boolean nation) {
+		val list = nation ? Nations : Towns;
+		int index = list.indexOf(name);
+		if (index < 0) {
+			list.add(name);
+			index = list.size() - 1;
+		}
+		return index;
 	}
 }

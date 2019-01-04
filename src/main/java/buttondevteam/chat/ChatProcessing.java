@@ -257,14 +257,12 @@ public class ChatProcessing {
             namesb.append(")");
             StringBuilder nicksb = new StringBuilder("(?i)(");
             boolean addNickFormatter = false;
-            int index = 0;
             for (Player p : Bukkit.getOnlinePlayers()) {
                 final String nick = PlayerListener.nicknames.inverse().get(p.getUniqueId());
                 if (nick != null) {
 	                nicksb.append(nick).append("|");
                     addNickFormatter = true; //Add it even if there's only 1 player online (it was in the if)
                 }
-                index++;
             }
 	        nicksb.deleteCharAt(nicksb.length() - 1);
             nicksb.append(")");
