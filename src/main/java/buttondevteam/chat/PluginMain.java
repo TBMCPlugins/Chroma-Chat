@@ -2,10 +2,13 @@ package buttondevteam.chat;
 
 import buttondevteam.chat.commands.YeehawCommand;
 import buttondevteam.chat.commands.ucmds.TownColorCommand;
+import buttondevteam.chat.components.TownColorComponent;
+import buttondevteam.chat.components.TownyComponent;
 import buttondevteam.chat.listener.PlayerJoinLeaveListener;
 import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.chat.listener.TownyListener;
 import buttondevteam.lib.TBMCCoreAPI;
+import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.Channel.RecipientTestResult;
 import buttondevteam.lib.chat.Color;
@@ -115,6 +118,9 @@ public class PluginMain extends JavaPlugin { // Translated to Java: 2015.07.15.
 
 		new Thread(this::FlairGetterThreadMethod).start();
 		new Thread(new AnnouncerThread()).start();
+
+		Component.registerComponent(this, new TownyComponent());
+		Component.registerComponent(this, new TownColorComponent());
 	}
 
     /**

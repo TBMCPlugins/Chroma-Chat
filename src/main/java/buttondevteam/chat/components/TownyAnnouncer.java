@@ -1,5 +1,6 @@
 package buttondevteam.chat.components;
 
+import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.TBMCChatAPI;
@@ -11,7 +12,7 @@ import java.util.logging.LogRecord;
 import java.util.regex.Pattern;
 
 public class TownyAnnouncer {
-	private static final Pattern LOG_TYPE_PATTERN = Pattern.compile("\\[(\\w+ (?:Msg|Message))] (\\w+):");
+	private static final Pattern LOG_TYPE_PATTERN = Pattern.compile("\\[(\\w+) (?:Msg|Message)](?: (\\w+):)?");
 	private static final Handler HANDLER = new Handler() {
 		@Override
 		public void publish(LogRecord logRecord) {
@@ -23,14 +24,17 @@ public class TownyAnnouncer {
 				case "Town":
 					TBMCChatAPI.SendSystemMessage(PluginMain.TownChat,
 						new Channel.RecipientTestResult(PluginMain.getTownNationIndex(groupID, false), groupID),
-						logRecord.getMessage()); //TODO: This will also send it in Minecraft
+						logRecord.getMessage(), ChatProcessing.MCORIGIN);
 					break;
 				case "Nation":
 					TBMCChatAPI.SendSystemMessage(PluginMain.NationChat,
 						new Channel.RecipientTestResult(PluginMain.getTownNationIndex(groupID, true), groupID),
-						logRecord.getMessage()); //TODO: This will also send it in Minecraft
+						logRecord.getMessage(), ChatProcessing.MCORIGIN);
 					break;
-				case "Global": //TODO
+				case "Global":
+					TBMCChatAPI.SendSystemMessage(Channel.GlobalChat,
+						Channel.RecipientTestResult.ALL,
+						logRecord.getMessage(), ChatProcessing.MCORIGIN);
 					break;
 			}
 		}
