@@ -5,11 +5,11 @@ import buttondevteam.lib.architecture.ConfigData;
 
 public class TownColorComponent extends Component {
 	public ConfigData<Byte> colorCount() { //TODO
-		return getData("colorCount", (byte) 1, cc -> (byte) cc, cc -> (int) cc);
+		return getConfig().getData("colorCount", (byte) 1, cc -> (byte) cc, cc -> (int) cc);
 	}
 
 	public ConfigData<Boolean> useNationColors() { //TODO
-		return getData("useNationColors", true);
+		return getConfig().getData("useNationColors", true);
 	}
 
 	@Override
