@@ -4,9 +4,13 @@ import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.commands.ucmds.HistoryCommand;
+import buttondevteam.component.channel.Channel;
+import buttondevteam.component.channel.ChatChannelRegisterEvent;
+import buttondevteam.component.channel.ChatRoom;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.chat.*;
+import buttondevteam.lib.chat.ChatMessage;
+import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
 import buttondevteam.lib.player.TBMCPlayer;
@@ -78,7 +82,7 @@ public class PlayerListener implements Listener {
 		int index = message.indexOf(" ");
 		val mp = ChromaGamerBase.getFromSender(sender);
 		String cmd;
-		final BiPredicate<Channel, String> checkchid = (chan, cmd1) -> cmd1.equalsIgnoreCase(chan.ID) || (chan.IDs != null && Arrays.stream(chan.IDs).anyMatch(cmd1::equalsIgnoreCase));
+		final BiPredicate<Channel, String> checkchid = (chan, cmd1) -> cmd1.equalsIgnoreCase(chan.ID) || (Arrays.stream(chan.IDs().get()).anyMatch(cmd1::equalsIgnoreCase));
 		if (index == -1) { // Only the command is run
 			if (!(sender instanceof Player || sender instanceof ConsoleCommandSender))
 				return false;
@@ -96,7 +100,7 @@ public class PlayerListener implements Listener {
 						if (channel instanceof ChatRoom)
 							((ChatRoom) channel).joinRoom(sender);
 					}
-					sender.sendMessage("§6You are now talking in: §b" + mp.channel().get().DisplayName);
+					sender.sendMessage("§6You are now talking in: §b" + mp.channel().get().DisplayName().get());
 					return true;
 				}
 			}
@@ -265,7 +269,7 @@ public class PlayerListener implements Listener {
 			for (Player p : Bukkit.getOnlinePlayers())
 				if (e.shouldSendTo(p))
 					p.sendMessage("§c!§r["
-							+ e.getChannel().DisplayName + "] <" + (e.getSender() instanceof Player
+						+ e.getChannel().DisplayName().get() + "] <" + (e.getSender() instanceof Player
 							? ((Player) e.getSender()).getDisplayName() : e.getSender().getName())
 							+ "> " + e.getMessage());
 			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex);

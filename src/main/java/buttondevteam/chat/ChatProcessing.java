@@ -7,10 +7,10 @@ import buttondevteam.chat.formatting.TellrawEvent;
 import buttondevteam.chat.formatting.TellrawPart;
 import buttondevteam.chat.formatting.TellrawSerializer;
 import buttondevteam.chat.listener.PlayerListener;
+import buttondevteam.component.channel.Channel;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCChatEventBase;
 import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.Priority;
 import buttondevteam.lib.chat.TellrawSerializableEnum;
@@ -114,7 +114,7 @@ public class ChatProcessing {
         else //Due to the online player map, getPlayer() can be more efficient than getAs()
             mp = e.getUser().getAs(ChatPlayer.class); //May be null
 
-        Color colormode = channel.color;
+	    Color colormode = channel.Color().get();
         if (mp != null && mp.OtherColorMode != null)
             colormode = mp.OtherColorMode;
         if (message.startsWith(">"))
@@ -122,7 +122,7 @@ public class ChatProcessing {
         // If greentext, ignore channel or player colors
 
         ArrayList<ChatFormatter> formatters = addFormatters(colormode);
-        if (colormode == channel.color && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
+	    if (colormode == channel.Color().get() && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
             final AtomicInteger rpc = new AtomicInteger(0);
             formatters.add(ChatFormatter.builder().color(colormode).onmatch((match, cf) -> {
                 cf.setColor(RainbowPresserColors[rpc.getAndUpdate(i -> ++i < RainbowPresserColors.length ? i : 0)]);
@@ -233,7 +233,7 @@ public class ChatProcessing {
     }
 
     static String getChannelID(Channel channel, CommandSender sender, String origin) {
-        return ("[" + (MCORIGIN.equals(origin) ? "" : "§8" + origin.substring(0, 1) + "§r|") + channel.DisplayName)
+	    return ("[" + (MCORIGIN.equals(origin) ? "" : "§8" + origin.substring(0, 1) + "§r|") + channel.DisplayName().get())
                 + "]";
     }
 
