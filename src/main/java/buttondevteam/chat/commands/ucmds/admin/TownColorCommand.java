@@ -1,6 +1,7 @@
 package buttondevteam.chat.commands.ucmds.admin;
 
 import buttondevteam.chat.PluginMain;
+import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.chat.listener.TownyListener;
 import buttondevteam.lib.chat.Color;
 import com.palmergames.bukkit.towny.object.Town;
@@ -35,12 +36,12 @@ public class TownColorCommand extends AdminCommandBase {
     public static boolean SetTownColor(CommandSender sender, String alias, String[] args) {
         if (args.length < 2)
             return false;
-        if (!PluginMain.TU.getTownsMap().containsKey(args[0].toLowerCase())) {
+	    if (!TownyComponent.TU.getTownsMap().containsKey(args[0].toLowerCase())) {
             sender.sendMessage("§cThe town '" + args[0] + "' cannot be found.");
             return true;
         }
 	    Color[] clrs = new Color[args.length - 1];
-	    Town targetTown = PluginMain.TU.getTownsMap().get(args[0].toLowerCase());
+	    Town targetTown = TownyComponent.TU.getTownsMap().get(args[0].toLowerCase());
 	    for (int i = 1; i < args.length; i++) {
 		    val c = getColorOrSendError(args[i], sender);
 		    if (!c.isPresent())
@@ -50,7 +51,7 @@ public class TownColorCommand extends AdminCommandBase {
 	    for (Map.Entry<String, Color[]> other : PluginMain.TownColors.entrySet()) {
 		    Color nc, tnc;
 		    try {
-			    nc = PluginMain.NationColor.get(PluginMain.TU.getTownsMap().get(other.getKey()).getNation().getName().toLowerCase());
+			    nc = PluginMain.NationColor.get(TownyComponent.TU.getTownsMap().get(other.getKey()).getNation().getName().toLowerCase());
 		    } catch (Exception e) { //Too lazy for lots of null-checks and it may throw exceptions anyways
 			    nc = null;
 		    }
@@ -103,6 +104,6 @@ public class TownColorCommand extends AdminCommandBase {
 	}
 
 	public static String getTownNameCased(String name) {
-        return PluginMain.TU.getTownsMap().get(name.toLowerCase()).getName();
+		return TownyComponent.TU.getTownsMap().get(name.toLowerCase()).getName();
     }
 }

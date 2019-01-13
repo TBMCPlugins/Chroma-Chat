@@ -1,4 +1,4 @@
-package buttondevteam.chat.components;
+package buttondevteam.chat.components.towny;
 
 import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.PluginMain;
@@ -23,12 +23,12 @@ public class TownyAnnouncer {
 			switch (String.valueOf(m.group(1))) { //valueOf: Handles null
 				case "Town":
 					TBMCChatAPI.SendSystemMessage(PluginMain.TownChat,
-						new Channel.RecipientTestResult(PluginMain.getTownNationIndex(groupID, false), groupID),
+						new Channel.RecipientTestResult(TownyComponent.getTownNationIndex(groupID, false), groupID),
 						logRecord.getMessage(), ChatProcessing.MCORIGIN);
 					break;
 				case "Nation":
 					TBMCChatAPI.SendSystemMessage(PluginMain.NationChat,
-						new Channel.RecipientTestResult(PluginMain.getTownNationIndex(groupID, true), groupID),
+						new Channel.RecipientTestResult(TownyComponent.getTownNationIndex(groupID, true), groupID),
 						logRecord.getMessage(), ChatProcessing.MCORIGIN);
 					break;
 				case "Global":

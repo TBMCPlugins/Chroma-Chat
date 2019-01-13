@@ -1,6 +1,6 @@
 package buttondevteam.chat.commands.ucmds;
 
-import buttondevteam.chat.PluginMain;
+import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
@@ -26,8 +26,8 @@ public class NationColorCommand extends UCommandBase {
 	@Override
 	public boolean OnCommand(Player player, String alias, String[] args) {
 		Resident res;
-		if (!(PluginMain.TU.getResidentMap().containsKey(player.getName().toLowerCase())
-				&& (res = PluginMain.TU.getResidentMap().get(player.getName().toLowerCase())).isKing())) {
+		if (!(TownyComponent.TU.getResidentMap().containsKey(player.getName().toLowerCase())
+			&& (res = TownyComponent.TU.getResidentMap().get(player.getName().toLowerCase())).isKing())) {
 			player.sendMessage("§cYou need to be the king of a nation to set it's colors.");
 			return true;
 		}

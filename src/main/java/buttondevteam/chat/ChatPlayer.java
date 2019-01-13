@@ -1,12 +1,12 @@
 package buttondevteam.chat;
 
+import buttondevteam.chat.components.flair.FlairStates;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.player.EnumPlayerData;
 import buttondevteam.lib.player.PlayerClass;
 import buttondevteam.lib.player.PlayerData;
 import buttondevteam.lib.player.TBMCPlayerBase;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -46,14 +46,11 @@ public class ChatPlayer extends TBMCPlayerBase {
 		return data(null);
 	}
 
-	public Location SavedLocation;
 	public boolean Working;
 	// public int Tables = 10;
-	public boolean SendingLink = false;
 	public boolean RainbowPresserColorMode = false;
 	public Color OtherColorMode = null;
 	public boolean ChatOnly = false;
-	public int LoginWarningCount = 0;
 
 	public static final int FlairTimeNonPresser = -1;
 	public static final int FlairTimeCantPress = -2;

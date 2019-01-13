@@ -1,11 +1,14 @@
 package buttondevteam.chat.listener;
 
 import buttondevteam.chat.ChatPlayer;
-import buttondevteam.chat.FlairStates;
 import buttondevteam.chat.PlayerJoinTimerTask;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.commands.UnlolCommand;
 import buttondevteam.chat.commands.ucmds.HistoryCommand;
+import buttondevteam.chat.components.flair.FlairComponent;
+import buttondevteam.chat.components.flair.FlairStates;
+import buttondevteam.chat.components.towny.TownyComponent;
+import buttondevteam.core.ComponentManager;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.player.TBMCPlayerJoinEvent;
 import buttondevteam.lib.player.TBMCPlayerLoadEvent;
@@ -40,18 +43,20 @@ public class PlayerJoinLeaveListener implements Listener {
 		ChatPlayer cp = e.GetPlayer().asPluginPlayer(ChatPlayer.class);
 		Player p = Bukkit.getPlayer(cp.getUUID());
 
-		if (!cp.FlairState().get().equals(FlairStates.NoComment)) {
-			PluginMain.ConfirmUserMessage(cp);
-			Timer timer = new Timer();
-			PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
-				@Override
-				public void run() {
-                    mp.FlairUpdate();
-				}
-			};
-			tt.mp = cp;
-			timer.schedule(tt, 1000);
-		} //TODO: Better Reddit integration (OAuth)
+		if (ComponentManager.isEnabled(FlairComponent.class)) {
+			if (!cp.FlairState().get().equals(FlairStates.NoComment)) {
+				FlairComponent.ConfirmUserMessage(cp);
+				Timer timer = new Timer();
+				PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
+					@Override
+					public void run() {
+						mp.FlairUpdate();
+					}
+				};
+				tt.mp = cp;
+				timer.schedule(tt, 1000);
+			} //TODO: Better Reddit integration (OAuth)
+		}
 
 		String nwithoutformatting = PluginMain.essentials.getUser(p).getNickname();
 
@@ -90,7 +95,7 @@ public class PlayerJoinLeaveListener implements Listener {
         if (nickname.contains("~")) //StartsWith doesn't work because of color codes
             nickname = nickname.replace("~", ""); //It gets stacked otherwise
 		String name = ChatColor.stripColor(nickname); //Enforce "town colors" on non-members
-        val res = PluginMain.TU.getResidentMap().get(player.getName().toLowerCase());
+		val res = TownyComponent.TU.getResidentMap().get(player.getName().toLowerCase());
         if (res == null || !res.hasTown())
 	        return name;
         try {

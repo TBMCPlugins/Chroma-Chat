@@ -1,6 +1,7 @@
 package buttondevteam.chat.commands.ucmds.admin;
 
 import buttondevteam.chat.PluginMain;
+import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.chat.listener.TownyListener;
 import buttondevteam.lib.chat.Color;
 import com.palmergames.bukkit.towny.object.Nation;
@@ -31,7 +32,7 @@ public class NationColorCommand extends AdminCommandBase {
 			sender.sendMessage("§cYou can only use one color as a nation color.");
 			return true;
 		}
-		final Nation nation = PluginMain.TU.getNationsMap().get(args[0].toLowerCase());
+		final Nation nation = TownyComponent.TU.getNationsMap().get(args[0].toLowerCase());
 		if (nation == null) {
 			sender.sendMessage("§cThe nation '" + args[0] + "' cannot be found.");
 			return true;

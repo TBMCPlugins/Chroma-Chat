@@ -4,9 +4,11 @@ import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.commands.ucmds.HistoryCommand;
+import buttondevteam.chat.components.flair.FlairComponent;
 import buttondevteam.component.channel.Channel;
 import buttondevteam.component.channel.ChatChannelRegisterEvent;
 import buttondevteam.component.channel.ChatRoom;
+import buttondevteam.core.ComponentManager;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.ChatMessage;
@@ -50,14 +52,8 @@ public class PlayerListener implements Listener {
 	 */
 	public static BiMap<String, UUID> nicknames = HashBiMap.create();
 
-	public static boolean Enable = false;
-
-	public static int LoginWarningCountTotal = 5;
-
 	public static String NotificationSound;
 	public static double NotificationPitch;
-
-	public static boolean ShowRPTag = false;
 
     public final static String[] LaughStrings = new String[]{"xd", "lel", "lawl", "kek", "lmao", "hue", "hah", "rofl"};
 
@@ -88,7 +84,7 @@ public class PlayerListener implements Listener {
 				return false;
 			// ^^ We can only store player or console channels - Directly sending to channels would still work if they had an event
 			cmd = sender instanceof ConsoleCommandSender ? message : message.substring(1);
-			for (Channel channel : Channel.getChannels()) {
+			for (Channel channel : ((Iterable<Channel>) Channel.getChannels()::iterator)) { //Using Stream.forEach would be too easy
 				if (checkchid.test(channel, cmd)) {
 					Channel oldch = mp.channel().get();
 					if (oldch instanceof ChatRoom)
@@ -130,7 +126,7 @@ public class PlayerListener implements Listener {
 					return true;
 				}
 			} else
-				for (Channel channel : Channel.getChannels()) {
+				for (Channel channel : (Iterable<Channel>) Channel.getChannels()::iterator) {
 					if (checkchid.test(channel, cmd)) { //Apparently method references don't require final variables
 						TBMCChatAPI.SendChatMessage(ChatMessage.builder(sender, mp, message.substring(index + 1)).build(), channel);
 						return true;
@@ -173,13 +169,10 @@ public class PlayerListener implements Listener {
 	public static boolean ActiveF = false;
 	public static ChatPlayer FPlayer = null;
 	public static BukkitTask Ftask = null;
-	public static int AlphaDeaths;
 	public static ArrayList<CommandSender> Fs = new ArrayList<>();
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
-		if (e.getEntity().getName().equals("Alpha_Bacca44"))
-			AlphaDeaths++;
 		// MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(e.getEntity());
 		if (/* (mgp != null && !mgp.isInMinigame()) && */ new Random().nextBoolean()) { // Don't store Fs for NPCs
 			Runnable tt = () -> {
@@ -249,9 +242,11 @@ public class PlayerListener implements Listener {
 			e.addInfo("Minecraft name: " + cp.PlayerName().get());
 			if (cp.UserName().get() != null && cp.UserName().get().length() > 0)
 				e.addInfo("Reddit name: " + cp.UserName().get());
-			final String flair = cp.GetFormattedFlair(e.getTarget() != InfoTarget.MCCommand);
-			if (flair.length() > 0)
-				e.addInfo("/r/TheButton flair: " + flair);
+			if (ComponentManager.isEnabled(FlairComponent.class)) {
+				final String flair = cp.GetFormattedFlair(e.getTarget() != InfoTarget.MCCommand);
+				if (flair.length() > 0)
+					e.addInfo("/r/TheButton flair: " + flair);
+			}
             e.addInfo(String.format("Respect: %.2f", cp.getF()));
 		} catch (Exception ex) {
 			TBMCCoreAPI.SendException("Error while providing chat info for player " + e.getPlayer().getFileName(), ex);

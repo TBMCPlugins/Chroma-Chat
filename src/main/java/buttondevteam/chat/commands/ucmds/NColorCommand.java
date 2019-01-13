@@ -2,6 +2,7 @@ package buttondevteam.chat.commands.ucmds;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
+import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.chat.listener.PlayerJoinLeaveListener;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.CommandClass;
@@ -34,7 +35,7 @@ public class NColorCommand extends UCommandBase {
 		Resident res;
 		Town town;
 		try {
-			if ((res = PluginMain.TU.getResidentMap().get(player.getName().toLowerCase())) == null || !res.hasTown()
+			if ((res = TownyComponent.TU.getResidentMap().get(player.getName().toLowerCase())) == null || !res.hasTown()
 					|| (town = res.getTown()) == null) {
 				player.sendMessage("§cYou need to be in a town.");
 				return true;
