@@ -183,7 +183,7 @@
 		<dependency>
 			<groupId>com.github.TBMCPlugins.ButtonCore</groupId>
 			<artifactId>ButtonCore</artifactId>
-			<version>${env.TRAVIS_BRANCH}-SNAPSHOT</version>
+            <version>${branch}-SNAPSHOT</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/net.sourceforge.htmlcleaner/htmlcleaner -->
 		<dependency>
@@ -259,5 +259,23 @@
 		<!-- github server corresponds to entry in ~/.m2/settings.xml -->
 		<github.global.server>githubo</github.global.server>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+        <branch>
+            master
+        </branch> <!-- Should be master if building ButtonCore locally - the CI will overwrite it (see below) -->
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>ci</id>
+            <activation>
+                <property>
+                    <name>env.TRAVIS_BRANCH</name>
+                </property>
+            </activation>
+            <properties>
+                <!-- Override only if necessary -->
+                <branch>${env.TRAVIS_BRANCH}</branch>
+            </properties>
+        </profile>
+    </profiles>
 </project>

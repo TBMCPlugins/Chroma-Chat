@@ -1,5 +1,6 @@
-package buttondevteam.chat.commands.ucmds;
+package buttondevteam.chat.components.towncolors;
 
+import buttondevteam.chat.commands.ucmds.UCommandBase;
 import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.CommandClass;
@@ -44,6 +45,6 @@ public class NationColorCommand extends UCommandBase {
 			player.sendMessage("§cCouldn't find your town/nation... Error reported.");
 			return true;
 		}
-		return buttondevteam.chat.commands.ucmds.admin.NationColorCommand.SetNationColor(player, alias, a);
+		return buttondevteam.chat.components.towncolors.admin.NationColorCommand.SetNationColor(player, alias, a);
 	}
 }

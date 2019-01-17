@@ -5,6 +5,7 @@ import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.commands.ucmds.HistoryCommand;
 import buttondevteam.chat.components.flair.FlairComponent;
+import buttondevteam.chat.components.towncolors.TownColorComponent;
 import buttondevteam.component.channel.Channel;
 import buttondevteam.component.channel.ChatChannelRegisterEvent;
 import buttondevteam.component.channel.ChatRoom;
@@ -51,9 +52,6 @@ public class PlayerListener implements Listener {
 	 * Does not contain format codes, lowercased
 	 */
 	public static BiMap<String, UUID> nicknames = HashBiMap.create();
-
-	public static String NotificationSound;
-	public static double NotificationPitch;
 
     public final static String[] LaughStrings = new String[]{"xd", "lel", "lawl", "kek", "lmao", "hue", "hah", "rofl"};
 
@@ -286,7 +284,7 @@ public class PlayerListener implements Listener {
             nicknames.inverse().forcePut(e.getAffected().getBase().getUniqueId(), ChatColor.stripColor(nick).toLowerCase());
 
 		Bukkit.getScheduler().runTaskLater(PluginMain.Instance, () -> {
-            PlayerJoinLeaveListener.updatePlayerColors(e.getAffected().getBase()); //Won't fire this event again
+			TownColorComponent.updatePlayerColors(e.getAffected().getBase()); //Won't fire this event again
 		}, 1);
 	}
 }

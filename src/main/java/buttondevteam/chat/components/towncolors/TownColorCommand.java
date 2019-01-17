@@ -1,11 +1,13 @@
-package buttondevteam.chat.commands.ucmds;
+package buttondevteam.chat.components.towncolors;
 
+import buttondevteam.chat.commands.ucmds.UCommandBase;
 import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
+import lombok.val;
 import org.bukkit.entity.Player;
 
 @CommandClass // TODO: /u u when annotation not present
@@ -14,7 +16,8 @@ public class TownColorCommand extends UCommandBase {
 	@Override
 	public String GetHelpText(String alias)[] {
 		StringBuilder cns = new StringBuilder(" <colorname1>");
-		for (int i = 2; i <= ColorCount; i++)
+		val comp = (TownColorComponent) getComponent();
+		for (int i = 2; i <= comp.colorCount().get(); i++)
 			cns.append(" [colorname").append(i).append("]");
 		return new String[] { //
 				"§6---- Town Color ----", //
@@ -26,8 +29,6 @@ public class TownColorCommand extends UCommandBase {
 		};
 	}
 
-	public static byte ColorCount;
-
 	@Override
 	public boolean OnCommand(Player player, String alias, String[] args) {
 		Resident res;
@@ -36,8 +37,9 @@ public class TownColorCommand extends UCommandBase {
 			player.sendMessage("§cYou need to be the mayor of a town to set it's colors.");
 			return true;
 		}
-		if (args.length > ColorCount) {
-			player.sendMessage("You can only use " + ColorCount + " color" + (ColorCount > 1 ? "s" : "") + ".");
+		val comp = (TownColorComponent) getComponent();
+		if (args.length > comp.colorCount().get()) {
+			player.sendMessage("You can only use " + comp.colorCount().get() + " color" + (comp.colorCount().get() > 1 ? "s" : "") + ".");
 			return true;
 		}
 		String[] a = new String[args.length + 1];
@@ -49,6 +51,6 @@ public class TownColorCommand extends UCommandBase {
 			player.sendMessage("§cCouldn't find your town... Error reported.");
 			return true;
 		}
-		return buttondevteam.chat.commands.ucmds.admin.TownColorCommand.SetTownColor(player, alias, a);
+		return buttondevteam.chat.components.towncolors.admin.TownColorCommand.SetTownColor(player, alias, a);
 	}
 }

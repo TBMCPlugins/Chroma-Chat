@@ -1,8 +1,10 @@
-package buttondevteam.chat.commands.ucmds.admin;
+package buttondevteam.chat.components.towncolors.admin;
 
 import buttondevteam.chat.PluginMain;
+import buttondevteam.chat.commands.ucmds.admin.AdminCommandBase;
+import buttondevteam.chat.components.towncolors.TownColorComponent;
+import buttondevteam.chat.components.towncolors.TownyListener;
 import buttondevteam.chat.components.towny.TownyComponent;
-import buttondevteam.chat.listener.TownyListener;
 import buttondevteam.lib.chat.Color;
 import com.palmergames.bukkit.towny.object.Town;
 import lombok.val;
@@ -48,16 +50,16 @@ public class TownColorCommand extends AdminCommandBase {
                 return true;
 		    clrs[i - 1] = c.get();
         }
-	    for (Map.Entry<String, Color[]> other : PluginMain.TownColors.entrySet()) {
+	    for (Map.Entry<String, Color[]> other : TownColorComponent.TownColors.entrySet()) {
 		    Color nc, tnc;
 		    try {
-			    nc = PluginMain.NationColor.get(TownyComponent.TU.getTownsMap().get(other.getKey()).getNation().getName().toLowerCase());
+			    nc = TownColorComponent.NationColor.get(TownyComponent.TU.getTownsMap().get(other.getKey()).getNation().getName().toLowerCase());
 		    } catch (Exception e) { //Too lazy for lots of null-checks and it may throw exceptions anyways
 			    nc = null;
 		    }
 		    if (nc == null) nc = Color.White; //Default nation color
 		    try {
-			    tnc = PluginMain.NationColor.get(targetTown.getNation().getName().toLowerCase());
+			    tnc = TownColorComponent.NationColor.get(targetTown.getNation().getName().toLowerCase());
 		    } catch (Exception e) {
 			    tnc = null;
 		    }
@@ -75,7 +77,7 @@ public class TownColorCommand extends AdminCommandBase {
 			    }
 		    }
 	    }
-        PluginMain.TownColors.put(args[0].toLowerCase(), clrs);
+	    TownColorComponent.TownColors.put(args[0].toLowerCase(), clrs);
 	    TownyListener.updateTownMembers(targetTown);
 
         val dtp = (DynmapTownyPlugin) Bukkit.getPluginManager().getPlugin("Dynmap-Towny");
@@ -84,7 +86,7 @@ public class TownColorCommand extends AdminCommandBase {
             PluginMain.Instance.getLogger().warning("Dynmap-Towny not found for setting town color!");
             return true;
         }
-	    PluginMain.setTownColor(dtp, targetTown.getName(), clrs);
+	    TownColorComponent.setTownColor(dtp, targetTown.getName(), clrs);
         sender.sendMessage("§bColor(s) set.");
         return true;
     }

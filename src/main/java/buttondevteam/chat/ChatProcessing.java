@@ -46,7 +46,7 @@ public class ChatProcessing {
     private static final Pattern ITALIC_PATTERN = Pattern.compile("\\*");
     private static final Pattern BOLD_PATTERN = Pattern.compile("\\*\\*");
     private static final Pattern CODE_PATTERN = Pattern.compile("`");
-    private static final Pattern MASKED_LINK_PATTERN = Pattern.compile("\\[([^\\[\\]])\\]\\(([^()])\\)");
+	private static final Pattern MASKED_LINK_PATTERN = Pattern.compile("\\[([^\\[\\]])]\\(([^()])\\)");
     private static final Pattern SOMEONE_PATTERN = Pattern.compile("@someone"); //TODO
     private static final Pattern STRIKETHROUGH_PATTERN = Pattern.compile("~~");
     private static final Color[] RainbowPresserColors = new Color[]{Color.Red, Color.Gold, Color.Yellow, Color.Green,
@@ -285,11 +285,11 @@ public class ChatProcessing {
                         }
                         ChatPlayer mpp = TBMCPlayer.getPlayer(nottest ? p.getUniqueId() : new UUID(0, 0), ChatPlayer.class);
                         if (nottest) {
-                            if (PlayerListener.NotificationSound == null)
+	                        if (PluginMain.Instance.notificationSound().get().length() == 0)
                                 p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
                             else
-                                p.playSound(p.getLocation(), PlayerListener.NotificationSound, 1.0f,
-                                        (float) PlayerListener.NotificationPitch);
+		                        p.playSound(p.getLocation(), PluginMain.Instance.notificationSound().get(), 1.0f,
+			                        PluginMain.Instance.notificationPitch().get());
                         }
                         String color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
 	                    return color + (nottest ? p.getName() : pn.get()) + "§r"; //Fix name casing, except when testing
@@ -305,11 +305,11 @@ public class ChatProcessing {
                                             + match.toLowerCase() + " but was reported as online.");
                                     return "§c" + match + "§r";
                                 }
-                                if (PlayerListener.NotificationSound == null)
-                                    p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f);
-                                else
-                                    p.playSound(p.getLocation(), PlayerListener.NotificationSound, 1.0f,
-                                            (float) PlayerListener.NotificationPitch);
+	                            if (PluginMain.Instance.notificationSound().get().length() == 0)
+		                            p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
+	                            else
+		                            p.playSound(p.getLocation(), PluginMain.Instance.notificationSound().get(), 1.0f,
+			                            PluginMain.Instance.notificationPitch().get());
                                 return PluginMain.essentials.getUser(p).getNickname();
                             }
                             error.accept("Player nicknamed " + match.toLowerCase()

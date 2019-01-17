@@ -1,9 +1,8 @@
-package buttondevteam.chat.commands.ucmds;
+package buttondevteam.chat.components.towncolors;
 
 import buttondevteam.chat.ChatPlayer;
-import buttondevteam.chat.PluginMain;
+import buttondevteam.chat.commands.ucmds.UCommandBase;
 import buttondevteam.chat.components.towny.TownyComponent;
-import buttondevteam.chat.listener.PlayerJoinLeaveListener;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
@@ -54,7 +53,7 @@ public class NColorCommand extends UCommandBase {
 			return true;
 		}
 		String[] nameparts = arg.split("[|:]");
-		Color[] towncolors = PluginMain.TownColors.get(town.getName().toLowerCase());
+		Color[] towncolors = TownColorComponent.TownColors.get(town.getName().toLowerCase());
 		if (towncolors == null) {
 			player.sendMessage("§cYour town doesn't have a color set. The town mayor can set it using /u towncolor.");
 			return true;
@@ -72,8 +71,8 @@ public class NColorCommand extends UCommandBase {
 			return true;
 		}
 		ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations()
-				.set(new ArrayList<>(Arrays.stream(nameparts).map(np -> np.length()).collect(Collectors.toList()))); // No byte[], no TIntArrayList
-        PlayerJoinLeaveListener.updatePlayerColors(player);
+			.set(new ArrayList<>(Arrays.stream(nameparts).map(String::length).collect(Collectors.toList()))); // No byte[], no TIntArrayList
+		TownColorComponent.updatePlayerColors(player);
         player.sendMessage("§bName colors set: " + player.getDisplayName());
 		return true;
 	}

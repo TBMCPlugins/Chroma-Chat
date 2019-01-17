@@ -1,5 +1,8 @@
-package buttondevteam.chat.commands.ucmds.admin;
+package buttondevteam.chat.components.towncolors.admin;
 
+import buttondevteam.chat.commands.ucmds.admin.AdminCommandBase;
+import buttondevteam.chat.components.towncolors.TownColorComponent;
+import lombok.val;
 import org.bukkit.command.CommandSender;
 
 public class TCCount extends AdminCommandBase {
@@ -20,7 +23,8 @@ public class TCCount extends AdminCommandBase {
 		} catch (NumberFormatException e) {
 			return false;
 		}
-		buttondevteam.chat.commands.ucmds.TownColorCommand.ColorCount = count;
+		val comp = (TownColorComponent) getComponent();
+		comp.colorCount().set(count);
 		sender.sendMessage("Color count set to " + count);
 		return true;
 	}
