@@ -12,7 +12,6 @@ import buttondevteam.core.ComponentManager;
 import buttondevteam.lib.player.TBMCPlayerJoinEvent;
 import buttondevteam.lib.player.TBMCPlayerLoadEvent;
 import buttondevteam.lib.player.TBMCPlayerSaveEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,7 +31,7 @@ public class PlayerJoinLeaveListener implements Listener {
 	@EventHandler
 	public void onPlayerTBMCJoin(TBMCPlayerJoinEvent e) {
 		ChatPlayer cp = e.GetPlayer().asPluginPlayer(ChatPlayer.class);
-		Player p = Bukkit.getPlayer(cp.getUUID());
+		Player p = e.getPlayer();
 
 		if (ComponentManager.isEnabled(FlairComponent.class)) {
 			if (!cp.FlairState().get().equals(FlairStates.NoComment)) {

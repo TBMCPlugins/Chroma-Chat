@@ -3,12 +3,12 @@ package buttondevteam.chat.formatting;
 import java.util.ArrayList;
 import java.util.Collection;
 
-class FormattedSection {
-	int Start;
-	int End;
-	ArrayList<ChatFormatter> Formatters = new ArrayList<ChatFormatter>();
-	ArrayList<String> Matches = new ArrayList<String>();
-	ChatFormatter.Type type;
+public class FormattedSection {
+	public int Start;
+	public int End;
+	public ArrayList<ChatFormatter> Formatters = new ArrayList<ChatFormatter>();
+	public ArrayList<String> Matches = new ArrayList<String>();
+	public ChatFormatter.Type type;
 
 	FormattedSection(ChatFormatter formatter, int start, int end, ArrayList<String> matches, ChatFormatter.Type type) {
 		Start = start;

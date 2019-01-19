@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.val;
 
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,7 +32,7 @@ public final class ChatFormatter {
 	boolean strikethrough;
 	boolean obfuscated;
 	Color color;
-	BiFunction<String, ChatFormatter, String> onmatch;
+	TriFunc<String, ChatFormatter, FormattedSection, String> onmatch;
 	String openlink;
 	@Builder.Default
 	Priority priority = Priority.Normal;
@@ -53,6 +52,11 @@ public final class ChatFormatter {
          */
         Excluder
     }
+
+	@FunctionalInterface
+	public interface TriFunc<T1, T2, T3, R> {
+		R apply(T1 x1, T2 x2, T3 x3);
+	}
 
 	public static void Combine(List<ChatFormatter> formatters, String str, TellrawPart tp) {
 		/*
@@ -334,7 +338,7 @@ public final class ChatFormatter {
 			for (ChatFormatter formatter : section.Formatters) {
 				DebugCommand.SendDebugMessage("Applying formatter: " + formatter);
 				if (formatter.onmatch != null)
-					originaltext = formatter.onmatch.apply(originaltext, formatter);
+					originaltext = formatter.onmatch.apply(originaltext, formatter, section);
 				if (formatter.color != null)
 					newtp.setColor(formatter.color);
 				if (formatter.bold)
@@ -356,7 +360,7 @@ public final class ChatFormatter {
 			        && newtp.isUnderlined() == lasttp.isUnderlined()
 			        && newtp.isStrikethrough() == lasttp.isStrikethrough()
 			        && newtp.isObfuscated() == lasttp.isObfuscated()
-			        && (openlink == null ? lastlink == null : openlink.equals(lastlink))) {
+		        && Objects.equals(openlink, lastlink)) {
 		        DebugCommand.SendDebugMessage("This part has the same properties as the previous one, combining.");
 		        lasttp.setText(lasttp.getText() + originaltext);
 		        continue; //Combine parts with the same properties

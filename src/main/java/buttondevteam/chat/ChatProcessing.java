@@ -46,7 +46,7 @@ public class ChatProcessing {
     private static final Pattern ITALIC_PATTERN = Pattern.compile("\\*");
     private static final Pattern BOLD_PATTERN = Pattern.compile("\\*\\*");
     private static final Pattern CODE_PATTERN = Pattern.compile("`");
-	private static final Pattern MASKED_LINK_PATTERN = Pattern.compile("\\[([^\\[\\]])]\\(([^()])\\)");
+	private static final Pattern MASKED_LINK_PATTERN = Pattern.compile("\\[([^\\[\\]]+)]\\(([^()]+)\\)");
     private static final Pattern SOMEONE_PATTERN = Pattern.compile("@someone"); //TODO
     private static final Pattern STRIKETHROUGH_PATTERN = Pattern.compile("~~");
     private static final Color[] RainbowPresserColors = new Color[]{Color.Red, Color.Gold, Color.Yellow, Color.Green,
@@ -63,9 +63,8 @@ public class ChatProcessing {
                     .build(),
             ChatFormatter.builder().regex(STRIKETHROUGH_PATTERN).strikethrough(true).removeCharCount((short) 2).type(ChatFormatter.Type.Range)
                     .build(),
-            ESCAPE_FORMATTER, ChatFormatter.builder().regex(URL_PATTERN).underlined(true).openlink("$1").type(ChatFormatter.Type.Excluder).build(),
-            ChatFormatter.builder().regex(NULL_MENTION_PATTERN).color(Color.DarkRed).build(), // Properly added a bug as a feature
-            ChatFormatter.builder().regex(CONSOLE_PING_PATTERN).color(Color.Aqua).onmatch((match, builder) -> {
+	    ESCAPE_FORMATTER, ChatFormatter.builder().regex(NULL_MENTION_PATTERN).color(Color.DarkRed).build(), // Properly added a bug as a feature
+	    ChatFormatter.builder().regex(CONSOLE_PING_PATTERN).color(Color.Aqua).onmatch((match, builder, section) -> {
                 if (!pingedconsole) {
                     System.out.print("\007");
                     pingedconsole = true; // Will set it to false in ProcessChat
@@ -78,9 +77,14 @@ public class ChatProcessing {
             ChatFormatter.builder().regex(CYAN_PATTERN).color(Color.Aqua).build(), // #55
             ChatFormatter.builder().regex(CODE_PATTERN).color(Color.DarkGray).removeCharCount((short) 1).type(ChatFormatter.Type.Range)
                     .build(),
-            ChatFormatter.builder().regex(MASKED_LINK_PATTERN).underlined(true).onmatch((match, builder) -> {
-                return match; // TODO!
-            }).build());
+	    ChatFormatter.builder().regex(MASKED_LINK_PATTERN).underlined(true).onmatch((match, builder, section) -> {
+		    String text, link;
+		    if (section.Matches.size() < 2 || (text = section.Matches.get(0)).length() == 0 || (link = section.Matches.get(1)).length() == 0)
+			    return "";
+		    builder.setOpenlink(link);
+		    return text;
+	    }).type(ChatFormatter.Type.Excluder).build(),
+	    ChatFormatter.builder().regex(URL_PATTERN).underlined(true).openlink("$1").type(ChatFormatter.Type.Excluder).build());
     private static Gson gson = new GsonBuilder()
             .registerTypeHierarchyAdapter(TellrawSerializableEnum.class, new TellrawSerializer.TwEnum())
             .registerTypeHierarchyAdapter(Collection.class, new TellrawSerializer.TwCollection())
@@ -124,7 +128,7 @@ public class ChatProcessing {
         ArrayList<ChatFormatter> formatters = addFormatters(colormode);
 	    if (colormode == channel.Color().get() && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
             final AtomicInteger rpc = new AtomicInteger(0);
-            formatters.add(ChatFormatter.builder().color(colormode).onmatch((match, cf) -> {
+		    formatters.add(ChatFormatter.builder().color(colormode).onmatch((match, cf, s) -> {
                 cf.setColor(RainbowPresserColors[rpc.getAndUpdate(i -> ++i < RainbowPresserColors.length ? i : 0)]);
                 return match;
             }).build());
@@ -275,7 +279,7 @@ public class ChatProcessing {
             };
 
             formatters.add(ChatFormatter.builder().regex(Pattern.compile(namesb.toString())).color(Color.Aqua)
-                    .onmatch((match, builder) -> {
+	            .onmatch((match, builder, section) -> {
                         Player p = Bukkit.getPlayer(match);
 	                    Optional<String> pn = nottest ? Optional.empty()
 			                    : Arrays.stream(testPlayers).filter(tp -> tp.equalsIgnoreCase(match)).findAny();
@@ -297,7 +301,7 @@ public class ChatProcessing {
 
             if (addNickFormatter)
                 formatters.add(ChatFormatter.builder().regex((Pattern.compile(nicksb.toString()))).color(Color.Aqua)
-                        .onmatch((match, builder) -> {
+	                .onmatch((match, builder, section) -> {
                             if (PlayerListener.nicknames.containsKey(match.toLowerCase())) { //Made a stream and all that but I can actually store it lowercased
                                 Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(match.toLowerCase()));
                                 if (p == null) {

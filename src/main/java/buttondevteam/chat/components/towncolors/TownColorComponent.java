@@ -42,7 +42,7 @@ public class TownColorComponent extends Component {
 	public static Map<String, Color> NationColor = new HashMap<>();
 
 	public ConfigData<Byte> colorCount() {
-		return getConfig().getData("colorCount", (byte) 1, cc -> (byte) cc, cc -> (int) cc);
+		return getConfig().getData("colorCount", (byte) 1, cc -> ((Integer) cc).byteValue(), Byte::intValue);
 	}
 
 	public ConfigData<Boolean> useNationColors() { //TODO
