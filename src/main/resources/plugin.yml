@@ -37,9 +37,9 @@ depend:
 - Votifier
 - Vault
 - ButtonCore
-- Dynmap-Towny
 soft-depend:
 - Minigames
+- Dynmap-Towny
 permissions:
   tbmc.admin:
     description: Gives access to /un- commands and /u admin commands

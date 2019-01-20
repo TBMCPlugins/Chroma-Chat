@@ -1,6 +1,6 @@
 package buttondevteam.chat.commands.ucmds;
 
-import buttondevteam.lib.chat.Channel;
+import buttondevteam.component.channel.Channel;
 import buttondevteam.lib.chat.ChatMessage;
 import buttondevteam.lib.chat.CommandClass;
 import lombok.RequiredArgsConstructor;
@@ -39,9 +39,9 @@ public class HistoryCommand extends UCommandBase {
 		sender.sendMessage("§6---- Chat History ----");
 		Stream<Channel> stream;
 		if (args.length == 0) {
-			stream = Channel.getChannels().stream();
+			stream = Channel.getChannels();
 		} else {
-			Optional<Channel> och = Channel.getChannels().stream().filter(chan -> chan.ID.equalsIgnoreCase(args[0])).findAny();
+			Optional<Channel> och = Channel.getChannels().filter(chan -> chan.ID.equalsIgnoreCase(args[0])).findAny();
 			if (!och.isPresent()) {
 				sender.sendMessage("§cChannel not found. Use the ID, for example: /" + (hc == null ? "u history" : hc.GetCommandPath()) + " ooc");
 				return true;
@@ -54,7 +54,7 @@ public class HistoryCommand extends UCommandBase {
 		for (int i = Math.max(0, arr.length - 10); i < arr.length; i++) {
 			HistoryEntry e = arr[i];
 			val cm = e.chatMessage;
-			sender.sendMessage("[" + e.channel.DisplayName + "] " + cm.getSender().getName() + ": " + cm.getMessage());
+			sender.sendMessage("[" + e.channel.DisplayName().get() + "] " + cm.getSender().getName() + ": " + cm.getMessage());
 			sent.set(true);
 		}
 		if (!sent.get())

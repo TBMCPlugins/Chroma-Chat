@@ -1,7 +1,10 @@
-package buttondevteam.chat.commands.ucmds.admin;
+package buttondevteam.chat.components.towncolors.admin;
 
 import buttondevteam.chat.PluginMain;
-import buttondevteam.chat.listener.TownyListener;
+import buttondevteam.chat.commands.ucmds.admin.AdminCommandBase;
+import buttondevteam.chat.components.towncolors.TownColorComponent;
+import buttondevteam.chat.components.towncolors.TownyListener;
+import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.lib.chat.Color;
 import com.palmergames.bukkit.towny.object.Town;
 import lombok.val;
@@ -35,28 +38,28 @@ public class TownColorCommand extends AdminCommandBase {
     public static boolean SetTownColor(CommandSender sender, String alias, String[] args) {
         if (args.length < 2)
             return false;
-        if (!PluginMain.TU.getTownsMap().containsKey(args[0].toLowerCase())) {
+	    if (!TownyComponent.TU.getTownsMap().containsKey(args[0].toLowerCase())) {
             sender.sendMessage("§cThe town '" + args[0] + "' cannot be found.");
             return true;
         }
 	    Color[] clrs = new Color[args.length - 1];
-	    Town targetTown = PluginMain.TU.getTownsMap().get(args[0].toLowerCase());
+	    Town targetTown = TownyComponent.TU.getTownsMap().get(args[0].toLowerCase());
 	    for (int i = 1; i < args.length; i++) {
 		    val c = getColorOrSendError(args[i], sender);
 		    if (!c.isPresent())
                 return true;
 		    clrs[i - 1] = c.get();
         }
-	    for (Map.Entry<String, Color[]> other : PluginMain.TownColors.entrySet()) {
+	    for (Map.Entry<String, Color[]> other : TownColorComponent.TownColors.entrySet()) {
 		    Color nc, tnc;
 		    try {
-			    nc = PluginMain.NationColor.get(PluginMain.TU.getTownsMap().get(other.getKey()).getNation().getName().toLowerCase());
+			    nc = TownColorComponent.NationColor.get(TownyComponent.TU.getTownsMap().get(other.getKey()).getNation().getName().toLowerCase());
 		    } catch (Exception e) { //Too lazy for lots of null-checks and it may throw exceptions anyways
 			    nc = null;
 		    }
 		    if (nc == null) nc = Color.White; //Default nation color
 		    try {
-			    tnc = PluginMain.NationColor.get(targetTown.getNation().getName().toLowerCase());
+			    tnc = TownColorComponent.NationColor.get(targetTown.getNation().getName().toLowerCase());
 		    } catch (Exception e) {
 			    tnc = null;
 		    }
@@ -74,7 +77,7 @@ public class TownColorCommand extends AdminCommandBase {
 			    }
 		    }
 	    }
-        PluginMain.TownColors.put(args[0].toLowerCase(), clrs);
+	    TownColorComponent.TownColors.put(args[0].toLowerCase(), clrs);
 	    TownyListener.updateTownMembers(targetTown);
 
         val dtp = (DynmapTownyPlugin) Bukkit.getPluginManager().getPlugin("Dynmap-Towny");
@@ -83,7 +86,7 @@ public class TownColorCommand extends AdminCommandBase {
             PluginMain.Instance.getLogger().warning("Dynmap-Towny not found for setting town color!");
             return true;
         }
-	    PluginMain.setTownColor(dtp, targetTown.getName(), clrs);
+	    TownColorComponent.setTownColor(dtp, targetTown.getName(), clrs);
         sender.sendMessage("§bColor(s) set.");
         return true;
     }
@@ -103,6 +106,6 @@ public class TownColorCommand extends AdminCommandBase {
 	}
 
 	public static String getTownNameCased(String name) {
-        return PluginMain.TU.getTownsMap().get(name.toLowerCase()).getName();
+		return TownyComponent.TU.getTownsMap().get(name.toLowerCase()).getName();
     }
 }

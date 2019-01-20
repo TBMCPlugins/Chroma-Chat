@@ -1,6 +1,7 @@
-package buttondevteam.chat.commands.ucmds;
+package buttondevteam.chat.components.towncolors;
 
-import buttondevteam.chat.PluginMain;
+import buttondevteam.chat.commands.ucmds.UCommandBase;
+import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
@@ -26,8 +27,8 @@ public class NationColorCommand extends UCommandBase {
 	@Override
 	public boolean OnCommand(Player player, String alias, String[] args) {
 		Resident res;
-		if (!(PluginMain.TU.getResidentMap().containsKey(player.getName().toLowerCase())
-				&& (res = PluginMain.TU.getResidentMap().get(player.getName().toLowerCase())).isKing())) {
+		if (!(TownyComponent.TU.getResidentMap().containsKey(player.getName().toLowerCase())
+			&& (res = TownyComponent.TU.getResidentMap().get(player.getName().toLowerCase())).isKing())) {
 			player.sendMessage("§cYou need to be the king of a nation to set it's colors.");
 			return true;
 		}
@@ -44,6 +45,6 @@ public class NationColorCommand extends UCommandBase {
 			player.sendMessage("§cCouldn't find your town/nation... Error reported.");
 			return true;
 		}
-		return buttondevteam.chat.commands.ucmds.admin.NationColorCommand.SetNationColor(player, alias, a);
+		return buttondevteam.chat.components.towncolors.admin.NationColorCommand.SetNationColor(player, alias, a);
 	}
 }

@@ -7,10 +7,10 @@ import buttondevteam.chat.formatting.TellrawEvent;
 import buttondevteam.chat.formatting.TellrawPart;
 import buttondevteam.chat.formatting.TellrawSerializer;
 import buttondevteam.chat.listener.PlayerListener;
+import buttondevteam.component.channel.Channel;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCChatEventBase;
 import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.Priority;
 import buttondevteam.lib.chat.TellrawSerializableEnum;
@@ -46,7 +46,7 @@ public class ChatProcessing {
     private static final Pattern ITALIC_PATTERN = Pattern.compile("\\*");
     private static final Pattern BOLD_PATTERN = Pattern.compile("\\*\\*");
     private static final Pattern CODE_PATTERN = Pattern.compile("`");
-    private static final Pattern MASKED_LINK_PATTERN = Pattern.compile("\\[([^\\[\\]])\\]\\(([^()])\\)");
+	private static final Pattern MASKED_LINK_PATTERN = Pattern.compile("\\[([^\\[\\]]+)]\\(([^()]+)\\)");
     private static final Pattern SOMEONE_PATTERN = Pattern.compile("@someone"); //TODO
     private static final Pattern STRIKETHROUGH_PATTERN = Pattern.compile("~~");
     private static final Color[] RainbowPresserColors = new Color[]{Color.Red, Color.Gold, Color.Yellow, Color.Green,
@@ -63,9 +63,8 @@ public class ChatProcessing {
                     .build(),
             ChatFormatter.builder().regex(STRIKETHROUGH_PATTERN).strikethrough(true).removeCharCount((short) 2).type(ChatFormatter.Type.Range)
                     .build(),
-            ESCAPE_FORMATTER, ChatFormatter.builder().regex(URL_PATTERN).underlined(true).openlink("$1").type(ChatFormatter.Type.Excluder).build(),
-            ChatFormatter.builder().regex(NULL_MENTION_PATTERN).color(Color.DarkRed).build(), // Properly added a bug as a feature
-            ChatFormatter.builder().regex(CONSOLE_PING_PATTERN).color(Color.Aqua).onmatch((match, builder) -> {
+	    ESCAPE_FORMATTER, ChatFormatter.builder().regex(NULL_MENTION_PATTERN).color(Color.DarkRed).build(), // Properly added a bug as a feature
+	    ChatFormatter.builder().regex(CONSOLE_PING_PATTERN).color(Color.Aqua).onmatch((match, builder, section) -> {
                 if (!pingedconsole) {
                     System.out.print("\007");
                     pingedconsole = true; // Will set it to false in ProcessChat
@@ -78,16 +77,21 @@ public class ChatProcessing {
             ChatFormatter.builder().regex(CYAN_PATTERN).color(Color.Aqua).build(), // #55
             ChatFormatter.builder().regex(CODE_PATTERN).color(Color.DarkGray).removeCharCount((short) 1).type(ChatFormatter.Type.Range)
                     .build(),
-            ChatFormatter.builder().regex(MASKED_LINK_PATTERN).underlined(true).onmatch((match, builder) -> {
-                return match; // TODO!
-            }).build());
+	    ChatFormatter.builder().regex(MASKED_LINK_PATTERN).underlined(true).onmatch((match, builder, section) -> {
+		    String text, link;
+		    if (section.Matches.size() < 2 || (text = section.Matches.get(0)).length() == 0 || (link = section.Matches.get(1)).length() == 0)
+			    return "";
+		    builder.setOpenlink(link);
+		    return text;
+	    }).type(ChatFormatter.Type.Excluder).build(),
+	    ChatFormatter.builder().regex(URL_PATTERN).underlined(true).openlink("$1").type(ChatFormatter.Type.Excluder).build());
     private static Gson gson = new GsonBuilder()
             .registerTypeHierarchyAdapter(TellrawSerializableEnum.class, new TellrawSerializer.TwEnum())
             .registerTypeHierarchyAdapter(Collection.class, new TellrawSerializer.TwCollection())
             .registerTypeAdapter(Boolean.class, new TellrawSerializer.TwBool())
             .registerTypeAdapter(boolean.class, new TellrawSerializer.TwBool()).disableHtmlEscaping().create();
     private static final String[] testPlayers = {"Koiiev", "iie", "Alisolarflare", "NorbiPeti", "Arsen_Derby_FTW", "carrot_lynx"};
-    static final String MCORIGIN = "Minecraft"; //Shouldn't change, like ever - TBMCPlayer.getFolderForType(TBMCPlayer.class) capitalized
+	public static final String MCORIGIN = "Minecraft"; //Shouldn't change, like ever - TBMCPlayer.getFolderForType(TBMCPlayer.class) capitalized
 
     private ChatProcessing() {
     }
@@ -114,7 +118,7 @@ public class ChatProcessing {
         else //Due to the online player map, getPlayer() can be more efficient than getAs()
             mp = e.getUser().getAs(ChatPlayer.class); //May be null
 
-        Color colormode = channel.color;
+	    Color colormode = channel.Color().get();
         if (mp != null && mp.OtherColorMode != null)
             colormode = mp.OtherColorMode;
         if (message.startsWith(">"))
@@ -122,9 +126,9 @@ public class ChatProcessing {
         // If greentext, ignore channel or player colors
 
         ArrayList<ChatFormatter> formatters = addFormatters(colormode);
-        if (colormode == channel.color && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
+	    if (colormode == channel.Color().get() && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
             final AtomicInteger rpc = new AtomicInteger(0);
-            formatters.add(ChatFormatter.builder().color(colormode).onmatch((match, cf) -> {
+		    formatters.add(ChatFormatter.builder().color(colormode).onmatch((match, cf, s) -> {
                 cf.setColor(RainbowPresserColors[rpc.getAndUpdate(i -> ++i < RainbowPresserColors.length ? i : 0)]);
                 return match;
             }).build());
@@ -233,7 +237,7 @@ public class ChatProcessing {
     }
 
     static String getChannelID(Channel channel, CommandSender sender, String origin) {
-        return ("[" + (MCORIGIN.equals(origin) ? "" : "§8" + origin.substring(0, 1) + "§r|") + channel.DisplayName)
+	    return ("[" + (MCORIGIN.equals(origin) ? "" : "§8" + origin.substring(0, 1) + "§r|") + channel.DisplayName().get())
                 + "]";
     }
 
@@ -257,14 +261,12 @@ public class ChatProcessing {
             namesb.append(")");
             StringBuilder nicksb = new StringBuilder("(?i)(");
             boolean addNickFormatter = false;
-            int index = 0;
             for (Player p : Bukkit.getOnlinePlayers()) {
                 final String nick = PlayerListener.nicknames.inverse().get(p.getUniqueId());
                 if (nick != null) {
 	                nicksb.append(nick).append("|");
                     addNickFormatter = true; //Add it even if there's only 1 player online (it was in the if)
                 }
-                index++;
             }
 	        nicksb.deleteCharAt(nicksb.length() - 1);
             nicksb.append(")");
@@ -277,7 +279,7 @@ public class ChatProcessing {
             };
 
             formatters.add(ChatFormatter.builder().regex(Pattern.compile(namesb.toString())).color(Color.Aqua)
-                    .onmatch((match, builder) -> {
+	            .onmatch((match, builder, section) -> {
                         Player p = Bukkit.getPlayer(match);
 	                    Optional<String> pn = nottest ? Optional.empty()
 			                    : Arrays.stream(testPlayers).filter(tp -> tp.equalsIgnoreCase(match)).findAny();
@@ -287,11 +289,11 @@ public class ChatProcessing {
                         }
                         ChatPlayer mpp = TBMCPlayer.getPlayer(nottest ? p.getUniqueId() : new UUID(0, 0), ChatPlayer.class);
                         if (nottest) {
-                            if (PlayerListener.NotificationSound == null)
+	                        if (PluginMain.Instance.notificationSound().get().length() == 0)
                                 p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
                             else
-                                p.playSound(p.getLocation(), PlayerListener.NotificationSound, 1.0f,
-                                        (float) PlayerListener.NotificationPitch);
+		                        p.playSound(p.getLocation(), PluginMain.Instance.notificationSound().get(), 1.0f,
+			                        PluginMain.Instance.notificationPitch().get());
                         }
                         String color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
 	                    return color + (nottest ? p.getName() : pn.get()) + "§r"; //Fix name casing, except when testing
@@ -299,7 +301,7 @@ public class ChatProcessing {
 
             if (addNickFormatter)
                 formatters.add(ChatFormatter.builder().regex((Pattern.compile(nicksb.toString()))).color(Color.Aqua)
-                        .onmatch((match, builder) -> {
+	                .onmatch((match, builder, section) -> {
                             if (PlayerListener.nicknames.containsKey(match.toLowerCase())) { //Made a stream and all that but I can actually store it lowercased
                                 Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(match.toLowerCase()));
                                 if (p == null) {
@@ -307,11 +309,11 @@ public class ChatProcessing {
                                             + match.toLowerCase() + " but was reported as online.");
                                     return "§c" + match + "§r";
                                 }
-                                if (PlayerListener.NotificationSound == null)
-                                    p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f);
-                                else
-                                    p.playSound(p.getLocation(), PlayerListener.NotificationSound, 1.0f,
-                                            (float) PlayerListener.NotificationPitch);
+	                            if (PluginMain.Instance.notificationSound().get().length() == 0)
+		                            p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
+	                            else
+		                            p.playSound(p.getLocation(), PluginMain.Instance.notificationSound().get(), 1.0f,
+			                            PluginMain.Instance.notificationPitch().get());
                                 return PluginMain.essentials.getUser(p).getNickname();
                             }
                             error.accept("Player nicknamed " + match.toLowerCase()

@@ -1,7 +1,10 @@
-package buttondevteam.chat.commands.ucmds.admin;
+package buttondevteam.chat.components.towncolors.admin;
 
 import buttondevteam.chat.PluginMain;
-import buttondevteam.chat.listener.TownyListener;
+import buttondevteam.chat.commands.ucmds.admin.AdminCommandBase;
+import buttondevteam.chat.components.towncolors.TownColorComponent;
+import buttondevteam.chat.components.towncolors.TownyListener;
+import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.lib.chat.Color;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
@@ -31,7 +34,7 @@ public class NationColorCommand extends AdminCommandBase {
 			sender.sendMessage("§cYou can only use one color as a nation color.");
 			return true;
 		}
-		final Nation nation = PluginMain.TU.getNationsMap().get(args[0].toLowerCase());
+		final Nation nation = TownyComponent.TU.getNationsMap().get(args[0].toLowerCase());
 		if (nation == null) {
 			sender.sendMessage("§cThe nation '" + args[0] + "' cannot be found.");
 			return true;
@@ -39,14 +42,14 @@ public class NationColorCommand extends AdminCommandBase {
 		val c = TownColorCommand.getColorOrSendError(args[1], sender);
 		if (!c.isPresent()) return true;
 		if (!c.get().getName().equals(Color.White.getName())) { //Default nation color
-			for (val nc : PluginMain.NationColor.values()) {
+			for (val nc : TownColorComponent.NationColor.values()) {
 				if (nc.getName().equals(c.get().getName())) {
 					sender.sendMessage("§cAnother nation already uses this color!");
 					return true;
 				}
 			}
 		}
-		PluginMain.NationColor.put(args[0].toLowerCase(), c.get());
+		TownColorComponent.NationColor.put(args[0].toLowerCase(), c.get());
 		Bukkit.getScheduler().runTaskAsynchronously(PluginMain.Instance, () -> {
 			for (Town t : nation.getTowns())
 				TownyListener.updateTownMembers(t);

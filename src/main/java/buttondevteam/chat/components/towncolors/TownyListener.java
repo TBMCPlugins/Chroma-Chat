@@ -1,4 +1,4 @@
-package buttondevteam.chat.listener;
+package buttondevteam.chat.components.towncolors;
 
 import buttondevteam.chat.PluginMain;
 import com.earth2me.essentials.User;
@@ -16,21 +16,21 @@ import java.util.Objects;
 public class TownyListener implements Listener {
 	@EventHandler
 	public void onTownRename(RenameTownEvent event) {
-		val clrs = PluginMain.TownColors.remove(event.getOldName().toLowerCase());
+		val clrs = TownColorComponent.TownColors.remove(event.getOldName().toLowerCase());
 		if (clrs != null)
-			PluginMain.TownColors.put(event.getTown().getName().toLowerCase(), clrs);
+			TownColorComponent.TownColors.put(event.getTown().getName().toLowerCase(), clrs);
 	}
 
 	@EventHandler //Gets called on town load as well
 	public void onTownJoin(TownAddResidentEvent event) {
 		Player p = Bukkit.getPlayer(event.getResident().getName());
 		if (p != null)
-			PlayerJoinLeaveListener.updatePlayerColors(p);
+			TownColorComponent.updatePlayerColors(p);
 	}
 
 	public static void updateTownMembers(Town town) {
 		town.getResidents().stream().map(r -> Bukkit.getPlayer(r.getName()))
-				.filter(Objects::nonNull).forEach(PlayerJoinLeaveListener::updatePlayerColors);
+			.filter(Objects::nonNull).forEach(TownColorComponent::updatePlayerColors);
 	}
 
 	@EventHandler
@@ -47,7 +47,7 @@ public class TownyListener implements Listener {
 
 	@EventHandler
 	public void onTownDelete(DeleteTownEvent event) {
-		PluginMain.TownColors.remove(event.getTownName().toLowerCase());
+		TownColorComponent.TownColors.remove(event.getTownName().toLowerCase());
 	}
 
 	@EventHandler
@@ -61,9 +61,9 @@ public class TownyListener implements Listener {
 
 	@EventHandler
 	public void onNationRename(RenameNationEvent event) {
-		val clrs = PluginMain.NationColor.remove(event.getOldName().toLowerCase());
+		val clrs = TownColorComponent.NationColor.remove(event.getOldName().toLowerCase());
 		if (clrs != null)
-			PluginMain.NationColor.put(event.getNation().getName().toLowerCase(), clrs);
+			TownColorComponent.NationColor.put(event.getNation().getName().toLowerCase(), clrs);
 	}
 
 	@EventHandler //Gets called on town load as well
@@ -78,7 +78,7 @@ public class TownyListener implements Listener {
 
 	@EventHandler
 	public void onNationDelete(DeleteNationEvent event) {
-		PluginMain.NationColor.remove(event.getNationName().toLowerCase());
+		TownColorComponent.NationColor.remove(event.getNationName().toLowerCase());
 	}
 
 	@EventHandler

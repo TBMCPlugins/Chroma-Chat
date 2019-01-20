@@ -7,8 +7,8 @@ import buttondevteam.chat.formatting.TellrawEvent;
 import buttondevteam.chat.formatting.TellrawEvent.ClickAction;
 import buttondevteam.chat.formatting.TellrawEvent.HoverAction;
 import buttondevteam.chat.formatting.TellrawPart;
+import buttondevteam.component.channel.Channel;
 import buttondevteam.core.TestPrepare;
-import buttondevteam.lib.chat.Channel;
 import buttondevteam.lib.chat.Color;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.command.CommandSender;
@@ -66,10 +66,15 @@ public class ChatFormatIT {
 		list.add(new ChatFormatIT(sender, "*test _test_ test*", new TellrawPart("test ").setItalic(true).setColor(Color.White),
 				new TellrawPart("test").setItalic(true).setUnderlined(true).setColor(Color.White), new TellrawPart(" test").setItalic(true).setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "https://norbipeti.github.io/test?test&test#test", new TellrawPart("https://norbipeti.github.io/test?test&test#test")
-				.setColor(Color.White).setUnderlined(true)
-				.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
-						new TellrawPart("Click to open").setColor(Color.Blue)))
-				.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/test?test&test#test"))));
+			.setColor(Color.White).setUnderlined(true)
+			.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
+				new TellrawPart("Click to open").setColor(Color.Blue)))
+			.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/test?test&test#test"))));
+		list.add(new ChatFormatIT(sender, "[hmm](https://norbipeti.github.io/test)", new TellrawPart("hmm")
+			.setColor(Color.White).setUnderlined(true)
+			.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
+				new TellrawPart("Click to open").setColor(Color.Blue)))
+			.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/test"))));
 
 		return list;
 	}

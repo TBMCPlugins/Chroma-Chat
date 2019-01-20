@@ -4,9 +4,16 @@ import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.commands.ucmds.HistoryCommand;
+import buttondevteam.chat.components.flair.FlairComponent;
+import buttondevteam.chat.components.towncolors.TownColorComponent;
+import buttondevteam.component.channel.Channel;
+import buttondevteam.component.channel.ChatChannelRegisterEvent;
+import buttondevteam.component.channel.ChatRoom;
+import buttondevteam.core.ComponentManager;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.chat.*;
+import buttondevteam.lib.chat.ChatMessage;
+import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
 import buttondevteam.lib.player.TBMCPlayer;
@@ -46,15 +53,6 @@ public class PlayerListener implements Listener {
 	 */
 	public static BiMap<String, UUID> nicknames = HashBiMap.create();
 
-	public static boolean Enable = false;
-
-	public static int LoginWarningCountTotal = 5;
-
-	public static String NotificationSound;
-	public static double NotificationPitch;
-
-	public static boolean ShowRPTag = false;
-
     public final static String[] LaughStrings = new String[]{"xd", "lel", "lawl", "kek", "lmao", "hue", "hah", "rofl"};
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -78,13 +76,13 @@ public class PlayerListener implements Listener {
 		int index = message.indexOf(" ");
 		val mp = ChromaGamerBase.getFromSender(sender);
 		String cmd;
-		final BiPredicate<Channel, String> checkchid = (chan, cmd1) -> cmd1.equalsIgnoreCase(chan.ID) || (chan.IDs != null && Arrays.stream(chan.IDs).anyMatch(cmd1::equalsIgnoreCase));
+		final BiPredicate<Channel, String> checkchid = (chan, cmd1) -> cmd1.equalsIgnoreCase(chan.ID) || (Arrays.stream(chan.IDs().get()).anyMatch(cmd1::equalsIgnoreCase));
 		if (index == -1) { // Only the command is run
 			if (!(sender instanceof Player || sender instanceof ConsoleCommandSender))
 				return false;
 			// ^^ We can only store player or console channels - Directly sending to channels would still work if they had an event
 			cmd = sender instanceof ConsoleCommandSender ? message : message.substring(1);
-			for (Channel channel : Channel.getChannels()) {
+			for (Channel channel : ((Iterable<Channel>) Channel.getChannels()::iterator)) { //Using Stream.forEach would be too easy
 				if (checkchid.test(channel, cmd)) {
 					Channel oldch = mp.channel().get();
 					if (oldch instanceof ChatRoom)
@@ -96,7 +94,7 @@ public class PlayerListener implements Listener {
 						if (channel instanceof ChatRoom)
 							((ChatRoom) channel).joinRoom(sender);
 					}
-					sender.sendMessage("§6You are now talking in: §b" + mp.channel().get().DisplayName);
+					sender.sendMessage("§6You are now talking in: §b" + mp.channel().get().DisplayName().get());
 					return true;
 				}
 			}
@@ -126,7 +124,7 @@ public class PlayerListener implements Listener {
 					return true;
 				}
 			} else
-				for (Channel channel : Channel.getChannels()) {
+				for (Channel channel : (Iterable<Channel>) Channel.getChannels()::iterator) {
 					if (checkchid.test(channel, cmd)) { //Apparently method references don't require final variables
 						TBMCChatAPI.SendChatMessage(ChatMessage.builder(sender, mp, message.substring(index + 1)).build(), channel);
 						return true;
@@ -169,13 +167,10 @@ public class PlayerListener implements Listener {
 	public static boolean ActiveF = false;
 	public static ChatPlayer FPlayer = null;
 	public static BukkitTask Ftask = null;
-	public static int AlphaDeaths;
 	public static ArrayList<CommandSender> Fs = new ArrayList<>();
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
-		if (e.getEntity().getName().equals("Alpha_Bacca44"))
-			AlphaDeaths++;
 		// MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(e.getEntity());
 		if (/* (mgp != null && !mgp.isInMinigame()) && */ new Random().nextBoolean()) { // Don't store Fs for NPCs
 			Runnable tt = () -> {
@@ -245,9 +240,11 @@ public class PlayerListener implements Listener {
 			e.addInfo("Minecraft name: " + cp.PlayerName().get());
 			if (cp.UserName().get() != null && cp.UserName().get().length() > 0)
 				e.addInfo("Reddit name: " + cp.UserName().get());
-			final String flair = cp.GetFormattedFlair(e.getTarget() != InfoTarget.MCCommand);
-			if (flair.length() > 0)
-				e.addInfo("/r/TheButton flair: " + flair);
+			if (ComponentManager.isEnabled(FlairComponent.class)) {
+				final String flair = cp.GetFormattedFlair(e.getTarget() != InfoTarget.MCCommand);
+				if (flair.length() > 0)
+					e.addInfo("/r/TheButton flair: " + flair);
+			}
             e.addInfo(String.format("Respect: %.2f", cp.getF()));
 		} catch (Exception ex) {
 			TBMCCoreAPI.SendException("Error while providing chat info for player " + e.getPlayer().getFileName(), ex);
@@ -265,7 +262,7 @@ public class PlayerListener implements Listener {
 			for (Player p : Bukkit.getOnlinePlayers())
 				if (e.shouldSendTo(p))
 					p.sendMessage("§c!§r["
-							+ e.getChannel().DisplayName + "] <" + (e.getSender() instanceof Player
+						+ e.getChannel().DisplayName().get() + "] <" + (e.getSender() instanceof Player
 							? ((Player) e.getSender()).getDisplayName() : e.getSender().getName())
 							+ "> " + e.getMessage());
 			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex);
@@ -287,7 +284,7 @@ public class PlayerListener implements Listener {
             nicknames.inverse().forcePut(e.getAffected().getBase().getUniqueId(), ChatColor.stripColor(nick).toLowerCase());
 
 		Bukkit.getScheduler().runTaskLater(PluginMain.Instance, () -> {
-            PlayerJoinLeaveListener.updatePlayerColors(e.getAffected().getBase()); //Won't fire this event again
+			TownColorComponent.updatePlayerColors(e.getAffected().getBase()); //Won't fire this event again
 		}, 1);
 	}
 }
