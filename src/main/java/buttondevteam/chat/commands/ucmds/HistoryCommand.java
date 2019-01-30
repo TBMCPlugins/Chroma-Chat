@@ -43,7 +43,7 @@ public class HistoryCommand extends UCommandBase {
 		} else {
 			Optional<Channel> och = Channel.getChannels().filter(chan -> chan.ID.equalsIgnoreCase(args[0])).findAny();
 			if (!och.isPresent()) {
-				sender.sendMessage("§cChannel not found. Use the ID, for example: /" + (hc == null ? "u history" : hc.GetCommandPath()) + " ooc");
+				sender.sendMessage("§cChannel not found. Use the ID, for example: /" + (hc == null ? "u history" : hc.GetCommandPath()) + " g");
 				return true;
 			}
 			stream = Stream.of(och.get());
