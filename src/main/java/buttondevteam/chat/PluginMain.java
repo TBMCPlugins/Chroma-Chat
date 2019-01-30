@@ -3,12 +3,13 @@ package buttondevteam.chat;
 import buttondevteam.chat.commands.YeehawCommand;
 import buttondevteam.chat.components.announce.AnnouncerComponent;
 import buttondevteam.chat.components.flair.FlairComponent;
+import buttondevteam.chat.components.fun.FunComponent;
 import buttondevteam.chat.components.towncolors.TownColorComponent;
 import buttondevteam.chat.components.towncolors.TownyListener;
 import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.chat.listener.PlayerJoinLeaveListener;
 import buttondevteam.chat.listener.PlayerListener;
-import buttondevteam.component.channel.Channel;
+import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.architecture.ButtonPlugin;
 import buttondevteam.lib.architecture.Component;
@@ -67,6 +68,7 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 		Component.registerComponent(this, new TownColorComponent());
 		Component.registerComponent(this, new FlairComponent()); //The original purpose of this plugin
 		Component.registerComponent(this, new AnnouncerComponent());
+		Component.registerComponent(this, new FunComponent());
 	}
 
 	public static Essentials essentials = null;

@@ -1,6 +1,6 @@
 package buttondevteam.chat.commands.ucmds;
 
-import buttondevteam.component.channel.Channel;
+import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.chat.ChatMessage;
 import buttondevteam.lib.chat.CommandClass;
 import lombok.RequiredArgsConstructor;

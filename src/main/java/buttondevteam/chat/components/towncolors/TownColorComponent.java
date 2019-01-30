@@ -77,8 +77,17 @@ public class TownColorComponent extends Component {
 			val dtp = (DynmapTownyPlugin) Bukkit.getPluginManager().getPlugin("Dynmap-Towny");
 			if (dtp == null)
 				return;
-			for (val entry : TownColors.entrySet())
-				setTownColor(dtp, buttondevteam.chat.components.towncolors.admin.TownColorCommand.getTownNameCased(entry.getKey()), entry.getValue());
+			for (val entry : TownColors.entrySet()) {
+				try {
+					val nation = TownyComponent.TU.getTownsMap().get(entry.getKey()).getNation();
+					Color nc;
+					if (nation == null || (nc = NationColor.get(nation.getName().toLowerCase())) == null)
+						nc = Color.White;
+					setTownColor(dtp, buttondevteam.chat.components.towncolors.admin.TownColorCommand.getTownNameCased(entry.getKey()), entry.getValue(), nc);
+				} catch (Exception e) {
+					TBMCCoreAPI.SendException("Error while setting town color for town " + entry.getKey() + "!", e);
+				}
+			}
 		});
 
 		registerCommand(new TownColorCommand());
@@ -104,11 +113,11 @@ public class TownColorComponent extends Component {
 	 * @param colors The town's colors
 	 */
 
-	public static void setTownColor(DynmapTownyPlugin dtp, String town, Color[] colors) {
+	public static void setTownColor(DynmapTownyPlugin dtp, String town, Color[] colors, Color nationcolor) {
 		Function<Color, Integer> c2i = c -> c.getRed() << 16 | c.getGreen() << 8 | c.getBlue();
 		try {
-			DTBridge.setTownColor(dtp, town, c2i.apply(colors[0]),
-				c2i.apply(colors.length > 1 ? colors[1] : colors[0]));
+			DTBridge.setTownColor(dtp, town, c2i.apply(nationcolor == null ? colors[0] : nationcolor),
+				c2i.apply(colors.length > 1 && nationcolor != null ? colors[1] : colors[0]));
 		} catch (Exception e) {
 			TBMCCoreAPI.SendException("Failed to set town color for town " + town + "!", e);
 		}

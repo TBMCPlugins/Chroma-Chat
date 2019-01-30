@@ -54,7 +54,7 @@ public class NationColorCommand extends AdminCommandBase {
 			for (Town t : nation.getTowns())
 				TownyListener.updateTownMembers(t);
 		});
-		sender.sendMessage("§bNation color set to §" + TownColorCommand.getColorText(c.get()));
+		sender.sendMessage("§bNation color set to " + TownColorCommand.getColorText(c.get()));
 		return true;
 	}
 }
