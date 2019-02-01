@@ -40,8 +40,9 @@ public final class ChatFormatter {
 	short removeCharCount = 0;
 	@Builder.Default
     Type type = Type.Normal;
+	String hoverText;
 
-    public enum Type {
+	public enum Type {
         Normal,
         /**
          * Matches a start and an end section which gets converted to one section (for example see italics)
@@ -353,6 +354,8 @@ public final class ChatFormatter {
 					newtp.setObfuscated(formatter.obfuscated);
 				if (formatter.openlink != null)
 					openlink = formatter.openlink;
+				if (formatter.hoverText != null)
+					newtp.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, formatter.hoverText));
 			}
 	        if (lasttp != null && newtp.getColor() == lasttp.getColor()
 			        && newtp.isBold() == lasttp.isBold()

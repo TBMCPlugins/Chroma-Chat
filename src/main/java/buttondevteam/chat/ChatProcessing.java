@@ -48,7 +48,8 @@ public class ChatProcessing {
     private static final Pattern CODE_PATTERN = Pattern.compile("`");
 	private static final Pattern MASKED_LINK_PATTERN = Pattern.compile("\\[([^\\[\\]]+)]\\(([^()]+)\\)");
     private static final Pattern SOMEONE_PATTERN = Pattern.compile("@someone"); //TODO
-    private static final Pattern STRIKETHROUGH_PATTERN = Pattern.compile("~~");
+	private static final Pattern STRIKETHROUGH_PATTERN = Pattern.compile("~~");
+	private static final Pattern SPOILER_PATTERN = Pattern.compile("\\|\\|");
     private static final Color[] RainbowPresserColors = new Color[]{Color.Red, Color.Gold, Color.Yellow, Color.Green,
             Color.Blue, Color.DarkPurple};
     private static boolean pingedconsole = false;
@@ -61,8 +62,13 @@ public class ChatProcessing {
             ChatFormatter.builder().regex(ITALIC_PATTERN).italic(true).removeCharCount((short) 1).type(ChatFormatter.Type.Range).build(),
             ChatFormatter.builder().regex(UNDERLINED_PATTERN).underlined(true).removeCharCount((short) 1).type(ChatFormatter.Type.Range)
                     .build(),
-            ChatFormatter.builder().regex(STRIKETHROUGH_PATTERN).strikethrough(true).removeCharCount((short) 2).type(ChatFormatter.Type.Range)
-                    .build(),
+	    ChatFormatter.builder().regex(STRIKETHROUGH_PATTERN).strikethrough(true).removeCharCount((short) 2).type(ChatFormatter.Type.Range)
+		    .build(),
+	    ChatFormatter.builder().regex(SPOILER_PATTERN).obfuscated(true).removeCharCount((short) 2).type(ChatFormatter.Type.Range)
+		    .onmatch((match, cf, fs) -> {
+			    cf.setHoverText(match);
+			    return match;
+		    }).build(),
 	    ESCAPE_FORMATTER, ChatFormatter.builder().regex(NULL_MENTION_PATTERN).color(Color.DarkRed).build(), // Properly added a bug as a feature
 	    ChatFormatter.builder().regex(CONSOLE_PING_PATTERN).color(Color.Aqua).onmatch((match, builder, section) -> {
                 if (!pingedconsole) {
