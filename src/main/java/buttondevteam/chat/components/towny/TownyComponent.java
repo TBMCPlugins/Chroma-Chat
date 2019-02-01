@@ -1,7 +1,7 @@
 package buttondevteam.chat.components.towny;
 
 import buttondevteam.chat.PluginMain;
-import buttondevteam.component.channel.Channel;
+import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.TBMCChatAPI;

@@ -1,7 +1,7 @@
 package buttondevteam.chat.commands.ucmds.admin;
 
 import buttondevteam.chat.PluginMain;
-import buttondevteam.component.updater.PluginUpdater;
+import buttondevteam.core.component.updater.PluginUpdater;
 import buttondevteam.lib.TBMCCoreAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

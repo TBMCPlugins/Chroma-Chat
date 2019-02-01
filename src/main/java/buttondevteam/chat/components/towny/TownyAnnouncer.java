@@ -2,7 +2,7 @@ package buttondevteam.chat.components.towny;
 
 import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.PluginMain;
-import buttondevteam.component.channel.Channel;
+import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import com.palmergames.bukkit.towny.TownyLogger;
 import lombok.val;

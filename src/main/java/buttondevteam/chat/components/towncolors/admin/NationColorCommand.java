@@ -42,9 +42,9 @@ public class NationColorCommand extends AdminCommandBase {
 		val c = TownColorCommand.getColorOrSendError(args[1], sender);
 		if (!c.isPresent()) return true;
 		if (!c.get().getName().equals(Color.White.getName())) { //Default nation color
-			for (val nc : TownColorComponent.NationColor.values()) {
-				if (nc.getName().equals(c.get().getName())) {
-					sender.sendMessage("§cAnother nation already uses this color!");
+			for (val e : TownColorComponent.NationColor.entrySet()) {
+				if (e.getValue().getName().equals(c.get().getName())) {
+					sender.sendMessage("§The nation " + e.getKey() + " already uses this color!");
 					return true;
 				}
 			}
@@ -54,7 +54,7 @@ public class NationColorCommand extends AdminCommandBase {
 			for (Town t : nation.getTowns())
 				TownyListener.updateTownMembers(t);
 		});
-		sender.sendMessage("§bNation color set to §" + TownColorCommand.getColorText(c.get()));
+		sender.sendMessage("§bNation color set to " + TownColorCommand.getColorText(c.get()));
 		return true;
 	}
 }

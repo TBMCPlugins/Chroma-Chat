@@ -50,20 +50,21 @@ public class TownColorCommand extends AdminCommandBase {
                 return true;
 		    clrs[i - 1] = c.get();
         }
+	    Color tnc;
+	    try {
+		    tnc = TownColorComponent.NationColor.get(targetTown.getNation().getName().toLowerCase());
+	    } catch (Exception e) {
+		    tnc = null;
+	    }
+	    if (tnc == null) tnc = Color.White; //Default nation color - TODO: Make configurable
 	    for (Map.Entry<String, Color[]> other : TownColorComponent.TownColors.entrySet()) {
-		    Color nc, tnc;
+		    Color nc;
 		    try {
 			    nc = TownColorComponent.NationColor.get(TownyComponent.TU.getTownsMap().get(other.getKey()).getNation().getName().toLowerCase());
 		    } catch (Exception e) { //Too lazy for lots of null-checks and it may throw exceptions anyways
 			    nc = null;
 		    }
 		    if (nc == null) nc = Color.White; //Default nation color
-		    try {
-			    tnc = TownColorComponent.NationColor.get(targetTown.getNation().getName().toLowerCase());
-		    } catch (Exception e) {
-			    tnc = null;
-		    }
-		    if (tnc == null) tnc = Color.White; //Default nation color - TODO: Make configurable
 		    if (nc.getName().equals(tnc.getName())) {
 			    int C = 0;
 			    if (clrs.length == other.getValue().length)
@@ -86,7 +87,7 @@ public class TownColorCommand extends AdminCommandBase {
             PluginMain.Instance.getLogger().warning("Dynmap-Towny not found for setting town color!");
             return true;
         }
-	    TownColorComponent.setTownColor(dtp, targetTown.getName(), clrs);
+	    TownColorComponent.setTownColor(dtp, targetTown.getName(), clrs, tnc);
         sender.sendMessage("§bColor(s) set.");
         return true;
     }

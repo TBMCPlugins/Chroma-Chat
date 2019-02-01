@@ -36,7 +36,7 @@ depend:
 - Towny
 - Votifier
 - Vault
-- ButtonCore
+- ThorpeCore
 soft-depend:
 - Minigames
 - Dynmap-Towny
