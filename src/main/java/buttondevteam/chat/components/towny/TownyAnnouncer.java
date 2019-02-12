@@ -3,6 +3,7 @@ package buttondevteam.chat.components.towny;
 import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.core.component.channel.Channel;
+import buttondevteam.lib.TBMCSystemChatEvent;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import com.palmergames.bukkit.towny.TownyLogger;
 import lombok.val;
@@ -24,17 +25,17 @@ public class TownyAnnouncer {
 				case "Town":
 					TBMCChatAPI.SendSystemMessage(PluginMain.TownChat,
 						new Channel.RecipientTestResult(TownyComponent.getTownNationIndex(groupID, false), groupID),
-						logRecord.getMessage(), ChatProcessing.MCORIGIN);
+						logRecord.getMessage(), target, ChatProcessing.MCORIGIN);
 					break;
 				case "Nation":
 					TBMCChatAPI.SendSystemMessage(PluginMain.NationChat,
 						new Channel.RecipientTestResult(TownyComponent.getTownNationIndex(groupID, true), groupID),
-						logRecord.getMessage(), ChatProcessing.MCORIGIN);
+						logRecord.getMessage(), target, ChatProcessing.MCORIGIN);
 					break;
 				case "Global":
 					TBMCChatAPI.SendSystemMessage(Channel.GlobalChat,
 						Channel.RecipientTestResult.ALL,
-						logRecord.getMessage(), ChatProcessing.MCORIGIN);
+						logRecord.getMessage(), target, ChatProcessing.MCORIGIN);
 					break;
 			}
 		}
@@ -50,11 +51,16 @@ public class TownyAnnouncer {
 		}
 	};
 
+	private static TBMCSystemChatEvent.BroadcastTarget target;
+
 	public static void setup() {
+		target = TBMCSystemChatEvent.BroadcastTarget.add("towny");
 		TownyLogger.log.addHandler(HANDLER);
 	}
 
 	public static void setdown() {
+		TBMCSystemChatEvent.BroadcastTarget.remove(target);
+		target = null;
 		TownyLogger.log.removeHandler(HANDLER);
 	}
 }

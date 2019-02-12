@@ -12,6 +12,7 @@ import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.chat.Color;
 import com.earth2me.essentials.User;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+import com.palmergames.bukkit.towny.object.Nation;
 import lombok.experimental.var;
 import lombok.val;
 import org.bukkit.Bukkit;
@@ -79,9 +80,10 @@ public class TownColorComponent extends Component {
 				return;
 			for (val entry : TownColors.entrySet()) {
 				try {
-					val nation = TownyComponent.TU.getTownsMap().get(entry.getKey()).getNation();
+					val town = TownyComponent.TU.getTownsMap().get(entry.getKey());
+					Nation nation;
 					Color nc;
-					if (nation == null || (nc = NationColor.get(nation.getName().toLowerCase())) == null)
+					if (!town.hasNation() || (nation = town.getNation()) == null || (nc = NationColor.get(nation.getName().toLowerCase())) == null)
 						nc = Color.White;
 					setTownColor(dtp, buttondevteam.chat.components.towncolors.admin.TownColorCommand.getTownNameCased(entry.getKey()), entry.getValue(), nc);
 				} catch (Exception e) {

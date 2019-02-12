@@ -52,7 +52,8 @@ public class ChatProcessing {
 	private static final Pattern SPOILER_PATTERN = Pattern.compile("\\|\\|");
     private static final Color[] RainbowPresserColors = new Color[]{Color.Red, Color.Gold, Color.Yellow, Color.Green,
             Color.Blue, Color.DarkPurple};
-    private static boolean pingedconsole = false;
+	private static final Pattern WORD_PATTERN = Pattern.compile("\\S+");
+	private static boolean pingedconsole = false;
 
     public static final ChatFormatter ESCAPE_FORMATTER = ChatFormatter.builder().regex(ESCAPE_PATTERN).build();
 
@@ -134,7 +135,7 @@ public class ChatProcessing {
         ArrayList<ChatFormatter> formatters = addFormatters(colormode);
 	    if (colormode == channel.Color().get() && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
             final AtomicInteger rpc = new AtomicInteger(0);
-		    formatters.add(ChatFormatter.builder().color(colormode).onmatch((match, cf, s) -> {
+		    formatters.add(ChatFormatter.builder().regex(WORD_PATTERN).color(colormode).onmatch((match, cf, s) -> {
                 cf.setColor(RainbowPresserColors[rpc.getAndUpdate(i -> ++i < RainbowPresserColors.length ? i : 0)]);
                 return match;
             }).build());
