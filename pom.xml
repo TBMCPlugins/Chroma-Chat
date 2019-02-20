@@ -163,10 +163,10 @@
 			<id>Minigames</id>
 			<url>http://maven.addstar.com.au/artifactory/release</url>
 		</repository>
-		<repository>
+		<!-- <repository>
 			<id>vault-repo</id>
 			<url>http://nexus.hc.to/content/repositories/pub_releases</url>
-		</repository>
+		</repository> -->
 		<!-- <repository> <id>WorldEdit</id> <url>http://maven.sk89q.com/artifactory/repo</url> 
 			</repository> -->
 		<repository>
@@ -215,9 +215,9 @@
 		<!-- <dependency> <groupId>au.com.mineauz</groupId> <artifactId>Minigames</artifactId> 
 			<version>1.8.0</version> </dependency> -->
 		<dependency>
-			<groupId>net.milkbowl.vault</groupId>
+			<groupId>com.github.milkbowl</groupId>
 			<artifactId>VaultAPI</artifactId>
-			<version>1.6</version>
+			<version>master-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

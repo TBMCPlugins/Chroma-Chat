@@ -1,6 +1,6 @@
 package buttondevteam.chat;
 
-import buttondevteam.chat.commands.UnlolCommand;
+import buttondevteam.chat.components.fun.UnlolCommand;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.formatting.ChatFormatter;
 import buttondevteam.chat.formatting.TellrawEvent;

@@ -217,7 +217,7 @@ pip-log.txt
 .mr.developer.cfg
 .metadata/*
 TheButtonAutoFlair/out/artifacts/Autoflair/Autoflair.jar
-*.iml
+#*.iml
 *.name
 .idea/compiler.xml
 *.xml

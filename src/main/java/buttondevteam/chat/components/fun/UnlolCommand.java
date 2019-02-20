@@ -1,4 +1,4 @@
-package buttondevteam.chat.commands;
+package buttondevteam.chat.components.fun;
 
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCChatEventBase;

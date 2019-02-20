@@ -3,7 +3,7 @@ package buttondevteam.chat.listener;
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PlayerJoinTimerTask;
 import buttondevteam.chat.PluginMain;
-import buttondevteam.chat.commands.UnlolCommand;
+import buttondevteam.chat.components.fun.UnlolCommand;
 import buttondevteam.chat.commands.ucmds.HistoryCommand;
 import buttondevteam.chat.components.flair.FlairComponent;
 import buttondevteam.chat.components.flair.FlairStates;
