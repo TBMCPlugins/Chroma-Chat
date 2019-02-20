@@ -5,6 +5,7 @@ import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.commands.ucmds.HistoryCommand;
 import buttondevteam.chat.components.flair.FlairComponent;
+import buttondevteam.chat.components.fun.FunComponent;
 import buttondevteam.chat.components.towncolors.TownColorComponent;
 import buttondevteam.core.ComponentManager;
 import buttondevteam.core.component.channel.Channel;
@@ -38,9 +39,7 @@ import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -52,8 +51,6 @@ public class PlayerListener implements Listener {
 	 * Does not contain format codes, lowercased
 	 */
 	public static BiMap<String, UUID> nicknames = HashBiMap.create();
-
-    public final static String[] LaughStrings = new String[]{"xd", "lel", "lawl", "kek", "lmao", "hue", "hah", "rofl"};
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
@@ -161,38 +158,6 @@ public class PlayerListener implements Listener {
 		for (Entry<String, UUID> nicknamekv : nicknames.entrySet()) {
 			if (nicknamekv.getKey().startsWith(name.toLowerCase()))
                 e.getTabCompletions().add(PluginMain.essentials.getUser(Bukkit.getPlayer(nicknamekv.getValue())).getNick(true)); //Tabcomplete with the correct case
-		}
-	}
-
-	public static boolean ActiveF = false;
-	public static ChatPlayer FPlayer = null;
-	public static BukkitTask Ftask = null;
-	public static ArrayList<CommandSender> Fs = new ArrayList<>();
-
-	@EventHandler
-	public void onPlayerDeath(PlayerDeathEvent e) {
-		// MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(e.getEntity());
-		if (/* (mgp != null && !mgp.isInMinigame()) && */ new Random().nextBoolean()) { // Don't store Fs for NPCs
-			Runnable tt = () -> {
-				if (ActiveF) {
-					ActiveF = false;
-					if (FPlayer != null && FPlayer.FCount().get() < Integer.MAX_VALUE - 1)
-						FPlayer.FCount().set(FPlayer.FCount().get() + Fs.size());
-					Bukkit.broadcastMessage("§b" + Fs.size() + " " + (Fs.size() == 1 ? "person" : "people")
-							+ " paid their respects.§r");
-					Fs.clear();
-				}
-			};
-			if (Ftask != null) {
-				Ftask.cancel();
-				tt.run(); //Finish previous one
-			}
-			ActiveF = true;
-			Fs.clear();
-			FPlayer = TBMCPlayer.getPlayer(e.getEntity().getUniqueId(), ChatPlayer.class);
-			FPlayer.FDeaths().set(FPlayer.FDeaths().get() + 1);
-			Bukkit.broadcastMessage("§bPress F to pay respects.§r");
-			Bukkit.getScheduler().runTaskLaterAsynchronously(PluginMain.Instance, tt, 15 * 20);
 		}
 	}
 

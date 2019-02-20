@@ -1,5 +1,6 @@
 package buttondevteam.chat;
 
+import buttondevteam.chat.components.fun.FunComponent;
 import buttondevteam.chat.components.fun.UnlolCommand;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.formatting.ChatFormatter;
@@ -7,6 +8,7 @@ import buttondevteam.chat.formatting.TellrawEvent;
 import buttondevteam.chat.formatting.TellrawPart;
 import buttondevteam.chat.formatting.TellrawSerializer;
 import buttondevteam.chat.listener.PlayerListener;
+import buttondevteam.core.ComponentManager;
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCChatEventBase;
@@ -296,12 +298,8 @@ public class ChatProcessing {
                         }
                         ChatPlayer mpp = TBMCPlayer.getPlayer(nottest ? p.getUniqueId() : new UUID(0, 0), ChatPlayer.class);
                         if (nottest) {
-	                        if (PluginMain.Instance.notificationSound().get().length() == 0)
-                                p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
-                            else
-		                        p.playSound(p.getLocation(), PluginMain.Instance.notificationSound().get(), 1.0f,
-			                        PluginMain.Instance.notificationPitch().get());
-                        }
+							playPingSound(p);
+						}
                         String color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
 	                    return color + (nottest ? p.getName() : pn.get()) + "§r"; //Fix name casing, except when testing
                     }).priority(Priority.High).type(ChatFormatter.Type.Excluder).build());
@@ -316,12 +314,8 @@ public class ChatProcessing {
                                             + match.toLowerCase() + " but was reported as online.");
                                     return "§c" + match + "§r";
                                 }
-	                            if (PluginMain.Instance.notificationSound().get().length() == 0)
-		                            p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
-	                            else
-		                            p.playSound(p.getLocation(), PluginMain.Instance.notificationSound().get(), 1.0f,
-			                            PluginMain.Instance.notificationPitch().get());
-                                return PluginMain.essentials.getUser(p).getNickname();
+								playPingSound(p);
+								return PluginMain.essentials.getUser(p).getNickname();
                             }
                             error.accept("Player nicknamed " + match.toLowerCase()
                                     + " not found in nickname map but was reported as online.");
@@ -331,24 +325,16 @@ public class ChatProcessing {
         return formatters;
     }
 
-    static void doFunStuff(CommandSender sender, TBMCChatEventBase event, String message) {
-        if (PlayerListener.ActiveF && !PlayerListener.Fs.contains(sender) && message.equalsIgnoreCase("F"))
-            PlayerListener.Fs.add(sender);
+	private static void playPingSound(Player p) {
+		if (PluginMain.Instance.notificationSound().get().length() == 0)
+			p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
+		else
+			p.playSound(p.getLocation(), PluginMain.Instance.notificationSound().get(), 1.0f,
+				PluginMain.Instance.notificationPitch().get());
+	}
 
-        String msg = message.toLowerCase();
-        val lld = new UnlolCommand.LastlolData(sender, event, System.nanoTime());
-        boolean add;
-        if (add = msg.contains("lol"))
-            lld.setLolornot(true);
-        else {
-            for (int i = 0; i < PlayerListener.LaughStrings.length; i++) {
-                if (add = msg.contains(PlayerListener.LaughStrings[i])) {
-                    lld.setLolornot(false);
-                    break;
-                }
-            }
-        }
-        if (add)
-            UnlolCommand.Lastlol.put(event.getChannel(), lld);
+	static void doFunStuff(CommandSender sender, TBMCChatEventBase event, String message) {
+		val fc=ComponentManager.getIfEnabled(FunComponent.class);
+		if(fc!=null) fc.onChat(sender, event, message);
     }
 }

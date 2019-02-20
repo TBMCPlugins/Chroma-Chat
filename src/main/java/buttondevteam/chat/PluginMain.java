@@ -84,7 +84,7 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 
 	private boolean setupPermissions() {
 		RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager()
-				.getRegistration(net.milkbowl.vault.permission.Permission.class);
+			.getRegistration(net.milkbowl.vault.permission.Permission.class);
 		if (permissionProvider != null) {
 			permission = permissionProvider.getProvider();
 		}
@@ -93,7 +93,7 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 
 	private boolean setupEconomy() {
 		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager()
-				.getRegistration(net.milkbowl.vault.economy.Economy.class);
+			.getRegistration(net.milkbowl.vault.economy.Economy.class);
 		if (economyProvider != null) {
 			economy = economyProvider.getProvider();
 		}

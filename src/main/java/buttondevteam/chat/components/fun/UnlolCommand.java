@@ -2,8 +2,7 @@ package buttondevteam.chat.components.fun;
 
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCChatEventBase;
-import buttondevteam.lib.chat.CommandClass;
-import buttondevteam.lib.chat.TBMCCommandBase;
+import buttondevteam.lib.chat.*;
 import lombok.Data;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -15,21 +14,18 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-@CommandClass(modOnly = false)
-public final class UnlolCommand extends TBMCCommandBase {
+@CommandClass(modOnly = false, helpText = {
+	"§6---- Unlol/unlaugh ----",
+	"This command is based on a joke between NorbiPeti and Ghostise",
+	"It will make the last person saying one of the recognized laugh strings blind for a few seconds",
+	"Note that you can only unlaugh laughs that weren't unlaughed before"
+})
+public final class UnlolCommand extends ICommand2MC {
 
-	public static Map<Channel, LastlolData> Lastlol = new HashMap<>();
+	public Map<Channel, LastlolData> Lastlol = new HashMap<>();
 
-	@Override
-	public String[] GetHelpText(String alias) {
-		return new String[] { "§6---- Unlol/unlaugh ----",
-				"This command is based on a joke between NorbiPeti and Ghostise",
-				"It will make the last person saying one of the recognized laugh strings blind for a few seconds",
-				"Note that you can only unlaugh laughs that weren't unlaughed before" };
-	}
-
-	@Override
-	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
+	@Command2.Subcommand
+	public boolean def(CommandSender sender) {
 		LastlolData lol = Lastlol.values().stream().filter(lld -> lld.Chatevent.shouldSendTo(sender))
 				.max(Comparator.comparingLong(lld -> lld.Loltime)).orElse(null);
 		if (lol == null)
