@@ -3,6 +3,7 @@ package buttondevteam.chat.listener;
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PlayerJoinTimerTask;
 import buttondevteam.chat.PluginMain;
+import buttondevteam.chat.components.chatonly.ChatOnlyComponent;
 import buttondevteam.chat.components.fun.UnlolCommand;
 import buttondevteam.chat.commands.ucmds.HistoryCommand;
 import buttondevteam.chat.components.flair.FlairComponent;
@@ -62,10 +63,7 @@ public class PlayerJoinLeaveListener implements Listener {
 
 		TownColorComponent.updatePlayerColors(p, cp); //TO!DO: Doesn't have effect - It can help to register the listener
 
-		if (cp.ChatOnly || p.getGameMode().equals(GameMode.SPECTATOR)) {
-			cp.ChatOnly = false;
-			p.setGameMode(GameMode.SURVIVAL);
-		}
+		ChatOnlyComponent.playerJoin(cp, p);
 
 		HistoryCommand.showHistory(e.getPlayer(), "u history", new String[0], null);
 	}
@@ -77,7 +75,6 @@ public class PlayerJoinLeaveListener implements Listener {
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) {
 		PlayerListener.nicknames.inverse().remove(event.getPlayer().getUniqueId());
-		UnlolCommand.Lastlol.values().removeIf(lld -> lld.getLolowner().equals(event.getPlayer()));
 	}
 
 }

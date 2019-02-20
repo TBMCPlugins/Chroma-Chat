@@ -1,5 +1,6 @@
 package buttondevteam.chat;
 
+import buttondevteam.chat.components.chatonly.ChatOnlyComponent;
 import buttondevteam.chat.components.fun.FunComponent;
 import buttondevteam.chat.components.fun.UnlolCommand;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
@@ -212,10 +213,7 @@ public class ChatProcessing {
                                      @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier,
                                      String origin) {
         TellrawPart json = new TellrawPart("");
-        if (mp != null && mp.ChatOnly) {
-            json.addExtra(new TellrawPart("[C]")
-                    .setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, "Chat only")));
-        }
+		ChatOnlyComponent.tellrawCreate(mp, json); //TODO: Make nice API
         json.addExtra(
                 new TellrawPart(channelidentifier)
                         .setHoverEvent(

@@ -176,21 +176,6 @@ public class PlayerListener implements Listener {
 		}
 	}
 
-	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent e) {
-		ChatPlayer mp = TBMCPlayer.getPlayer(e.getPlayer().getUniqueId(), ChatPlayer.class);
-		if (mp.ChatOnly)
-			e.setCancelled(true);
-	}
-
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onPlayerTeleport(PlayerTeleportEvent e) {
-		if (TBMCPlayer.getPlayer(e.getPlayer().getUniqueId(), ChatPlayer.class).ChatOnly) {
-			e.setCancelled(true);
-			e.getPlayer().sendMessage("§cYou are not allowed to teleport while in chat-only mode.");
-		}
-	}
-
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onConsoleCommand(ServerCommandEvent event) {
 		if (onCommandPreprocess(event.getSender(), event.getCommand()))

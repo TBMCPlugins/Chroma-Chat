@@ -2,6 +2,7 @@ package buttondevteam.chat.components.fun;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
+import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.lib.TBMCChatEventBase;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.player.TBMCPlayer;
@@ -11,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ public class FunComponent extends Component implements Listener {
 		registerListener(pc);
 		registerCommand(command=new UnlolCommand());
 		registerListener(this);
+		registerCommand(new FTopCommand());
 	}
 
 	@Override
@@ -83,5 +86,9 @@ public class FunComponent extends Component implements Listener {
 			Bukkit.broadcastMessage("§bPress F to pay respects.§r");
 			Bukkit.getScheduler().runTaskLaterAsynchronously(PluginMain.Instance, tt, 15 * 20);
 		}
+	}
+	@EventHandler
+	public void onPlayerLeave(PlayerQuitEvent event) {
+		command.Lastlol.values().removeIf(lld -> lld.getLolowner().equals(event.getPlayer()));
 	}
 }
