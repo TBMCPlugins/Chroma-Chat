@@ -2,6 +2,7 @@ package buttondevteam.chat.components.fun;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
+import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCChatEventBase;
 import buttondevteam.lib.TBMCCommandPreprocessEvent;
 import buttondevteam.lib.TBMCSystemChatEvent;
@@ -10,6 +11,7 @@ import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.TBMCPlayer;
+import lombok.Getter;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -35,13 +37,15 @@ public class FunComponent extends Component implements Listener {
 	private ArrayList<CommandSender> Fs = new ArrayList<>();
 	private UnlolCommand command;
 	private TBMCSystemChatEvent.BroadcastTarget unlolTarget;
+	private TBMCSystemChatEvent.BroadcastTarget fTarget;
 	@Override
 	protected void enable() {
 		unlolTarget = TBMCSystemChatEvent.BroadcastTarget.add("unlol");
+		fTarget = TBMCSystemChatEvent.BroadcastTarget.add("respect");
 		val pc = new PressCommand();
 		registerCommand(pc);
 		registerListener(pc);
-		registerCommand(command=new UnlolCommand());
+		registerCommand(command=new UnlolCommand(unlolTarget));
 		registerListener(this);
 		registerCommand(new FTopCommand());
 	}
@@ -81,8 +85,9 @@ public class FunComponent extends Component implements Listener {
 					ActiveF = false;
 					if (FPlayer != null && FPlayer.FCount().get() < Integer.MAX_VALUE - 1)
 						FPlayer.FCount().set(FPlayer.FCount().get() + Fs.size());
-					Bukkit.broadcastMessage("§b" + Fs.size() + " " + (Fs.size() == 1 ? "person" : "people")
-						+ " paid their respects.§r");
+					TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL,
+						"§b" + Fs.size() + " " + (Fs.size() == 1 ? "person" : "people")
+						+ " paid their respects.§r", fTarget);
 					Fs.clear();
 				}
 			};
@@ -94,7 +99,8 @@ public class FunComponent extends Component implements Listener {
 			Fs.clear();
 			FPlayer = TBMCPlayer.getPlayer(e.getEntity().getUniqueId(), ChatPlayer.class);
 			FPlayer.FDeaths().set(FPlayer.FDeaths().get() + 1);
-			Bukkit.broadcastMessage("§bPress F to pay respects.§r");
+			TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL,
+				"§bPress F to pay respects.§r", fTarget);
 			Bukkit.getScheduler().runTaskLaterAsynchronously(PluginMain.Instance, tt, 15 * 20);
 		}
 	}

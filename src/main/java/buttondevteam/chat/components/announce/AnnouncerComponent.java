@@ -1,7 +1,10 @@
 package buttondevteam.chat.components.announce;
 
+import buttondevteam.core.component.channel.Channel;
+import buttondevteam.lib.TBMCSystemChatEvent;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ConfigData;
+import buttondevteam.lib.chat.TBMCChatAPI;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
@@ -14,6 +17,9 @@ public class AnnouncerComponent extends Component implements Runnable {
 	public ConfigData<Integer> AnnounceTime() {
 		return getConfig().getData("announceTime", 15 * 60 * 1000);
 	}
+
+	private TBMCSystemChatEvent.BroadcastTarget target;
+
 	private static int AnnounceMessageIndex = 0;
 
 	@Override
@@ -26,7 +32,7 @@ public class AnnouncerComponent extends Component implements Runnable {
 			}
 			if (Bukkit.getOnlinePlayers().size() == 0) continue; //Don't post to Discord if nobody is on
 			if (AnnounceMessages().get().size() > AnnounceMessageIndex) {
-				Bukkit.broadcastMessage(AnnounceMessages().get().get(AnnounceMessageIndex));
+				TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, AnnounceMessages().get().get(AnnounceMessageIndex), target);
 				AnnounceMessageIndex++;
 				if (AnnounceMessageIndex == AnnounceMessages().get().size())
 					AnnounceMessageIndex = 0;
@@ -36,6 +42,7 @@ public class AnnouncerComponent extends Component implements Runnable {
 
 	@Override
 	protected void enable() {
+		target= TBMCSystemChatEvent.BroadcastTarget.add("announcements");
 		registerCommand(new AddCommand());
 		registerCommand(new EditCommand());
 		registerCommand(new ListCommand());

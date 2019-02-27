@@ -2,8 +2,11 @@ package buttondevteam.chat.components.fun;
 
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCChatEventBase;
+import buttondevteam.lib.TBMCSystemChatEvent;
+import buttondevteam.lib.ThorpeUtils;
 import buttondevteam.lib.chat.*;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -20,9 +23,12 @@ import java.util.Map;
 	"It will make the last person saying one of the recognized laugh strings blind for a few seconds",
 	"Note that you can only unlaugh laughs that weren't unlaughed before"
 })
+@RequiredArgsConstructor
 public final class UnlolCommand extends ICommand2MC {
 
 	public Map<Channel, LastlolData> Lastlol = new HashMap<>();
+
+	private final TBMCSystemChatEvent.BroadcastTarget target;
 
 	@Command2.Subcommand
 	public boolean def(CommandSender sender) {
@@ -33,10 +39,10 @@ public final class UnlolCommand extends ICommand2MC {
 		if (lol.Lolowner instanceof Player)
 			((Player) lol.Lolowner)
 					.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 2 * 20, 5, false, false));
-		String msg = (sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName())
+		String msg = ThorpeUtils.getDisplayName(sender)
 				+ (lol.Lolornot ? " unlolled " : " unlaughed ")
-				+ (lol.Lolowner instanceof Player ? ((Player) lol.Lolowner).getDisplayName() : lol.Lolowner.getName());
-		Bukkit.broadcastMessage(msg);
+				+ ThorpeUtils.getDisplayName(lol.Lolowner);
+		TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, msg, target);
 		Lastlol.remove(lol.Chatevent.getChannel());
 		return true;
 	}
