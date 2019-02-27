@@ -2,17 +2,26 @@ package buttondevteam.chat.components.fun;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
-import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.lib.TBMCChatEventBase;
+import buttondevteam.lib.TBMCCommandPreprocessEvent;
+import buttondevteam.lib.TBMCSystemChatEvent;
+import buttondevteam.lib.ThorpeUtils;
 import buttondevteam.lib.architecture.Component;
+import buttondevteam.lib.chat.TBMCChatAPI;
+import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.TBMCPlayer;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.help.HelpTopic;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
@@ -25,8 +34,10 @@ public class FunComponent extends Component implements Listener {
 	private BukkitTask Ftask = null;
 	private ArrayList<CommandSender> Fs = new ArrayList<>();
 	private UnlolCommand command;
+	private TBMCSystemChatEvent.BroadcastTarget unlolTarget;
 	@Override
 	protected void enable() {
+		unlolTarget = TBMCSystemChatEvent.BroadcastTarget.add("unlol");
 		val pc = new PressCommand();
 		registerCommand(pc);
 		registerListener(pc);
@@ -90,5 +101,37 @@ public class FunComponent extends Component implements Listener {
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) {
 		command.Lastlol.values().removeIf(lld -> lld.getLolowner().equals(event.getPlayer()));
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onCommandPreprocess(TBMCCommandPreprocessEvent event) {
+		if (event.isCancelled()) return;
+		final String cmd = event.getMessage();
+		// We don't care if we have arguments
+		if (cmd.toLowerCase().startsWith("/un")) {
+			for (HelpTopic ht : PluginMain.Instance.getServer().getHelpMap().getHelpTopics()) {
+				if (ht.getName().equalsIgnoreCase(cmd))
+					return;
+			}
+			if (PluginMain.permission.has(event.getSender(), "thorpe.unanything")) {
+				event.setCancelled(true);
+				String s = cmd.substring(3);
+				int index = event.getMessage().indexOf(' ');
+				if (index == -1) {
+					event.getSender().sendMessage("§cUsage: /un" + s + " <player>");
+					return;
+				}
+				Player target = Bukkit.getPlayer(event.getMessage().substring(index + 1));
+				if (target == null) {
+					event.getSender().sendMessage("§cError: Player not found. (/un" + s + " <player>)");
+					return;
+				}
+				val user = ChromaGamerBase.getFromSender(event.getSender());
+				target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 5, false, false));
+				val chan = user.channel().get();
+				TBMCChatAPI.SendSystemMessage(chan, chan.getRTR(event.getSender()), ThorpeUtils.getDisplayName(event.getSender()) + " un" + s
+					+ "'d " + target.getDisplayName(), unlolTarget);
+			}
+		}
 	}
 }

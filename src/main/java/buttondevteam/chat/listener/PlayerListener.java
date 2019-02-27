@@ -5,7 +5,6 @@ import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.commands.ucmds.HistoryCommand;
 import buttondevteam.chat.components.flair.FlairComponent;
-import buttondevteam.chat.components.fun.FunComponent;
 import buttondevteam.chat.components.towncolors.TownColorComponent;
 import buttondevteam.core.ComponentManager;
 import buttondevteam.core.component.channel.Channel;
@@ -13,6 +12,8 @@ import buttondevteam.core.component.channel.ChatChannelRegisterEvent;
 import buttondevteam.core.component.channel.ChatRoom;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
+import buttondevteam.lib.TBMCSystemChatEvent;
+import buttondevteam.lib.ThorpeUtils;
 import buttondevteam.lib.chat.ChatMessage;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.ChromaGamerBase;
@@ -33,16 +34,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatTabCompleteEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
-import org.bukkit.help.HelpTopic;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.Arrays;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.UUID;
 import java.util.function.BiPredicate;
 
@@ -100,12 +98,12 @@ public class PlayerListener implements Listener {
 			if (cmd.equalsIgnoreCase("tpahere")) {
 				Player player = Bukkit.getPlayer(message.substring(index + 1));
 				if (player != null && sender instanceof Player)
-					player.sendMessage("§b" + ((Player) sender).getDisplayName() + " §bis in this world: "
+					player.sendMessage("§b" + ((Player) sender).getDisplayName() + " §bis in this world: " //TODO: Move to the Core
 							+ ((Player) sender).getWorld().getName());
 			} else if (cmd.equalsIgnoreCase("minecraft:me")) {
 				if (!(sender instanceof Player) || !PluginMain.essentials.getUser((Player) sender).isMuted()) {
 					String msg = message.substring(index + 1);
-					Bukkit.broadcastMessage(String.format("* %s %s", sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName(), msg));
+					TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, String.format("* %s %s", ThorpeUtils.getDisplayName(sender), msg), TBMCSystemChatEvent.BroadcastTarget.ALL); //TODO: Don't send to all
 					return true;
 				} else {
 					sender.sendMessage("§cCan't use /minecraft:me while muted.");
@@ -128,26 +126,6 @@ public class PlayerListener implements Listener {
 					}
 				}
 			// TODO: Target selectors
-		}
-		// We don't care if we have arguments
-		if (cmd.toLowerCase().startsWith("un")) {
-			for (HelpTopic ht : PluginMain.Instance.getServer().getHelpMap().getHelpTopics()) {
-				if (ht.getName().equalsIgnoreCase("/" + cmd))
-					return false;
-			}
-			if (PluginMain.permission.has(sender, "tbmc.admin")) {
-				String s = cmd.substring(2);
-				Player target = Bukkit.getPlayer(message.substring(index + 1));
-				if (target == null) {
-					sender.sendMessage("§cError: Player not found. (/un" + s + " <player>)");
-					return true;
-				}
-				target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 5, false, false));
-				Bukkit.broadcastMessage(
-						(sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName()) + " un" + s
-								+ "'d " + target.getDisplayName());
-				return true;
-			}
 		}
 		return false;
 	}
