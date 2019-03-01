@@ -97,6 +97,7 @@ public class TownColorComponent extends Component {
 		registerCommand(new buttondevteam.chat.components.towncolors.admin.TownColorCommand());
 		registerCommand(new buttondevteam.chat.components.towncolors.admin.NationColorCommand());
 		registerCommand(new TCCount());
+		registerListener(new TownyListener());
 	}
 
 	@Override

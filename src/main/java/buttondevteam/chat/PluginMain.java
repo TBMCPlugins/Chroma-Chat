@@ -5,7 +5,6 @@ import buttondevteam.chat.components.announce.AnnouncerComponent;
 import buttondevteam.chat.components.flair.FlairComponent;
 import buttondevteam.chat.components.fun.FunComponent;
 import buttondevteam.chat.components.towncolors.TownColorComponent;
-import buttondevteam.chat.components.towncolors.TownyListener;
 import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.chat.listener.PlayerJoinLeaveListener;
 import buttondevteam.chat.listener.PlayerListener;
@@ -33,9 +32,6 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 
 	public static Scoreboard SB;
 
-	public static Channel TownChat;
-	public static Channel NationChat;
-
 	public ConfigData<String> notificationSound() {
 		return getIConfig().getData("notificationSound", "");
 	}
@@ -52,20 +48,21 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 
 		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerListener(), this);
 		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerJoinLeaveListener(), this);
-		TBMCCoreAPI.RegisterEventsForExceptions(new TownyListener(), this);
 		TBMCChatAPI.AddCommands(this, YeehawCommand.class);
 		Console = this.getServer().getConsoleSender();
 
 		SB = getServer().getScoreboardManager().getMainScoreboard(); // Main can be detected with @a[score_...]
 
-		Component.registerComponent(this, new TownyComponent());
+		if (Bukkit.getPluginManager().isPluginEnabled("Towny"))
+			Component.registerComponent(this, new TownyComponent());
 
 		TBMCChatAPI.RegisterChatChannel(new Channel("§7RP§f", Color.Gray, "rp", null)); //Since it's null, it's recognised as global
 
 		if (!setupEconomy() || !setupPermissions())
 			TBMCCoreAPI.SendException("We're in trouble", new Exception("Failed to set up economy or permissions!"));
 
-		Component.registerComponent(this, new TownColorComponent());
+		if (Bukkit.getPluginManager().isPluginEnabled("Towny"))
+			Component.registerComponent(this, new TownColorComponent());
 		Component.registerComponent(this, new FlairComponent()); //The original purpose of this plugin
 		Component.registerComponent(this, new AnnouncerComponent());
 		Component.registerComponent(this, new FunComponent());

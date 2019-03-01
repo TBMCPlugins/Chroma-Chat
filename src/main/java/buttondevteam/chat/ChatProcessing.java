@@ -1,9 +1,9 @@
 package buttondevteam.chat;
 
+import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.components.chatonly.ChatOnlyComponent;
 import buttondevteam.chat.components.fun.FunComponent;
-import buttondevteam.chat.components.fun.UnlolCommand;
-import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
+import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.chat.formatting.ChatFormatter;
 import buttondevteam.chat.formatting.TellrawEvent;
 import buttondevteam.chat.formatting.TellrawPart;
@@ -178,16 +178,11 @@ public class ChatProcessing {
                 if (score < 0) // Never send messages to score below 0
                     sender.sendMessage("§cYou don't have permission to send this message or something went wrong");
                 else {
-                    PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-                            String.format("tellraw @a[score_%s=%d,score_%s_min=%d] %s", channel.ID, score, channel.ID,
-                                    score, jsonstr));
-                    if (e.getChannel().ID.equals(PluginMain.TownChat.ID)
-                            || e.getChannel().ID.equals(PluginMain.NationChat.ID)) {
-                        ((List<TellrawPart>) json.getExtra()).add(0, new TellrawPart("[SPY]"));
-                        jsonstr = toJson(json);
-                        Bukkit.getServer().dispatchCommand(PluginMain.Console, String.format(
-                                "tellraw @a[score_%s=1000,score_%s_min=1000] %s", channel.ID, channel.ID, jsonstr));
-                    }
+	                PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
+		                String.format("tellraw @a[score_%s=%d,score_%s_min=%d] %s", channel.ID, score, channel.ID,
+			                score, jsonstr));
+	                val tc = ComponentManager.getIfEnabled(TownyComponent.class);
+	                if (tc != null) tc.handleSpies(channel, json, ChatProcessing::toJson);
                 }
             } else
                 PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,

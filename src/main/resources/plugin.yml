@@ -33,13 +33,12 @@ commands:
 author: NorbiPeti
 depend:
 - Essentials
-- Towny
-- Votifier
 - Vault
 - ThorpeCore
 soft-depend:
 - Minigames
 - Dynmap-Towny
+- Towny
 permissions:
   tbmc.admin:
     description: Gives access to /un- commands and /u admin commands

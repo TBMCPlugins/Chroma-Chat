@@ -1,6 +1,7 @@
 package buttondevteam.chat.components.towny;
 
 import buttondevteam.chat.PluginMain;
+import buttondevteam.chat.formatting.TellrawPart;
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.chat.Color;
@@ -17,6 +18,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class TownyComponent extends Component {
@@ -24,16 +27,19 @@ public class TownyComponent extends Component {
 	private static ArrayList<String> Towns;
 	private static ArrayList<String> Nations;
 
+	private Channel TownChat;
+	private Channel NationChat;
+
 	@Override
 	protected void enable() {
 		TU = ((Towny) Bukkit.getPluginManager().getPlugin("Towny")).getTownyUniverse();
 		Towns = TU.getTownsMap().values().stream().map(Town::getName).collect(Collectors.toCollection(ArrayList::new)); // Creates a snapshot of towns, new towns will be added when needed
 		Nations = TU.getNationsMap().values().stream().map(Nation::getName).collect(Collectors.toCollection(ArrayList::new)); // Same here but with nations
 		TBMCChatAPI.RegisterChatChannel(
-			PluginMain.TownChat = new Channel("§3TC§f", Color.DarkAqua, "tc", s -> checkTownNationChat(s, false)));
+			TownChat = new Channel("§3TC§f", Color.DarkAqua, "tc", s -> checkTownNationChat(s, false)));
 		TBMCChatAPI.RegisterChatChannel(
-			PluginMain.NationChat = new Channel("§6NC§f", Color.Gold, "nc", s -> checkTownNationChat(s, true)));
-		TownyAnnouncer.setup();
+			NationChat = new Channel("§6NC§f", Color.Gold, "nc", s -> checkTownNationChat(s, true)));
+		TownyAnnouncer.setup(TownChat, NationChat);
 	}
 
 	@Override
@@ -41,6 +47,14 @@ public class TownyComponent extends Component {
 		TownyAnnouncer.setdown();
 	}
 
+	public void handleSpies(Channel channel, TellrawPart json, Function<TellrawPart, String> toJson) {
+		if (channel.ID.equals(TownChat.ID) || channel.ID.equals(NationChat.ID)) {
+			((List<TellrawPart>) json.getExtra()).add(0, new TellrawPart("[SPY]"));
+			String jsonstr = toJson.apply(json);
+			Bukkit.getServer().dispatchCommand(PluginMain.Console, String.format(
+				"tellraw @a[score_%s=1000,score_%s_min=1000] %s", channel.ID, channel.ID, jsonstr));
+		}
+	}
 
 	/**
 	 * Return the error message for the message sender if they can't send it and the score
@@ -49,13 +63,13 @@ public class TownyComponent extends Component {
 		if (!(sender instanceof Player))
 			return new Channel.RecipientTestResult("§cYou are not a player!");
 		Resident resident = TU.getResidentMap().get(sender.getName().toLowerCase());
-		Channel.RecipientTestResult result = checkTownNationChatInternal(sender, nationchat, resident);
+		Channel.RecipientTestResult result = checkTownNationChatInternal(nationchat, resident);
 		if (result.errormessage != null && resident != null && resident.getModes().contains("spy")) // Only use spy if they wouldn't see it
 			result = new Channel.RecipientTestResult(1000, "allspies"); // There won't be more than a thousand towns/nations probably
 		return result;
 	}
 
-	private static Channel.RecipientTestResult checkTownNationChatInternal(CommandSender sender, boolean nationchat,
+	private static Channel.RecipientTestResult checkTownNationChatInternal(boolean nationchat,
 	                                                                       Resident resident) {
 		try {
 			/*

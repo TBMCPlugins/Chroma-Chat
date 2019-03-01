@@ -22,8 +22,6 @@ import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerGetInfoEvent;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.vexsoftware.votifier.model.Vote;
-import com.vexsoftware.votifier.model.VotifierEvent;
 import lombok.val;
 import net.ess3.api.events.NickChangeEvent;
 import org.bukkit.Bukkit;
@@ -136,21 +134,6 @@ public class PlayerListener implements Listener {
 		for (Entry<String, UUID> nicknamekv : nicknames.entrySet()) {
 			if (nicknamekv.getKey().startsWith(name.toLowerCase()))
                 e.getTabCompletions().add(PluginMain.essentials.getUser(Bukkit.getPlayer(nicknamekv.getValue())).getNick(true)); //Tabcomplete with the correct case
-		}
-	}
-
-	@EventHandler
-	@SuppressWarnings("deprecation")
-	public void onVotifierEvent(VotifierEvent event) { //TODO: Move to teh Core eh
-		Vote vote = event.getVote();
-		PluginMain.Instance.getLogger().info("Vote: " + vote);
-		org.bukkit.OfflinePlayer op = Bukkit.getOfflinePlayer(vote.getUsername());
-		Player p = Bukkit.getPlayer(vote.getUsername());
-		if (op != null) {
-			PluginMain.economy.depositPlayer(op, 50.0);
-		}
-		if (p != null) {
-			p.sendMessage("§bThanks for voting! $50 was added to your account.");
 		}
 	}
 
