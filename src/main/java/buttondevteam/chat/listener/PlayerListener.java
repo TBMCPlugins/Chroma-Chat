@@ -18,7 +18,6 @@ import buttondevteam.lib.chat.ChatMessage;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
-import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerGetInfoEvent;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -52,8 +51,7 @@ public class PlayerListener implements Listener {
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		if (event.isCancelled())
 			return;
-		ChatPlayer cp = TBMCPlayer.getPlayer(event.getPlayer().getUniqueId(), ChatPlayer.class);
-		TBMCChatAPI.SendChatMessage(ChatMessage.builder(event.getPlayer(), cp, event.getMessage()).build());
+		//The custom event is called in the core, but doesn't cancel the MC event
 		event.setCancelled(true); // The custom event should only be cancelled when muted or similar
 	}
 
@@ -170,12 +168,12 @@ public class PlayerListener implements Listener {
 			HistoryCommand.addChatMessage(e.getCm(), e.getChannel());
 			e.setCancelled(ChatProcessing.ProcessChat(e));
 		} catch (NoClassDefFoundError | Exception ex) { // Weird things can happen
+			val str = "§c!§r[" + e.getChannel().DisplayName().get() + "] <"
+				+ ThorpeUtils.getDisplayName(e.getSender()) + "> " + e.getMessage();
 			for (Player p : Bukkit.getOnlinePlayers())
 				if (e.shouldSendTo(p))
-					p.sendMessage("§c!§r["
-						+ e.getChannel().DisplayName().get() + "] <" + (e.getSender() instanceof Player
-							? ((Player) e.getSender()).getDisplayName() : e.getSender().getName())
-							+ "> " + e.getMessage());
+					p.sendMessage(str);
+			Bukkit.getConsoleSender().sendMessage(str);
 			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex);
 		}
 	}

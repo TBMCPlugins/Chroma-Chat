@@ -144,7 +144,7 @@ public class ChatProcessing {
             }).build());
         }
         pingedconsole = false; // Will set it to true onmatch (static constructor)
-        final String channelidentifier = getChannelID(channel, sender, e.getOrigin());
+	    final String channelidentifier = getChannelID(channel, e.getOrigin());
 
         TellrawPart json = createTellraw(sender, message, player, mp, e.getUser(), channelidentifier, e.getOrigin());
         long combinetime = System.nanoTime();
@@ -238,7 +238,7 @@ public class ChatProcessing {
         return player.getDisplayName();
     }
 
-    static String getChannelID(Channel channel, CommandSender sender, String origin) {
+	static String getChannelID(Channel channel, String origin) {
 	    return ("[" + (MCORIGIN.equals(origin) ? "" : "§8" + origin.substring(0, 1) + "§r|") + channel.DisplayName().get())
                 + "]";
     }

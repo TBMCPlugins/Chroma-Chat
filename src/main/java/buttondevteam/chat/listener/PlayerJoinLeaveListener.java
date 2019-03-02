@@ -3,17 +3,13 @@ package buttondevteam.chat.listener;
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PlayerJoinTimerTask;
 import buttondevteam.chat.PluginMain;
-import buttondevteam.chat.components.chatonly.ChatOnlyComponent;
-import buttondevteam.chat.components.fun.UnlolCommand;
 import buttondevteam.chat.commands.ucmds.HistoryCommand;
 import buttondevteam.chat.components.flair.FlairComponent;
 import buttondevteam.chat.components.flair.FlairStates;
-import buttondevteam.chat.components.towncolors.TownColorComponent;
 import buttondevteam.core.ComponentManager;
 import buttondevteam.lib.player.TBMCPlayerJoinEvent;
 import buttondevteam.lib.player.TBMCPlayerLoadEvent;
 import buttondevteam.lib.player.TBMCPlayerSaveEvent;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -59,11 +55,7 @@ public class PlayerJoinLeaveListener implements Listener {
 				nwithoutformatting = nwithoutformatting.replace("§" + nwithoutformatting.charAt(index + 1), "");
 		} else
 			nwithoutformatting = p.getName();
-		PlayerListener.nicknames.forcePut(nwithoutformatting.toLowerCase(), p.getUniqueId());
-
-		TownColorComponent.updatePlayerColors(p, cp); //TO!DO: Doesn't have effect - It can help to register the listener
-
-		ChatOnlyComponent.playerJoin(cp, p);
+		PlayerListener.nicknames.forcePut(nwithoutformatting.toLowerCase(), p.getUniqueId()); //TODO: FormatterComponent
 
 		HistoryCommand.showHistory(e.getPlayer(), "u history", new String[0], null);
 	}

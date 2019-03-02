@@ -10,6 +10,7 @@ import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ComponentMetadata;
 import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.chat.Color;
+import buttondevteam.lib.player.TBMCPlayerJoinEvent;
 import com.earth2me.essentials.User;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
@@ -20,6 +21,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.dynmap.towny.DTBridge;
 import org.dynmap.towny.DynmapTownyPlugin;
 
@@ -32,7 +35,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @ComponentMetadata(depends = TownyComponent.class)
-public class TownColorComponent extends Component {
+public class TownColorComponent extends Component implements Listener {
 	/**
 	 * Names lowercased
 	 */
@@ -98,6 +101,7 @@ public class TownColorComponent extends Component {
 		registerCommand(new buttondevteam.chat.components.towncolors.admin.NationColorCommand());
 		registerCommand(new TCCount());
 		registerListener(new TownyListener());
+		registerListener(this);
 	}
 
 	@Override
@@ -181,13 +185,18 @@ public class TownColorComponent extends Component {
 	/**
 	 * Checks if the component is enabled
 	 */
-	public static void updatePlayerColors(Player player, ChatPlayer cp) { //Probably at join - nop, nicknames
+	private static void updatePlayerColors(Player player, ChatPlayer cp) { //Probably at join - nop, nicknames
 		if (!ComponentManager.isEnabled(TownColorComponent.class))
 			return;
 		User user = PluginMain.essentials.getUser(player);
 		user.setNickname(getPlayerNickname(player, user, cp));
 		user.setDisplayNick(); //These won't fire the nick change event
 		cp.FlairUpdate(); //Update in list
+	}
+
+	@EventHandler
+	public void onPlayerJoin(TBMCPlayerJoinEvent event) {
+		updatePlayerColors(event.getPlayer(), event.GetPlayer().asPluginPlayer(ChatPlayer.class));
 	}
 
 	private static void load_old(Consumer<ConfigurationSection> loadTC,

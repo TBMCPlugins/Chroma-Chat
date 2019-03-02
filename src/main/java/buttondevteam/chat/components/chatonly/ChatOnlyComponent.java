@@ -7,8 +7,8 @@ import buttondevteam.core.ComponentManager;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerJoinEvent;
+import lombok.val;
 import org.bukkit.GameMode;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -27,9 +27,10 @@ public class ChatOnlyComponent extends Component implements Listener {
 
 	}
 
-	public static void playerJoin(ChatPlayer cp, Player p) {
-		if(!ComponentManager.isEnabled(ChatOnlyComponent.class))
-			return;
+	@EventHandler
+	public void playerJoin(TBMCPlayerJoinEvent event) {
+		val p = event.getPlayer();
+		val cp = event.GetPlayer().asPluginPlayer(ChatPlayer.class);
 		if (cp.ChatOnly || p.getGameMode().equals(GameMode.SPECTATOR)) {
 			cp.ChatOnly = false;
 			p.setGameMode(GameMode.SURVIVAL);
