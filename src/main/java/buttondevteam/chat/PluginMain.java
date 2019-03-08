@@ -2,6 +2,7 @@ package buttondevteam.chat;
 
 import buttondevteam.chat.commands.YeehawCommand;
 import buttondevteam.chat.components.announce.AnnouncerComponent;
+import buttondevteam.chat.components.appendext.AppendTextComponent;
 import buttondevteam.chat.components.flair.FlairComponent;
 import buttondevteam.chat.components.fun.FunComponent;
 import buttondevteam.chat.components.towncolors.TownColorComponent;
@@ -66,6 +67,7 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 		Component.registerComponent(this, new FlairComponent()); //The original purpose of this plugin
 		Component.registerComponent(this, new AnnouncerComponent());
 		Component.registerComponent(this, new FunComponent());
+		Component.registerComponent(this, new AppendTextComponent());
 	}
 
 	public static Essentials essentials = null;
