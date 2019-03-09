@@ -11,7 +11,6 @@ import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.TBMCPlayer;
-import lombok.Getter;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -29,7 +28,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class FunComponent extends Component implements Listener {
+public class FunComponent extends Component<PluginMain> implements Listener {
 	private final static String[] LaughStrings = new String[]{"xd", "lel", "lawl", "kek", "lmao", "hue", "hah", "rofl"};
 	private boolean ActiveF = false;
 	private ChatPlayer FPlayer = null;

@@ -9,6 +9,7 @@ import buttondevteam.chat.components.towncolors.TownColorComponent;
 import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.chat.listener.PlayerJoinLeaveListener;
 import buttondevteam.chat.listener.PlayerListener;
+import buttondevteam.core.MainPlugin;
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.architecture.ButtonPlugin;
@@ -17,7 +18,6 @@ import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import com.earth2me.essentials.Essentials;
-import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
@@ -50,6 +50,7 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerListener(), this);
 		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerJoinLeaveListener(), this);
 		TBMCChatAPI.AddCommands(this, YeehawCommand.class);
+		MainPlugin.Instance.setChatHandlerEnabled(false); //Disable Core chat handler
 		Console = this.getServer().getConsoleSender();
 
 		SB = getServer().getScoreboardManager().getMainScoreboard(); // Main can be detected with @a[score_...]
@@ -79,7 +80,6 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 
 	public static Permission permission = null;
 	public static Economy economy = null;
-	public static Chat chat = null;
 
 	private boolean setupPermissions() {
 		RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager()

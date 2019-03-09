@@ -51,21 +51,26 @@ public class TownColorCommand extends AdminCommandBase {
 		    clrs[i - 1] = c.get();
         }
 	    Color tnc;
-	    try {
-		    tnc = TownColorComponent.NationColor.get(targetTown.getNation().getName().toLowerCase());
-	    } catch (Exception e) {
-		    tnc = null;
-	    }
-	    if (tnc == null) tnc = Color.White; //Default nation color - TODO: Make configurable
+	    boolean usenc = TownColorComponent.getComponent().useNationColors().get();
+	    if (usenc) {
+		    try {
+			    tnc = TownColorComponent.NationColor.get(targetTown.getNation().getName().toLowerCase());
+		    } catch (Exception e) {
+			    tnc = null;
+		    }
+		    if (tnc == null) tnc = Color.White; //Default nation color - TODO: Make configurable
+	    } else tnc = null;
 	    for (Map.Entry<String, Color[]> other : TownColorComponent.TownColors.entrySet()) {
 		    Color nc;
-		    try {
-			    nc = TownColorComponent.NationColor.get(TownyComponent.TU.getTownsMap().get(other.getKey()).getNation().getName().toLowerCase());
-		    } catch (Exception e) { //Too lazy for lots of null-checks and it may throw exceptions anyways
-			    nc = null;
-		    }
-		    if (nc == null) nc = Color.White; //Default nation color
-		    if (nc.getName().equals(tnc.getName())) {
+		    if (usenc) {
+			    try {
+				    nc = TownColorComponent.NationColor.get(TownyComponent.TU.getTownsMap().get(other.getKey()).getNation().getName().toLowerCase());
+			    } catch (Exception e) { //Too lazy for lots of null-checks and it may throw exceptions anyways
+				    nc = null;
+			    }
+			    if (nc == null) nc = Color.White; //Default nation color
+		    } else nc = null;
+		    if (!usenc || nc.getName().equals(tnc.getName())) {
 			    int C = 0;
 			    if (clrs.length == other.getValue().length)
 				    for (int i = 0; i < clrs.length; i++)

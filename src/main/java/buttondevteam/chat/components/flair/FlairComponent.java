@@ -1,6 +1,7 @@
 package buttondevteam.chat.components.flair;
 
 import buttondevteam.chat.ChatPlayer;
+import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ConfigData;
@@ -21,7 +22,7 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class FlairComponent extends Component {
+public class FlairComponent extends Component<PluginMain> {
 	private ConfigData<String> FlairThreadURL() {
 		return getConfig().getData("flairThreadURL", "https://www.reddit.com/r/Chromagamers/comments/51ys94/flair_thread_for_the_mc_server/");
 	}

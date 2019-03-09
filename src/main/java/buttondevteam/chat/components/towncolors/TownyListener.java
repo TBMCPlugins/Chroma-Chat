@@ -61,6 +61,7 @@ public class TownyListener implements Listener {
 
 	@EventHandler
 	public void onNationRename(RenameNationEvent event) {
+		if (!TownColorComponent.getComponent().useNationColors().get()) return;
 		val clrs = TownColorComponent.NationColor.remove(event.getOldName().toLowerCase());
 		if (clrs != null)
 			TownColorComponent.NationColor.put(event.getNation().getName().toLowerCase(), clrs);
@@ -68,21 +69,25 @@ public class TownyListener implements Listener {
 
 	@EventHandler //Gets called on town load as well
 	public void onNationJoin(NationAddTownEvent event) {
+		if (!TownColorComponent.getComponent().useNationColors().get()) return;
 		updateTownMembers(event.getTown());
 	}
 
 	@EventHandler
 	public void onNationLeave(NationRemoveTownEvent event) {
+		if (!TownColorComponent.getComponent().useNationColors().get()) return;
 		updateTownMembers(event.getTown()); //The town still has it's colours
 	}
 
 	@EventHandler
 	public void onNationDelete(DeleteNationEvent event) {
+		if (!TownColorComponent.getComponent().useNationColors().get()) return;
 		TownColorComponent.NationColor.remove(event.getNationName().toLowerCase());
 	}
 
 	@EventHandler
 	public void onNationCreate(NewNationEvent event) {
+		if (!TownColorComponent.getComponent().useNationColors().get()) return;
 		Player p = Bukkit.getPlayer(event.getNation().getCapital().getMayor().getName());
 		if (p != null)
 			p.sendMessage("§6Use /u nationcolor to set a color for the nation.");

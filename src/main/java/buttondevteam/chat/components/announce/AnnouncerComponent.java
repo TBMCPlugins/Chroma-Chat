@@ -1,5 +1,6 @@
 package buttondevteam.chat.components.announce;
 
+import buttondevteam.chat.PluginMain;
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCSystemChatEvent;
 import buttondevteam.lib.architecture.Component;
@@ -9,7 +10,7 @@ import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 
-public class AnnouncerComponent extends Component implements Runnable {
+public class AnnouncerComponent extends Component<PluginMain> implements Runnable {
 	public ConfigData<ArrayList<String>> AnnounceMessages() {
 		return getConfig().getData("announceMessages", new ArrayList<>(0));
 	}

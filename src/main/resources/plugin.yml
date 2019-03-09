@@ -1,4 +1,4 @@
-name: ButtonChat
+name: Thorpe-Chat
 main: buttondevteam.chat.PluginMain
 version: 4.0
 commands:

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class TownyComponent extends Component {
+public class TownyComponent extends Component<PluginMain> {
 	public static TownyUniverse TU;
 	private static ArrayList<String> Towns;
 	private static ArrayList<String> Nations;
