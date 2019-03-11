@@ -1,14 +1,13 @@
 package buttondevteam.chat.commands.ucmds;
 
-import java.util.ArrayList;
-
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.chat.TBMCCommandBase;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
 
 @CommandClass(modOnly = false)
 public final class HelpCommand extends UCommandBase {
@@ -46,7 +45,7 @@ public final class HelpCommand extends UCommandBase {
 							if (!text.contains("/" + topcmd))
 								text.add("/" + topcmd);
 						}
-			sender.sendMessage(text.toArray(new String[text.size()]));
+			sender.sendMessage(text.toArray(new String[0]));
 		} else if (args[0].equalsIgnoreCase("colors")) {
 			sender.sendMessage(new String[] { "§6---- Chat colors/formats ----", //
 					"Tellraw name   - Code | Tellraw name    - Code", //

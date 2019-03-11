@@ -1,6 +1,5 @@
 package buttondevteam.chat;
 
-import buttondevteam.chat.commands.YeehawCommand;
 import buttondevteam.chat.components.announce.AnnouncerComponent;
 import buttondevteam.chat.components.appendext.AppendTextComponent;
 import buttondevteam.chat.components.flair.FlairComponent;
@@ -49,7 +48,6 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 
 		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerListener(), this);
 		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerJoinLeaveListener(), this);
-		TBMCChatAPI.AddCommands(this, YeehawCommand.class);
 		MainPlugin.Instance.setChatHandlerEnabled(false); //Disable Core chat handler
 		Console = this.getServer().getConsoleSender();
 

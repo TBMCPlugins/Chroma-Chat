@@ -8,6 +8,7 @@ import buttondevteam.lib.TBMCCommandPreprocessEvent;
 import buttondevteam.lib.TBMCSystemChatEvent;
 import buttondevteam.lib.ThorpeUtils;
 import buttondevteam.lib.architecture.Component;
+import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.TBMCPlayer;
@@ -29,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class FunComponent extends Component<PluginMain> implements Listener {
-	private final static String[] LaughStrings = new String[]{"xd", "lel", "lawl", "kek", "lmao", "hue", "hah", "rofl"};
 	private boolean ActiveF = false;
 	private ChatPlayer FPlayer = null;
 	private BukkitTask Ftask = null;
@@ -37,6 +37,19 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 	private UnlolCommand command;
 	private TBMCSystemChatEvent.BroadcastTarget unlolTarget;
 	private TBMCSystemChatEvent.BroadcastTarget fTarget;
+
+	private ConfigData<String[]> laughStrings() {
+		return getConfig().getData("laughStrings", () -> new String[]{"xd", "lel", "lawl", "kek", "lmao", "hue", "hah", "rofl"});
+	}
+
+	private ConfigData<Boolean> respect() {
+		return getConfig().getData("respect", true);
+	}
+
+	private ConfigData<Boolean> unlol() {
+		return getConfig().getData("unlol", true);
+	}
+
 	@Override
 	protected void enable() {
 		unlolTarget = TBMCSystemChatEvent.BroadcastTarget.add("unlol");
@@ -47,6 +60,9 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 		registerCommand(command=new UnlolCommand(unlolTarget));
 		registerListener(this);
 		registerCommand(new FTopCommand());
+		registerCommand(new OpmeCommand());
+		registerCommand(new YeehawCommand());
+		registerCommand(new CCommand());
 	}
 
 	@Override
@@ -58,27 +74,30 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 		if (ActiveF && !Fs.contains(sender) && message.equalsIgnoreCase("F"))
 			Fs.add(sender);
 
-		String msg = message.toLowerCase();
-		val lld = new UnlolCommand.LastlolData(sender, event, System.nanoTime());
-		boolean add;
-		if (add = msg.contains("lol"))
-			lld.setLolornot(true);
-		else {
-			for (int i = 0; i < LaughStrings.length; i++) {
-				if (add = msg.contains(LaughStrings[i])) {
-					lld.setLolornot(false);
-					break;
+		if (unlol().get()) {
+			String msg = message.toLowerCase();
+			val lld = new UnlolCommand.LastlolData(sender, event, System.nanoTime());
+			boolean add;
+			if (add = msg.contains("lol"))
+				lld.setLolornot(true);
+			else {
+				String[] laughs = laughStrings().get();
+				for (String laugh : laughs) {
+					if (add = msg.contains(laugh)) {
+						lld.setLolornot(false);
+						break;
+					}
 				}
 			}
+			if (add)
+				command.Lastlol.put(event.getChannel(), lld);
 		}
-		if (add)
-			command.Lastlol.put(event.getChannel(), lld);
 	}
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		// MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(e.getEntity());
-		if (/* (mgp != null && !mgp.isInMinigame()) && */ new Random().nextBoolean()) { // Don't store Fs for NPCs
+		if (e.getDeathMessage().length() > 0 && respect().get() && new Random().nextBoolean()) { // Don't store Fs for NPCs
 			Runnable tt = () -> {
 				if (ActiveF) {
 					ActiveF = false;
@@ -105,12 +124,14 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 	}
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) {
-		command.Lastlol.values().removeIf(lld -> lld.getLolowner().equals(event.getPlayer()));
+		if (unlol().get())
+			command.Lastlol.values().removeIf(lld -> lld.getLolowner().equals(event.getPlayer()));
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onCommandPreprocess(TBMCCommandPreprocessEvent event) {
 		if (event.isCancelled()) return;
+		if (!unlol().get()) return;
 		final String cmd = event.getMessage();
 		// We don't care if we have arguments
 		if (cmd.toLowerCase().startsWith("/un")) {
