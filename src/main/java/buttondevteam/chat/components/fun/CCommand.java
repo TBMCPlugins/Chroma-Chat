@@ -4,7 +4,6 @@ import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.chat.*;
 import buttondevteam.lib.player.TBMCPlayer;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 @CommandClass(path = "u c", helpText = {
@@ -14,8 +13,7 @@ import org.bukkit.entity.Player;
 @OptionallyPlayerCommandClass(playerOnly = true)
 public class CCommand extends ICommand2MC {
 	@Command2.Subcommand
-	public boolean def(CommandSender sender, @Command2.OptionalArg String color) {
-		Player player = (Player) sender;
+	public boolean def(Player player, @Command2.OptionalArg String color) {
 		ChatPlayer p = TBMCPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class);
 		if (color == null) {
 			if (PluginMain.permission.has(player, "thorpe.color.rainbow")) {
