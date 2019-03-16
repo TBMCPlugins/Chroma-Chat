@@ -113,6 +113,7 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 		if (useNationColors().get())
 			registerCommand(new buttondevteam.chat.components.towncolors.admin.NationColorCommand());
 		registerCommand(new TCCount());
+		registerCommand(new NColorCommand());
 		registerListener(new TownyListener());
 		registerListener(this);
 	}

@@ -41,7 +41,7 @@ public class TownColorCommand extends AdminCommandBase { //TODO: Command path al
 			val c = getColorOrSendError(colors[i], sender);
 		    if (!c.isPresent())
                 return true;
-		    clrs[i - 1] = c.get();
+			clrs[i] = c.get();
         }
 	    Color tnc;
 	    boolean usenc = TownColorComponent.getComponent().useNationColors().get();
