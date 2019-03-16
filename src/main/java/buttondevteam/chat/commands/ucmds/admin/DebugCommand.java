@@ -1,20 +1,19 @@
 package buttondevteam.chat.commands.ucmds.admin;
 
+import buttondevteam.chat.PluginMain;
+import buttondevteam.lib.chat.Command2;
+import buttondevteam.lib.chat.CommandClass;
 import org.bukkit.command.CommandSender;
 
-import buttondevteam.chat.PluginMain;
-
+@CommandClass(helpText = {
+	"Debug mode",
+	"Toggles debug mode, which prints debug messages to the console."
+})
 public class DebugCommand extends AdminCommandBase {
 	public static boolean DebugMode = false;
 
-	@Override
-	public String[] GetHelpText(String alias) {
-		return new String[] { "§6---- Debug mode ----",
-				"Toggles debug mode, which prints debug messages to the console." };
-	}
-
-	@Override
-	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
+	@Command2.Subcommand
+	public boolean def(CommandSender sender, String alias, String[] args) {
 		sender.sendMessage("§eDebug mode " + ((DebugMode = !DebugMode) ? "§aenabled." : "§cdisabled."));
 		return true;
 	}

@@ -23,7 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class FlairComponent extends Component<PluginMain> {
-	private ConfigData<String> FlairThreadURL() {
+	ConfigData<String> FlairThreadURL() {
 		return getConfig().getData("flairThreadURL", "https://www.reddit.com/r/Chromagamers/comments/51ys94/flair_thread_for_the_mc_server/");
 	}
 
@@ -39,7 +39,7 @@ public class FlairComponent extends Component<PluginMain> {
 
 	@Override
 	protected void enable() {
-		registerCommand(new AcceptCommand());
+		registerCommand(new AcceptCommand(this));
 		registerCommand(new IgnoreCommand());
 		registerCommand(new SetFlairCommand());
 		new Thread(this::FlairGetterThreadMethod).start();
@@ -106,7 +106,7 @@ public class FlairComponent extends Component<PluginMain> {
 		}
 	}
 
-	public static void DownloadFlair(ChatPlayer mp) throws IOException {
+	void DownloadFlair(ChatPlayer mp) throws IOException {
 		String[] flairdata = TBMCCoreAPI
 			.DownloadString("http://karmadecay.com/thebutton-data.php?users=" + mp.UserName().get())
 			.replace("\"", "").split(":");

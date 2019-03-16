@@ -2,24 +2,21 @@ package buttondevteam.chat.components.flair;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.commands.ucmds.UCommandBase;
+import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
 import buttondevteam.lib.player.TBMCPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandClass(modOnly = false)
+@CommandClass(modOnly = false, helpText = {
+	"Ignore flair",
+	"Stop the \"write your name in the thread\" message from showing up"
+})
 @OptionallyPlayerCommandClass(playerOnly = true)
 public final class IgnoreCommand extends UCommandBase {
-
-	@Override
-	public String[] GetHelpText(String alias) {
-		return new String[] { "§6---- Ignore flair ----",
-				"Stop the \"write your name in the thread\" message from showing up" };
-	}
-
-	@Override
-	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
+	@Command2.Subcommand
+	public boolean def(CommandSender sender) {
 		final Player player = (Player) sender;
 		ChatPlayer p = TBMCPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class);
 		if (p.FlairState().get().equals(FlairStates.Accepted)) {
@@ -39,5 +36,4 @@ public final class IgnoreCommand extends UCommandBase {
 			player.sendMessage("§cYou already ignored the message.§r");
 		return true;
 	}
-
 }

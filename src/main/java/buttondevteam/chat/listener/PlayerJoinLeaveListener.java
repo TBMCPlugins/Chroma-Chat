@@ -57,7 +57,7 @@ public class PlayerJoinLeaveListener implements Listener {
 			nwithoutformatting = p.getName();
 		PlayerListener.nicknames.forcePut(nwithoutformatting.toLowerCase(), p.getUniqueId()); //TODO: FormatterComponent
 
-		HistoryCommand.showHistory(e.getPlayer(), "u history", new String[0], null);
+		HistoryCommand.showHistory(e.getPlayer(), null);
 	}
 
 	@EventHandler

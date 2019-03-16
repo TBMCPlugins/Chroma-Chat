@@ -44,11 +44,7 @@ public class AnnouncerComponent extends Component<PluginMain> implements Runnabl
 	@Override
 	protected void enable() {
 		target= TBMCSystemChatEvent.BroadcastTarget.add("announcements");
-		registerCommand(new AddCommand());
-		registerCommand(new EditCommand());
-		registerCommand(new ListCommand());
-		registerCommand(new RemoveCommand());
-		registerCommand(new SetTimeCommand());
+		registerCommand(new AnnounceCommand(this));
 		new Thread(this).start();
 	}
 

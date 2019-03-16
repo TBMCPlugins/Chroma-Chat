@@ -1,33 +1,24 @@
 package buttondevteam.chat.commands;
 
+import buttondevteam.lib.chat.Command2;
+import buttondevteam.lib.chat.CommandClass;
+import buttondevteam.lib.chat.ICommand2MC;
+import org.bukkit.command.CommandSender;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import org.bukkit.command.CommandSender;
-
-import buttondevteam.lib.chat.CommandClass;
-import buttondevteam.lib.chat.TBMCCommandBase;
-
-@CommandClass(modOnly = false)
-public class MWikiCommand extends TBMCCommandBase {
-
-	@Override
-	public String[] GetHelpText(String alias) {
-		return new String[] { "§6---- Minecraft Wiki linker ----", //
-				"Use without parameters to get a link to the wiki", //
-				"You can also search the wiki, for example:", //
-				" /" + alias + " beacon - Provides a link that redirects to the beacon's wiki page" //
-		};
-	}
-
-	@Override
-	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
-		String query = "";
-		for (int i = 0; i < args.length; i++)
-			query += args[i] + " ";
-		query = query.trim();
+@CommandClass(modOnly = false, helpText = {
+	"Minecraft Wiki linker", //
+	"Use without parameters to get a link to the wiki", //
+	"You can also search the wiki, for example:", //
+	" /mwiki beacon - Provides a link that redirects to the beacon's wiki page" //
+})
+public class MWikiCommand extends ICommand2MC {
+	@Command2.Subcommand
+	public boolean def(CommandSender sender, @Command2.OptionalArg String query) {
 		try {
-			if (query.length() == 0)
+			if (query == null)
 				sender.sendMessage(new String[] { "§bMinecraft Wiki link: http://minecraft.gamepedia.com/",
 						"You can also search on it using /mwiki <query>" });
 			else

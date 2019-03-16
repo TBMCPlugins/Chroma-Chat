@@ -4,45 +4,46 @@ import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PlayerJoinTimerTask;
 import buttondevteam.chat.commands.ucmds.UCommandBase;
 import buttondevteam.lib.TBMCCoreAPI;
+import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
 import buttondevteam.lib.player.TBMCPlayer;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Timer;
 
-@CommandClass(modOnly = false)
+@CommandClass(modOnly = false, helpText = {
+	"Accept flair", //
+	"Accepts a flair from Reddit", //
+	"Use /u accept <username> if you commented from multiple accounts"
+})
 @OptionallyPlayerCommandClass(playerOnly = true)
+@RequiredArgsConstructor
 public class AcceptCommand extends UCommandBase {
+	private final FlairComponent component;
 
-	@Override
-	public String[] GetHelpText(String alias) {
-		return new String[] { "§6---- Accept flair ----", //
-				"Accepts a flair from Reddit", //
-				"Use /u accept <username> if you commented from multiple accounts" //
-		};
-	}
-
-	@Override
-	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
+	@Command2.Subcommand
+	public boolean def(CommandSender sender, @Command2.OptionalArg String username) {
 		final Player player = (Player) sender;
 		ChatPlayer p = TBMCPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class);
-		if (args.length < 1 && p.UserNames().size() > 1) {
+		if (username == null && p.UserNames().size() > 1) {
 			player.sendMessage("§9Multiple users commented your name. §bPlease pick one using /u accept <username>");
 			StringBuilder sb = new StringBuilder();
 			sb.append("§6Usernames:");
-			for (String username : p.UserNames())
-				sb.append(" ").append(username);
+			for (String name : p.UserNames())
+				sb.append(" ").append(name);
 			player.sendMessage(sb.toString());
 			return true;
 		}
 		if (p.FlairState().get().equals(FlairStates.NoComment) || p.UserNames().size() == 0) {
-			player.sendMessage("§cError: You need to write your username to the reddit thread at /r/ChromaGamers§r");
+			player.sendMessage("§cError: You need to write your username to the reddit thread§r");
+			player.sendMessage(component.FlairThreadURL().get());
 			return true;
 		}
-		if (args.length > 0 && !p.UserNames().contains(args[0])) {
-			player.sendMessage("§cError: Unknown name: " + args[0] + "§r");
+		if (username != null && !p.UserNames().contains(username)) {
+			player.sendMessage("§cError: Unknown name: " + username + "§r");
 			return true;
 		}
 		if (p.Working) {
@@ -50,12 +51,12 @@ public class AcceptCommand extends UCommandBase {
 			return true;
 		}
 
-		if ((args.length > 0 ? args[0] : p.UserNames().get(0)).equals(p.UserName().get())) {
+		if ((username != null ? username : p.UserNames().get(0)).equals(p.UserName().get())) {
 			player.sendMessage("§cYou already have this user's flair.§r");
 			return true;
 		}
-		if (args.length > 0)
-			p.UserName().set(args[0]);
+		if (username != null)
+			p.UserName().set(username);
 		else
 			p.UserName().set(p.UserNames().get(0));
 
@@ -66,7 +67,7 @@ public class AcceptCommand extends UCommandBase {
 			@Override
 			public void run() {
 				try {
-					FlairComponent.DownloadFlair(mp);
+					component.DownloadFlair(mp);
 				} catch (Exception e) {
 					TBMCCoreAPI.SendException(
 							"An error occured while downloading flair for " + player.getCustomName() + "!", e);
@@ -93,5 +94,4 @@ public class AcceptCommand extends UCommandBase {
 		timer.schedule(tt, 20);
 		return true;
 	}
-
 }

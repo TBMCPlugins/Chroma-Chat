@@ -1,5 +1,10 @@
 package buttondevteam.chat;
 
+import buttondevteam.chat.commands.MWikiCommand;
+import buttondevteam.chat.commands.ucmds.HelpCommand;
+import buttondevteam.chat.commands.ucmds.HistoryCommand;
+import buttondevteam.chat.commands.ucmds.InfoCommand;
+import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.components.announce.AnnouncerComponent;
 import buttondevteam.chat.components.appendext.AppendTextComponent;
 import buttondevteam.chat.components.flair.FlairComponent;
@@ -67,6 +72,11 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 		Component.registerComponent(this, new AnnouncerComponent());
 		Component.registerComponent(this, new FunComponent());
 		Component.registerComponent(this, new AppendTextComponent());
+		getCommand2MC().registerCommand(new DebugCommand());
+		getCommand2MC().registerCommand(new HelpCommand());
+		getCommand2MC().registerCommand(new HistoryCommand());
+		getCommand2MC().registerCommand(new InfoCommand());
+		getCommand2MC().registerCommand(new MWikiCommand());
 	}
 
 	public static Essentials essentials = null;
