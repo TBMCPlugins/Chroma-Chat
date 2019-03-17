@@ -12,16 +12,15 @@ import buttondevteam.core.component.channel.ChatChannelRegisterEvent;
 import buttondevteam.core.component.channel.ChatRoom;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
+import buttondevteam.lib.TBMCSystemChatEvent;
+import buttondevteam.lib.ThorpeUtils;
 import buttondevteam.lib.chat.ChatMessage;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
-import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerGetInfoEvent;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.vexsoftware.votifier.model.Vote;
-import com.vexsoftware.votifier.model.VotifierEvent;
 import lombok.val;
 import net.ess3.api.events.NickChangeEvent;
 import org.bukkit.Bukkit;
@@ -32,18 +31,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatTabCompleteEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
-import org.bukkit.help.HelpTopic;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.UUID;
 import java.util.function.BiPredicate;
 
@@ -53,14 +47,11 @@ public class PlayerListener implements Listener {
 	 */
 	public static BiMap<String, UUID> nicknames = HashBiMap.create();
 
-    public final static String[] LaughStrings = new String[]{"xd", "lel", "lawl", "kek", "lmao", "hue", "hah", "rofl"};
-
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		if (event.isCancelled())
 			return;
-		ChatPlayer cp = TBMCPlayer.getPlayer(event.getPlayer().getUniqueId(), ChatPlayer.class);
-		TBMCChatAPI.SendChatMessage(ChatMessage.builder(event.getPlayer(), cp, event.getMessage()).build());
+		//The custom event is called in the core, but doesn't cancel the MC event
 		event.setCancelled(true); // The custom event should only be cancelled when muted or similar
 	}
 
@@ -103,12 +94,12 @@ public class PlayerListener implements Listener {
 			if (cmd.equalsIgnoreCase("tpahere")) {
 				Player player = Bukkit.getPlayer(message.substring(index + 1));
 				if (player != null && sender instanceof Player)
-					player.sendMessage("§b" + ((Player) sender).getDisplayName() + " §bis in this world: "
+					player.sendMessage("§b" + ((Player) sender).getDisplayName() + " §bis in this world: " //TODO: Move to the Core
 							+ ((Player) sender).getWorld().getName());
 			} else if (cmd.equalsIgnoreCase("minecraft:me")) {
 				if (!(sender instanceof Player) || !PluginMain.essentials.getUser((Player) sender).isMuted()) {
 					String msg = message.substring(index + 1);
-					Bukkit.broadcastMessage(String.format("* %s %s", sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName(), msg));
+					TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, String.format("* %s %s", ThorpeUtils.getDisplayName(sender), msg), TBMCSystemChatEvent.BroadcastTarget.ALL); //TODO: Don't send to all
 					return true;
 				} else {
 					sender.sendMessage("§cCan't use /minecraft:me while muted.");
@@ -132,26 +123,6 @@ public class PlayerListener implements Listener {
 				}
 			// TODO: Target selectors
 		}
-		// We don't care if we have arguments
-		if (cmd.toLowerCase().startsWith("un")) {
-			for (HelpTopic ht : PluginMain.Instance.getServer().getHelpMap().getHelpTopics()) {
-				if (ht.getName().equalsIgnoreCase("/" + cmd))
-					return false;
-			}
-			if (PluginMain.permission.has(sender, "tbmc.admin")) {
-				String s = cmd.substring(2);
-				Player target = Bukkit.getPlayer(message.substring(index + 1));
-				if (target == null) {
-					sender.sendMessage("§cError: Player not found. (/un" + s + " <player>)");
-					return true;
-				}
-				target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 5, false, false));
-				Bukkit.broadcastMessage(
-						(sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName()) + " un" + s
-								+ "'d " + target.getDisplayName());
-				return true;
-			}
-		}
 		return false;
 	}
 
@@ -161,68 +132,6 @@ public class PlayerListener implements Listener {
 		for (Entry<String, UUID> nicknamekv : nicknames.entrySet()) {
 			if (nicknamekv.getKey().startsWith(name.toLowerCase()))
                 e.getTabCompletions().add(PluginMain.essentials.getUser(Bukkit.getPlayer(nicknamekv.getValue())).getNick(true)); //Tabcomplete with the correct case
-		}
-	}
-
-	public static boolean ActiveF = false;
-	public static ChatPlayer FPlayer = null;
-	public static BukkitTask Ftask = null;
-	public static ArrayList<CommandSender> Fs = new ArrayList<>();
-
-	@EventHandler
-	public void onPlayerDeath(PlayerDeathEvent e) {
-		// MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(e.getEntity());
-		if (/* (mgp != null && !mgp.isInMinigame()) && */ new Random().nextBoolean()) { // Don't store Fs for NPCs
-			Runnable tt = () -> {
-				if (ActiveF) {
-					ActiveF = false;
-					if (FPlayer != null && FPlayer.FCount().get() < Integer.MAX_VALUE - 1)
-						FPlayer.FCount().set(FPlayer.FCount().get() + Fs.size());
-					Bukkit.broadcastMessage("§b" + Fs.size() + " " + (Fs.size() == 1 ? "person" : "people")
-							+ " paid their respects.§r");
-					Fs.clear();
-				}
-			};
-			if (Ftask != null) {
-				Ftask.cancel();
-				tt.run(); //Finish previous one
-			}
-			ActiveF = true;
-			Fs.clear();
-			FPlayer = TBMCPlayer.getPlayer(e.getEntity().getUniqueId(), ChatPlayer.class);
-			FPlayer.FDeaths().set(FPlayer.FDeaths().get() + 1);
-			Bukkit.broadcastMessage("§bPress F to pay respects.§r");
-			Bukkit.getScheduler().runTaskLaterAsynchronously(PluginMain.Instance, tt, 15 * 20);
-		}
-	}
-
-	@EventHandler
-	@SuppressWarnings("deprecation")
-	public void onVotifierEvent(VotifierEvent event) { //TODO: Move to teh Core eh
-		Vote vote = event.getVote();
-		PluginMain.Instance.getLogger().info("Vote: " + vote);
-		org.bukkit.OfflinePlayer op = Bukkit.getOfflinePlayer(vote.getUsername());
-		Player p = Bukkit.getPlayer(vote.getUsername());
-		if (op != null) {
-			PluginMain.economy.depositPlayer(op, 50.0);
-		}
-		if (p != null) {
-			p.sendMessage("§bThanks for voting! $50 was added to your account.");
-		}
-	}
-
-	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent e) {
-		ChatPlayer mp = TBMCPlayer.getPlayer(e.getPlayer().getUniqueId(), ChatPlayer.class);
-		if (mp.ChatOnly)
-			e.setCancelled(true);
-	}
-
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onPlayerTeleport(PlayerTeleportEvent e) {
-		if (TBMCPlayer.getPlayer(e.getPlayer().getUniqueId(), ChatPlayer.class).ChatOnly) {
-			e.setCancelled(true);
-			e.getPlayer().sendMessage("§cYou are not allowed to teleport while in chat-only mode.");
 		}
 	}
 
@@ -259,12 +168,12 @@ public class PlayerListener implements Listener {
 			HistoryCommand.addChatMessage(e.getCm(), e.getChannel());
 			e.setCancelled(ChatProcessing.ProcessChat(e));
 		} catch (NoClassDefFoundError | Exception ex) { // Weird things can happen
+			val str = "§c!§r[" + e.getChannel().DisplayName().get() + "] <"
+				+ ThorpeUtils.getDisplayName(e.getSender()) + "> " + e.getMessage();
 			for (Player p : Bukkit.getOnlinePlayers())
 				if (e.shouldSendTo(p))
-					p.sendMessage("§c!§r["
-						+ e.getChannel().DisplayName().get() + "] <" + (e.getSender() instanceof Player
-							? ((Player) e.getSender()).getDisplayName() : e.getSender().getName())
-							+ "> " + e.getMessage());
+					p.sendMessage(str);
+			Bukkit.getConsoleSender().sendMessage(str);
 			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex);
 		}
 	}

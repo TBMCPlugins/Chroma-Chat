@@ -4,6 +4,7 @@ import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.commands.ucmds.UCommandBase;
 import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.lib.chat.Color;
+import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -16,21 +17,16 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 @OptionallyPlayerCommandClass(playerOnly = true)
-@CommandClass
+@CommandClass(helpText = {
+	"Name color", //
+	"This command allows you to set how the town colors look on your name.", //
+	"To use this command, you need to be in a town which has town colors set.", //
+	"Use a vertical line (or a colon) as a separator between the colors.", //
+	"Example: /u ncolor Norbi|Peti --> §6Norbi§ePeti" //
+})
 public class NColorCommand extends UCommandBase {
-	@Override
-	public String[] GetHelpText(String alias) {
-		return new String[] { //
-				"§6---- Name color ----", //
-				"This command allows you to set how the town colors look on your name.", //
-				"To use this command, you need to be in a town which has town colors set.", //
-				"Use a vertical line as a separator between the colors.", //
-				"Example: /u ncolor Norbi|Peti --> §6Norbi§ePeti" //
-		};
-	}
-
-	@Override
-	public boolean OnCommand(Player player, String alias, String[] args) {
+	@Command2.Subcommand
+	public boolean def(Player player, String nameWithLines) {
 		Resident res;
 		Town town;
 		try {
@@ -43,16 +39,14 @@ public class NColorCommand extends UCommandBase {
 			player.sendMessage("§cYou need to be in a town. (" + e + ")");
 			return true;
 		}
-		if (args.length == 0)
-			return false;
 		final String name = ChatColor.stripColor(player.getDisplayName()).replace("~", ""); //Remove ~
-		String arg = args[0]; //Don't add ~ for nicknames
-        if (!arg.replace("|", "").replace(":", "").equalsIgnoreCase(name)) {
+		//Don't add ~ for nicknames
+		if (!nameWithLines.replace("|", "").replace(":", "").equalsIgnoreCase(name)) {
 			player.sendMessage("§cThe name you gave doesn't match your name. Make sure to use "
                     + name + "§c with added vertical lines (|) or colons (:).");
 			return true;
 		}
-		String[] nameparts = arg.split("[|:]");
+		String[] nameparts = nameWithLines.split("[|:]");
 		Color[] towncolors = TownColorComponent.TownColors.get(town.getName().toLowerCase());
 		if (towncolors == null) {
 			player.sendMessage("§cYour town doesn't have a color set. The town mayor can set it using /u towncolor.");

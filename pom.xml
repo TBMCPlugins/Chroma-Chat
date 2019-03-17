@@ -156,17 +156,13 @@
 			<url>http://repo.ess3.net/content/repositories/essrel/</url>
 		</repository>
 		<repository>
-			<id>Votifier</id>
-            <url>https://dl.bintray.com/nuvotifier/maven/</url>
-		</repository>
-		<repository>
 			<id>Minigames</id>
 			<url>http://maven.addstar.com.au/artifactory/release</url>
 		</repository>
-		<repository>
+		<!-- <repository>
 			<id>vault-repo</id>
 			<url>http://nexus.hc.to/content/repositories/pub_releases</url>
-		</repository>
+		</repository> -->
 		<!-- <repository> <id>WorldEdit</id> <url>http://maven.sk89q.com/artifactory/repo</url> 
 			</repository> -->
 		<repository>
@@ -207,17 +203,12 @@
 			<artifactId>Towny</artifactId>
 			<version>8d3b6b6</version>
 		</dependency>
-		<dependency>
-			<groupId>com.vexsoftware</groupId>
-            <artifactId>nuvotifier-universal</artifactId>
-            <version>2.3.4</version>
-		</dependency>
 		<!-- <dependency> <groupId>au.com.mineauz</groupId> <artifactId>Minigames</artifactId> 
 			<version>1.8.0</version> </dependency> -->
 		<dependency>
-			<groupId>net.milkbowl.vault</groupId>
+			<groupId>com.github.milkbowl</groupId>
 			<artifactId>VaultAPI</artifactId>
-			<version>1.6</version>
+			<version>master-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

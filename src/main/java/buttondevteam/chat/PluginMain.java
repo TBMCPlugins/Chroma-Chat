@@ -1,14 +1,19 @@
 package buttondevteam.chat;
 
-import buttondevteam.chat.commands.YeehawCommand;
+import buttondevteam.chat.commands.MWikiCommand;
+import buttondevteam.chat.commands.ucmds.HelpCommand;
+import buttondevteam.chat.commands.ucmds.HistoryCommand;
+import buttondevteam.chat.commands.ucmds.InfoCommand;
+import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.components.announce.AnnouncerComponent;
+import buttondevteam.chat.components.appendext.AppendTextComponent;
 import buttondevteam.chat.components.flair.FlairComponent;
 import buttondevteam.chat.components.fun.FunComponent;
 import buttondevteam.chat.components.towncolors.TownColorComponent;
-import buttondevteam.chat.components.towncolors.TownyListener;
 import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.chat.listener.PlayerJoinLeaveListener;
 import buttondevteam.chat.listener.PlayerListener;
+import buttondevteam.core.MainPlugin;
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.architecture.ButtonPlugin;
@@ -17,7 +22,6 @@ import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import com.earth2me.essentials.Essentials;
-import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
@@ -32,9 +36,6 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 	public static ConsoleCommandSender Console;
 
 	public static Scoreboard SB;
-
-	public static Channel TownChat;
-	public static Channel NationChat;
 
 	public ConfigData<String> notificationSound() {
 		return getIConfig().getData("notificationSound", "");
@@ -52,23 +53,30 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 
 		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerListener(), this);
 		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerJoinLeaveListener(), this);
-		TBMCCoreAPI.RegisterEventsForExceptions(new TownyListener(), this);
-		TBMCChatAPI.AddCommands(this, YeehawCommand.class);
+		MainPlugin.Instance.setChatHandlerEnabled(false); //Disable Core chat handler
 		Console = this.getServer().getConsoleSender();
 
 		SB = getServer().getScoreboardManager().getMainScoreboard(); // Main can be detected with @a[score_...]
 
-		Component.registerComponent(this, new TownyComponent());
+		if (Bukkit.getPluginManager().isPluginEnabled("Towny"))
+			Component.registerComponent(this, new TownyComponent());
 
 		TBMCChatAPI.RegisterChatChannel(new Channel("§7RP§f", Color.Gray, "rp", null)); //Since it's null, it's recognised as global
 
 		if (!setupEconomy() || !setupPermissions())
 			TBMCCoreAPI.SendException("We're in trouble", new Exception("Failed to set up economy or permissions!"));
 
-		Component.registerComponent(this, new TownColorComponent());
+		if (Bukkit.getPluginManager().isPluginEnabled("Towny"))
+			Component.registerComponent(this, new TownColorComponent());
 		Component.registerComponent(this, new FlairComponent()); //The original purpose of this plugin
 		Component.registerComponent(this, new AnnouncerComponent());
 		Component.registerComponent(this, new FunComponent());
+		Component.registerComponent(this, new AppendTextComponent());
+		getCommand2MC().registerCommand(new DebugCommand());
+		getCommand2MC().registerCommand(new HelpCommand());
+		getCommand2MC().registerCommand(new HistoryCommand());
+		getCommand2MC().registerCommand(new InfoCommand());
+		getCommand2MC().registerCommand(new MWikiCommand());
 	}
 
 	public static Essentials essentials = null;
@@ -80,11 +88,10 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 
 	public static Permission permission = null;
 	public static Economy economy = null;
-	public static Chat chat = null;
 
 	private boolean setupPermissions() {
 		RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager()
-				.getRegistration(net.milkbowl.vault.permission.Permission.class);
+			.getRegistration(net.milkbowl.vault.permission.Permission.class);
 		if (permissionProvider != null) {
 			permission = permissionProvider.getProvider();
 		}
@@ -93,7 +100,7 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 
 	private boolean setupEconomy() {
 		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager()
-				.getRegistration(net.milkbowl.vault.economy.Economy.class);
+			.getRegistration(net.milkbowl.vault.economy.Economy.class);
 		if (economyProvider != null) {
 			economy = economyProvider.getProvider();
 		}

@@ -10,8 +10,11 @@ import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ComponentMetadata;
 import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.chat.Color;
+import buttondevteam.lib.player.TBMCPlayerJoinEvent;
 import com.earth2me.essentials.User;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+import com.palmergames.bukkit.towny.object.Nation;
+import lombok.Getter;
 import lombok.experimental.var;
 import lombok.val;
 import org.bukkit.Bukkit;
@@ -19,6 +22,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.dynmap.towny.DTBridge;
 import org.dynmap.towny.DynmapTownyPlugin;
 
@@ -31,7 +36,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @ComponentMetadata(depends = TownyComponent.class)
-public class TownColorComponent extends Component {
+public class TownColorComponent extends Component<PluginMain> implements Listener {
 	/**
 	 * Names lowercased
 	 */
@@ -45,17 +50,22 @@ public class TownColorComponent extends Component {
 		return getConfig().getData("colorCount", (byte) 1, cc -> ((Integer) cc).byteValue(), Byte::intValue);
 	}
 
-	public ConfigData<Boolean> useNationColors() { //TODO
+	public ConfigData<Boolean> useNationColors() {
 		return getConfig().getData("useNationColors", true);
 	}
+
+	@Getter
+	private static TownColorComponent component;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void enable() {
+		component = this;
 		//TODO: Don't register all commands automatically (welp)
 		Consumer<ConfigurationSection> loadTC = cs -> TownColorComponent.TownColors.putAll(cs.getValues(true).entrySet().stream()
 			.collect(Collectors.toMap(Map.Entry::getKey, v -> ((List<String>) v.getValue()).stream()
 				.map(Color::valueOf).toArray(Color[]::new))));
+		boolean usenc = useNationColors().get();
 		Consumer<ConfigurationSection> loadNC = ncs ->
 			TownColorComponent.NationColor.putAll(ncs.getValues(true).entrySet().stream()
 				.collect(Collectors.toMap(Map.Entry::getKey, v -> Color.valueOf((String) v.getValue()))));
@@ -64,14 +74,17 @@ public class TownColorComponent extends Component {
 			loadTC.accept(cs);
 		else
 			load_old(loadTC, null); //Load old data
-		var ncs = getConfig().getConfig().getConfigurationSection("nationcolors");
-		if (ncs != null)
-			loadNC.accept(ncs);
-		else
-			load_old(null, loadNC); //Why not choose by making different args null
+		if (usenc) {
+			var ncs = getConfig().getConfig().getConfigurationSection("nationcolors");
+			if (ncs != null)
+				loadNC.accept(ncs);
+			else
+				load_old(null, loadNC); //Why not choose by making different args null
+		}
 
 		TownColors.keySet().removeIf(t -> !TownyComponent.TU.getTownsMap().containsKey(t)); // Removes town colors for deleted/renamed towns
-		NationColor.keySet().removeIf(n -> !TownyComponent.TU.getNationsMap().containsKey(n)); // Removes nation colors for deleted/renamed nations
+		if (usenc)
+			NationColor.keySet().removeIf(n -> !TownyComponent.TU.getNationsMap().containsKey(n)); // Removes nation colors for deleted/renamed nations
 
 		Bukkit.getScheduler().runTask(getPlugin(), () -> {
 			val dtp = (DynmapTownyPlugin) Bukkit.getPluginManager().getPlugin("Dynmap-Towny");
@@ -79,9 +92,12 @@ public class TownColorComponent extends Component {
 				return;
 			for (val entry : TownColors.entrySet()) {
 				try {
-					val nation = TownyComponent.TU.getTownsMap().get(entry.getKey()).getNation();
+					val town = TownyComponent.TU.getTownsMap().get(entry.getKey());
+					Nation nation;
 					Color nc;
-					if (nation == null || (nc = NationColor.get(nation.getName().toLowerCase())) == null)
+					if (!useNationColors().get())
+						nc = null;
+					else if (!town.hasNation() || (nation = town.getNation()) == null || (nc = NationColor.get(nation.getName().toLowerCase())) == null)
 						nc = Color.White;
 					setTownColor(dtp, buttondevteam.chat.components.towncolors.admin.TownColorCommand.getTownNameCased(entry.getKey()), entry.getValue(), nc);
 				} catch (Exception e) {
@@ -90,19 +106,24 @@ public class TownColorComponent extends Component {
 			}
 		});
 
-		registerCommand(new TownColorCommand());
-		registerCommand(new NationColorCommand());
+		registerCommand(new TownColorCommand(this));
+		if (useNationColors().get())
+			registerCommand(new NationColorCommand());
 		registerCommand(new buttondevteam.chat.components.towncolors.admin.TownColorCommand());
-		registerCommand(new buttondevteam.chat.components.towncolors.admin.NationColorCommand());
+		if (useNationColors().get())
+			registerCommand(new buttondevteam.chat.components.towncolors.admin.NationColorCommand());
 		registerCommand(new TCCount());
+		registerListener(new TownyListener());
+		registerListener(this);
 	}
 
 	@Override
 	protected void disable() {
 		getConfig().getConfig().createSection("towncolors", TownColors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
 			v -> Arrays.stream(v.getValue()).map(Enum::toString).toArray(String[]::new))));
-		getConfig().getConfig().createSection("nationcolors", NationColor.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
-			v -> v.getValue().toString())));
+		if (useNationColors().get())
+			getConfig().getConfig().createSection("nationcolors", NationColor.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
+				v -> v.getValue().toString())));
 	}
 
 	/**
@@ -150,18 +171,20 @@ public class TownColorComponent extends Component {
 	        	len = name.length() / (clrs.length+1);
 	        else
 	        	len = name.length() / clrs.length;*/
+			boolean usenc = component.useNationColors().get();
 			val nclar = cp.NameColorLocations().get();
 			int[] ncl = nclar == null ? null : nclar.stream().mapToInt(Integer::intValue).toArray();
-			if (ncl != null && (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length + 1)) //+1: Nation color
+			if (ncl != null && (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length + (usenc ? 1 : 0))) //+1: Nation color
 				ncl = null; // Reset if name length changed
 			//System.out.println("ncl: "+Arrays.toString(ncl)+" - sum: "+Arrays.stream(ncl).sum()+" - name len: "+name.length());
-			if (!res.getTown().hasNation()
-				|| (nc = NationColor.get(res.getTown().getNation().getName().toLowerCase())) == null)
-				nc = Color.White;
-			ret.append(anyColoredNamePart.apply(nc, ncl == null ? len : ncl[0])); //Make first color the nation color
+			if (usenc) {
+				if (!res.getTown().hasNation()
+					|| (nc = NationColor.get(res.getTown().getNation().getName().toLowerCase())) == null)
+					nc = Color.White;
+				ret.append(anyColoredNamePart.apply(nc, ncl == null ? len : ncl[0])); //Make first color the nation color
+			}
 			for (int i = 0; i < clrs.length; i++)
-				//ret.append(coloredNamePart.apply(ncl == null ? len : (nc==null?ncl[i]:ncl[i+1]), i));
-				ret.append(coloredNamePart.apply(ncl == null ? len : ncl[i + 1], i));
+				ret.append(coloredNamePart.apply(ncl == null ? len : (usenc ? ncl[i + 1] : ncl[i]), i));
 			return ret.toString();
 		} catch (NotRegisteredException e) {
 			return nickname;
@@ -178,13 +201,18 @@ public class TownColorComponent extends Component {
 	/**
 	 * Checks if the component is enabled
 	 */
-	public static void updatePlayerColors(Player player, ChatPlayer cp) { //Probably at join - nop, nicknames
+	private static void updatePlayerColors(Player player, ChatPlayer cp) { //Probably at join - nop, nicknames
 		if (!ComponentManager.isEnabled(TownColorComponent.class))
 			return;
 		User user = PluginMain.essentials.getUser(player);
 		user.setNickname(getPlayerNickname(player, user, cp));
 		user.setDisplayNick(); //These won't fire the nick change event
 		cp.FlairUpdate(); //Update in list
+	}
+
+	@EventHandler
+	public void onPlayerJoin(TBMCPlayerJoinEvent event) {
+		updatePlayerColors(event.getPlayer(), event.GetPlayer().asPluginPlayer(ChatPlayer.class));
 	}
 
 	private static void load_old(Consumer<ConfigurationSection> loadTC,

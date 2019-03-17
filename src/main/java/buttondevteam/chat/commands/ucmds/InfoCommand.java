@@ -1,35 +1,26 @@
 package buttondevteam.chat.commands.ucmds;
 
+import buttondevteam.lib.TBMCCoreAPI;
+import buttondevteam.lib.chat.Command2;
+import buttondevteam.lib.chat.CommandClass;
+import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
+import buttondevteam.lib.player.TBMCPlayer;
+import buttondevteam.lib.player.TBMCPlayerBase;
 import org.bukkit.command.CommandSender;
 
-import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.chat.CommandClass;
-import buttondevteam.lib.player.TBMCPlayer;
-import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
-import buttondevteam.lib.player.TBMCPlayerBase;
-
-@CommandClass(modOnly = false)
+@CommandClass(modOnly = false, helpText = {
+	"User information", //
+	"Get some information known about the user.", //
+})
 public class InfoCommand extends UCommandBase {
-
-	@Override
-	public String[] GetHelpText(String alias) {
-		return new String[] { //
-				"§6---- User information ----", //
-				"Get some information known about the user.", //
-				"Usage: /" + alias + " info <playername>" //
-		};
-	}
-
-	@Override
-	public boolean OnCommand(CommandSender sender, String alias, String[] args) {
-		if (args.length == 0)
-			return false;
-		if (args[0].equalsIgnoreCase("console") || args[0].equalsIgnoreCase("server")
-				|| args[0].equalsIgnoreCase("@console")) {
+	@Command2.Subcommand
+	public boolean def(CommandSender sender, String player) {
+		if (player.equalsIgnoreCase("console") || player.equalsIgnoreCase("server")
+			|| player.equalsIgnoreCase("@console")) {
 			sender.sendMessage("The server console.");
 			return true;
 		}
-		try (TBMCPlayer p = TBMCPlayerBase.getFromName(args[0], TBMCPlayer.class)) {
+		try (TBMCPlayer p = TBMCPlayerBase.getFromName(player, TBMCPlayer.class)) {
 			if (p == null) {
 				sender.sendMessage("§cThe specified player cannot be found");
 				return true;

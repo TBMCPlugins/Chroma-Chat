@@ -1,10 +1,14 @@
 package buttondevteam.chat.components.fun;
 
+import buttondevteam.core.component.channel.Channel;
+import buttondevteam.core.component.restart.RestartComponent;
 import buttondevteam.core.component.restart.ScheduledRestartCommand;
 import buttondevteam.lib.ScheduledServerRestartEvent;
 import buttondevteam.lib.ThorpeUtils;
-import buttondevteam.lib.chat.Command2MC;
+import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
+import buttondevteam.lib.chat.ICommand2MC;
+import buttondevteam.lib.chat.TBMCChatAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
@@ -13,12 +17,12 @@ import org.bukkit.event.Listener;
 import java.util.HashSet;
 
 @CommandClass
-public class PressCommand extends Command2MC implements Listener {
+public class PressCommand extends ICommand2MC implements Listener {
 	private HashSet<CommandSender> pressers; //Will be cleared with this class on shutdown/disable
 	private ScheduledRestartCommand command;
 	private int startTicks;
 
-	@Subcommand
+	@Command2.Subcommand
 	public void def(CommandSender sender) {
 		if (command == null) {
 			sender.sendMessage("§cThe timer isn't ticking... yet.");
@@ -29,7 +33,7 @@ public class PressCommand extends Command2MC implements Listener {
 			return;
 		}
 		pressers.add(sender);
-		Bukkit.broadcastMessage(String.format("§b-- %s §bpressed at %.0fs", ThorpeUtils.getDisplayName(sender), command.getRestartCounter() / 20f));
+		TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, String.format("§b-- %s §bpressed at %.0fs", ThorpeUtils.getDisplayName(sender), command.getRestartCounter() / 20f), command.getComponent().getRestartBroadcast());
 		command.setRestartCounter(startTicks);
 	}
 

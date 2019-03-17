@@ -1,12 +1,15 @@
 package buttondevteam.chat;
 
-import buttondevteam.chat.commands.UnlolCommand;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
+import buttondevteam.chat.components.chatonly.ChatOnlyComponent;
+import buttondevteam.chat.components.fun.FunComponent;
+import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.chat.formatting.ChatFormatter;
 import buttondevteam.chat.formatting.TellrawEvent;
 import buttondevteam.chat.formatting.TellrawPart;
 import buttondevteam.chat.formatting.TellrawSerializer;
 import buttondevteam.chat.listener.PlayerListener;
+import buttondevteam.core.ComponentManager;
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCChatEventBase;
@@ -52,7 +55,8 @@ public class ChatProcessing {
 	private static final Pattern SPOILER_PATTERN = Pattern.compile("\\|\\|");
     private static final Color[] RainbowPresserColors = new Color[]{Color.Red, Color.Gold, Color.Yellow, Color.Green,
             Color.Blue, Color.DarkPurple};
-    private static boolean pingedconsole = false;
+	private static final Pattern WORD_PATTERN = Pattern.compile("\\S+");
+	private static boolean pingedconsole = false;
 
     public static final ChatFormatter ESCAPE_FORMATTER = ChatFormatter.builder().regex(ESCAPE_PATTERN).build();
 
@@ -134,13 +138,13 @@ public class ChatProcessing {
         ArrayList<ChatFormatter> formatters = addFormatters(colormode);
 	    if (colormode == channel.Color().get() && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
             final AtomicInteger rpc = new AtomicInteger(0);
-		    formatters.add(ChatFormatter.builder().color(colormode).onmatch((match, cf, s) -> {
+		    formatters.add(ChatFormatter.builder().regex(WORD_PATTERN).color(colormode).onmatch((match, cf, s) -> {
                 cf.setColor(RainbowPresserColors[rpc.getAndUpdate(i -> ++i < RainbowPresserColors.length ? i : 0)]);
                 return match;
             }).build());
         }
         pingedconsole = false; // Will set it to true onmatch (static constructor)
-        final String channelidentifier = getChannelID(channel, sender, e.getOrigin());
+	    final String channelidentifier = getChannelID(channel, e.getOrigin());
 
         TellrawPart json = createTellraw(sender, message, player, mp, e.getUser(), channelidentifier, e.getOrigin());
         long combinetime = System.nanoTime();
@@ -174,16 +178,11 @@ public class ChatProcessing {
                 if (score < 0) // Never send messages to score below 0
                     sender.sendMessage("§cYou don't have permission to send this message or something went wrong");
                 else {
-                    PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-                            String.format("tellraw @a[score_%s=%d,score_%s_min=%d] %s", channel.ID, score, channel.ID,
-                                    score, jsonstr));
-                    if (e.getChannel().ID.equals(PluginMain.TownChat.ID)
-                            || e.getChannel().ID.equals(PluginMain.NationChat.ID)) {
-                        ((List<TellrawPart>) json.getExtra()).add(0, new TellrawPart("[SPY]"));
-                        jsonstr = toJson(json);
-                        Bukkit.getServer().dispatchCommand(PluginMain.Console, String.format(
-                                "tellraw @a[score_%s=1000,score_%s_min=1000] %s", channel.ID, channel.ID, jsonstr));
-                    }
+	                PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
+		                String.format("tellraw @a[score_%s=%d,score_%s_min=%d] %s", channel.ID, score, channel.ID,
+			                score, jsonstr));
+	                val tc = ComponentManager.getIfEnabled(TownyComponent.class);
+	                if (tc != null) tc.handleSpies(channel, json, ChatProcessing::toJson);
                 }
             } else
                 PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
@@ -209,10 +208,7 @@ public class ChatProcessing {
                                      @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier,
                                      String origin) {
         TellrawPart json = new TellrawPart("");
-        if (mp != null && mp.ChatOnly) {
-            json.addExtra(new TellrawPart("[C]")
-                    .setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, "Chat only")));
-        }
+		ChatOnlyComponent.tellrawCreate(mp, json); //TODO: Make nice API
         json.addExtra(
                 new TellrawPart(channelidentifier)
                         .setHoverEvent(
@@ -242,7 +238,7 @@ public class ChatProcessing {
         return player.getDisplayName();
     }
 
-    static String getChannelID(Channel channel, CommandSender sender, String origin) {
+	static String getChannelID(Channel channel, String origin) {
 	    return ("[" + (MCORIGIN.equals(origin) ? "" : "§8" + origin.substring(0, 1) + "§r|") + channel.DisplayName().get())
                 + "]";
     }
@@ -295,12 +291,8 @@ public class ChatProcessing {
                         }
                         ChatPlayer mpp = TBMCPlayer.getPlayer(nottest ? p.getUniqueId() : new UUID(0, 0), ChatPlayer.class);
                         if (nottest) {
-	                        if (PluginMain.Instance.notificationSound().get().length() == 0)
-                                p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
-                            else
-		                        p.playSound(p.getLocation(), PluginMain.Instance.notificationSound().get(), 1.0f,
-			                        PluginMain.Instance.notificationPitch().get());
-                        }
+							playPingSound(p);
+						}
                         String color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
 	                    return color + (nottest ? p.getName() : pn.get()) + "§r"; //Fix name casing, except when testing
                     }).priority(Priority.High).type(ChatFormatter.Type.Excluder).build());
@@ -315,12 +307,8 @@ public class ChatProcessing {
                                             + match.toLowerCase() + " but was reported as online.");
                                     return "§c" + match + "§r";
                                 }
-	                            if (PluginMain.Instance.notificationSound().get().length() == 0)
-		                            p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
-	                            else
-		                            p.playSound(p.getLocation(), PluginMain.Instance.notificationSound().get(), 1.0f,
-			                            PluginMain.Instance.notificationPitch().get());
-                                return PluginMain.essentials.getUser(p).getNickname();
+								playPingSound(p);
+								return PluginMain.essentials.getUser(p).getNickname();
                             }
                             error.accept("Player nicknamed " + match.toLowerCase()
                                     + " not found in nickname map but was reported as online.");
@@ -330,24 +318,16 @@ public class ChatProcessing {
         return formatters;
     }
 
-    static void doFunStuff(CommandSender sender, TBMCChatEventBase event, String message) {
-        if (PlayerListener.ActiveF && !PlayerListener.Fs.contains(sender) && message.equalsIgnoreCase("F"))
-            PlayerListener.Fs.add(sender);
+	private static void playPingSound(Player p) {
+		if (PluginMain.Instance.notificationSound().get().length() == 0)
+			p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
+		else
+			p.playSound(p.getLocation(), PluginMain.Instance.notificationSound().get(), 1.0f,
+				PluginMain.Instance.notificationPitch().get());
+	}
 
-        String msg = message.toLowerCase();
-        val lld = new UnlolCommand.LastlolData(sender, event, System.nanoTime());
-        boolean add;
-        if (add = msg.contains("lol"))
-            lld.setLolornot(true);
-        else {
-            for (int i = 0; i < PlayerListener.LaughStrings.length; i++) {
-                if (add = msg.contains(PlayerListener.LaughStrings[i])) {
-                    lld.setLolornot(false);
-                    break;
-                }
-            }
-        }
-        if (add)
-            UnlolCommand.Lastlol.put(event.getChannel(), lld);
+	static void doFunStuff(CommandSender sender, TBMCChatEventBase event, String message) {
+		val fc=ComponentManager.getIfEnabled(FunComponent.class);
+		if(fc!=null) fc.onChat(sender, event, message);
     }
 }

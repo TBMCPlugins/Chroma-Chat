@@ -1,11 +1,12 @@
 package buttondevteam.chat.components.towncolors.admin;
 
-import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.commands.ucmds.admin.AdminCommandBase;
 import buttondevteam.chat.components.towncolors.TownColorComponent;
 import buttondevteam.chat.components.towncolors.TownyListener;
 import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.lib.chat.Color;
+import buttondevteam.lib.chat.Command2;
+import buttondevteam.lib.chat.CommandClass;
 import com.palmergames.bukkit.towny.object.Town;
 import lombok.val;
 import org.bukkit.Bukkit;
@@ -17,55 +18,52 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class TownColorCommand extends AdminCommandBase {
-    @Override
-    public String GetHelpText(String alias)[] { // TODO: Command path aliases
-        return new String[]{ //
-                "§6---- Town Color ----", //
-                "This command allows setting a color for a town.", //
-                "The town will be shown with this color on Dynmap and all players in the town will appear in chat with these colors.", //
-                "The colors will split the name evenly.", //
-                "Usage: /" + GetCommandPath() + " <town> <colorname1> [colorname2...]", //
-                "Example: /" + GetCommandPath() + " Alderon blue gray" //
-        };
-    }
+@CommandClass(helpText = {
+	"Town Color", //
+	"This command allows setting a color for a town.", //
+	"The town will be shown with this color on Dynmap and all players in the town will appear in chat with these colors.", //
+	"The colors will split the name evenly.", //
+})
+public class TownColorCommand extends AdminCommandBase { //TODO: Command path aliases
+	@Command2.Subcommand
+	public boolean def(CommandSender sender, String town, String... colornames) {
+		if (!TownyComponent.TU.getTownsMap().containsKey(town.toLowerCase())) {
+			sender.sendMessage("§cThe town '" + town + "' cannot be found.");
+			return true;
+		}
+		Town targetTown = TownyComponent.TU.getTownsMap().get(town.toLowerCase());
+		return SetTownColor(sender, targetTown, colornames);
+	}
 
-    @Override
-    public boolean OnCommand(CommandSender sender, String alias, String[] args) {
-        return SetTownColor(sender, alias, args);
-    }
-
-    public static boolean SetTownColor(CommandSender sender, String alias, String[] args) {
-        if (args.length < 2)
-            return false;
-	    if (!TownyComponent.TU.getTownsMap().containsKey(args[0].toLowerCase())) {
-            sender.sendMessage("§cThe town '" + args[0] + "' cannot be found.");
-            return true;
-        }
-	    Color[] clrs = new Color[args.length - 1];
-	    Town targetTown = TownyComponent.TU.getTownsMap().get(args[0].toLowerCase());
-	    for (int i = 1; i < args.length; i++) {
-		    val c = getColorOrSendError(args[i], sender);
+	public static boolean SetTownColor(CommandSender sender, Town town, String[] colors) {
+		Color[] clrs = new Color[colors.length];
+		for (int i = 0; i < colors.length; i++) {
+			val c = getColorOrSendError(colors[i], sender);
 		    if (!c.isPresent())
                 return true;
 		    clrs[i - 1] = c.get();
         }
 	    Color tnc;
-	    try {
-		    tnc = TownColorComponent.NationColor.get(targetTown.getNation().getName().toLowerCase());
-	    } catch (Exception e) {
-		    tnc = null;
-	    }
-	    if (tnc == null) tnc = Color.White; //Default nation color - TODO: Make configurable
+	    boolean usenc = TownColorComponent.getComponent().useNationColors().get();
+	    if (usenc) {
+		    try {
+			    tnc = TownColorComponent.NationColor.get(town.getNation().getName().toLowerCase());
+		    } catch (Exception e) {
+			    tnc = null;
+		    }
+		    if (tnc == null) tnc = Color.White; //Default nation color - TODO: Make configurable
+	    } else tnc = null;
 	    for (Map.Entry<String, Color[]> other : TownColorComponent.TownColors.entrySet()) {
 		    Color nc;
-		    try {
-			    nc = TownColorComponent.NationColor.get(TownyComponent.TU.getTownsMap().get(other.getKey()).getNation().getName().toLowerCase());
-		    } catch (Exception e) { //Too lazy for lots of null-checks and it may throw exceptions anyways
-			    nc = null;
-		    }
-		    if (nc == null) nc = Color.White; //Default nation color
-		    if (nc.getName().equals(tnc.getName())) {
+		    if (usenc) {
+			    try {
+				    nc = TownColorComponent.NationColor.get(TownyComponent.TU.getTownsMap().get(other.getKey()).getNation().getName().toLowerCase());
+			    } catch (Exception e) { //Too lazy for lots of null-checks and it may throw exceptions anyways
+				    nc = null;
+			    }
+			    if (nc == null) nc = Color.White; //Default nation color
+		    } else nc = null;
+		    if (!usenc || nc.getName().equals(tnc.getName())) {
 			    int C = 0;
 			    if (clrs.length == other.getValue().length)
 				    for (int i = 0; i < clrs.length; i++)
@@ -78,16 +76,12 @@ public class TownColorCommand extends AdminCommandBase {
 			    }
 		    }
 	    }
-	    TownColorComponent.TownColors.put(args[0].toLowerCase(), clrs);
-	    TownyListener.updateTownMembers(targetTown);
+		TownColorComponent.TownColors.put(town.getName().toLowerCase(), clrs);
+		TownyListener.updateTownMembers(town);
 
         val dtp = (DynmapTownyPlugin) Bukkit.getPluginManager().getPlugin("Dynmap-Towny");
-        if (dtp == null) {
-            sender.sendMessage("§cDynmap-Towny couldn't be found §6but otherwise §btown color set.");
-            PluginMain.Instance.getLogger().warning("Dynmap-Towny not found for setting town color!");
-            return true;
-        }
-	    TownColorComponent.setTownColor(dtp, targetTown.getName(), clrs, tnc);
+		if (dtp != null) //If it's not found then it's not loaded, it'll be noticed by the admins if needed
+			TownColorComponent.setTownColor(dtp, town.getName(), clrs, tnc);
         sender.sendMessage("§bColor(s) set.");
         return true;
     }

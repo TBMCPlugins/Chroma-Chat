@@ -1,6 +1,7 @@
 package buttondevteam.chat.components.flair;
 
 import buttondevteam.chat.ChatPlayer;
+import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ConfigData;
@@ -21,8 +22,8 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class FlairComponent extends Component {
-	private ConfigData<String> FlairThreadURL() {
+public class FlairComponent extends Component<PluginMain> {
+	ConfigData<String> FlairThreadURL() {
 		return getConfig().getData("flairThreadURL", "https://www.reddit.com/r/Chromagamers/comments/51ys94/flair_thread_for_the_mc_server/");
 	}
 
@@ -38,7 +39,7 @@ public class FlairComponent extends Component {
 
 	@Override
 	protected void enable() {
-		registerCommand(new AcceptCommand());
+		registerCommand(new AcceptCommand(this));
 		registerCommand(new IgnoreCommand());
 		registerCommand(new SetFlairCommand());
 		new Thread(this::FlairGetterThreadMethod).start();
@@ -105,7 +106,7 @@ public class FlairComponent extends Component {
 		}
 	}
 
-	public static void DownloadFlair(ChatPlayer mp) throws IOException {
+	void DownloadFlair(ChatPlayer mp) throws IOException {
 		String[] flairdata = TBMCCoreAPI
 			.DownloadString("http://karmadecay.com/thebutton-data.php?users=" + mp.UserName().get())
 			.replace("\"", "").split(":");
