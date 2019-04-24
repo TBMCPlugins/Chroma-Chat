@@ -1,6 +1,7 @@
 package buttondevteam.chat;
 
 import buttondevteam.chat.commands.MWikiCommand;
+import buttondevteam.chat.commands.SnapCommand;
 import buttondevteam.chat.commands.ucmds.HelpCommand;
 import buttondevteam.chat.commands.ucmds.HistoryCommand;
 import buttondevteam.chat.commands.ucmds.InfoCommand;
@@ -77,6 +78,7 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 		getCommand2MC().registerCommand(new HistoryCommand());
 		getCommand2MC().registerCommand(new InfoCommand());
 		getCommand2MC().registerCommand(new MWikiCommand());
+		getCommand2MC().registerCommand(new SnapCommand());
 	}
 
 	public static Essentials essentials = null;
