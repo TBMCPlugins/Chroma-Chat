@@ -178,15 +178,14 @@ public class ChatProcessing {
                 if (score < 0) // Never send messages to score below 0
                     sender.sendMessage("§cYou don't have permission to send this message or something went wrong");
                 else {
-	                PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
+	                ChatUtils.dispatchConsoleCommand(
 		                String.format("tellraw @a[score_%s=%d,score_%s_min=%d] %s", channel.ID, score, channel.ID,
-			                score, jsonstr));
+			                score, jsonstr), true);
 	                val tc = ComponentManager.getIfEnabled(TownyComponent.class);
 	                if (tc != null) tc.handleSpies(channel, json, ChatProcessing::toJson);
                 }
             } else
-                PluginMain.Instance.getServer().dispatchCommand(PluginMain.Console,
-                        String.format("tellraw @a %s", jsonstr));
+	            ChatUtils.dispatchConsoleCommand(String.format("tellraw @a %s", jsonstr), true);
         } catch (Exception ex) {
             TBMCCoreAPI.SendException("An error occured while sending a chat message!", ex);
             sender.sendMessage("§cAn error occured while sending the message.");
