@@ -122,6 +122,12 @@ public class ChatProcessing {
 
         doFunStuff(sender, e, message);
 
+	    final String channelidentifier = getChannelID(channel, e.getOrigin());
+	    PluginMain.Instance.getServer().getConsoleSender()
+		    .sendMessage(String.format("%s <%s§r> %s", channelidentifier, getSenderName(sender, player), message));
+
+	    if (Bukkit.getOnlinePlayers().size() == 0) return false; //Don't try to send to nobody (errors on 1.14)
+
         ChatPlayer mp;
         if (player != null)
             mp = TBMCPlayerBase.getPlayer(player.getUniqueId(), ChatPlayer.class);
@@ -144,7 +150,6 @@ public class ChatProcessing {
             }).build());
         }
         pingedconsole = false; // Will set it to true onmatch (static constructor)
-	    final String channelidentifier = getChannelID(channel, e.getOrigin());
 
         TellrawPart json = createTellraw(sender, message, player, mp, e.getUser(), channelidentifier, e.getOrigin());
         long combinetime = System.nanoTime();
@@ -191,8 +196,6 @@ public class ChatProcessing {
             sender.sendMessage("§cAn error occured while sending the message.");
             return true;
         }
-        PluginMain.Instance.getServer().getConsoleSender()
-                .sendMessage(String.format("%s <%s§r> %s", channelidentifier, getSenderName(sender, player), message));
         DebugCommand.SendDebugMessage(
                 "-- Full ChatProcessing time: " + (System.nanoTime() - processstart) / 1000000f + " ms");
         DebugCommand.SendDebugMessage("-- ChatFormatter.Combine time: " + combinetime / 1000000f + " ms");
