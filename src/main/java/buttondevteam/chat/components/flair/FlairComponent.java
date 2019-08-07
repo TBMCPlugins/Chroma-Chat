@@ -23,7 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class FlairComponent extends Component<PluginMain> {
-	ConfigData<String> FlairThreadURL() {
+	ConfigData<String> flairThreadURL() {
 		return getConfig().getData("flairThreadURL", "https://www.reddit.com/r/Chromagamers/comments/51ys94/flair_thread_for_the_mc_server/");
 	}
 
@@ -54,7 +54,7 @@ public class FlairComponent extends Component<PluginMain> {
 		int errorcount = 0;
 		while (isEnabled()) {
 			try {
-				String body = TBMCCoreAPI.DownloadString(FlairThreadURL().get() + ".json?limit=1000");
+				String body = TBMCCoreAPI.DownloadString(flairThreadURL().get() + ".json?limit=1000");
 				JsonArray json = new JsonParser().parse(body).getAsJsonArray().get(1).getAsJsonObject().get("data")
 					.getAsJsonObject().get("children").getAsJsonArray();
 				for (Object obj : json) {

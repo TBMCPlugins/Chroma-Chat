@@ -20,7 +20,7 @@ public class AnnounceCommand extends UCommandBase {
 	})
 	public boolean add(CommandSender sender, @Command2.TextArg String text) {
 		String finalmessage = text.replace('&', '§');
-		component.AnnounceMessages().get().add(finalmessage);
+		component.announceMessages().get().add(finalmessage);
 		sender.sendMessage("§bAnnouncement added.§r");
 		return true;
 	}
@@ -34,9 +34,9 @@ public class AnnounceCommand extends UCommandBase {
 		String finalmessage1 = text.replace('&', '§');
 		if (index > 100)
 			return false;
-		while (component.AnnounceMessages().get().size() <= index)
-			component.AnnounceMessages().get().add("");
-		component.AnnounceMessages().get().set(index, finalmessage1);
+		while (component.announceMessages().get().size() <= index)
+			component.announceMessages().get().add("");
+		component.announceMessages().get().set(index, finalmessage1);
 		sender.sendMessage("Announcement edited.");
 		return true;
 	}
@@ -49,10 +49,10 @@ public class AnnounceCommand extends UCommandBase {
 		sender.sendMessage("§bList of announce messages:§r");
 		sender.sendMessage("§bFormat: [index] message§r");
 		int i = 0;
-		for (String message : component.AnnounceMessages().get())
+		for (String message : component.announceMessages().get())
 			sender.sendMessage("[" + i++ + "] " + message);
 		sender.sendMessage("§bCurrent wait time between announcements: "
-			+ component.AnnounceTime().get() / 60 / 1000 + " minute(s)§r");
+			+ component.announceTime().get() / 60 / 1000 + " minute(s)§r");
 		return true;
 	}
 
@@ -61,7 +61,7 @@ public class AnnounceCommand extends UCommandBase {
 		"This command removes an announcement"
 	})
 	public boolean remove(CommandSender sender, int index) {
-		val msgs = component.AnnounceMessages().get();
+		val msgs = component.announceMessages().get();
 		if (index < 0 || index > msgs.size()) return false;
 		msgs.remove(index);
 		sender.sendMessage("Announcement removed.");
@@ -73,7 +73,7 @@ public class AnnounceCommand extends UCommandBase {
 		"This command sets the time between the announcements"
 	})
 	public boolean settime(CommandSender sender, int minutes) {
-		component.AnnounceTime().set(minutes * 60 * 1000);
+		component.announceTime().set(minutes * 60 * 1000);
 		sender.sendMessage("Time set between announce messages to " + minutes + " minutes");
 		return true;
 	}

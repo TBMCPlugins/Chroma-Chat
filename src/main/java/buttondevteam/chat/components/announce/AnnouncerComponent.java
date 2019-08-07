@@ -11,11 +11,11 @@ import org.bukkit.Bukkit;
 import java.util.ArrayList;
 
 public class AnnouncerComponent extends Component<PluginMain> implements Runnable {
-	public ConfigData<ArrayList<String>> AnnounceMessages() {
+	public ConfigData<ArrayList<String>> announceMessages() {
 		return getConfig().getData("announceMessages", new ArrayList<>(0));
 	}
 
-	public ConfigData<Integer> AnnounceTime() {
+	public ConfigData<Integer> announceTime() {
 		return getConfig().getData("announceTime", 15 * 60 * 1000);
 	}
 
@@ -27,15 +27,15 @@ public class AnnouncerComponent extends Component<PluginMain> implements Runnabl
 	public void run() {
 		while (isEnabled()) {
 			try {
-				Thread.sleep(AnnounceTime().get());
+				Thread.sleep(announceTime().get());
 			} catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
 			}
 			if (Bukkit.getOnlinePlayers().size() == 0) continue; //Don't post to Discord if nobody is on
-			if (AnnounceMessages().get().size() > AnnounceMessageIndex) {
-				TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, AnnounceMessages().get().get(AnnounceMessageIndex), target);
+			if (announceMessages().get().size() > AnnounceMessageIndex) {
+				TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, announceMessages().get().get(AnnounceMessageIndex), target);
 				AnnounceMessageIndex++;
-				if (AnnounceMessageIndex == AnnounceMessages().get().size())
+				if (AnnounceMessageIndex == announceMessages().get().size())
 					AnnounceMessageIndex = 0;
 			}
 		}
