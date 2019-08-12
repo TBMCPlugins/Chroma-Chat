@@ -1,5 +1,6 @@
 package buttondevteam.chat.components.towny;
 
+import buttondevteam.chat.ChatUtils;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.formatting.TellrawPart;
 import buttondevteam.core.component.channel.Channel;
@@ -51,8 +52,8 @@ public class TownyComponent extends Component<PluginMain> {
 		if (channel.ID.equals(TownChat.ID) || channel.ID.equals(NationChat.ID)) {
 			((List<TellrawPart>) json.getExtra()).add(0, new TellrawPart("[SPY]"));
 			String jsonstr = toJson.apply(json);
-			Bukkit.getServer().dispatchCommand(PluginMain.Console, String.format(
-				"tellraw @a[score_%s=1000,score_%s_min=1000] %s", channel.ID, channel.ID, jsonstr));
+			ChatUtils.dispatchConsoleCommand(String.format(
+				"tellraw @a[score_%s=1000,score_%s_min=1000] %s", channel.ID, channel.ID, jsonstr), true);
 		}
 	}
 
