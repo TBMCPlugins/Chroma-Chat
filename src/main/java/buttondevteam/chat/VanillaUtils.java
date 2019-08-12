@@ -9,6 +9,7 @@ import net.minecraft.server.v1_12_R1.IChatBaseComponent;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 @UtilityClass
@@ -31,7 +32,7 @@ public class VanillaUtils {
 		try {
 			if (isChatOn == null) {
 				val cl = p.getClass();
-				if (!cl.getSimpleName().contains("CraftPlayer")) return true; // p instanceof CraftPlayer
+				if (notCraftPlayer(cl)) return true; // p instanceof CraftPlayer
 				val hm = cl.getMethod("getHandle");
 				val handle = hm.invoke(p); //p.getHandle()
 				val vpcl = handle.getClass();
@@ -71,12 +72,38 @@ public class VanillaUtils {
 		return Short.parseShort(v);
 	}*/
 
-	public String tellRaw(Player p, String json) {
+	private BiConsumer<Player, String> tellRaw;
+
+	public boolean tellRaw(Player p, String json) {
 		try {
-			ChatComponentUtils.filterForDisplay(((CraftPlayer) p).getHandle(), //TODO: Reflection
-				IChatBaseComponent.ChatSerializer.a(json), ((CraftPlayer) p).getHandle());
+			val pcl = p.getClass();
+			if (notCraftPlayer(pcl)) return false;
+			val hm = pcl.getMethod("getHandle");
+			val handle = hm.invoke(p); ;
+			val nms = handle.getClass().getPackage().getName();
+			val chatcompcl = Class.forName(nms + ".IChatBaseComponent");
+			val sendmsg = handle.getClass().getMethod("sendMessage", chatcompcl);
+
+			val ccucl = Class.forName(nms + ".ChatComponentUtils");
+			val iclcl = Class.forName(nms + ".ICommandListener");
+			val encl = Class.forName(nms + ".Entity");
+			val ffdm = ccucl.getMethod("filterForDisplay", iclcl, chatcompcl, encl);
+
+			val cscl = Class.forName(chatcompcl.getName() + "$ChatSerializer");
+			val am = cscl.getMethod("a", String.class);
+			val deserialized = am.invoke(null, json);
+			val filtered = ffdm.invoke(null, handle, deserialized, handle); //TODO: Use BiConsumer
+			sendmsg.invoke(handle, filtered);
+
+			((CraftPlayer) p).getHandle().sendMessage(ChatComponentUtils
+				.filterForDisplay(((CraftPlayer) p).getHandle(),
+					IChatBaseComponent.ChatSerializer.a(json), ((CraftPlayer) p).getHandle()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private boolean notCraftPlayer(Class<?> cl) {
+		return !cl.getSimpleName().contains("CraftPlayer");
 	}
 }
