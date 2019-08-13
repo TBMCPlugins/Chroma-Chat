@@ -29,15 +29,12 @@ import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.scoreboard.Scoreboard;
 
 public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15.
 	// A user, which flair isn't obtainable:
 	// https://www.reddit.com/r/thebutton/comments/31c32v/i_pressed_the_button_without_really_thinking/
 	public static PluginMain Instance;
 	public static ConsoleCommandSender Console;
-
-	public static Scoreboard SB;
 
 	public ConfigData<String> notificationSound() {
 		return getIConfig().getData("notificationSound", "");
@@ -57,8 +54,6 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerJoinLeaveListener(), this);
 		MainPlugin.Instance.setChatHandlerEnabled(false); //Disable Core chat handler
 		Console = this.getServer().getConsoleSender();
-
-		SB = getServer().getScoreboardManager().getMainScoreboard(); // Main can be detected with @a[score_...]
 
 		if (Bukkit.getPluginManager().isPluginEnabled("Towny"))
 			Component.registerComponent(this, new TownyComponent());

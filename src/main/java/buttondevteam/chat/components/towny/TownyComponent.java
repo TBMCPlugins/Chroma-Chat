@@ -1,7 +1,7 @@
 package buttondevteam.chat.components.towny;
 
-import buttondevteam.chat.ChatUtils;
 import buttondevteam.chat.PluginMain;
+import buttondevteam.chat.VanillaUtils;
 import buttondevteam.chat.formatting.TellrawPart;
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.architecture.Component;
@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -48,12 +49,20 @@ public class TownyComponent extends Component<PluginMain> {
 		TownyAnnouncer.setdown();
 	}
 
-	public void handleSpies(Channel channel, TellrawPart json, Function<TellrawPart, String> toJson) {
+	public void handleSpiesInit(Channel channel, TellrawPart json, Function<TellrawPart, String> toJson) {
 		if (channel.ID.equals(TownChat.ID) || channel.ID.equals(NationChat.ID)) {
 			((List<TellrawPart>) json.getExtra()).add(0, new TellrawPart("[SPY]"));
-			String jsonstr = toJson.apply(json);
-			ChatUtils.dispatchConsoleCommand(String.format(
-				"tellraw @a[score_%s=1000,score_%s_min=1000] %s", channel.ID, channel.ID, jsonstr), true);
+			jsonstr = toJson.apply(json);
+		}
+	}
+
+	private String jsonstr;
+
+	public void handleSpies(Channel channel, Player p) {
+		if (channel.ID.equals(TownChat.ID) || channel.ID.equals(NationChat.ID)) {
+			if (Optional.ofNullable(TU.getResidentMap().get(p.getName().toLowerCase()))
+				.filter(r -> r.hasMode("spy")).isPresent())
+				VanillaUtils.tellRaw(p, jsonstr);
 		}
 	}
 

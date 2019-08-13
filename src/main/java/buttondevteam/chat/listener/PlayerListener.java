@@ -8,7 +8,6 @@ import buttondevteam.chat.components.flair.FlairComponent;
 import buttondevteam.chat.components.towncolors.TownColorComponent;
 import buttondevteam.core.ComponentManager;
 import buttondevteam.core.component.channel.Channel;
-import buttondevteam.core.component.channel.ChatChannelRegisterEvent;
 import buttondevteam.core.component.channel.ChatRoom;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
@@ -176,12 +175,6 @@ public class PlayerListener implements Listener {
 			Bukkit.getConsoleSender().sendMessage(str);
 			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex);
 		}
-	}
-
-	@EventHandler
-	public void onChannelRegistered(ChatChannelRegisterEvent e) {
-		if (!e.getChannel().isGlobal() && PluginMain.SB.getObjective(e.getChannel().ID) == null) // Not global chat and doesn't exist yet
-			PluginMain.SB.registerNewObjective(e.getChannel().ID, "dummy");
 	}
 
 	@EventHandler

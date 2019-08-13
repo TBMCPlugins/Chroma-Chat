@@ -4,25 +4,22 @@ import buttondevteam.core.MainPlugin;
 import buttondevteam.lib.TBMCChatEvent;
 import lombok.experimental.UtilityClass;
 import lombok.val;
-import net.minecraft.server.v1_12_R1.ChatComponentUtils;
-import net.minecraft.server.v1_12_R1.IChatBaseComponent;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 @UtilityClass
 public class VanillaUtils {
-	public int getMCScoreIfChatOn(Player p, TBMCChatEvent e) {
+	public String getGroupIfChatOn(Player p, TBMCChatEvent e) {
 		try {
 			if (isChatOn(p)) // Only send if client allows chat
-				return e.getMCScore(p);
+				return e.getGroupID(p);
 			else
-				return -1;
+				return null;
 		} catch (NoClassDefFoundError ex) {
 			MainPlugin.Instance.getLogger().warning("Compatibility error, can't check if the chat is hidden by the player.");
-			return e.getMCScore(p);
+			return e.getGroupID(p);
 		}
 	}
 
@@ -47,6 +44,7 @@ public class VanillaUtils {
 				val full = ff.get(null); // EnumChatVisibility.FULL
 				isChatOn = pl -> {
 					try {
+						if (notCraftPlayer(pl.getClass())) return true; //Need to check each time
 						val ph = hm.invoke(pl); //pl.getHandle()
 						val flags = gcfm.invoke(ph); //handle.getChatFlags()
 						return flags == full; //TODO: It's only checked if not global
@@ -72,34 +70,49 @@ public class VanillaUtils {
 		return Short.parseShort(v);
 	}*/
 
-	private BiConsumer<Player, String> tellRaw;
+	private BiPredicate<Player, String> tellRaw;
 
 	public boolean tellRaw(Player p, String json) {
 		try {
-			val pcl = p.getClass();
-			if (notCraftPlayer(pcl)) return false;
-			val hm = pcl.getMethod("getHandle");
-			val handle = hm.invoke(p); ;
-			val nms = handle.getClass().getPackage().getName();
-			val chatcompcl = Class.forName(nms + ".IChatBaseComponent");
-			val sendmsg = handle.getClass().getMethod("sendMessage", chatcompcl);
+			if (tellRaw == null) {
+				val pcl = p.getClass();
+				if (notCraftPlayer(pcl)) return false;
+				val hm = pcl.getMethod("getHandle");
+				val handle = hm.invoke(p);
+				val nms = handle.getClass().getPackage().getName();
+				val chatcompcl = Class.forName(nms + ".IChatBaseComponent");
+				val sendmsg = handle.getClass().getMethod("sendMessage", chatcompcl);
 
-			val ccucl = Class.forName(nms + ".ChatComponentUtils");
-			val iclcl = Class.forName(nms + ".ICommandListener");
-			val encl = Class.forName(nms + ".Entity");
-			val ffdm = ccucl.getMethod("filterForDisplay", iclcl, chatcompcl, encl);
+				val ccucl = Class.forName(nms + ".ChatComponentUtils");
+				val iclcl = Class.forName(nms + ".ICommandListener");
+				val encl = Class.forName(nms + ".Entity");
+				//val ffdm = ccucl.getMethod("filterForDisplay", iclcl, chatcompcl, encl);
 
-			val cscl = Class.forName(chatcompcl.getName() + "$ChatSerializer");
-			val am = cscl.getMethod("a", String.class);
-			val deserialized = am.invoke(null, json);
-			val filtered = ffdm.invoke(null, handle, deserialized, handle); //TODO: Use BiConsumer
-			sendmsg.invoke(handle, filtered);
+				val cscl = Class.forName(chatcompcl.getName() + "$ChatSerializer");
+				val am = cscl.getMethod("a", String.class);
 
-			((CraftPlayer) p).getHandle().sendMessage(ChatComponentUtils
+				tellRaw = (pl, jsonStr) -> {
+					if (notCraftPlayer(pl.getClass())) return false;
+					try {
+						val hhandle = hm.invoke(pl);
+						val deserialized = am.invoke(null, jsonStr);
+						//val filtered = ffdm.invoke(null, hhandle, deserialized, hhandle);
+						sendmsg.invoke(hhandle, deserialized);
+						return true;
+					} catch (Exception e) {
+						e.printStackTrace();
+						return false;
+					}
+				};
+			}
+
+			/*((CraftPlayer) p).getHandle().sendMessage(ChatComponentUtils
 				.filterForDisplay(((CraftPlayer) p).getHandle(),
-					IChatBaseComponent.ChatSerializer.a(json), ((CraftPlayer) p).getHandle()));
+					IChatBaseComponent.ChatSerializer.a(json), ((CraftPlayer) p).getHandle()));*/
+			return tellRaw.test(p, json);
 		} catch (Exception e) {
-			e.printStackTrace();
+			PluginMain.Instance.getLogger().warning("Could not use tellRaw: " + e.getMessage());
+			return false;
 		}
 	}
 
