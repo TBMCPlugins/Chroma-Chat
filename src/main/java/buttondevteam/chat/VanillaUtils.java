@@ -83,10 +83,10 @@ public class VanillaUtils {
 				val chatcompcl = Class.forName(nms + ".IChatBaseComponent");
 				val sendmsg = handle.getClass().getMethod("sendMessage", chatcompcl);
 
-				val ccucl = Class.forName(nms + ".ChatComponentUtils");
+				/*val ccucl = Class.forName(nms + ".ChatComponentUtils");
 				val iclcl = Class.forName(nms + ".ICommandListener");
 				val encl = Class.forName(nms + ".Entity");
-				//val ffdm = ccucl.getMethod("filterForDisplay", iclcl, chatcompcl, encl);
+				val ffdm = ccucl.getMethod("filterForDisplay", iclcl, chatcompcl, encl);*/
 
 				val cscl = Class.forName(chatcompcl.getName() + "$ChatSerializer");
 				val am = cscl.getMethod("a", String.class);
