@@ -47,7 +47,7 @@ public class VanillaUtils {
 						if (notCraftPlayer(pl.getClass())) return true; //Need to check each time
 						val ph = hm.invoke(pl); //pl.getHandle()
 						val flags = gcfm.invoke(ph); //handle.getChatFlags()
-						return flags == full; //TODO: It's only checked if not global
+						return flags == full;
 					} catch (Exception e) {
 						e.printStackTrace();
 						return true;
