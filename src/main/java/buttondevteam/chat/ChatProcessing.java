@@ -34,6 +34,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public class ChatProcessing {
@@ -140,7 +141,7 @@ public class ChatProcessing {
 			colormode = Color.Green;
 		// If greentext, ignore channel or player colors
 
-		ArrayList<ChatFormatter> formatters = addFormatters(colormode);
+		ArrayList<ChatFormatter> formatters = addFormatters(colormode, e::shouldSendTo);
 		if (colormode == channel.Color().get() && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
 			final AtomicInteger rpc = new AtomicInteger(0);
 			formatters.add(ChatFormatter.builder().regex(WORD_PATTERN).color(colormode).onmatch((match, cf, s) -> {
@@ -240,7 +241,7 @@ public class ChatProcessing {
 			+ "]";
 	}
 
-	static ArrayList<ChatFormatter> addFormatters(Color colormode) {
+	static ArrayList<ChatFormatter> addFormatters(Color colormode, Predicate<Player> canSee) {
 		@SuppressWarnings("unchecked")
 		ArrayList<ChatFormatter> formatters = (ArrayList<ChatFormatter>) commonFormatters.clone();
 
@@ -250,12 +251,19 @@ public class ChatProcessing {
 		boolean nottest; //Not assigning a default value, so that it can only be used in the if
 		if ((nottest = Bukkit.getOnlinePlayers().size() > 0) || Bukkit.getVersion().equals("test")) {
 			StringBuilder namesb = new StringBuilder("(?i)(");
+			boolean addNameFormatter = false; //Needed because some names may be filtered out if they can't see the channel
 			if (nottest)
-				for (Player p : Bukkit.getOnlinePlayers())
-					namesb.append(p.getName()).append("|");
-			else
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					if (canSee.test(p)) {
+						namesb.append(p.getName()).append("|");
+						addNameFormatter = true;
+					}
+				}
+			else {
 				for (String testPlayer : testPlayers)
 					namesb.append(testPlayer).append("|");
+				addNameFormatter = true;
+			}
 			namesb.deleteCharAt(namesb.length() - 1);
 			namesb.append(")");
 			StringBuilder nicksb = new StringBuilder("(?i)(");
@@ -264,7 +272,7 @@ public class ChatProcessing {
 				final String nick = PlayerListener.nicknames.inverse().get(p.getUniqueId());
 				if (nick != null) {
 					nicksb.append(nick).append("|");
-					addNickFormatter = true; //Add it even if there's only 1 player online (it was in the if)
+					addNickFormatter = true;
 				}
 			}
 			nicksb.deleteCharAt(nicksb.length() - 1);
@@ -277,22 +285,23 @@ public class ChatProcessing {
 					System.out.println(message);
 			};
 
-			formatters.add(ChatFormatter.builder().regex(Pattern.compile(namesb.toString())).color(Color.Aqua)
-				.onmatch((match, builder, section) -> {
-					Player p = Bukkit.getPlayer(match);
-					Optional<String> pn = nottest ? Optional.empty()
-						: Arrays.stream(testPlayers).filter(tp -> tp.equalsIgnoreCase(match)).findAny();
-					if (nottest ? p == null : !pn.isPresent()) {
-						error.accept("Error: Can't find player " + match + " but was reported as online.");
-						return "§c" + match + "§r";
-					}
-					ChatPlayer mpp = TBMCPlayer.getPlayer(nottest ? p.getUniqueId() : new UUID(0, 0), ChatPlayer.class);
-					if (nottest) {
-						playPingSound(p);
-					}
-					String color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
-					return color + (nottest ? p.getName() : pn.get()) + "§r"; //Fix name casing, except when testing
-				}).priority(Priority.High).type(ChatFormatter.Type.Excluder).build());
+			if (addNameFormatter)
+				formatters.add(ChatFormatter.builder().regex(Pattern.compile(namesb.toString())).color(Color.Aqua)
+					.onmatch((match, builder, section) -> {
+						Player p = Bukkit.getPlayer(match);
+						Optional<String> pn = nottest ? Optional.empty()
+							: Arrays.stream(testPlayers).filter(tp -> tp.equalsIgnoreCase(match)).findAny();
+						if (nottest ? p == null : !pn.isPresent()) {
+							error.accept("Error: Can't find player " + match + " but was reported as online.");
+							return "§c" + match + "§r";
+						}
+						ChatPlayer mpp = TBMCPlayer.getPlayer(nottest ? p.getUniqueId() : new UUID(0, 0), ChatPlayer.class);
+						if (nottest) {
+							playPingSound(p);
+						}
+						String color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
+						return color + (nottest ? p.getName() : pn.get()) + "§r"; //Fix name casing, except when testing
+					}).priority(Priority.High).type(ChatFormatter.Type.Excluder).build());
 
 			if (addNickFormatter)
 				formatters.add(ChatFormatter.builder().regex((Pattern.compile(nicksb.toString()))).color(Color.Aqua)

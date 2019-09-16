@@ -91,7 +91,7 @@ public class ChatFormatIT {
 
 	@Test
 	public void testMessage() {
-		ArrayList<ChatFormatter> cfs = ChatProcessing.addFormatters(Color.White);
+		ArrayList<ChatFormatter> cfs = ChatProcessing.addFormatters(Color.White, p -> true);
 		final String chid = ChatProcessing.getChannelID(Channel.GlobalChat, ChatProcessing.MCORIGIN);
 		final TellrawPart tp = ChatProcessing.createTellraw(sender, message, null, null, null, chid, ChatProcessing.MCORIGIN);
 		ChatFormatter.Combine(cfs, message, tp);

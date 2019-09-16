@@ -141,13 +141,13 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 			}
 			if (PluginMain.permission.has(event.getSender(), "thorpe.unanything")) {
 				event.setCancelled(true);
-				String s = cmd.substring(3);
-				int index = event.getMessage().indexOf(' ');
+				int index = cmd.lastIndexOf(' ');
 				if (index == -1) {
-					event.getSender().sendMessage("§cUsage: /un" + s + " <player>");
+					event.getSender().sendMessage("§cUsage: " + cmd + " <player>");
 					return;
 				}
-				Player target = Bukkit.getPlayer(event.getMessage().substring(index + 1));
+				String s = cmd.substring(3, index);
+				Player target = Bukkit.getPlayer(cmd.substring(index + 1));
 				if (target == null) {
 					event.getSender().sendMessage("§cError: Player not found. (/un" + s + " <player>)");
 					return;

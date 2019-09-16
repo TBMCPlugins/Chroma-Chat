@@ -6,6 +6,8 @@ import buttondevteam.lib.chat.*;
 import buttondevteam.lib.player.TBMCPlayer;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+
 @CommandClass(path = "u c", helpText = {
 	"Rainbow mode",
 	"This command allows you to talk in rainbow colors"
@@ -32,7 +34,8 @@ public class CCommand extends ICommand2MC {
 				p.RainbowPresserColorMode = false;
 				p.OtherColorMode = null;
 				try {
-					p.OtherColorMode = Color.valueOf(color.toLowerCase());
+					String x = color.toLowerCase();
+					p.OtherColorMode = Arrays.stream(Color.values()).filter(c -> c.getName().equals(x)).findAny().orElse(null);
 				} catch (Exception e) {
 					player.sendMessage("§cUnknown message color: " + color);
 					player.sendMessage("§cUse color names, like blue, or dark_aqua");
