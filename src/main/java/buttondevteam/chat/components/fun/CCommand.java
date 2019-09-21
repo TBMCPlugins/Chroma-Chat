@@ -7,6 +7,7 @@ import buttondevteam.lib.player.TBMCPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 @CommandClass(path = "u c", helpText = {
 	"Rainbow mode",
@@ -18,7 +19,7 @@ public class CCommand extends ICommand2MC {
 	public boolean def(Player player, @Command2.OptionalArg String color) {
 		ChatPlayer p = TBMCPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class);
 		if (color == null) {
-			if (PluginMain.permission.has(player, "thorpe.color.rainbow")) {
+			if (PluginMain.permission.has(player, "chroma.color.rainbow")) {
 				p.RainbowPresserColorMode = !p.RainbowPresserColorMode;
 				p.OtherColorMode = null;
 				if (p.RainbowPresserColorMode)
@@ -30,20 +31,23 @@ public class CCommand extends ICommand2MC {
 				return true;
 			}
 		} else {
-			if (PluginMain.permission.has(player, "thorpe.color.custom")) {
-				p.RainbowPresserColorMode = false;
-				p.OtherColorMode = null;
-				try {
-					String x = color.toLowerCase();
-					p.OtherColorMode = Arrays.stream(Color.values()).filter(c -> c.getName().equals(x)).findAny().orElse(null);
-				} catch (Exception e) {
+			if (PluginMain.permission.has(player, "chroma.color.custom")) {
+				String x = color.toLowerCase();
+				if ("off".equals(x)) {
+					p.OtherColorMode = null;
+					player.sendMessage("§eMessage color reset.");
+					return true;
+				}
+				Optional<Color> oc = Arrays.stream(Color.values()).filter(c -> c.getName().equals(x)).findAny();
+				if (!oc.isPresent()) {
 					player.sendMessage("§cUnknown message color: " + color);
 					player.sendMessage("§cUse color names, like blue, or dark_aqua");
+					player.sendMessage("§cOr use 'off' to disable");
+					return true;
 				}
-				if (p.OtherColorMode != null)
-					player.sendMessage(String.format("§eMessage color set to %s", p.OtherColorMode));
-				else
-					player.sendMessage("§eMessage color reset.");
+				p.RainbowPresserColorMode = false;
+				p.OtherColorMode = oc.get();
+				player.sendMessage(String.format("§eMessage color set to %s", p.OtherColorMode));
 			} else {
 				player.sendMessage("§cYou don't have permission for this command.");
 				return true;

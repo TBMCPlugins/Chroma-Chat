@@ -5,18 +5,25 @@ import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCSystemChatEvent;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import lombok.val;
-import org.apache.log4j.Appender;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.filter.LevelRangeFilter;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import java.util.regex.Pattern;
 
 public class TownyAnnouncer {
 	private static final Pattern LOG_TYPE_PATTERN = Pattern.compile("\\[(\\w+) (?:Msg|Message)](?: (\\w+):)?");
-	private static final Appender HANDLER = new AppenderSkeleton() {
+	private static final Appender HANDLER = new AbstractAppender(TownyAnnouncer.class.getSimpleName(),
+		LevelRangeFilter.createFilter(Level.INFO, Level.INFO, Filter.Result.ACCEPT, Filter.Result.DENY),
+		PatternLayout.createDefaultLayout()) {
 		@Override
-		public void append(LoggingEvent logRecord) {
+		public void append(LogEvent logRecord) {
 			if (logRecord.getMessage() == null) return;
 			String message = logRecord.getMessage().toString();
 			val m = LOG_TYPE_PATTERN.matcher(message);
@@ -42,16 +49,6 @@ public class TownyAnnouncer {
 					break;
 			}
 		}
-
-		@Override
-		public void close() throws SecurityException {
-
-		}
-
-		@Override
-		public boolean requiresLayout() {
-			return false;
-		}
 	};
 
 	private static TBMCSystemChatEvent.BroadcastTarget target;
@@ -62,7 +59,7 @@ public class TownyAnnouncer {
 		target = TBMCSystemChatEvent.BroadcastTarget.add("towny");
 		TownyAnnouncer.townChannel = townChannel;
 		TownyAnnouncer.nationChannel = nationChannel;
-		LogManager.getLogger("com.palmergames.bukkit.towny").addAppender(HANDLER);
+		((Logger) LogManager.getLogger("com.palmergames.bukkit.towny")).getContext().getConfiguration().addAppender(HANDLER);
 	}
 
 	public static void setdown() {
@@ -70,6 +67,6 @@ public class TownyAnnouncer {
 		target = null;
 		TownyAnnouncer.townChannel = null;
 		TownyAnnouncer.nationChannel = null;
-		LogManager.getLogger("com.palmergames.bukkit.towny").removeAppender(HANDLER);
+		((Logger) LogManager.getLogger("com.palmergames.bukkit.towny")).getContext().getConfiguration().getAppenders().remove(TownyAnnouncer.class.getSimpleName());
 	}
 }

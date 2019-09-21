@@ -269,6 +269,7 @@ public class ChatProcessing {
 			StringBuilder nicksb = new StringBuilder("(?i)(");
 			boolean addNickFormatter = false;
 			for (Player p : Bukkit.getOnlinePlayers()) {
+				if (!canSee.test(p)) continue;
 				final String nick = PlayerListener.nicknames.inverse().get(p.getUniqueId());
 				if (nick != null) {
 					nicksb.append(nick).append("|");

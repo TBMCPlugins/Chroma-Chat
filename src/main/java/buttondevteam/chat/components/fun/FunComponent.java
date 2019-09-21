@@ -139,7 +139,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 				if (ht.getName().equalsIgnoreCase(cmd))
 					return;
 			}
-			if (PluginMain.permission.has(event.getSender(), "thorpe.unanything")) {
+			if (PluginMain.permission.has(event.getSender(), "chroma.unanything")) {
 				event.setCancelled(true);
 				int index = cmd.lastIndexOf(' ');
 				if (index == -1) {

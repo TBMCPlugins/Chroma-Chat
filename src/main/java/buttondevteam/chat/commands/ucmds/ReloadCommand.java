@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 
 @CommandClass(helpText = {
 	"Reload",
-	"Reloads Thorpe-Chat"
+	"Reloads the config"
 }, modOnly = true)
 public class ReloadCommand extends UCommandBase {
 	@Command2.Subcommand
