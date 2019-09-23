@@ -1,7 +1,9 @@
-package buttondevteam.chat.formatting;
+package buttondevteam.chat.components.formatter.formatting;
 
-import buttondevteam.chat.ChatProcessing;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
+import buttondevteam.chat.components.formatter.ChatProcessing;
+import buttondevteam.lib.architecture.ConfigData;
+import buttondevteam.lib.architecture.IHaveConfig;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.Priority;
 import lombok.Builder;
@@ -40,6 +42,11 @@ public final class ChatFormatter {
 	@Builder.Default
 	Type type = Type.Normal;
 	String hoverText;
+	String name;
+
+	private ConfigData<Boolean> enabled(IHaveConfig config) {
+		return config.getData(name + ".enabled", true);
+	}
 
 	public enum Type {
 		Normal,
@@ -58,13 +65,15 @@ public final class ChatFormatter {
 		R apply(T1 x1, T2 x2, T3 x3);
 	}
 
-	public static void Combine(List<ChatFormatter> formatters, String str, TellrawPart tp) {
+	public static void Combine(List<ChatFormatter> formatters, String str, TellrawPart tp, IHaveConfig config) {
 		/*
 		 * This method assumes that there is always a global formatter
 		 */
 		header("ChatFormatter.Combine begin");
 		ArrayList<FormattedSection> sections = new ArrayList<>();
 
+		if (config != null) //null if testing
+			formatters.removeIf(cf -> !cf.enabled(config).get()); //Remove disabled formatters
 		createSections(formatters, str, sections, true);
 
 		header("Section creation (excluders done)");

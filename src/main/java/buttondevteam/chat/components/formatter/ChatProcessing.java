@@ -1,13 +1,17 @@
-package buttondevteam.chat;
+package buttondevteam.chat.components.formatter;
 
+import buttondevteam.chat.ChatPlayer;
+import buttondevteam.chat.ChatUtils;
+import buttondevteam.chat.PluginMain;
+import buttondevteam.chat.VanillaUtils;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.components.chatonly.ChatOnlyComponent;
+import buttondevteam.chat.components.formatter.formatting.ChatFormatter;
+import buttondevteam.chat.components.formatter.formatting.TellrawEvent;
+import buttondevteam.chat.components.formatter.formatting.TellrawPart;
+import buttondevteam.chat.components.formatter.formatting.TellrawSerializer;
 import buttondevteam.chat.components.fun.FunComponent;
 import buttondevteam.chat.components.towny.TownyComponent;
-import buttondevteam.chat.formatting.ChatFormatter;
-import buttondevteam.chat.formatting.TellrawEvent;
-import buttondevteam.chat.formatting.TellrawPart;
-import buttondevteam.chat.formatting.TellrawSerializer;
 import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.core.ComponentManager;
 import buttondevteam.core.component.channel.Channel;
@@ -101,12 +105,11 @@ public class ChatProcessing {
 		.registerTypeAdapter(Boolean.class, new TellrawSerializer.TwBool())
 		.registerTypeAdapter(boolean.class, new TellrawSerializer.TwBool()).disableHtmlEscaping().create();
 	private static final String[] testPlayers = {"Koiiev", "iie", "Alisolarflare", "NorbiPeti", "Arsen_Derby_FTW", "carrot_lynx"};
-	public static final String MCORIGIN = "Minecraft"; //Shouldn't change, like ever - TBMCPlayer.getFolderForType(TBMCPlayer.class) capitalized
 
 	private ChatProcessing() {
 	}
 
-	public static boolean ProcessChat(TBMCChatEvent e) {
+	public static boolean ProcessChat(TBMCChatEvent e, FormatterComponent component) {
 		Channel channel = e.getChannel();
 		CommandSender sender = e.getSender();
 		String message = e.getMessage();
@@ -141,19 +144,24 @@ public class ChatProcessing {
 			colormode = Color.Green;
 		// If greentext, ignore channel or player colors
 
-		ArrayList<ChatFormatter> formatters = addFormatters(colormode, e::shouldSendTo);
-		if (colormode == channel.Color().get() && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
-			final AtomicInteger rpc = new AtomicInteger(0);
-			formatters.add(ChatFormatter.builder().regex(WORD_PATTERN).color(colormode).onmatch((match, cf, s) -> {
-				cf.setColor(RainbowPresserColors[rpc.getAndUpdate(i -> ++i < RainbowPresserColors.length ? i : 0)]);
-				return match;
-			}).build());
-		}
-		pingedconsole = false; // Will set it to true onmatch (static constructor)
+		ArrayList<ChatFormatter> formatters;
+		if (component.allowFormatting().get()) {
+			formatters = addFormatters(colormode, e::shouldSendTo);
+			if (colormode == channel.Color().get() && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
+				final AtomicInteger rpc = new AtomicInteger(0);
+				formatters.add(ChatFormatter.builder().regex(WORD_PATTERN).color(colormode).onmatch((match, cf, s) -> {
+					cf.setColor(RainbowPresserColors[rpc.getAndUpdate(i -> ++i < RainbowPresserColors.length ? i : 0)]);
+					return match;
+				}).build());
+			}
+			pingedconsole = false; // Will set it to true onmatch (static constructor)
+		} else
+			formatters = Lists.newArrayList(ChatFormatter.builder().regex(ENTIRE_MESSAGE_PATTERN)
+				.color(Color.White).priority(Priority.Low).build()); //This formatter is necessary
 
 		TellrawPart json = createTellraw(sender, message, player, mp, e.getUser(), channelidentifier, e.getOrigin());
 		long combinetime = System.nanoTime();
-		ChatFormatter.Combine(formatters, message, json);
+		ChatFormatter.Combine(formatters, message, json, component.getConfig());
 		combinetime = System.nanoTime() - combinetime;
 		String jsonstr = toJson(json);
 		if (jsonstr.length() >= 32767) {
@@ -203,15 +211,15 @@ public class ChatProcessing {
 	}
 
 	static TellrawPart createTellraw(CommandSender sender, String message, @Nullable Player player,
-	                                 @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier,
-	                                 String origin) {
+									 @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier,
+									 String origin) {
 		TellrawPart json = new TellrawPart("");
 		ChatOnlyComponent.tellrawCreate(mp, json); //TODO: Make nice API
 		json.addExtra(
 			new TellrawPart(channelidentifier)
 				.setHoverEvent(
 					TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT,
-						new TellrawPart((MCORIGIN.equals(origin) ? "" : "From " + origin + "n")
+						new TellrawPart((ChatUtils.MCORIGIN.equals(origin) ? "" : "From " + origin + "n")
 							+ "Copy message").setColor(Color.Blue)))
 				.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAction.SUGGEST_COMMAND, message)));
 		if (PluginMain.permission.has(sender, "tbmc.badge.diamond"))
@@ -237,7 +245,7 @@ public class ChatProcessing {
 	}
 
 	static String getChannelID(Channel channel, String origin) {
-		return ("[" + (MCORIGIN.equals(origin) ? "" : "§8" + origin.substring(0, 1) + "§r|") + channel.DisplayName().get())
+		return ("[" + (ChatUtils.MCORIGIN.equals(origin) ? "" : "§8" + origin.substring(0, 1) + "§r|") + channel.DisplayName().get())
 			+ "]";
 	}
 

@@ -1,6 +1,6 @@
 package buttondevteam.chat.components.towny;
 
-import buttondevteam.chat.ChatProcessing;
+import buttondevteam.chat.ChatUtils;
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCSystemChatEvent;
 import buttondevteam.lib.chat.TBMCChatAPI;
@@ -34,18 +34,18 @@ public class TownyAnnouncer {
 					if (townChannel == null) return;
 					TBMCChatAPI.SendSystemMessage(townChannel,
 						new Channel.RecipientTestResult(TownyComponent.getTownNationIndex(groupID, false), groupID),
-						message, target, ChatProcessing.MCORIGIN);
+						message, target, ChatUtils.MCORIGIN);
 					break;
 				case "Nation":
 					if (nationChannel == null) return;
 					TBMCChatAPI.SendSystemMessage(nationChannel,
 						new Channel.RecipientTestResult(TownyComponent.getTownNationIndex(groupID, true), groupID),
-						message, target, ChatProcessing.MCORIGIN);
+						message, target, ChatUtils.MCORIGIN);
 					break;
 				case "Global":
 					TBMCChatAPI.SendSystemMessage(Channel.GlobalChat,
 						Channel.RecipientTestResult.ALL,
-						message, target, ChatProcessing.MCORIGIN);
+						message, target, ChatUtils.MCORIGIN);
 					break;
 			}
 		}

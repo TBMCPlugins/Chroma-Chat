@@ -1,4 +1,4 @@
-package buttondevteam.chat.formatting;
+package buttondevteam.chat.components.formatter.formatting;
 
 import java.util.ArrayList;
 import java.util.Collection;

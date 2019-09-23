@@ -2,7 +2,7 @@ package buttondevteam.chat.components.towny;
 
 import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.VanillaUtils;
-import buttondevteam.chat.formatting.TellrawPart;
+import buttondevteam.chat.components.formatter.formatting.TellrawPart;
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.chat.Color;

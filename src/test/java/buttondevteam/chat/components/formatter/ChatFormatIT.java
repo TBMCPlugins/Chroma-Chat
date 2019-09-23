@@ -1,25 +1,27 @@
-package buttondevteam.chat;
+package buttondevteam.chat.components.formatter;
 
+import buttondevteam.chat.ChatUtils;
+import buttondevteam.chat.ObjectTestRunner;
 import buttondevteam.chat.ObjectTestRunner.Objects;
+import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
-import buttondevteam.chat.formatting.ChatFormatter;
-import buttondevteam.chat.formatting.TellrawEvent;
-import buttondevteam.chat.formatting.TellrawEvent.ClickAction;
-import buttondevteam.chat.formatting.TellrawEvent.HoverAction;
-import buttondevteam.chat.formatting.TellrawPart;
+import buttondevteam.chat.components.formatter.formatting.ChatFormatter;
+import buttondevteam.chat.components.formatter.formatting.TellrawEvent;
+import buttondevteam.chat.components.formatter.formatting.TellrawEvent.ClickAction;
+import buttondevteam.chat.components.formatter.formatting.TellrawEvent.HoverAction;
+import buttondevteam.chat.components.formatter.formatting.TellrawPart;
 import buttondevteam.core.TestPrepare;
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.chat.Color;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.command.CommandSender;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 @RunWith(ObjectTestRunner.class)
 public class ChatFormatIT {
@@ -92,15 +94,15 @@ public class ChatFormatIT {
 	@Test
 	public void testMessage() {
 		ArrayList<ChatFormatter> cfs = ChatProcessing.addFormatters(Color.White, p -> true);
-		final String chid = ChatProcessing.getChannelID(Channel.GlobalChat, ChatProcessing.MCORIGIN);
-		final TellrawPart tp = ChatProcessing.createTellraw(sender, message, null, null, null, chid, ChatProcessing.MCORIGIN);
-		ChatFormatter.Combine(cfs, message, tp);
+		final String chid = ChatProcessing.getChannelID(Channel.GlobalChat, ChatUtils.MCORIGIN);
+		final TellrawPart tp = ChatProcessing.createTellraw(sender, message, null, null, null, chid, ChatUtils.MCORIGIN);
+		ChatFormatter.Combine(cfs, message, tp, null);
 		System.out.println("Testing: " + message);
 		// System.out.println(ChatProcessing.toJson(tp));
-		final TellrawPart expectedtp = ChatProcessing.createTellraw(sender, message, null, null, null, chid, ChatProcessing.MCORIGIN);
+		final TellrawPart expectedtp = ChatProcessing.createTellraw(sender, message, null, null, null, chid, ChatUtils.MCORIGIN);
 		// System.out.println("Raw: " + ChatProcessing.toJson(expectedtp));
 		for (TellrawPart extra : extras)
 			expectedtp.addExtra(extra);
-		assertEquals(ChatProcessing.toJson(expectedtp), ChatProcessing.toJson(tp));
+		Assert.assertEquals(ChatProcessing.toJson(expectedtp), ChatProcessing.toJson(tp));
 	}
 }
