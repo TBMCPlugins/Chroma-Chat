@@ -17,12 +17,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * A {@link ChatFormatter} shows what formatting to use based on regular expressions. {@link ChatFormatter#Combine(List, String, TellrawPart)} is used to turn it into a {@link TellrawPart}, combining
+ * A {@link ChatFormatter} shows what formatting to use based on regular expressions. {@link ChatFormatter#Combine(List, String, TellrawPart, IHaveConfig)} is used to turn it into a {@link TellrawPart}, combining
  * intersecting parts found, for example when {@code _abc*def*ghi_} is said in chat, it'll turn it into an underlined part, then an underlined <i>and italics</i> part, finally an underlined part
  * again.
  *
  * @author NorbiPeti
  */
+@SuppressWarnings("UnusedAssignment")
 @Data
 @Builder
 public final class ChatFormatter {
@@ -43,6 +44,14 @@ public final class ChatFormatter {
 	Type type = Type.Normal;
 	String hoverText;
 	String name;
+
+	public static ChatFormatterBuilder builder(String name, Pattern regex) {
+		return builder().regex(regex).name(name);
+	}
+
+	private static ChatFormatterBuilder builder() {
+		return new ChatFormatterBuilder();
+	}
 
 	private ConfigData<Boolean> enabled(IHaveConfig config) {
 		return config.getData(name + ".enabled", true);
