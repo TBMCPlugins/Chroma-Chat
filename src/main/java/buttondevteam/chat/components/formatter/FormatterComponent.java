@@ -2,6 +2,7 @@ package buttondevteam.chat.components.formatter;
 
 import buttondevteam.chat.PluginMain;
 import buttondevteam.core.ComponentManager;
+import buttondevteam.core.MainPlugin;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ConfigData;
@@ -17,12 +18,12 @@ public class FormatterComponent extends Component<PluginMain> {
 
 	@Override
 	protected void enable() {
-
+		MainPlugin.Instance.setChatHandlerEnabled(false); //Disable Core chat handler - if this component is disabled then let it do it's job
 	}
 
 	@Override
 	protected void disable() {
-
+		MainPlugin.Instance.setChatHandlerEnabled(true);
 	}
 
 	/**

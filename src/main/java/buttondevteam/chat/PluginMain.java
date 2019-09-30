@@ -10,6 +10,7 @@ import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.components.announce.AnnouncerComponent;
 import buttondevteam.chat.components.appendext.AppendTextComponent;
 import buttondevteam.chat.components.flair.FlairComponent;
+import buttondevteam.chat.components.formatter.FormatterComponent;
 import buttondevteam.chat.components.fun.FunComponent;
 import buttondevteam.chat.components.towncolors.TownColorComponent;
 import buttondevteam.chat.components.towny.TownyComponent;
@@ -52,7 +53,6 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 
 		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerListener(), this);
 		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerJoinLeaveListener(), this);
-		MainPlugin.Instance.setChatHandlerEnabled(false); //Disable Core chat handler
 		Console = this.getServer().getConsoleSender();
 
 		if (Bukkit.getPluginManager().isPluginEnabled("Towny"))
@@ -69,6 +69,7 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 		Component.registerComponent(this, new AnnouncerComponent());
 		Component.registerComponent(this, new FunComponent());
 		Component.registerComponent(this, new AppendTextComponent());
+		Component.registerComponent(this, new FormatterComponent());
 		getCommand2MC().registerCommand(new DebugCommand());
 		getCommand2MC().registerCommand(new HelpCommand());
 		getCommand2MC().registerCommand(new HistoryCommand());
