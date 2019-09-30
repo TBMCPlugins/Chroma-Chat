@@ -174,7 +174,7 @@ public class ChatProcessing {
 		try {
 			if (!channel.isGlobal()) {
 				String senderGroup = e.getGroupID(sender);
-				if (senderGroup == null) { // Never send messages to score below 0
+				if (senderGroup == null) { // Never send messages if the group is null
 					sender.sendMessage("§cYou don't have permission to send this message or something went wrong");
 					return true;
 				}
@@ -187,7 +187,7 @@ public class ChatProcessing {
 						group = null; // Don't send the message to them
 					else
 						group = VanillaUtils.getGroupIfChatOn(p, e);
-					if (group != null)
+					if (senderGroup.equals(group))
 						VanillaUtils.tellRaw(p, jsonstr);
 					else if (tc != null) tc.handleSpies(channel, p);
 					//Only sends if didn't send normally
