@@ -168,7 +168,7 @@
 			<id>projectlombok.org</id>
 			<url>http://projectlombok.org/mavenrepo</url>
 		</repository>
-	</repositories>
+    </repositories>
 	<dependencies>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
@@ -199,9 +199,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.TownyAdvanced</groupId>
+            <groupId>com.palmergames.bukkit.towny</groupId>
             <artifactId>Towny</artifactId>
-            <version>0.94.0.9</version>
+            <version>0.95.0.0</version>
             <scope>provided</scope>
         </dependency>
 		<!-- <dependency> <groupId>au.com.mineauz</groupId> <artifactId>Minigames</artifactId> 

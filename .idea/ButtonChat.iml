@@ -33,8 +33,8 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.ess3:LegacyProvider:2.17.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.ess3:ReflectionProvider:2.17.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.ess3:FlattenedProvider:2.17.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.TownyAdvanced:Towny:0.94.0.9" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.milkbowl:VaultAPI:master-af0353b1d7-1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.palmergames.bukkit.towny:Towny:0.95.0.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.milkbowl:VaultAPI:master-4c248aad62-1" level="project" />
     <orderEntry type="library" name="Maven: org.bukkit:bukkit:1.13.1-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.18.10" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT" level="project" />
