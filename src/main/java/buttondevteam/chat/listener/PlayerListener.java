@@ -10,10 +10,10 @@ import buttondevteam.chat.components.towncolors.TownColorComponent;
 import buttondevteam.core.ComponentManager;
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.core.component.channel.ChatRoom;
+import buttondevteam.lib.ChromaUtils;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.TBMCSystemChatEvent;
-import buttondevteam.lib.ThorpeUtils;
 import buttondevteam.lib.chat.ChatMessage;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.ChromaGamerBase;
@@ -100,7 +100,7 @@ public class PlayerListener implements Listener {
 			} else if (cmd.equalsIgnoreCase("minecraft:me")) {
 				if (!(sender instanceof Player) || !PluginMain.essentials.getUser((Player) sender).isMuted()) {
 					String msg = message.substring(index + 1);
-					TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, String.format("* %s %s", ThorpeUtils.getDisplayName(sender), msg), TBMCSystemChatEvent.BroadcastTarget.ALL); //TODO: Don't send to all
+					TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, String.format("* %s %s", ChromaUtils.getDisplayName(sender), msg), TBMCSystemChatEvent.BroadcastTarget.ALL); //TODO: Don't send to all
 					return true;
 				} else {
 					sender.sendMessage("§cCan't use /minecraft:me while muted.");

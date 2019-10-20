@@ -1,13 +1,15 @@
 package buttondevteam.chat.components.fun;
 
 import buttondevteam.core.component.channel.Channel;
+import buttondevteam.lib.ChromaUtils;
 import buttondevteam.lib.TBMCChatEventBase;
 import buttondevteam.lib.TBMCSystemChatEvent;
-import buttondevteam.lib.ThorpeUtils;
-import buttondevteam.lib.chat.*;
+import buttondevteam.lib.chat.Command2;
+import buttondevteam.lib.chat.CommandClass;
+import buttondevteam.lib.chat.ICommand2MC;
+import buttondevteam.lib.chat.TBMCChatAPI;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -39,9 +41,9 @@ public final class UnlolCommand extends ICommand2MC {
 		if (lol.Lolowner instanceof Player)
 			((Player) lol.Lolowner)
 					.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 2 * 20, 5, false, false));
-		String msg = ThorpeUtils.getDisplayName(sender)
+		String msg = ChromaUtils.getDisplayName(sender)
 				+ (lol.Lolornot ? " unlolled " : " unlaughed ")
-				+ ThorpeUtils.getDisplayName(lol.Lolowner);
+			+ ChromaUtils.getDisplayName(lol.Lolowner);
 		TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, msg, target);
 		Lastlol.remove(lol.Chatevent.getChannel());
 		return true;

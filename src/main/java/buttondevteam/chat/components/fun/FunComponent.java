@@ -3,10 +3,10 @@ package buttondevteam.chat.components.fun;
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.core.component.channel.Channel;
+import buttondevteam.lib.ChromaUtils;
 import buttondevteam.lib.TBMCChatEventBase;
 import buttondevteam.lib.TBMCCommandPreprocessEvent;
 import buttondevteam.lib.TBMCSystemChatEvent;
-import buttondevteam.lib.ThorpeUtils;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.chat.TBMCChatAPI;
@@ -155,7 +155,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 				val user = ChromaGamerBase.getFromSender(event.getSender());
 				target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 5, false, false));
 				val chan = user.channel().get();
-				TBMCChatAPI.SendSystemMessage(chan, chan.getRTR(event.getSender()), ThorpeUtils.getDisplayName(event.getSender()) + " un" + s
+				TBMCChatAPI.SendSystemMessage(chan, chan.getRTR(event.getSender()), ChromaUtils.getDisplayName(event.getSender()) + " un" + s
 					+ "'d " + target.getDisplayName(), unlolTarget);
 			}
 		}

@@ -1,8 +1,7 @@
 package buttondevteam.chat;
 
+import buttondevteam.lib.ChromaUtils;
 import buttondevteam.lib.TBMCChatEvent;
-import buttondevteam.lib.ThorpeUtils;
-import lombok.var;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -50,7 +49,7 @@ public final class ChatUtils {
 	 */
 	public static void sendChatMessage(TBMCChatEvent e, Function<String, String> modifier) {
 		var str = "[" + e.getChannel().DisplayName().get() + "] <"
-			+ ThorpeUtils.getDisplayName(e.getSender()) + "> " + e.getMessage();
+			+ ChromaUtils.getDisplayName(e.getSender()) + "> " + e.getMessage();
 		str = modifier.apply(str);
 		for (Player p : Bukkit.getOnlinePlayers())
 			if (e.shouldSendTo(p))
