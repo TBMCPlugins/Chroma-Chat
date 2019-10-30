@@ -1,18 +1,122 @@
 package buttondevteam.chat;
 
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
-import org.bukkit.entity.Player;
-
+import buttondevteam.core.MainPlugin;
 import buttondevteam.lib.TBMCChatEvent;
 import lombok.experimental.UtilityClass;
-import net.minecraft.server.v1_12_R1.EntityHuman.EnumChatVisibility;
+import lombok.val;
+import org.bukkit.entity.Player;
+
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 @UtilityClass
 public class VanillaUtils {
-	public int getMCScoreIfChatOn(Player p, TBMCChatEvent e) {
-		if (!(p instanceof CraftPlayer) || ((CraftPlayer) p).getHandle().getChatFlags() == EnumChatVisibility.FULL) // Only send if client allows chat
-			return e.getMCScore(p);
-		else
-			return -1;
+	public String getGroupIfChatOn(Player p, TBMCChatEvent e) {
+		try {
+			if (isChatOn(p)) // Only send if client allows chat
+				return e.getGroupID(p);
+			else
+				return null;
+		} catch (NoClassDefFoundError ex) {
+			MainPlugin.Instance.getLogger().warning("Compatibility error, can't check if the chat is hidden by the player.");
+			return e.getGroupID(p);
+		}
+	}
+
+	private Predicate<Player> isChatOn;
+
+	private boolean isChatOn(Player p) {
+		try {
+			if (isChatOn == null) {
+				val cl = p.getClass();
+				if (notCraftPlayer(cl)) return true; // p instanceof CraftPlayer
+				val hm = cl.getMethod("getHandle");
+				val handle = hm.invoke(p); //p.getHandle()
+				val vpcl = handle.getClass();
+				val gcfm = vpcl.getMethod("getChatFlags");
+				Class<?> encl;
+				try {
+					encl = Class.forName(handle.getClass().getPackage().getName() + ".EnumChatVisibility");
+				} catch (ClassNotFoundException e) {
+					encl = Class.forName(handle.getClass().getPackage().getName() + ".EntityHuman$EnumChatVisibility");
+				}
+				val ff = encl.getField("FULL");
+				val full = ff.get(null); // EnumChatVisibility.FULL
+				isChatOn = pl -> {
+					try {
+						if (notCraftPlayer(pl.getClass())) return true; //Need to check each time
+						val ph = hm.invoke(pl); //pl.getHandle()
+						val flags = gcfm.invoke(ph); //handle.getChatFlags()
+						return flags == full;
+					} catch (Exception e) {
+						e.printStackTrace();
+						return true;
+					}
+				};
+			}
+			return isChatOn.test(p);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return true;
+		}
+	}
+
+	/*private String version;
+
+	public short getMCVersion() {
+		if (version != null) return version;
+		val v = ChatUtils.coolSubstring(Bukkit.getServer().getVersion().getClass().getPackage().getName(),
+			"org.bukkit.craftbukkit.v", "_R1").orElse("1_8").replace("_", "");
+		return Short.parseShort(v);
+	}*/
+
+	private BiPredicate<Player, String> tellRaw;
+
+	public boolean tellRaw(Player p, String json) {
+		try {
+			if (tellRaw == null) {
+				val pcl = p.getClass();
+				if (notCraftPlayer(pcl)) return false;
+				val hm = pcl.getMethod("getHandle");
+				val handle = hm.invoke(p);
+				val nms = handle.getClass().getPackage().getName();
+				val chatcompcl = Class.forName(nms + ".IChatBaseComponent");
+				val sendmsg = handle.getClass().getMethod("sendMessage", chatcompcl);
+
+				/*val ccucl = Class.forName(nms + ".ChatComponentUtils");
+				val iclcl = Class.forName(nms + ".ICommandListener");
+				val encl = Class.forName(nms + ".Entity");
+				val ffdm = ccucl.getMethod("filterForDisplay", iclcl, chatcompcl, encl);*/
+
+				val cscl = Class.forName(chatcompcl.getName() + "$ChatSerializer");
+				val am = cscl.getMethod("a", String.class);
+
+				tellRaw = (pl, jsonStr) -> {
+					if (notCraftPlayer(pl.getClass())) return false;
+					try {
+						val hhandle = hm.invoke(pl);
+						val deserialized = am.invoke(null, jsonStr);
+						//val filtered = ffdm.invoke(null, hhandle, deserialized, hhandle);
+						sendmsg.invoke(hhandle, deserialized);
+						return true;
+					} catch (Exception e) {
+						e.printStackTrace();
+						return false;
+					}
+				};
+			}
+
+			/*((CraftPlayer) p).getHandle().sendMessage(ChatComponentUtils
+				.filterForDisplay(((CraftPlayer) p).getHandle(),
+					IChatBaseComponent.ChatSerializer.a(json), ((CraftPlayer) p).getHandle()));*/
+			return tellRaw.test(p, json);
+		} catch (Exception e) {
+			PluginMain.Instance.getLogger().warning("Could not use tellRaw: " + e.getMessage());
+			return false;
+		}
+	}
+
+	private boolean notCraftPlayer(Class<?> cl) {
+		return !cl.getSimpleName().contains("CraftPlayer");
 	}
 }

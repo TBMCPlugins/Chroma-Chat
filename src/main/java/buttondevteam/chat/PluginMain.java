@@ -5,10 +5,12 @@ import buttondevteam.chat.commands.SnapCommand;
 import buttondevteam.chat.commands.ucmds.HelpCommand;
 import buttondevteam.chat.commands.ucmds.HistoryCommand;
 import buttondevteam.chat.commands.ucmds.InfoCommand;
+import buttondevteam.chat.commands.ucmds.ReloadCommand;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.components.announce.AnnouncerComponent;
 import buttondevteam.chat.components.appendext.AppendTextComponent;
 import buttondevteam.chat.components.flair.FlairComponent;
+import buttondevteam.chat.components.formatter.FormatterComponent;
 import buttondevteam.chat.components.fun.FunComponent;
 import buttondevteam.chat.components.towncolors.TownColorComponent;
 import buttondevteam.chat.components.towny.TownyComponent;
@@ -28,15 +30,12 @@ import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.scoreboard.Scoreboard;
 
 public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15.
 	// A user, which flair isn't obtainable:
 	// https://www.reddit.com/r/thebutton/comments/31c32v/i_pressed_the_button_without_really_thinking/
 	public static PluginMain Instance;
 	public static ConsoleCommandSender Console;
-
-	public static Scoreboard SB;
 
 	public ConfigData<String> notificationSound() {
 		return getIConfig().getData("notificationSound", "");
@@ -54,10 +53,7 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 
 		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerListener(), this);
 		TBMCCoreAPI.RegisterEventsForExceptions(new PlayerJoinLeaveListener(), this);
-		MainPlugin.Instance.setChatHandlerEnabled(false); //Disable Core chat handler
 		Console = this.getServer().getConsoleSender();
-
-		SB = getServer().getScoreboardManager().getMainScoreboard(); // Main can be detected with @a[score_...]
 
 		if (Bukkit.getPluginManager().isPluginEnabled("Towny"))
 			Component.registerComponent(this, new TownyComponent());
@@ -73,11 +69,13 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 		Component.registerComponent(this, new AnnouncerComponent());
 		Component.registerComponent(this, new FunComponent());
 		Component.registerComponent(this, new AppendTextComponent());
+		Component.registerComponent(this, new FormatterComponent());
 		getCommand2MC().registerCommand(new DebugCommand());
 		getCommand2MC().registerCommand(new HelpCommand());
 		getCommand2MC().registerCommand(new HistoryCommand());
 		getCommand2MC().registerCommand(new InfoCommand());
 		getCommand2MC().registerCommand(new MWikiCommand());
+		getCommand2MC().registerCommand(new ReloadCommand());
 		getCommand2MC().registerCommand(new SnapCommand());
 	}
 

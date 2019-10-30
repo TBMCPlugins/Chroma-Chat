@@ -1,8 +1,8 @@
 package buttondevteam.chat.components.chatonly;
 
 import buttondevteam.chat.ChatPlayer;
-import buttondevteam.chat.formatting.TellrawEvent;
-import buttondevteam.chat.formatting.TellrawPart;
+import buttondevteam.chat.components.formatter.formatting.TellrawEvent;
+import buttondevteam.chat.components.formatter.formatting.TellrawPart;
 import buttondevteam.core.ComponentManager;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.player.TBMCPlayer;

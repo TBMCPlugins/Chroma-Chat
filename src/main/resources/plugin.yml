@@ -1,4 +1,4 @@
-name: Thorpe-Chat
+name: Chroma-Chat
 main: buttondevteam.chat.PluginMain
 version: 4.0
 commands:
@@ -34,7 +34,7 @@ author: NorbiPeti
 depend:
 - Essentials
 - Vault
-- ThorpeCore
+- ChromaCore
 soft-depend:
 - Minigames
 - Dynmap-Towny

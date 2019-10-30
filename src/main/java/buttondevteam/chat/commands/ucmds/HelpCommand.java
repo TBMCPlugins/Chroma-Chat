@@ -19,7 +19,7 @@ public final class HelpCommand extends UCommandBase {
 	public boolean def(CommandSender sender, @Command2.TextArg @Command2.OptionalArg String topicOrCommand) {
 		if (topicOrCommand == null) {
 			sender.sendMessage(new String[]{
-				"§6---- Thorpe Help ----",
+				"§6---- Chroma Help ----",
 				"Do /u help <topic> for more info",
 				"Do /u help <commandname> [subcommands] for more info about a command",
 				"Topics:",

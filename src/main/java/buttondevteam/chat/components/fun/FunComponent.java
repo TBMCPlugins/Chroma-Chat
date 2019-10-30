@@ -3,10 +3,10 @@ package buttondevteam.chat.components.fun;
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.core.component.channel.Channel;
+import buttondevteam.lib.ChromaUtils;
 import buttondevteam.lib.TBMCChatEventBase;
 import buttondevteam.lib.TBMCCommandPreprocessEvent;
 import buttondevteam.lib.TBMCSystemChatEvent;
-import buttondevteam.lib.ThorpeUtils;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.chat.TBMCChatAPI;
@@ -139,15 +139,15 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 				if (ht.getName().equalsIgnoreCase(cmd))
 					return;
 			}
-			if (PluginMain.permission.has(event.getSender(), "thorpe.unanything")) {
+			if (PluginMain.permission.has(event.getSender(), "chroma.unanything")) {
 				event.setCancelled(true);
-				String s = cmd.substring(3);
-				int index = event.getMessage().indexOf(' ');
+				int index = cmd.lastIndexOf(' ');
 				if (index == -1) {
-					event.getSender().sendMessage("§cUsage: /un" + s + " <player>");
+					event.getSender().sendMessage("§cUsage: " + cmd + " <player>");
 					return;
 				}
-				Player target = Bukkit.getPlayer(event.getMessage().substring(index + 1));
+				String s = cmd.substring(3, index);
+				Player target = Bukkit.getPlayer(cmd.substring(index + 1));
 				if (target == null) {
 					event.getSender().sendMessage("§cError: Player not found. (/un" + s + " <player>)");
 					return;
@@ -155,7 +155,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 				val user = ChromaGamerBase.getFromSender(event.getSender());
 				target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 5, false, false));
 				val chan = user.channel().get();
-				TBMCChatAPI.SendSystemMessage(chan, chan.getRTR(event.getSender()), ThorpeUtils.getDisplayName(event.getSender()) + " un" + s
+				TBMCChatAPI.SendSystemMessage(chan, chan.getRTR(event.getSender()), ChromaUtils.getDisplayName(event.getSender()) + " un" + s
 					+ "'d " + target.getDisplayName(), unlolTarget);
 			}
 		}

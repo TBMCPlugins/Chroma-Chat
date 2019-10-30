@@ -1,19 +1,19 @@
 package buttondevteam.chat.listener;
 
 import buttondevteam.chat.ChatPlayer;
-import buttondevteam.chat.ChatProcessing;
+import buttondevteam.chat.ChatUtils;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.commands.ucmds.HistoryCommand;
 import buttondevteam.chat.components.flair.FlairComponent;
+import buttondevteam.chat.components.formatter.FormatterComponent;
 import buttondevteam.chat.components.towncolors.TownColorComponent;
 import buttondevteam.core.ComponentManager;
 import buttondevteam.core.component.channel.Channel;
-import buttondevteam.core.component.channel.ChatChannelRegisterEvent;
 import buttondevteam.core.component.channel.ChatRoom;
+import buttondevteam.lib.ChromaUtils;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.TBMCSystemChatEvent;
-import buttondevteam.lib.ThorpeUtils;
 import buttondevteam.lib.chat.ChatMessage;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.ChromaGamerBase;
@@ -52,7 +52,8 @@ public class PlayerListener implements Listener {
 		if (event.isCancelled())
 			return;
 		//The custom event is called in the core, but doesn't cancel the MC event
-		event.setCancelled(true); // The custom event should only be cancelled when muted or similar
+		if (ComponentManager.isEnabled(FormatterComponent.class)) //If not enabled, then let the other plugins deal with the message
+			event.setCancelled(true); // The custom event should only be cancelled when muted or similar
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -95,11 +96,11 @@ public class PlayerListener implements Listener {
 				Player player = Bukkit.getPlayer(message.substring(index + 1));
 				if (player != null && sender instanceof Player)
 					player.sendMessage("§b" + ((Player) sender).getDisplayName() + " §bis in this world: " //TODO: Move to the Core
-							+ ((Player) sender).getWorld().getName());
+						+ ((Player) sender).getWorld().getName());
 			} else if (cmd.equalsIgnoreCase("minecraft:me")) {
 				if (!(sender instanceof Player) || !PluginMain.essentials.getUser((Player) sender).isMuted()) {
 					String msg = message.substring(index + 1);
-					TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, String.format("* %s %s", ThorpeUtils.getDisplayName(sender), msg), TBMCSystemChatEvent.BroadcastTarget.ALL); //TODO: Don't send to all
+					TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, String.format("* %s %s", ChromaUtils.getDisplayName(sender), msg), TBMCSystemChatEvent.BroadcastTarget.ALL); //TODO: Don't send to all
 					return true;
 				} else {
 					sender.sendMessage("§cCan't use /minecraft:me while muted.");
@@ -131,7 +132,7 @@ public class PlayerListener implements Listener {
 		String name = e.getLastToken();
 		for (Entry<String, UUID> nicknamekv : nicknames.entrySet()) {
 			if (nicknamekv.getKey().startsWith(name.toLowerCase()))
-                e.getTabCompletions().add(PluginMain.essentials.getUser(Bukkit.getPlayer(nicknamekv.getValue())).getNick(true)); //Tabcomplete with the correct case
+				e.getTabCompletions().add(PluginMain.essentials.getUser(Bukkit.getPlayer(nicknamekv.getValue())).getNick(true)); //Tabcomplete with the correct case
 		}
 	}
 
@@ -154,7 +155,7 @@ public class PlayerListener implements Listener {
 				if (flair.length() > 0)
 					e.addInfo("/r/TheButton flair: " + flair);
 			}
-            e.addInfo(String.format("Respect: %.2f", cp.getF()));
+			e.addInfo(String.format("Respect: %.2f", cp.getF()));
 		} catch (Exception ex) {
 			TBMCCoreAPI.SendException("Error while providing chat info for player " + e.getPlayer().getFileName(), ex);
 		}
@@ -166,31 +167,20 @@ public class PlayerListener implements Listener {
 			if (e.isCancelled())
 				return;
 			HistoryCommand.addChatMessage(e.getCm(), e.getChannel());
-			e.setCancelled(ChatProcessing.ProcessChat(e));
+			e.setCancelled(FormatterComponent.handleChat(e));
 		} catch (NoClassDefFoundError | Exception ex) { // Weird things can happen
-			val str = "§c!§r[" + e.getChannel().DisplayName().get() + "] <"
-				+ ThorpeUtils.getDisplayName(e.getSender()) + "> " + e.getMessage();
-			for (Player p : Bukkit.getOnlinePlayers())
-				if (e.shouldSendTo(p))
-					p.sendMessage(str);
-			Bukkit.getConsoleSender().sendMessage(str);
+			ChatUtils.sendChatMessage(e, s -> "§c!§r" + s);
 			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex);
 		}
 	}
 
 	@EventHandler
-	public void onChannelRegistered(ChatChannelRegisterEvent e) {
-		if (!e.getChannel().isGlobal() && PluginMain.SB.getObjective(e.getChannel().ID) == null) // Not global chat and doesn't exist yet
-			PluginMain.SB.registerNewObjective(e.getChannel().ID, "dummy");
-	}
-
-	@EventHandler
 	public void onNickChange(NickChangeEvent e) {
-        String nick = e.getValue();
-        if (nick == null)
-            nicknames.inverse().remove(e.getAffected().getBase().getUniqueId());
-        else
-            nicknames.inverse().forcePut(e.getAffected().getBase().getUniqueId(), ChatColor.stripColor(nick).toLowerCase());
+		String nick = e.getValue();
+		if (nick == null)
+			nicknames.inverse().remove(e.getAffected().getBase().getUniqueId());
+		else
+			nicknames.inverse().forcePut(e.getAffected().getBase().getUniqueId(), ChatColor.stripColor(nick).toLowerCase());
 
 		Bukkit.getScheduler().runTaskLater(PluginMain.Instance, () -> {
 			TownColorComponent.updatePlayerColors(e.getAffected().getBase()); //Won't fire this event again

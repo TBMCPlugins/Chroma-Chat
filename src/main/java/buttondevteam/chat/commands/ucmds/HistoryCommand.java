@@ -5,7 +5,6 @@ import buttondevteam.lib.chat.ChatMessage;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.var;
 import lombok.val;
 import org.bukkit.command.CommandSender;
 

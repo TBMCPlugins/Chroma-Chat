@@ -15,7 +15,6 @@ import com.earth2me.essentials.User;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import lombok.Getter;
-import lombok.experimental.var;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -113,6 +112,7 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 		if (useNationColors().get())
 			registerCommand(new buttondevteam.chat.components.towncolors.admin.NationColorCommand());
 		registerCommand(new TCCount());
+		registerCommand(new NColorCommand());
 		registerListener(new TownyListener());
 		registerListener(this);
 	}

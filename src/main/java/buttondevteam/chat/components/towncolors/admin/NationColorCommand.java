@@ -35,7 +35,7 @@ public class NationColorCommand extends AdminCommandBase {
 		if (!c.get().getName().equals(Color.White.getName())) { //Default nation color
 			for (val e : TownColorComponent.NationColor.entrySet()) {
 				if (e.getValue().getName().equals(c.get().getName())) {
-					sender.sendMessage("§The nation " + e.getKey() + " already uses this color!");
+					sender.sendMessage("§cThe nation " + e.getKey() + " already uses this color!");
 					return true;
 				}
 			}
