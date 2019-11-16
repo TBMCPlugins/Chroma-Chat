@@ -135,6 +135,21 @@
 			<!-- <plugin> <groupId>org.basepom.maven</groupId> <artifactId>duplicate-finder-maven-plugin</artifactId> 
 				<version>1.2.1</version> <executions> <execution> <goals> <goal>check</goal> 
 				</goals> </execution> </executions> </plugin> -->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 	<groupId>buttondevteam</groupId>

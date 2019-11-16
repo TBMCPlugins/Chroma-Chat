@@ -38,9 +38,9 @@ public class ChatFormatIT {
 		list.add(new ChatFormatIT(sender, "**test**", new TellrawPart("test").setBold(true).setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "***test***",
 				new TellrawPart("test").setBold(true).setItalic(true).setColor(Color.White)));
-		list.add(new ChatFormatIT(sender, "***_test_***",
+		list.add(new ChatFormatIT(sender, "***__test__***",
 				new TellrawPart("test").setBold(true).setItalic(true).setUnderlined(true).setColor(Color.White)));
-		list.add(new ChatFormatIT(sender, "***_~~test~~_***", new TellrawPart("test").setBold(true).setItalic(true)
+		list.add(new ChatFormatIT(sender, "***__~~test~~__***", new TellrawPart("test").setBold(true).setItalic(true)
 				.setUnderlined(true).setStrikethrough(true).setColor(Color.White)));
         list.add(new ChatFormatIT(sender, "¯\\\\\\_(ツ)\\_/¯", new TellrawPart("¯\\_(ツ)_/¯").setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "https://google.hu/",

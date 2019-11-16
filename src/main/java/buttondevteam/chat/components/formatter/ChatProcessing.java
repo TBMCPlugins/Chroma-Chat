@@ -49,7 +49,7 @@ public class ChatProcessing {
 	private static final Pattern HASHTAG_PATTERN = Pattern.compile("#(\\w+)");
 	private static final Pattern URL_PATTERN = Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),&]+(?:#[\\w]+)?)");
 	public static final Pattern ENTIRE_MESSAGE_PATTERN = Pattern.compile(".+");
-	private static final Pattern UNDERLINED_PATTERN = Pattern.compile("_");
+	private static final Pattern UNDERLINED_PATTERN = Pattern.compile("__");
 	private static final Pattern ITALIC_PATTERN = Pattern.compile("\\*");
 	private static final Pattern BOLD_PATTERN = Pattern.compile("\\*\\*");
 	private static final Pattern CODE_PATTERN = Pattern.compile("`");
