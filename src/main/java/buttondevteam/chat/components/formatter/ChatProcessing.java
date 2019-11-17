@@ -25,6 +25,7 @@ import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerBase;
 import com.earth2me.essentials.User;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -51,6 +52,7 @@ public class ChatProcessing {
 	public static final Pattern ENTIRE_MESSAGE_PATTERN = Pattern.compile(".+");
 	private static final Pattern UNDERLINED_PATTERN = Pattern.compile("__");
 	private static final Pattern ITALIC_PATTERN = Pattern.compile("\\*");
+	private static final Pattern ITALIC_PATTERN_2 = Pattern.compile("_");
 	private static final Pattern BOLD_PATTERN = Pattern.compile("\\*\\*");
 	private static final Pattern CODE_PATTERN = Pattern.compile("`");
 	private static final Pattern MASKED_LINK_PATTERN = Pattern.compile("\\[([^\\[\\]]+)]\\(([^()]+)\\)");
@@ -68,7 +70,8 @@ public class ChatProcessing {
 		ChatFormatter.builder("bold", BOLD_PATTERN).bold(true).removeCharCount((short) 2).type(ChatFormatter.Type.Range)
 			.priority(Priority.High).build(),
 		ChatFormatter.builder("italic", ITALIC_PATTERN).italic(true).removeCharCount((short) 1).type(ChatFormatter.Type.Range).build(),
-		ChatFormatter.builder("underlined", UNDERLINED_PATTERN).underlined(true).removeCharCount((short) 1).type(ChatFormatter.Type.Range)
+		ChatFormatter.builder("italic2", ITALIC_PATTERN_2).italic(true).removeCharCount((short) 1).type(ChatFormatter.Type.Range).build(),
+		ChatFormatter.builder("underlined", UNDERLINED_PATTERN).underlined(true).removeCharCount((short) 2).type(ChatFormatter.Type.Range)
 			.build(),
 		ChatFormatter.builder("strikethrough", STRIKETHROUGH_PATTERN).strikethrough(true).removeCharCount((short) 2).type(ChatFormatter.Type.Range)
 			.build(),
@@ -98,7 +101,15 @@ public class ChatProcessing {
 			builder.setOpenlink(link);
 			return text;
 		}).type(ChatFormatter.Type.Excluder).build(),
-		ChatFormatter.builder("url", URL_PATTERN).underlined(true).openlink("$1").type(ChatFormatter.Type.Excluder).build());
+		ChatFormatter.builder("url", URL_PATTERN).underlined(true).openlink("$1").type(ChatFormatter.Type.Excluder).build(),
+		ChatFormatter.builder("someone", SOMEONE_PATTERN).color(Color.Aqua).onmatch((match, builder, section) -> {
+			if (Bukkit.getOnlinePlayers().size() == 0) return match;
+			var players = ImmutableList.copyOf(Bukkit.getOnlinePlayers());
+			var playerC = new Random().nextInt(players.size());
+			var player = players.get(playerC);
+			playPingSound(player);
+			return "@someone (" + player.getDisplayName() + ")";
+		}).build());
 	private static Gson gson = new GsonBuilder()
 		.registerTypeHierarchyAdapter(TellrawSerializableEnum.class, new TellrawSerializer.TwEnum())
 		.registerTypeHierarchyAdapter(Collection.class, new TellrawSerializer.TwCollection())
@@ -211,8 +222,8 @@ public class ChatProcessing {
 	}
 
 	static TellrawPart createTellraw(CommandSender sender, String message, @Nullable Player player,
-									 @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier,
-									 String origin) {
+	                                 @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier,
+	                                 String origin) {
 		TellrawPart json = new TellrawPart("");
 		ChatOnlyComponent.tellrawCreate(mp, json); //TODO: Make nice API
 		json.addExtra(

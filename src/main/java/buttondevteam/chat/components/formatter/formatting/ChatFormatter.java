@@ -45,6 +45,13 @@ public final class ChatFormatter {
 	String hoverText;
 	String name;
 
+	@Override
+	public String toString() {
+		return "ChatFormatter{" +
+			"name='" + name + '\'' +
+			'}';
+	}
+
 	public static ChatFormatterBuilder builder(String name, Pattern regex) {
 		return builder().regex(regex).name(name);
 	}
@@ -98,7 +105,7 @@ public final class ChatFormatter {
 		sections = convertRangeSections(str, sections, remchars);
 
 		header("Adding remove chars (RC)"); // Important to add after the range section conversion
-		addRemChars(sections, remchars);
+		addRemChars(sections, remchars, str);
 
 		header("Section combining");
 		combineSections(str, sections);
@@ -130,6 +137,19 @@ public final class ChatFormatter {
 				FormattedSection section = new FormattedSection(formatter, matcher.start(), matcher.end() - 1, groups,
 					formatter.type);
 				sections.add(section);
+			}
+		}
+	}
+
+	private static void newCombine(String str, ArrayList<FormattedSection> sections, ArrayList<int[]> remchars) {
+		var stack = new Stack<FormattedSection>();
+		for (int i = 0; i < str.length(); i++) {
+			for (Iterator<FormattedSection> iterator = sections.iterator(); iterator.hasNext(); ) {
+				FormattedSection section = iterator.next();
+				if (section.Start <= i) {
+					stack.push(section);
+					iterator.remove();
+				}
 			}
 		}
 	}
@@ -200,7 +220,7 @@ public final class ChatFormatter {
 		return sections;
 	}
 
-	private static void addRemChars(ArrayList<FormattedSection> sections, ArrayList<int[]> remchars) {
+	private static void addRemChars(ArrayList<FormattedSection> sections, ArrayList<int[]> remchars, String str) {
 		sections.stream()
 			.flatMap(fs -> fs.Formatters.stream().filter(cf -> cf.removeCharCount > 0)
 				.mapToInt(cf -> cf.removeCharCount).mapToObj(rcc -> new int[]{fs.Start, fs.Start + rcc - 1}))
@@ -210,8 +230,9 @@ public final class ChatFormatter {
 				.mapToInt(cf -> cf.removeCharCount).mapToObj(rcc -> new int[]{fs.End - rcc + 1, fs.End}))
 			.forEach(remchars::add);
 		DebugCommand.SendDebugMessage("Added remchars:");
-		DebugCommand
-			.SendDebugMessage(remchars.stream().map(Arrays::toString).collect(Collectors.joining("; ")));
+		DebugCommand.SendDebugMessage(remchars.stream().map(Arrays::toString).collect(Collectors.joining("; ")));
+		sendMessageWithPointer(str,
+			remchars.stream().flatMapToInt(Arrays::stream).toArray());
 	}
 
 	private static void combineSections(String str, ArrayList<FormattedSection> sections) {
@@ -222,10 +243,21 @@ public final class ChatFormatter {
 			if (sections.size() < 2)
 				break;
 			DebugCommand.SendDebugMessage("i: " + i);
-			FormattedSection firstSection = sections.get(i - 1);
+			final FormattedSection firstSection;
+			final FormattedSection lastSection;
+			{
+				FormattedSection firstSect = sections.get(i - 1);
+				FormattedSection lastSect = sections.get(i);
+				if (firstSect.Start > lastSect.Start) { //The first can't start later
+					var section = firstSect;
+					firstSect = lastSect;
+					lastSect = section;
+				}
+				firstSection = firstSect;
+				lastSection = lastSect;
+			}
 			DebugCommand.SendDebugMessage("Combining sections " + firstSection);
 			sendMessageWithPointer(str, firstSection.Start, firstSection.End);
-			final FormattedSection lastSection = sections.get(i);
 			DebugCommand.SendDebugMessage(" and " + lastSection);
 			sendMessageWithPointer(str, lastSection.Start, lastSection.End);
 			if (firstSection.Start == lastSection.Start && firstSection.End == lastSection.End) {
@@ -256,7 +288,7 @@ public final class ChatFormatter {
 
 				Predicate<FormattedSection> removeIfNeeded = s -> {
 					if (s.Start < 0 || s.End < 0 || s.Start > s.End) {
-						DebugCommand.SendDebugMessage("Removing section: " + s);
+						DebugCommand.SendDebugMessage("  Removed: " + s);
 						sendMessageWithPointer(str, s.Start, s.End);
 						sections.remove(s);
 						return true;
@@ -310,11 +342,13 @@ public final class ChatFormatter {
 			int start = section.Start, end = section.End;
 			DebugCommand.SendDebugMessage("Start: " + start + " - End: " + end);
 			sendMessageWithPointer(str, start, end);
-			val rcs = remchars.stream().filter(rc -> rc[0] <= start && start <= rc[1]).findAny();
-			val rce = remchars.stream().filter(rc -> rc[0] <= end && end <= rc[1]).findAny();
-			val rci = remchars.stream().filter(rc -> start < rc[0] && rc[1] < end).toArray(int[][]::new);
-			int s = start, e = end;
-			if (rcs.isPresent())
+			/*DebugCommand.SendDebugMessage("RCS: "+remchars.stream().filter(rc -> rc[0] <= start && start <= rc[1]).count());
+			DebugCommand.SendDebugMessage("RCE: "+remchars.stream().filter(rc -> rc[0] <= end && end <= rc[1]).count());
+			DebugCommand.SendDebugMessage("RCI: "+remchars.stream().filter(rc -> start < rc[0] || rc[1] < end).count());*/
+			val rci = remchars.stream().filter(rc -> (rc[0] <= start && rc[1] >= start)
+				|| (rc[0] >= start && rc[1] <= end)
+				|| (rc[0] <= end && rc[1] >= end)).sorted(Comparator.comparingInt(rc -> rc[0] * 10000 + rc[1])).toArray(int[][]::new);
+			/*if (rcs.isPresent())
 				s = rcs.get()[1] + 1;
 			if (rce.isPresent())
 				e = rce.get()[0] - 1;
@@ -322,12 +356,17 @@ public final class ChatFormatter {
 			if (e - s < 0) { //e-s==0 means the end char is the same as start char, so one char message
 				DebugCommand.SendDebugMessage("Skipping section because of remchars (length would be " + (e - s + 1) + ")");
 				continue;
-			}
-			originaltext = str.substring(s, e + 1);
+			}*/
+			DebugCommand.SendDebugMessage("Applying RC: " + Arrays.stream(rci).map(Arrays::toString).collect(Collectors.joining(", ", "[", "]")));
+			originaltext = str.substring(start, end + 1);
 			val sb = new StringBuilder(originaltext);
 			for (int x = rci.length - 1; x >= 0; x--)
-				sb.delete(rci[x][0] - start - 1, rci[x][1] - start); //Delete going backwards
+				sb.delete(Math.max(rci[x][0] - start, 0), Math.min(rci[x][1] - start, end) + 1); //Delete going backwards
 			originaltext = sb.toString();
+			if (originaltext.length() == 0) {
+				DebugCommand.SendDebugMessage("Skipping section because of remchars");
+				continue;
+			}
 			DebugCommand.SendDebugMessage("Section text: " + originaltext);
 			String openlink = null;
 			section.Formatters.sort(Comparator.comparing(cf2 -> cf2.priority.GetValue())); //Apply the highest last, to overwrite previous ones
