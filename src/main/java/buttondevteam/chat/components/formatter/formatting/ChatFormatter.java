@@ -160,6 +160,7 @@ public final class ChatFormatter {
 		boolean escaped = false;
 		int takenStart = -1, takenEnd = -1;
 		ChatFormatter takenFormatter = null;
+		boolean takenByBigGuy = false; //Can't win against him (finished sections take precedence)
 		for (final FormattedSection section : sections) {
 			// Set ending to -1 until closed with another 1 long "section" - only do this if IsRange is true
 			if (section.type != Type.Range) {
@@ -175,11 +176,12 @@ public final class ChatFormatter {
 				continue;
 			}
 			if (!escaped) {
+				ChatFormatter formatter = section.Formatters.get(0);
 				if (section.Start == takenStart || (section.Start > takenStart && section.Start < takenEnd)) {
 					/*
 					 * if (nextSection.containsKey(section.Formatters.get(0)) ? section.RemCharFromStart <= takenEnd - takenStart : section.RemCharFromStart > takenEnd - takenStart) {
 					 */
-					if (section.Formatters.get(0).removeCharCount < takenEnd - takenStart) {
+					if (takenByBigGuy || formatter.removeCharCount < takenEnd - takenStart) {
 						DebugCommand.SendDebugMessage("Lose: " + section);
 						sendMessageWithPointer(str, section.Start, section.End);
 						DebugCommand.SendDebugMessage("And win: " + takenFormatter);
@@ -190,21 +192,38 @@ public final class ChatFormatter {
 					sendMessageWithPointer(str, section.Start, section.End);
 					DebugCommand.SendDebugMessage("And lose: " + takenFormatter);
 				}
+				boolean hasFormatter = nextSection.containsKey(formatter);
+				if (!hasFormatter) {
+					val ff = formatter;
+					val cfo = nextSection.keySet().stream().filter(f -> f.removeCharCount > ff.removeCharCount).findAny();
+					if (cfo.isPresent()) {
+						//formatter = cfo.get();
+						val s = nextSection.get(cfo.get());
+						int takenS = section.Start, takenE = section.Start + formatter.removeCharCount;
+						if (s.Start == takenS || (s.Start > takenS && s.Start < takenE)) { //Peek()
+							hasFormatter = true;
+							continue; //Not the formatter we're looking for - TODO: It doesn't fix the problem of italics at the end
+						}
+					}
+				}
 				takenStart = section.Start;
-				takenEnd = section.Start + section.Formatters.get(0).removeCharCount;
-				takenFormatter = section.Formatters.get(0);
-				if (nextSection.containsKey(section.Formatters.get(0))) {
-					FormattedSection s = nextSection.remove(section.Formatters.get(0));
+				takenEnd = section.Start + formatter.removeCharCount;
+				takenFormatter = formatter;
+				if (hasFormatter) {
+					FormattedSection s = nextSection.remove(formatter);
+					//HACK? If we can find another section that removes more characters, finish that instead
 					// section: the ending marker section - s: the to-be full section
 					s.End = takenEnd - 1; //Take the remCharCount into account as well
 					// s.IsRange = false; // IsRange means it's a 1 long section indicating a start or an end
 					combined.add(s);
+					takenByBigGuy = true;
 					DebugCommand.SendDebugMessage("Finished section: " + s);
 					sendMessageWithPointer(str, s.Start, s.End);
 				} else {
 					DebugCommand.SendDebugMessage("Adding next section: " + section);
 					sendMessageWithPointer(str, section.Start, section.End);
-					nextSection.put(section.Formatters.get(0), section);
+					nextSection.put(formatter, section);
+					takenByBigGuy = false;
 				}
 				DebugCommand
 					.SendDebugMessage("New area taken: (" + takenStart + "-" + takenEnd + ") " + takenFormatter);
@@ -236,12 +255,7 @@ public final class ChatFormatter {
 	}
 
 	private static void combineSections(String str, ArrayList<FormattedSection> sections) {
-		boolean cont = true;
-		boolean found = false;
-		for (int i = 1; cont; ) {
-			int nextindex = i + 1;
-			if (sections.size() < 2)
-				break;
+		for (int i = 1; i < sections.size(); i++) {
 			DebugCommand.SendDebugMessage("i: " + i);
 			final FormattedSection firstSection;
 			final FormattedSection lastSection;
@@ -263,10 +277,13 @@ public final class ChatFormatter {
 			if (firstSection.Start == lastSection.Start && firstSection.End == lastSection.End) {
 				firstSection.Formatters.addAll(lastSection.Formatters);
 				firstSection.Matches.addAll(lastSection.Matches);
+				firstSection.type = lastSection.type;
 				DebugCommand.SendDebugMessage("To section " + firstSection);
 				sendMessageWithPointer(str, firstSection.Start, firstSection.End);
 				sections.remove(i);
-				found = true;
+				i = 0;
+				sortSections(sections);
+				continue;
 			} else if (firstSection.End > lastSection.Start && firstSection.Start < lastSection.End) {
 				int origend2 = firstSection.End;
 				firstSection.End = lastSection.Start - 1;
@@ -276,7 +293,6 @@ public final class ChatFormatter {
 				section.Formatters.addAll(lastSection.Formatters);
 				section.Matches.addAll(lastSection.Matches); // TODO: Clean
 				sections.add(i, section);
-				nextindex++;
 				// Use the properties of the first section not the second one
 				lastSection.Formatters.clear();
 				lastSection.Formatters.addAll(firstSection.Formatters);
@@ -309,26 +325,18 @@ public final class ChatFormatter {
 					DebugCommand.SendDebugMessage("  3:" + lastSection);
 					sendMessageWithPointer(str, lastSection.Start, lastSection.End);
 				}
-				found = true;
+				i = 0;
 			}
+			sortSections(sections);
+			if (i == 0) continue;
 			for (int j = i - 1; j <= i + 1; j++) {
 				if (j < sections.size() && sections.get(j).End < sections.get(j).Start) {
 					DebugCommand.SendDebugMessage("Removing section: " + sections.get(j));
 					sendMessageWithPointer(str, sections.get(j).Start, sections.get(j).End);
 					sections.remove(j);
 					j--;
-					found = true;
+					i = 0;
 				}
-			}
-			i = nextindex - 1;
-			i++;
-			if (i >= sections.size()) {
-				if (found) {
-					i = 1;
-					found = false;
-					sortSections(sections);
-				} else
-					cont = false;
 			}
 		}
 	}
@@ -420,7 +428,7 @@ public final class ChatFormatter {
 		sections.sort(
 			(s1, s2) -> s1.Start == s2.Start
 				? s1.End == s2.End ? Integer.compare(s2.Formatters.get(0).priority.GetValue(),
-				s1.Formatters.get(0).priority.GetValue()) : Integer.compare(s2.End, s1.End)
+				s1.Formatters.get(0).priority.GetValue()) : Integer.compare(s1.End, s2.End)
 				: Integer.compare(s1.Start, s2.Start));
 	}
 
