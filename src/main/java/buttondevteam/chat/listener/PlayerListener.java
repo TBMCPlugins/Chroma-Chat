@@ -161,6 +161,8 @@ public class PlayerListener implements Listener {
 		}
 	}
 
+	private long lastError = 0;
+
 	@EventHandler
 	public void onPlayerTBMCChat(TBMCChatEvent e) {
 		try {
@@ -169,6 +171,13 @@ public class PlayerListener implements Listener {
 			HistoryCommand.addChatMessage(e.getCm(), e.getChannel());
 			e.setCancelled(FormatterComponent.handleChat(e));
 		} catch (NoClassDefFoundError | Exception ex) { // Weird things can happen
+			if (lastError < System.nanoTime() - 1000L * 1000L * 1000L * 60 * 60 //60 mins
+				&& Bukkit.getOnlinePlayers().size() > 0) { //If there are no players on, display to the first person
+				lastError = System.nanoTime(); //I put the whole thing in the if to protect against race conditions
+				for (Player p : Bukkit.getOnlinePlayers())
+					if (e.shouldSendTo(p))
+						p.sendMessage("[" + e.getChannel().DisplayName().get() + "] §cSome features in the message below might be unavailable due to an error.");
+			}
 			ChatUtils.sendChatMessage(e, s -> "§c!§r" + s);
 			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex);
 		}

@@ -26,14 +26,14 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
 public class FunComponent extends Component<PluginMain> implements Listener {
 	private boolean ActiveF = false;
 	private ChatPlayer FPlayer = null;
 	private BukkitTask Ftask = null;
-	private ArrayList<CommandSender> Fs = new ArrayList<>();
+	private HashSet<CommandSender> Fs = new HashSet<>();
 	private UnlolCommand command;
 	private TBMCSystemChatEvent.BroadcastTarget unlolTarget;
 	private TBMCSystemChatEvent.BroadcastTarget fTarget;
@@ -119,7 +119,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 			FPlayer.FDeaths().set(FPlayer.FDeaths().get() + 1);
 			TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL,
 				"§bPress F to pay respects.§r", fTarget);
-			Bukkit.getScheduler().runTaskLaterAsynchronously(PluginMain.Instance, tt, 15 * 20);
+			Ftask = Bukkit.getScheduler().runTaskLaterAsynchronously(PluginMain.Instance, tt, 15 * 20);
 		}
 	}
 	@EventHandler
