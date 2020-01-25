@@ -34,6 +34,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Town colors for Towny. It allows mayors and kings to set a color for their town/nation (nation can be disabled).
+ * This color is applied to the player names in chat and on Dynmap, if used.
+ */
 @ComponentMetadata(depends = TownyComponent.class)
 public class TownColorComponent extends Component<PluginMain> implements Listener {
 	/**
@@ -45,10 +49,17 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 	 */
 	public static Map<String, Color> NationColor = new HashMap<>();
 
+	/**
+	 * The amount of town colors allowed. If more than one is used, players can change how many letters to be in a specific color using /u ncolor.
+	 */
 	public ConfigData<Byte> colorCount() {
 		return getConfig().getData("colorCount", (byte) 1, cc -> ((Integer) cc).byteValue(), Byte::intValue);
 	}
 
+	/**
+	 * If enabled, players will have a nation-defined color in addition to town colors, white by default.
+	 * They can change how much of each color they want with this as well.
+	 */
 	public ConfigData<Boolean> useNationColors() {
 		return getConfig().getData("useNationColors", true);
 	}
@@ -60,7 +71,6 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 	@Override
 	protected void enable() {
 		component = this;
-		//TODO: Don't register all commands automatically (welp)
 		Consumer<ConfigurationSection> loadTC = cs -> TownColorComponent.TownColors.putAll(cs.getValues(true).entrySet().stream()
 			.collect(Collectors.toMap(Map.Entry::getKey, v -> ((List<String>) v.getValue()).stream()
 				.map(Color::valueOf).toArray(Color[]::new))));

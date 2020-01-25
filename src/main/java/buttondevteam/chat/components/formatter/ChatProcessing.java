@@ -107,7 +107,7 @@ public class ChatProcessing {
 			var players = ImmutableList.copyOf(Bukkit.getOnlinePlayers());
 			var playerC = new Random().nextInt(players.size());
 			var player = players.get(playerC);
-			playPingSound(player);
+			playPingSound(player, ComponentManager.getIfEnabled(FormatterComponent.class));
 			return "@someone (" + player.getDisplayName() + ")";
 		}).build());
 	private static Gson gson = new GsonBuilder()
@@ -157,7 +157,7 @@ public class ChatProcessing {
 
 		ArrayList<ChatFormatter> formatters;
 		if (component.allowFormatting().get()) {
-			formatters = addFormatters(colormode, e::shouldSendTo);
+			formatters = addFormatters(colormode, e::shouldSendTo, component);
 			if (colormode == channel.Color().get() && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
 				final AtomicInteger rpc = new AtomicInteger(0);
 				formatters.add(ChatFormatter.builder("word", WORD_PATTERN).color(colormode).onmatch((match, cf, s) -> {
@@ -260,7 +260,7 @@ public class ChatProcessing {
 			+ "]";
 	}
 
-	static ArrayList<ChatFormatter> addFormatters(Color colormode, Predicate<Player> canSee) {
+	static ArrayList<ChatFormatter> addFormatters(Color colormode, Predicate<Player> canSee, @Nullable FormatterComponent component) {
 		@SuppressWarnings("unchecked")
 		ArrayList<ChatFormatter> formatters = (ArrayList<ChatFormatter>) commonFormatters.clone();
 
@@ -317,7 +317,7 @@ public class ChatProcessing {
 						}
 						ChatPlayer mpp = TBMCPlayer.getPlayer(nottest ? p.getUniqueId() : new UUID(0, 0), ChatPlayer.class);
 						if (nottest) {
-							playPingSound(p);
+							playPingSound(p, component);
 						}
 						String color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
 						return color + (nottest ? p.getName() : pn.get()) + "§r"; //Fix name casing, except when testing
@@ -333,7 +333,7 @@ public class ChatProcessing {
 									+ match.toLowerCase() + " but was reported as online.");
 								return "§c" + match + "§r";
 							}
-							playPingSound(p);
+							playPingSound(p, component);
 							return PluginMain.essentials.getUser(p).getNickname();
 						}
 						error.accept("Player nicknamed " + match.toLowerCase()
@@ -344,12 +344,12 @@ public class ChatProcessing {
 		return formatters;
 	}
 
-	private static void playPingSound(Player p) {
-		if (PluginMain.Instance.notificationSound().get().length() == 0)
+	private static void playPingSound(Player p, @Nullable FormatterComponent component) {
+		if (component == null || component.notificationSound().get().length() == 0)
 			p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
 		else
-			p.playSound(p.getLocation(), PluginMain.Instance.notificationSound().get(), 1.0f,
-				PluginMain.Instance.notificationPitch().get());
+			p.playSound(p.getLocation(), component.notificationSound().get(), 1.0f,
+				component.notificationPitch().get());
 	}
 
 	static void doFunStuff(CommandSender sender, TBMCChatEventBase event, String message) {

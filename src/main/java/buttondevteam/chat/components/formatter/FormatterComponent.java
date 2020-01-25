@@ -8,13 +8,32 @@ import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ConfigData;
 
 /**
- * This component handles the custom processing of chat messages. If this component is disabled channels won't be supported either in Minecraft.
+ * This component handles the custom processing of chat messages. If this component is disabled channels won't be supported in Minecraft.
  * If you only want to disable the formatting features, set allowFormatting to false.
+ * If you're using another chat plugin, you should disable the whole component.
  */
 public class FormatterComponent extends Component<PluginMain> {
+	/**
+	 * Determines whether Markdown formatting, name mentioning and similar features are enabled.
+	 */
 	ConfigData<Boolean> allowFormatting() {
 		return getConfig().getData("allowFormatting", true);
 	}
+
+	/**
+	 * The sound to play when a player is mentioned. Leave empty to use default.
+	 */
+	public ConfigData<String> notificationSound() {
+		return getConfig().getData("notificationSound", "");
+	}
+
+	/**
+	 * The pitch of the notification sound.
+	 */
+	public ConfigData<Float> notificationPitch() {
+		return getConfig().getData("notificationPitch", 1.0f);
+	}
+
 
 	@Override
 	protected void enable() {

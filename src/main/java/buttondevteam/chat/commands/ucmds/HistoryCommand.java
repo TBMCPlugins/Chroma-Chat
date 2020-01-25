@@ -1,5 +1,6 @@
 package buttondevteam.chat.commands.ucmds;
 
+import buttondevteam.chat.PluginMain;
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.chat.ChatMessage;
 import buttondevteam.lib.chat.Command2;
@@ -29,6 +30,10 @@ public class HistoryCommand extends UCommandBase {
 	}
 
 	public static boolean showHistory(CommandSender sender, String channel) {
+		if (!PluginMain.Instance.storeChatHistory().get()) {
+			sender.sendMessage("§6Chat history is disabled");
+			return true;
+		}
 		Function<Channel, LinkedList<HistoryEntry>> getThem = ch -> messages.get(ch.ID + "_" + ch.getGroupID(sender)); //If can't see, groupID is null, and that shouldn't be in the map
 		sender.sendMessage("§6---- Chat History ----");
 		Stream<Channel> stream;
@@ -69,6 +74,7 @@ public class HistoryCommand extends UCommandBase {
 	}
 
 	public static void addChatMessage(ChatMessage chatMessage, Channel channel) {
+		if (!PluginMain.Instance.storeChatHistory().get()) return;
 		val groupID = channel.getGroupID(chatMessage.getPermCheck());
 		if (groupID == null) return; //Just to be sure
 		synchronized (messages) {
