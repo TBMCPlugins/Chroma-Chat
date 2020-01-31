@@ -57,9 +57,9 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 	}
 
 	/**
-	 * This is a sort of inside joke between me and Ghostise, who said "no, it was very unlol" after I said lol.
+	 * This is an inside joke on our server.
 	 * It keeps track of laughs (lols and what's defined in laughStrings) and if someone does /unlol or /unlaugh it will unlaugh the last person who laughed.
-	 * This action can only be performed once per laugh.
+	 * Which also blinds the laughing person for a few seconds. This action can only be performed once per laugh.
 	 */
 	private ConfigData<Boolean> unlol() {
 		return getConfig().getData("unlol", true);

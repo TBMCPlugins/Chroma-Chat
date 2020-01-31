@@ -5,7 +5,6 @@ import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.ICommand2MC;
-import buttondevteam.lib.chat.TBMCCommandBase;
 import buttondevteam.lib.player.TBMCPlayerBase;
 import lombok.val;
 import org.bukkit.Bukkit;

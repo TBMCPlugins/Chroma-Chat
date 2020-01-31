@@ -2,7 +2,10 @@ package buttondevteam.chat.components.fun;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
-import buttondevteam.lib.chat.*;
+import buttondevteam.lib.chat.Color;
+import buttondevteam.lib.chat.Command2;
+import buttondevteam.lib.chat.CommandClass;
+import buttondevteam.lib.chat.ICommand2MC;
 import buttondevteam.lib.player.TBMCPlayer;
 import org.bukkit.entity.Player;
 
@@ -13,7 +16,6 @@ import java.util.Optional;
 	"Rainbow mode",
 	"This command allows you to talk in rainbow colors"
 })
-@OptionallyPlayerCommandClass(playerOnly = true)
 public class CCommand extends ICommand2MC {
 	@Command2.Subcommand
 	public boolean def(Player player, @Command2.OptionalArg String color) {

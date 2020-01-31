@@ -37,34 +37,34 @@ public class ChatFormatIT {
 		list.add(new ChatFormatIT(sender, "*test*", new TellrawPart("test").setItalic(true).setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "**test**", new TellrawPart("test").setBold(true).setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "***test***",
-				new TellrawPart("test").setBold(true).setItalic(true).setColor(Color.White)));
+			new TellrawPart("test").setBold(true).setItalic(true).setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "***__test__***",
-				new TellrawPart("test").setBold(true).setItalic(true).setUnderlined(true).setColor(Color.White)));
+			new TellrawPart("test").setBold(true).setItalic(true).setUnderlined(true).setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "***__~~test~~__***", new TellrawPart("test").setBold(true).setItalic(true)
-				.setUnderlined(true).setStrikethrough(true).setColor(Color.White)));
-        list.add(new ChatFormatIT(sender, "¯\\\\\\_(ツ)\\_/¯", new TellrawPart("¯\\_(ツ)_/¯").setColor(Color.White)));
+			.setUnderlined(true).setStrikethrough(true).setColor(Color.White)));
+		list.add(new ChatFormatIT(sender, "¯\\\\\\_(ツ)\\_/¯", new TellrawPart("¯\\_(ツ)_/¯").setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "https://google.hu/",
-				new TellrawPart("https://google.hu/").setColor(Color.White).setUnderlined(true)
-						.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
-								new TellrawPart("Click to open").setColor(Color.Blue)))
-						.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://google.hu/"))));
-        list.add(new ChatFormatIT(sender, "*test", new TellrawPart("*test").setColor(Color.White)));
+			new TellrawPart("https://google.hu/").setColor(Color.White).setUnderlined(true)
+				.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
+					new TellrawPart("Click to open").setColor(Color.Blue)))
+				.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://google.hu/"))));
+		list.add(new ChatFormatIT(sender, "*test", new TellrawPart("*test").setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "**test*", new TellrawPart("**test*").setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "***test", new TellrawPart("***test").setColor(Color.White)));
-        list.add(new ChatFormatIT(sender, "Koiiev", new TellrawPart("§bKoiiev§r").setColor(Color.Aqua)));
+		list.add(new ChatFormatIT(sender, "Koiiev", new TellrawPart("§bKoiiev§r").setColor(Color.Aqua)));
 		list.add(new ChatFormatIT(sender, "norbipeti", new TellrawPart("§bNorbiPeti§r").setColor(Color.Aqua)));
-        list.add(new ChatFormatIT(sender, "Arsen_Derby_FTW", new TellrawPart("§bArsen_Derby_FTW§r").setColor(Color.Aqua)));
+		list.add(new ChatFormatIT(sender, "Arsen_Derby_FTW", new TellrawPart("§bArsen_Derby_FTW§r").setColor(Color.Aqua)));
 		list.add(new ChatFormatIT(sender, "carrot_lynx", new TellrawPart("§bcarrot_lynx§r").setColor(Color.Aqua)));
 		list.add(new ChatFormatIT(sender, "*carrot_lynx*", new TellrawPart("§bcarrot_lynx§r").setItalic(true).setColor(Color.Aqua)));
 		list.add(new ChatFormatIT(sender, "https://norbipeti.github.io/", new TellrawPart("https://norbipeti.github.io/")
-				.setColor(Color.White).setUnderlined(true)
-				.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
-						new TellrawPart("Click to open").setColor(Color.Blue)))
-				.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/"))));
+			.setColor(Color.White).setUnderlined(true)
+			.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
+				new TellrawPart("Click to open").setColor(Color.Blue)))
+			.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/"))));
 		list.add(new ChatFormatIT(sender, "*https://norbipeti.github.io/ heh*", new TellrawPart("https://norbipeti.github.io/").setItalic(true).setUnderlined(true)
-				.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
-						new TellrawPart("Click to open").setColor(Color.Blue)))
-				.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/")), new TellrawPart(" heh").setItalic(true)));
+			.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
+				new TellrawPart("Click to open").setColor(Color.Blue)))
+			.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/")), new TellrawPart(" heh").setItalic(true)));
 		list.add(new ChatFormatIT(sender, "*test _test_ test*", new TellrawPart("test test test").setItalic(true).setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "*test __test__ test*", new TellrawPart("test ").setItalic(true).setColor(Color.White),
 			new TellrawPart("test").setItalic(true).setUnderlined(true).setColor(Color.White), new TellrawPart(" test").setItalic(true).setColor(Color.White)));
@@ -82,6 +82,11 @@ public class ChatFormatIT {
 			.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
 				new TellrawPart("Click to open").setColor(Color.Blue)))
 			.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/test"))));
+		TellrawPart space = new TellrawPart(" ").setColor(Color.White);
+		list.add(new ChatFormatIT(sender, "A rainbow text for testing. O", new TellrawPart("A").setColor(Color.Red),
+			space, new TellrawPart("rainbow").setColor(Color.Gold), space, new TellrawPart("text").setColor(Color.Yellow),
+			space, new TellrawPart("for").setColor(Color.Green), space, new TellrawPart("testing.").setColor(Color.Blue),
+			space, new TellrawPart("O").setColor(Color.DarkPurple)).setRainbowMode());
 
 		return list;
 	}
@@ -89,6 +94,7 @@ public class ChatFormatIT {
 	private final CommandSender sender;
 	private final String message;
 	private final TellrawPart[] extras;
+	private boolean rainbowMode;
 
 	public ChatFormatIT(CommandSender sender, String message, TellrawPart... expectedextras) {
 		this.sender = sender;
@@ -96,10 +102,17 @@ public class ChatFormatIT {
 		this.extras = expectedextras;
 	}
 
+	private ChatFormatIT setRainbowMode() {
+		rainbowMode = true;
+		return this;
+	}
+
 	@Test
 	public void testMessage() {
 		ArrayList<ChatFormatter> cfs = ChatProcessing.addFormatters(Color.White, p -> true, null);
 		final String chid = ChatProcessing.getChannelID(Channel.GlobalChat, ChatUtils.MCORIGIN);
+		if (rainbowMode)
+			ChatProcessing.createRPC(Color.White, cfs);
 		final TellrawPart tp = ChatProcessing.createTellraw(sender, message, null, null, null, chid, ChatUtils.MCORIGIN);
 		ChatFormatter.Combine(cfs, message, tp, null);
 		System.out.println("Testing: " + message);

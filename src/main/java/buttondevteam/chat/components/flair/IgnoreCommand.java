@@ -4,20 +4,16 @@ import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.commands.ucmds.UCommandBase;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
-import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
 import buttondevteam.lib.player.TBMCPlayer;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 @CommandClass(modOnly = false, helpText = {
 	"Ignore flair",
 	"Stop the \"write your name in the thread\" message from showing up"
 })
-@OptionallyPlayerCommandClass(playerOnly = true)
 public final class IgnoreCommand extends UCommandBase {
 	@Command2.Subcommand
-	public boolean def(CommandSender sender) {
-		final Player player = (Player) sender;
+	public boolean def(Player player) {
 		ChatPlayer p = TBMCPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class);
 		if (p.FlairState().get().equals(FlairStates.Accepted)) {
 			player.sendMessage("§cYou can only ignore the \"write your name in the thread\" message.");

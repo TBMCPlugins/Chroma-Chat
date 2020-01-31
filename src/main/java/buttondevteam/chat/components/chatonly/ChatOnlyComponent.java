@@ -5,6 +5,7 @@ import buttondevteam.chat.components.formatter.formatting.TellrawEvent;
 import buttondevteam.chat.components.formatter.formatting.TellrawPart;
 import buttondevteam.core.ComponentManager;
 import buttondevteam.lib.architecture.Component;
+import buttondevteam.lib.architecture.ComponentMetadata;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerJoinEvent;
 import lombok.val;
@@ -18,6 +19,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 /**
  * Allows players to enter chat-only mode which puts them into spectator mode and disallows everything besides chatting.
  */
+@ComponentMetadata(enabledByDefault = false)
 public class ChatOnlyComponent extends Component implements Listener {
 	@Override
 	protected void enable() {

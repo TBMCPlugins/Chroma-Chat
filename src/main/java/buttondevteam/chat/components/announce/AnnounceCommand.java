@@ -1,15 +1,19 @@
 package buttondevteam.chat.components.announce;
 
 import buttondevteam.chat.commands.ucmds.UCommandBase;
+import buttondevteam.chat.components.formatter.ChatProcessing;
+import buttondevteam.chat.components.formatter.FormatterComponent;
+import buttondevteam.chat.components.formatter.formatting.TellrawEvent;
+import buttondevteam.chat.components.formatter.formatting.TellrawPart;
+import buttondevteam.core.ComponentManager;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
-import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 @CommandClass(modOnly = true)
-@OptionallyPlayerCommandClass(playerOnly = false)
 @RequiredArgsConstructor
 public class AnnounceCommand extends UCommandBase {
 	private final AnnouncerComponent component;
@@ -28,7 +32,7 @@ public class AnnounceCommand extends UCommandBase {
 	@Command2.Subcommand(helpText = {
 		"Edit announcement",
 		"This command lets you edit an announcement by its index.",
-		"Shouldn't be used directly, use either command blocks or click on an announcement in /u announce list (WIP) instead." //TODO: <--
+		"Shouldn't be used directly, use either command blocks or click on an announcement in /u announce list instead."
 	})
 	public boolean edit(CommandSender sender, byte index, @Command2.TextArg String text) {
 		String finalmessage1 = text.replace('&', '§');
@@ -49,8 +53,19 @@ public class AnnounceCommand extends UCommandBase {
 		sender.sendMessage("§bList of announce messages:§r");
 		sender.sendMessage("§bFormat: [index] message§r");
 		int i = 0;
-		for (String message : component.announceMessages().get())
-			sender.sendMessage("[" + i++ + "] " + message);
+		for (String message : component.announceMessages().get()) {
+			String msg = "[" + i++ + "] " + message;
+			//noinspection SuspiciousMethodCalls
+			if (!ComponentManager.isEnabled(FormatterComponent.class) || !Bukkit.getOnlinePlayers().contains(sender)) {
+				sender.sendMessage(msg);
+				continue;
+			}
+			String json = ChatProcessing.toJson(new TellrawPart(msg)
+				.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, "Click to edit"))
+				.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAction.SUGGEST_COMMAND,
+					"/" + getCommandPath() + " edit " + (i - 1) + " " + message.replace('§', '&'))));
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + sender.getName() + " " + json);
+		}
 		sender.sendMessage("§bCurrent wait time between announcements: "
 			+ component.announceTime().get() / 60 / 1000 + " minute(s)§r");
 		return true;

@@ -4,6 +4,7 @@ import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.architecture.Component;
+import buttondevteam.lib.architecture.ComponentMetadata;
 import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.player.TBMCPlayerBase;
 import com.google.gson.JsonArray;
@@ -26,6 +27,7 @@ import java.util.*;
  * This component checks a specific Reddit thread every 10 seconds for comments such as "IGN: NorbiPeti" to link Reddit accounts and to determine their /r/thebutton flair.
  * This was the original goal of this plugin when it was made.
  */
+@ComponentMetadata(enabledByDefault = false)
 public class FlairComponent extends Component<PluginMain> {
 	/**
 	 * The Reddit thread to check for account connections. Re-enable the component if this was empty.

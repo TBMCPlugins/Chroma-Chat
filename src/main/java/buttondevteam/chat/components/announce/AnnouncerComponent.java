@@ -5,10 +5,9 @@ import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCSystemChatEvent;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ConfigData;
+import buttondevteam.lib.architecture.ListConfigData;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import org.bukkit.Bukkit;
-
-import java.util.ArrayList;
 
 /**
  * Displays the configured messages at the set interval when someone is online.
@@ -17,8 +16,8 @@ public class AnnouncerComponent extends Component<PluginMain> implements Runnabl
 	/**
 	 * The messages to display to players.
 	 */
-	public ConfigData<ArrayList<String>> announceMessages() {
-		return getConfig().getData("announceMessages", new ArrayList<>(0));
+	public ListConfigData<String> announceMessages() {
+		return getConfig().getListData("announceMessages");
 	}
 
 	/**

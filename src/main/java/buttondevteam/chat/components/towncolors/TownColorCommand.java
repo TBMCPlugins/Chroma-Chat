@@ -5,7 +5,6 @@ import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
-import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
@@ -21,7 +20,6 @@ import java.lang.reflect.Method;
 	"The town will be shown with this color on Dynmap and all players in the town will appear in chat with these colors.", //
 	"The colors will split the name evenly but residents can override that with /u ncolor.", //
 }) // TODO: /u u when annotation not present
-@OptionallyPlayerCommandClass(playerOnly = true)
 @RequiredArgsConstructor
 public class TownColorCommand extends UCommandBase {
 	private final TownColorComponent component;

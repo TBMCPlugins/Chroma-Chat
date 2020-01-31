@@ -56,7 +56,7 @@ public class ChatProcessing {
 	private static final Pattern BOLD_PATTERN = Pattern.compile("\\*\\*");
 	private static final Pattern CODE_PATTERN = Pattern.compile("`");
 	private static final Pattern MASKED_LINK_PATTERN = Pattern.compile("\\[([^\\[\\]]+)]\\(([^()]+)\\)");
-	private static final Pattern SOMEONE_PATTERN = Pattern.compile("@someone"); //TODO
+	private static final Pattern SOMEONE_PATTERN = Pattern.compile("@someone");
 	private static final Pattern STRIKETHROUGH_PATTERN = Pattern.compile("~~");
 	private static final Pattern SPOILER_PATTERN = Pattern.compile("\\|\\|");
 	private static final Color[] RainbowPresserColors = new Color[]{Color.Red, Color.Gold, Color.Yellow, Color.Green,
@@ -108,7 +108,7 @@ public class ChatProcessing {
 			var playerC = new Random().nextInt(players.size());
 			var player = players.get(playerC);
 			playPingSound(player, ComponentManager.getIfEnabled(FormatterComponent.class));
-			return "@someone (" + player.getDisplayName() + ")";
+			return "@someone (" + player.getDisplayName() + "§r)";
 		}).build());
 	private static Gson gson = new GsonBuilder()
 		.registerTypeHierarchyAdapter(TellrawSerializableEnum.class, new TellrawSerializer.TwEnum())
@@ -159,11 +159,7 @@ public class ChatProcessing {
 		if (component.allowFormatting().get()) {
 			formatters = addFormatters(colormode, e::shouldSendTo, component);
 			if (colormode == channel.Color().get() && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
-				final AtomicInteger rpc = new AtomicInteger(0);
-				formatters.add(ChatFormatter.builder("word", WORD_PATTERN).color(colormode).onmatch((match, cf, s) -> {
-					cf.setColor(RainbowPresserColors[rpc.getAndUpdate(i -> ++i < RainbowPresserColors.length ? i : 0)]);
-					return match;
-				}).build());
+				createRPC(colormode, formatters);
 			}
 			pingedconsole = false; // Will set it to true onmatch (static constructor)
 		} else
@@ -217,7 +213,15 @@ public class ChatProcessing {
 		return false;
 	}
 
-	static String toJson(TellrawPart json) {
+	static void createRPC(Color colormode, ArrayList<ChatFormatter> formatters) {
+		final AtomicInteger rpc = new AtomicInteger(0);
+		formatters.add(ChatFormatter.builder("rpc", WORD_PATTERN).color(colormode).onmatch((match, cf, s) -> {
+			cf.setColor(RainbowPresserColors[rpc.getAndUpdate(i -> ++i < RainbowPresserColors.length ? i : 0)]);
+			return match;
+		}).build());
+	}
+
+	public static String toJson(TellrawPart json) {
 		return gson.toJson(json);
 	}
 

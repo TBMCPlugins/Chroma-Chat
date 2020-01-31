@@ -5,7 +5,6 @@ import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
-import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -17,7 +16,6 @@ import org.bukkit.entity.Player;
 	"Each town in the nation will have it's first color (border) set to this color.", //
 	"See the help text for /u towncolor for more details.", //
 })
-@OptionallyPlayerCommandClass(playerOnly = true)
 public class NationColorCommand extends UCommandBase {
 	@Command2.Subcommand
 	public boolean def(Player player, String color) {
