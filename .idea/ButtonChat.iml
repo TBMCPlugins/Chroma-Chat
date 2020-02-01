@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_13_PREVIEW">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_11">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
@@ -34,14 +34,14 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.ess3:LegacyProvider:2.17.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.ess3:ReflectionProvider:2.17.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.ess3:FlattenedProvider:2.17.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.palmergames.bukkit.towny:Towny:0.95.0.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.milkbowl:VaultAPI:master-4c248aad62-1" level="project" />
-    <orderEntry type="library" name="Maven: org.bukkit:bukkit:1.13.1-R0.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.palmergames.bukkit.towny:Towny:0.95.2.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.milkbowl:VaultAPI:master-89c00e1cb8-1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.18.10" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.github.webbukkit:Dynmap-Towny:master-0.60-g924051d-7" level="project" />
     <orderEntry type="library" name="Maven: com.github.webbukkit:Dynmap:v2.5" level="project" />
     <orderEntry type="library" name="Maven: com.nijikokun.bukkit:Permissions:3.1.6" level="project" />
+    <orderEntry type="library" name="Maven: org.bukkit:bukkit:1.7.10-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: ru.tehkode:PermissionsEx:1.19.1" level="project" />
     <orderEntry type="library" name="Maven: de.bananaco:bPermissions:2.9.1" level="project" />
     <orderEntry type="library" name="Maven: com.platymuus.bukkit.permissions:PermissionsBukkit:1.6" level="project" />

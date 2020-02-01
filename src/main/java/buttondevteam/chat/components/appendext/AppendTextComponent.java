@@ -15,8 +15,12 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
+/**
+ * Allows players to append tableflips and other things to their messages. Everything is configurable here.
+ */
 public class AppendTextComponent extends Component<PluginMain> {
 	private Map<String, IHaveConfig> appendTexts;
+
 	private ConfigData<String[]> helpText(IHaveConfig config) {
 		return config.getData("helpText", () -> new String[]{
 			"Tableflip", //

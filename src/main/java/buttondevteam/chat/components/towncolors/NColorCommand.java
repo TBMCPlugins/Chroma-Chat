@@ -6,7 +6,6 @@ import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
-import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 import org.bukkit.ChatColor;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-@OptionallyPlayerCommandClass(playerOnly = true)
 @CommandClass(helpText = {
 	"Name color", //
 	"This command allows you to set how the town colors look on your name.", //

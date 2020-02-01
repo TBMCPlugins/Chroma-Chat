@@ -23,8 +23,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import org.dynmap.towny.DTBridge;
-import org.dynmap.towny.DynmapTownyPlugin;
 
 import java.io.File;
 import java.util.*;
@@ -34,6 +34,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Town colors for Towny. It allows mayors and kings to set a color for their town/nation (nation can be disabled).
+ * This color is applied to the player names in chat and on Dynmap, if used.
+ */
 @ComponentMetadata(depends = TownyComponent.class)
 public class TownColorComponent extends Component<PluginMain> implements Listener {
 	/**
@@ -45,10 +49,17 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 	 */
 	public static Map<String, Color> NationColor = new HashMap<>();
 
+	/**
+	 * The amount of town colors allowed. If more than one is used, players can change how many letters to be in a specific color using /u ncolor.
+	 */
 	public ConfigData<Byte> colorCount() {
 		return getConfig().getData("colorCount", (byte) 1, cc -> ((Integer) cc).byteValue(), Byte::intValue);
 	}
 
+	/**
+	 * If enabled, players will have a nation-defined color in addition to town colors, white by default.
+	 * They can change how much of each color they want with this as well.
+	 */
 	public ConfigData<Boolean> useNationColors() {
 		return getConfig().getData("useNationColors", true);
 	}
@@ -60,7 +71,6 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 	@Override
 	protected void enable() {
 		component = this;
-		//TODO: Don't register all commands automatically (welp)
 		Consumer<ConfigurationSection> loadTC = cs -> TownColorComponent.TownColors.putAll(cs.getValues(true).entrySet().stream()
 			.collect(Collectors.toMap(Map.Entry::getKey, v -> ((List<String>) v.getValue()).stream()
 				.map(Color::valueOf).toArray(Color[]::new))));
@@ -85,25 +95,7 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 		if (usenc)
 			NationColor.keySet().removeIf(n -> !TownyComponent.TU.getNationsMap().containsKey(n)); // Removes nation colors for deleted/renamed nations
 
-		Bukkit.getScheduler().runTask(getPlugin(), () -> {
-			val dtp = (DynmapTownyPlugin) Bukkit.getPluginManager().getPlugin("Dynmap-Towny");
-			if (dtp == null)
-				return;
-			for (val entry : TownColors.entrySet()) {
-				try {
-					val town = TownyComponent.TU.getTownsMap().get(entry.getKey());
-					Nation nation;
-					Color nc;
-					if (!useNationColors().get())
-						nc = null;
-					else if (!town.hasNation() || (nation = town.getNation()) == null || (nc = NationColor.get(nation.getName().toLowerCase())) == null)
-						nc = Color.White;
-					setTownColor(dtp, buttondevteam.chat.components.towncolors.admin.TownColorCommand.getTownNameCased(entry.getKey()), entry.getValue(), nc);
-				} catch (Exception e) {
-					TBMCCoreAPI.SendException("Error while setting town color for town " + entry.getKey() + "!", e);
-				}
-			}
-		});
+		initDynmap();
 
 		registerCommand(new TownColorCommand(this));
 		if (useNationColors().get())
@@ -126,6 +118,28 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 				v -> v.getValue().toString())));
 	}
 
+	private void initDynmap() {
+		Bukkit.getScheduler().runTask(getPlugin(), () -> {
+			val dtp = Bukkit.getPluginManager().getPlugin("Dynmap-Towny");
+			if (dtp == null)
+				return;
+			for (val entry : TownColors.entrySet()) {
+				try {
+					val town = TownyComponent.TU.getTownsMap().get(entry.getKey());
+					Nation nation;
+					Color nc;
+					if (!useNationColors().get())
+						nc = null;
+					else if (!town.hasNation() || (nation = town.getNation()) == null || (nc = NationColor.get(nation.getName().toLowerCase())) == null)
+						nc = Color.White;
+					setTownColor(dtp, buttondevteam.chat.components.towncolors.admin.TownColorCommand.getTownNameCased(entry.getKey()), entry.getValue(), nc);
+				} catch (Exception e) {
+					TBMCCoreAPI.SendException("Error while setting town color for town " + entry.getKey() + "!", e);
+				}
+			}
+		});
+	}
+
 	/**
 	 * Sets a town's color on Dynmap.
 	 *
@@ -133,8 +147,7 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 	 * @param town   The town's name using the correct casing
 	 * @param colors The town's colors
 	 */
-
-	public static void setTownColor(DynmapTownyPlugin dtp, String town, Color[] colors, Color nationcolor) {
+	public static void setTownColor(Plugin dtp, String town, Color[] colors, Color nationcolor) {
 		Function<Color, Integer> c2i = c -> c.getRed() << 16 | c.getGreen() << 8 | c.getBlue();
 		try {
 			DTBridge.setTownColor(dtp, town, c2i.apply(nationcolor == null ? colors[0] : nationcolor),

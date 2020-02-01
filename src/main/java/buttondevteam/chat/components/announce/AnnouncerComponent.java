@@ -5,23 +5,31 @@ import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCSystemChatEvent;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ConfigData;
+import buttondevteam.lib.architecture.ListConfigData;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import org.bukkit.Bukkit;
 
-import java.util.ArrayList;
-
+/**
+ * Displays the configured messages at the set interval when someone is online.
+ */
 public class AnnouncerComponent extends Component<PluginMain> implements Runnable {
-	public ConfigData<ArrayList<String>> announceMessages() {
-		return getConfig().getData("announceMessages", new ArrayList<>(0));
+	/**
+	 * The messages to display to players.
+	 */
+	public ListConfigData<String> announceMessages() {
+		return getConfig().getListData("announceMessages");
 	}
 
+	/**
+	 * The time in milliseconds between the messages. Use /u announce settime to set minutes.
+	 */
 	public ConfigData<Integer> announceTime() {
 		return getConfig().getData("announceTime", 15 * 60 * 1000);
 	}
 
 	private TBMCSystemChatEvent.BroadcastTarget target;
 
-	private static int AnnounceMessageIndex = 0;
+	private int AnnounceMessageIndex = 0;
 
 	@Override
 	public void run() {
@@ -43,7 +51,7 @@ public class AnnouncerComponent extends Component<PluginMain> implements Runnabl
 
 	@Override
 	protected void enable() {
-		target= TBMCSystemChatEvent.BroadcastTarget.add("announcements");
+		target = TBMCSystemChatEvent.BroadcastTarget.add("announcements");
 		registerCommand(new AnnounceCommand(this));
 		new Thread(this).start();
 	}

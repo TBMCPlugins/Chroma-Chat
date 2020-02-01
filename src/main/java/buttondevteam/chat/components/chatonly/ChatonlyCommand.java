@@ -1,13 +1,11 @@
 package buttondevteam.chat.components.chatonly;
 
-import buttondevteam.lib.chat.ICommand2MC;
-import org.bukkit.GameMode;
-import org.bukkit.entity.Player;
-
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.lib.chat.CommandClass;
-import buttondevteam.lib.chat.PlayerCommandBase;
+import buttondevteam.lib.chat.ICommand2MC;
 import buttondevteam.lib.player.TBMCPlayer;
+import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
 
 @CommandClass(modOnly = false, helpText = {
 	"§6---- Chat-only mode ----", //

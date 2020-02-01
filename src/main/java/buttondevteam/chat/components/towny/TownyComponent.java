@@ -22,6 +22,10 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * This component manages the town and nation chat. It's also needed for the TownColorComponent.
+ * It provides the TC and NC channels, and posts Towny messages (global, town, nation) to the correct channels for other platforms like Discord.
+ */
 public class TownyComponent extends Component<PluginMain> {
 	public static TownyUniverse TU;
 	private static ArrayList<String> Towns;

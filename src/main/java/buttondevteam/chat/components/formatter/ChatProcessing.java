@@ -25,6 +25,7 @@ import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerBase;
 import com.earth2me.essentials.User;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -49,12 +50,13 @@ public class ChatProcessing {
 	private static final Pattern HASHTAG_PATTERN = Pattern.compile("#(\\w+)");
 	private static final Pattern URL_PATTERN = Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),&]+(?:#[\\w]+)?)");
 	public static final Pattern ENTIRE_MESSAGE_PATTERN = Pattern.compile(".+");
-	private static final Pattern UNDERLINED_PATTERN = Pattern.compile("_");
+	private static final Pattern UNDERLINED_PATTERN = Pattern.compile("__");
 	private static final Pattern ITALIC_PATTERN = Pattern.compile("\\*");
+	private static final Pattern ITALIC_PATTERN_2 = Pattern.compile("_");
 	private static final Pattern BOLD_PATTERN = Pattern.compile("\\*\\*");
 	private static final Pattern CODE_PATTERN = Pattern.compile("`");
 	private static final Pattern MASKED_LINK_PATTERN = Pattern.compile("\\[([^\\[\\]]+)]\\(([^()]+)\\)");
-	private static final Pattern SOMEONE_PATTERN = Pattern.compile("@someone"); //TODO
+	private static final Pattern SOMEONE_PATTERN = Pattern.compile("@someone");
 	private static final Pattern STRIKETHROUGH_PATTERN = Pattern.compile("~~");
 	private static final Pattern SPOILER_PATTERN = Pattern.compile("\\|\\|");
 	private static final Color[] RainbowPresserColors = new Color[]{Color.Red, Color.Gold, Color.Yellow, Color.Green,
@@ -68,7 +70,8 @@ public class ChatProcessing {
 		ChatFormatter.builder("bold", BOLD_PATTERN).bold(true).removeCharCount((short) 2).type(ChatFormatter.Type.Range)
 			.priority(Priority.High).build(),
 		ChatFormatter.builder("italic", ITALIC_PATTERN).italic(true).removeCharCount((short) 1).type(ChatFormatter.Type.Range).build(),
-		ChatFormatter.builder("underlined", UNDERLINED_PATTERN).underlined(true).removeCharCount((short) 1).type(ChatFormatter.Type.Range)
+		ChatFormatter.builder("italic2", ITALIC_PATTERN_2).italic(true).removeCharCount((short) 1).type(ChatFormatter.Type.Range).build(),
+		ChatFormatter.builder("underlined", UNDERLINED_PATTERN).underlined(true).removeCharCount((short) 2).type(ChatFormatter.Type.Range)
 			.build(),
 		ChatFormatter.builder("strikethrough", STRIKETHROUGH_PATTERN).strikethrough(true).removeCharCount((short) 2).type(ChatFormatter.Type.Range)
 			.build(),
@@ -98,7 +101,15 @@ public class ChatProcessing {
 			builder.setOpenlink(link);
 			return text;
 		}).type(ChatFormatter.Type.Excluder).build(),
-		ChatFormatter.builder("url", URL_PATTERN).underlined(true).openlink("$1").type(ChatFormatter.Type.Excluder).build());
+		ChatFormatter.builder("url", URL_PATTERN).underlined(true).openlink("$1").type(ChatFormatter.Type.Excluder).build(),
+		ChatFormatter.builder("someone", SOMEONE_PATTERN).color(Color.Aqua).onmatch((match, builder, section) -> {
+			if (Bukkit.getOnlinePlayers().size() == 0) return match;
+			var players = ImmutableList.copyOf(Bukkit.getOnlinePlayers());
+			var playerC = new Random().nextInt(players.size());
+			var player = players.get(playerC);
+			playPingSound(player, ComponentManager.getIfEnabled(FormatterComponent.class));
+			return "@someone (" + player.getDisplayName() + "§r)";
+		}).build());
 	private static Gson gson = new GsonBuilder()
 		.registerTypeHierarchyAdapter(TellrawSerializableEnum.class, new TellrawSerializer.TwEnum())
 		.registerTypeHierarchyAdapter(Collection.class, new TellrawSerializer.TwCollection())
@@ -146,13 +157,9 @@ public class ChatProcessing {
 
 		ArrayList<ChatFormatter> formatters;
 		if (component.allowFormatting().get()) {
-			formatters = addFormatters(colormode, e::shouldSendTo);
+			formatters = addFormatters(colormode, e::shouldSendTo, component);
 			if (colormode == channel.Color().get() && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
-				final AtomicInteger rpc = new AtomicInteger(0);
-				formatters.add(ChatFormatter.builder("word", WORD_PATTERN).color(colormode).onmatch((match, cf, s) -> {
-					cf.setColor(RainbowPresserColors[rpc.getAndUpdate(i -> ++i < RainbowPresserColors.length ? i : 0)]);
-					return match;
-				}).build());
+				createRPC(colormode, formatters);
 			}
 			pingedconsole = false; // Will set it to true onmatch (static constructor)
 		} else
@@ -206,13 +213,21 @@ public class ChatProcessing {
 		return false;
 	}
 
-	static String toJson(TellrawPart json) {
+	static void createRPC(Color colormode, ArrayList<ChatFormatter> formatters) {
+		final AtomicInteger rpc = new AtomicInteger(0);
+		formatters.add(ChatFormatter.builder("rpc", WORD_PATTERN).color(colormode).onmatch((match, cf, s) -> {
+			cf.setColor(RainbowPresserColors[rpc.getAndUpdate(i -> ++i < RainbowPresserColors.length ? i : 0)]);
+			return match;
+		}).build());
+	}
+
+	public static String toJson(TellrawPart json) {
 		return gson.toJson(json);
 	}
 
 	static TellrawPart createTellraw(CommandSender sender, String message, @Nullable Player player,
-									 @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier,
-									 String origin) {
+	                                 @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier,
+	                                 String origin) {
 		TellrawPart json = new TellrawPart("");
 		ChatOnlyComponent.tellrawCreate(mp, json); //TODO: Make nice API
 		json.addExtra(
@@ -249,7 +264,7 @@ public class ChatProcessing {
 			+ "]";
 	}
 
-	static ArrayList<ChatFormatter> addFormatters(Color colormode, Predicate<Player> canSee) {
+	static ArrayList<ChatFormatter> addFormatters(Color colormode, Predicate<Player> canSee, @Nullable FormatterComponent component) {
 		@SuppressWarnings("unchecked")
 		ArrayList<ChatFormatter> formatters = (ArrayList<ChatFormatter>) commonFormatters.clone();
 
@@ -306,7 +321,7 @@ public class ChatProcessing {
 						}
 						ChatPlayer mpp = TBMCPlayer.getPlayer(nottest ? p.getUniqueId() : new UUID(0, 0), ChatPlayer.class);
 						if (nottest) {
-							playPingSound(p);
+							playPingSound(p, component);
 						}
 						String color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
 						return color + (nottest ? p.getName() : pn.get()) + "§r"; //Fix name casing, except when testing
@@ -322,7 +337,7 @@ public class ChatProcessing {
 									+ match.toLowerCase() + " but was reported as online.");
 								return "§c" + match + "§r";
 							}
-							playPingSound(p);
+							playPingSound(p, component);
 							return PluginMain.essentials.getUser(p).getNickname();
 						}
 						error.accept("Player nicknamed " + match.toLowerCase()
@@ -333,12 +348,12 @@ public class ChatProcessing {
 		return formatters;
 	}
 
-	private static void playPingSound(Player p) {
-		if (PluginMain.Instance.notificationSound().get().length() == 0)
+	private static void playPingSound(Player p, @Nullable FormatterComponent component) {
+		if (component == null || component.notificationSound().get().length() == 0)
 			p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
 		else
-			p.playSound(p.getLocation(), PluginMain.Instance.notificationSound().get(), 1.0f,
-				PluginMain.Instance.notificationPitch().get());
+			p.playSound(p.getLocation(), component.notificationSound().get(), 1.0f,
+				component.notificationPitch().get());
 	}
 
 	static void doFunStuff(CommandSender sender, TBMCChatEventBase event, String message) {

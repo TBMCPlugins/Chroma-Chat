@@ -26,26 +26,41 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
+/**
+ * Random things I added over the years.
+ */
 public class FunComponent extends Component<PluginMain> implements Listener {
 	private boolean ActiveF = false;
 	private ChatPlayer FPlayer = null;
 	private BukkitTask Ftask = null;
-	private ArrayList<CommandSender> Fs = new ArrayList<>();
+	private HashSet<CommandSender> Fs = new HashSet<>();
 	private UnlolCommand command;
 	private TBMCSystemChatEvent.BroadcastTarget unlolTarget;
 	private TBMCSystemChatEvent.BroadcastTarget fTarget;
 
+	/**
+	 * The strings that count as laughs, see unlol.
+	 */
 	private ConfigData<String[]> laughStrings() {
 		return getConfig().getData("laughStrings", () -> new String[]{"xd", "lel", "lawl", "kek", "lmao", "hue", "hah", "rofl"});
 	}
 
+	/**
+	 * The "Press F to pay respects" meme in Minecraft. It will randomly appear on player death and keep track of how many "F"s are said in chat.
+	 * You can hover over a player's name to see their respect.
+	 */
 	private ConfigData<Boolean> respect() {
 		return getConfig().getData("respect", true);
 	}
 
+	/**
+	 * This is an inside joke on our server.
+	 * It keeps track of laughs (lols and what's defined in laughStrings) and if someone does /unlol or /unlaugh it will unlaugh the last person who laughed.
+	 * Which also blinds the laughing person for a few seconds. This action can only be performed once per laugh.
+	 */
 	private ConfigData<Boolean> unlol() {
 		return getConfig().getData("unlol", true);
 	}
@@ -105,7 +120,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 						FPlayer.FCount().set(FPlayer.FCount().get() + Fs.size());
 					TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL,
 						"§b" + Fs.size() + " " + (Fs.size() == 1 ? "person" : "people")
-						+ " paid their respects.§r", fTarget);
+							+ " paid their respects.§r", fTarget);
 					Fs.clear();
 				}
 			};
@@ -119,9 +134,10 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 			FPlayer.FDeaths().set(FPlayer.FDeaths().get() + 1);
 			TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL,
 				"§bPress F to pay respects.§r", fTarget);
-			Bukkit.getScheduler().runTaskLaterAsynchronously(PluginMain.Instance, tt, 15 * 20);
+			Ftask = Bukkit.getScheduler().runTaskLaterAsynchronously(PluginMain.Instance, tt, 15 * 20);
 		}
 	}
+
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) {
 		if (unlol().get())

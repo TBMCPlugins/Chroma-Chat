@@ -4,6 +4,7 @@ import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.architecture.Component;
+import buttondevteam.lib.architecture.ComponentMetadata;
 import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.player.TBMCPlayerBase;
 import com.google.gson.JsonArray;
@@ -22,9 +23,17 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * This component checks a specific Reddit thread every 10 seconds for comments such as "IGN: NorbiPeti" to link Reddit accounts and to determine their /r/thebutton flair.
+ * This was the original goal of this plugin when it was made.
+ */
+@ComponentMetadata(enabledByDefault = false)
 public class FlairComponent extends Component<PluginMain> {
+	/**
+	 * The Reddit thread to check for account connections. Re-enable the component if this was empty.
+	 */
 	ConfigData<String> flairThreadURL() {
-		return getConfig().getData("flairThreadURL", "https://www.reddit.com/r/Chromagamers/comments/51ys94/flair_thread_for_the_mc_server/");
+		return getConfig().getData("flairThreadURL", "");
 	}
 
 	/**
@@ -52,7 +61,7 @@ public class FlairComponent extends Component<PluginMain> {
 
 	private void FlairGetterThreadMethod() {
 		int errorcount = 0;
-		while (isEnabled()) {
+		while (isEnabled() && flairThreadURL().get().length() > 0) {
 			try {
 				String body = TBMCCoreAPI.DownloadString(flairThreadURL().get() + ".json?limit=1000");
 				JsonArray json = new JsonParser().parse(body).getAsJsonArray().get(1).getAsJsonObject().get("data")

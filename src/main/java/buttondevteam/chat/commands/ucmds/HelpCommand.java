@@ -1,14 +1,8 @@
 package buttondevteam.chat.commands.ucmds;
 
-import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
-import buttondevteam.lib.chat.TBMCChatAPI;
-import buttondevteam.lib.chat.TBMCCommandBase;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
 
 @CommandClass(modOnly = false, helpText = {
 	"Help",
@@ -36,19 +30,7 @@ public final class HelpCommand extends UCommandBase {
 				"- Playernames: Hover over them to get some player info",
 				"-- Respect: This is the number of paid respects divided by eliglble deaths. This is a reference to CoD:AW's \"Press F to pay respects\""});
 		else if (topicOrCommand.equalsIgnoreCase("commands")) {
-			ArrayList<String> text = new ArrayList<String>();
-			text.add("§6---- Command list ----");
-			for (TBMCCommandBase cmd : TBMCChatAPI.GetCommands().values())
-				if (!cmd.getClass().getAnnotation(CommandClass.class).modOnly() || PluginMain.permission.has(sender, "tbmc.admin"))
-					if (!cmd.isPlayerOnly() || sender instanceof Player)
-						if (!cmd.GetCommandPath().contains(" "))
-							text.add("/" + cmd.GetCommandPath());
-						else {
-							final String topcmd = cmd.GetCommandPath().substring(0, cmd.GetCommandPath().indexOf(' '));
-							if (!text.contains("/" + topcmd))
-								text.add("/" + topcmd);
-						}
-			sender.sendMessage(text.toArray(new String[0]));
+			sender.sendMessage(getManager().getCommandsText());
 		} else if (topicOrCommand.equalsIgnoreCase("colors")) {
 			sender.sendMessage(new String[]{"§6---- Chat colors/formats ----", //
 				"Tellraw name   - Code | Tellraw name    - Code", //

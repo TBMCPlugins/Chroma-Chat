@@ -16,7 +16,6 @@ import buttondevteam.chat.components.towncolors.TownColorComponent;
 import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.chat.listener.PlayerJoinLeaveListener;
 import buttondevteam.chat.listener.PlayerListener;
-import buttondevteam.core.MainPlugin;
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.architecture.ButtonPlugin;
@@ -37,12 +36,12 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 	public static PluginMain Instance;
 	public static ConsoleCommandSender Console;
 
-	public ConfigData<String> notificationSound() {
-		return getIConfig().getData("notificationSound", "");
-	}
-
-	public ConfigData<Float> notificationPitch() {
-		return getIConfig().getData("notificationPitch", 1.0f);
+	/**
+	 * If enabled, stores and displays the last 10 messages the player can see (public, their town chat etc.)
+	 * Can be used with the Discord plugin so players can see some of the conversation they missed that's visible on Discord anyways.
+	 */
+	public ConfigData<Boolean> storeChatHistory() {
+		return getIConfig().getData("storeChatHistory", true);
 	}
 
 	// Fired when plugin is first enabled

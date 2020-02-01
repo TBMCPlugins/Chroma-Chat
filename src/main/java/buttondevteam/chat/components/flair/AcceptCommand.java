@@ -6,10 +6,8 @@ import buttondevteam.chat.commands.ucmds.UCommandBase;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
-import buttondevteam.lib.chat.OptionallyPlayerCommandClass;
 import buttondevteam.lib.player.TBMCPlayer;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Timer;
@@ -19,14 +17,12 @@ import java.util.Timer;
 	"Accepts a flair from Reddit", //
 	"Use /u accept <username> if you commented from multiple accounts"
 })
-@OptionallyPlayerCommandClass(playerOnly = true)
 @RequiredArgsConstructor
 public class AcceptCommand extends UCommandBase {
 	private final FlairComponent component;
 
 	@Command2.Subcommand
-	public boolean def(CommandSender sender, @Command2.OptionalArg String username) {
-		final Player player = (Player) sender;
+	public boolean def(Player player, @Command2.OptionalArg String username) {
 		ChatPlayer p = TBMCPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class);
 		if (username == null && p.UserNames().size() > 1) {
 			player.sendMessage("§9Multiple users commented your name. §bPlease pick one using /u accept <username>");
