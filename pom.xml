@@ -2,13 +2,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.github.TBMCPlugins.ButtonCore</groupId>
+        <groupId>com.github.TBMCPlugins.ChromaCore</groupId>
         <artifactId>CorePOM</artifactId>
         <version>master-SNAPSHOT</version>
     </parent>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>The Button Minecraft Chat Plugin</name>
-	<description>The Button Minecraft Chat Plugin</description>
+	<name>Chroma-Chat Plugin</name>
+	<description>Chroma-Chat Plugin</description>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<resources>
@@ -29,7 +29,7 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
-		<finalName>ButtonChat</finalName>
+		<finalName>Chroma-Chat</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -188,8 +188,8 @@
 			<version>1.12.2-R0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>com.github.TBMCPlugins.ButtonCore</groupId>
-			<artifactId>ButtonCore</artifactId>
+			<groupId>com.github.TBMCPlugins.ChromaCore</groupId>
+			<artifactId>Chroma-Core</artifactId>
             <version>${branch}-SNAPSHOT</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/net.sourceforge.htmlcleaner/htmlcleaner -->
@@ -269,7 +269,7 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-	<artifactId>ButtonChat</artifactId>
+	<artifactId>Chroma-Chat</artifactId>
 	<organization>
 		<name>TBMCPlugins</name>
 		<url>https://github.com/TBMCPlugins</url>
