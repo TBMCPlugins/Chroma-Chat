@@ -5,14 +5,12 @@ import buttondevteam.chat.components.formatter.ChatProcessing;
 import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.architecture.IHaveConfig;
 import buttondevteam.lib.chat.Color;
-import buttondevteam.lib.chat.Priority;
 import lombok.Builder;
 import lombok.Data;
 import lombok.val;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -28,16 +26,6 @@ import java.util.stream.Collectors;
 @Builder
 public final class ChatFormatter {
 	Pattern regex;
-	boolean italic;
-	boolean bold;
-	boolean underlined;
-	boolean strikethrough;
-	boolean obfuscated;
-	Color color;
-	TriFunc<String, ChatFormatter, FormattedSection, String> onmatch;
-	String openlink;
-	@Builder.Default
-	Priority priority = Priority.Normal;
 	@Builder.Default
 	short removeCharCount = 0;
 	@Builder.Default
@@ -62,18 +50,6 @@ public final class ChatFormatter {
 
 	private ConfigData<Boolean> enabled(IHaveConfig config) {
 		return config.getData(name + ".enabled", true);
-	}
-
-	public enum Type {
-		Normal,
-		/**
-		 * Matches a start and an end section which gets converted to one section (for example see italics)
-		 */
-		Range,
-		/**
-		 * Exclude matching area from further processing (besides this formatter)
-		 */
-		Excluder
 	}
 
 	@FunctionalInterface
@@ -101,8 +77,8 @@ public final class ChatFormatter {
 		 */
 		val remchars = new ArrayList<int[]>();
 
-		header("Range section conversion");
-		sections = convertRangeSections(str, sections, remchars);
+		header("Range section creation");
+		sections = createRangeSections(str, sections, formatters, remchars);
 
 		header("Adding remove chars (RC)"); // Important to add after the range section conversion
 		addRemChars(sections, remchars, str);
@@ -117,28 +93,6 @@ public final class ChatFormatter {
 
 	private static void createSections(List<ChatFormatter> formatters, String str, ArrayList<FormattedSection> sections,
 	                                   boolean excluders) {
-		for (ChatFormatter formatter : formatters) {
-			if (excluders == (formatter.type != Type.Excluder))
-				continue; //If we're looking at excluders and this isn't one, skip - or vica-versa
-			Matcher matcher = formatter.regex.matcher(str);
-			while (matcher.find()) {
-				DebugCommand.SendDebugMessage("Found match from " + matcher.start() + " to " + (matcher.end() - 1));
-				DebugCommand.SendDebugMessage("With " + (excluders ? "excluder " : "") + "formatter: " + formatter);
-				sendMessageWithPointer(str, matcher.start(), matcher.end() - 1);
-				if (formatter.regex != ChatProcessing.ENTIRE_MESSAGE_PATTERN && sections.stream().anyMatch(fs -> fs.type == Type.Excluder && (fs.End >= matcher.start() && fs.Start <= matcher.end() - 1))) {
-					DebugCommand.SendDebugMessage("Ignoring formatter because of an excluder");
-					continue; //Exclude areas matched by excluders - Range sections are correctly handled afterwards
-				}
-				ArrayList<String> groups = new ArrayList<>();
-				for (int i = 0; i < matcher.groupCount(); i++)
-					groups.add(matcher.group(i + 1));
-				if (groups.size() > 0)
-					DebugCommand.SendDebugMessage("First group: " + groups.get(0));
-				FormattedSection section = new FormattedSection(formatter, matcher.start(), matcher.end() - 1, groups,
-					formatter.type);
-				sections.add(section);
-			}
-		}
 	}
 
 	private static void newCombine(String str, ArrayList<FormattedSection> sections, ArrayList<int[]> remchars) {
@@ -154,7 +108,7 @@ public final class ChatFormatter {
 		}
 	}
 
-	private static ArrayList<FormattedSection> convertRangeSections(String str, ArrayList<FormattedSection> sections, ArrayList<int[]> remchars) {
+	private static ArrayList<FormattedSection> createRangeSections(String str, List<ChatFormatter> formatters, ArrayList<int[]> remchars) {
 		ArrayList<FormattedSection> combined = new ArrayList<>();
 		Map<ChatFormatter, FormattedSection> nextSection = new HashMap<>();
 		boolean escaped = false;
@@ -172,7 +126,7 @@ public final class ChatFormatter {
 					combined.add(section); // The above will delete the \
 					DebugCommand.SendDebugMessage("Added section: " + section);
 				}
-				sendMessageWithPointer(str, section.Start, section.End);
+				ChatFormatUtils.sendMessageWithPointer(str, section.Start, section.End);
 				continue;
 			}
 			if (!escaped) {
@@ -183,17 +137,17 @@ public final class ChatFormatter {
 					 */
 					if (takenByBigGuy || formatter.removeCharCount < takenEnd - takenStart) {
 						DebugCommand.SendDebugMessage("Lose: " + section);
-						sendMessageWithPointer(str, section.Start, section.End);
+						ChatFormatUtils.sendMessageWithPointer(str, section.Start, section.End);
 						DebugCommand.SendDebugMessage("And win: " + takenFormatter);
 						continue; // The current section loses
 					}
 					nextSection.remove(takenFormatter); // The current section wins
 					DebugCommand.SendDebugMessage("Win: " + section);
-					sendMessageWithPointer(str, section.Start, section.End);
+					ChatFormatUtils.sendMessageWithPointer(str, section.Start, section.End);
 					DebugCommand.SendDebugMessage("And lose: " + takenFormatter);
 				}
 				boolean hasFormatter = nextSection.containsKey(formatter);
-				if (!hasFormatter) {
+				/*if (!hasFormatter) {
 					val ff = formatter;
 					val cfo = nextSection.keySet().stream().filter(f -> f.removeCharCount > ff.removeCharCount).findAny();
 					if (cfo.isPresent()) {
@@ -205,7 +159,7 @@ public final class ChatFormatter {
 							continue; //Not the formatter we're looking for - TODO: It doesn't fix the problem of italics at the end
 						}
 					}
-				}
+				}*/
 				takenStart = section.Start;
 				takenEnd = section.Start + formatter.removeCharCount;
 				takenFormatter = formatter;
@@ -218,19 +172,19 @@ public final class ChatFormatter {
 					combined.add(s);
 					takenByBigGuy = true;
 					DebugCommand.SendDebugMessage("Finished section: " + s);
-					sendMessageWithPointer(str, s.Start, s.End);
+					ChatFormatUtils.sendMessageWithPointer(str, s.Start, s.End);
 				} else {
 					DebugCommand.SendDebugMessage("Adding next section: " + section);
-					sendMessageWithPointer(str, section.Start, section.End);
+					ChatFormatUtils.sendMessageWithPointer(str, section.Start, section.End);
 					nextSection.put(formatter, section);
 					takenByBigGuy = false;
 				}
 				DebugCommand
 					.SendDebugMessage("New area taken: (" + takenStart + "-" + takenEnd + ") " + takenFormatter);
-				sendMessageWithPointer(str, takenStart, takenEnd);
+				ChatFormatUtils.sendMessageWithPointer(str, takenStart, takenEnd);
 			} else {
 				DebugCommand.SendDebugMessage("Skipping section: " + section); // This will keep the text (character)
-				sendMessageWithPointer(str, section.Start, section.End);
+				ChatFormatUtils.sendMessageWithPointer(str, section.Start, section.End);
 				escaped = false; // Reset escaping if applied, like if we're at the '*' in '\*'
 			}
 		}
@@ -250,7 +204,7 @@ public final class ChatFormatter {
 			.forEach(remchars::add);
 		DebugCommand.SendDebugMessage("Added remchars:");
 		DebugCommand.SendDebugMessage(remchars.stream().map(Arrays::toString).collect(Collectors.joining("; ")));
-		sendMessageWithPointer(str,
+		ChatFormatUtils.sendMessageWithPointer(str,
 			remchars.stream().flatMapToInt(Arrays::stream).toArray());
 	}
 
@@ -271,15 +225,15 @@ public final class ChatFormatter {
 				lastSection = lastSect;
 			}
 			DebugCommand.SendDebugMessage("Combining sections " + firstSection);
-			sendMessageWithPointer(str, firstSection.Start, firstSection.End);
+			ChatFormatUtils.sendMessageWithPointer(str, firstSection.Start, firstSection.End);
 			DebugCommand.SendDebugMessage(" and " + lastSection);
-			sendMessageWithPointer(str, lastSection.Start, lastSection.End);
+			ChatFormatUtils.sendMessageWithPointer(str, lastSection.Start, lastSection.End);
 			if (firstSection.Start == lastSection.Start && firstSection.End == lastSection.End) {
 				firstSection.Formatters.addAll(lastSection.Formatters);
 				firstSection.Matches.addAll(lastSection.Matches);
 				firstSection.type = lastSection.type;
 				DebugCommand.SendDebugMessage("To section " + firstSection);
-				sendMessageWithPointer(str, firstSection.Start, firstSection.End);
+				ChatFormatUtils.sendMessageWithPointer(str, firstSection.Start, firstSection.End);
 				sections.remove(i);
 				i = 0;
 				sortSections(sections);
@@ -305,7 +259,7 @@ public final class ChatFormatter {
 				Predicate<FormattedSection> removeIfNeeded = s -> {
 					if (s.Start < 0 || s.End < 0 || s.Start > s.End) {
 						DebugCommand.SendDebugMessage("  Removed: " + s);
-						sendMessageWithPointer(str, s.Start, s.End);
+						ChatFormatUtils.sendMessageWithPointer(str, s.Start, s.End);
 						sections.remove(s);
 						return true;
 					}
@@ -315,15 +269,15 @@ public final class ChatFormatter {
 				DebugCommand.SendDebugMessage("To sections");
 				if (!removeIfNeeded.test(firstSection)) {
 					DebugCommand.SendDebugMessage("  1:" + firstSection + "");
-					sendMessageWithPointer(str, firstSection.Start, firstSection.End);
+					ChatFormatUtils.sendMessageWithPointer(str, firstSection.Start, firstSection.End);
 				}
 				if (!removeIfNeeded.test(section)) {
 					DebugCommand.SendDebugMessage("  2:" + section + "");
-					sendMessageWithPointer(str, section.Start, section.End);
+					ChatFormatUtils.sendMessageWithPointer(str, section.Start, section.End);
 				}
 				if (!removeIfNeeded.test(lastSection)) {
 					DebugCommand.SendDebugMessage("  3:" + lastSection);
-					sendMessageWithPointer(str, lastSection.Start, lastSection.End);
+					ChatFormatUtils.sendMessageWithPointer(str, lastSection.Start, lastSection.End);
 				}
 				i = 0;
 			}
@@ -332,7 +286,7 @@ public final class ChatFormatter {
 			for (int j = i - 1; j <= i + 1; j++) {
 				if (j < sections.size() && sections.get(j).End < sections.get(j).Start) {
 					DebugCommand.SendDebugMessage("Removing section: " + sections.get(j));
-					sendMessageWithPointer(str, sections.get(j).Start, sections.get(j).End);
+					ChatFormatUtils.sendMessageWithPointer(str, sections.get(j).Start, sections.get(j).End);
 					sections.remove(j);
 					j--;
 					i = 0;
@@ -349,7 +303,7 @@ public final class ChatFormatter {
 			String originaltext;
 			int start = section.Start, end = section.End;
 			DebugCommand.SendDebugMessage("Start: " + start + " - End: " + end);
-			sendMessageWithPointer(str, start, end);
+			ChatFormatUtils.sendMessageWithPointer(str, start, end);
 			/*DebugCommand.SendDebugMessage("RCS: "+remchars.stream().filter(rc -> rc[0] <= start && start <= rc[1]).count());
 			DebugCommand.SendDebugMessage("RCE: "+remchars.stream().filter(rc -> rc[0] <= end && end <= rc[1]).count());
 			DebugCommand.SendDebugMessage("RCI: "+remchars.stream().filter(rc -> start < rc[0] || rc[1] < end).count());*/
@@ -430,20 +384,6 @@ public final class ChatFormatter {
 				? s1.End == s2.End ? Integer.compare(s2.Formatters.get(0).priority.GetValue(),
 				s1.Formatters.get(0).priority.GetValue()) : Integer.compare(s1.End, s2.End)
 				: Integer.compare(s1.Start, s2.Start));
-	}
-
-	private static void sendMessageWithPointer(String str, int... pointer) {
-		DebugCommand.SendDebugMessage(str);
-		StringBuilder sb = new StringBuilder(str.length());
-		Arrays.sort(pointer);
-		for (int i = 0; i < pointer.length; i++) {
-			for (int j = 0; j < pointer[i] - (i > 0 ? pointer[i - 1] + 1 : 0); j++)
-				sb.append(' ');
-			if (pointer[i] == (i > 0 ? pointer[i - 1] : -1))
-				continue;
-			sb.append('^');
-		}
-		DebugCommand.SendDebugMessage(sb.toString());
 	}
 
 	private static void header(String message) {

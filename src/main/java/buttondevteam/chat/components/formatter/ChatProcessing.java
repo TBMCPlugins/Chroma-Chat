@@ -49,7 +49,6 @@ public class ChatProcessing {
 	private static final Pattern CONSOLE_PING_PATTERN = Pattern.compile("(?i)" + Pattern.quote("@console"));
 	private static final Pattern HASHTAG_PATTERN = Pattern.compile("#(\\w+)");
 	private static final Pattern URL_PATTERN = Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),&]+(?:#[\\w]+)?)");
-	public static final Pattern ENTIRE_MESSAGE_PATTERN = Pattern.compile(".+");
 	private static final Pattern UNDERLINED_PATTERN = Pattern.compile("__");
 	private static final Pattern ITALIC_PATTERN = Pattern.compile("\\*");
 	private static final Pattern ITALIC_PATTERN_2 = Pattern.compile("_");
@@ -64,7 +63,10 @@ public class ChatProcessing {
 	private static final Pattern WORD_PATTERN = Pattern.compile("\\S+");
 	private static boolean pingedconsole = false;
 
-	public static final ChatFormatter ESCAPE_FORMATTER = ChatFormatter.builder("escape", ESCAPE_PATTERN).build();
+	/**
+	 * A special range formatter that removes the effect of the next formatter
+	 */
+	public static final ChatFormatter ESCAPE_FORMATTER = ChatFormatter.builder("escape", ESCAPE_PATTERN).type(ChatFormatter.Type.Range).build();
 
 	private static ArrayList<ChatFormatter> commonFormatters = Lists.newArrayList(
 		ChatFormatter.builder("bold", BOLD_PATTERN).bold(true).removeCharCount((short) 2).type(ChatFormatter.Type.Range)
