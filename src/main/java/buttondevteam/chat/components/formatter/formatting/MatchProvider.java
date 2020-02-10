@@ -8,4 +8,6 @@ public interface MatchProvider {
 	FormattedSection getNextSection(String message, ArrayList<int[]> ignoredAreas, ArrayList<int[]> removedCharacters);
 
 	boolean isFinished();
+
+	String getName();
 }

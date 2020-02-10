@@ -1,18 +1,21 @@
 package buttondevteam.chat.components.formatter.formatting;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
-@RequiredArgsConstructor
-public class RangeMatchProvider implements MatchProvider {
+public class RangeMatchProvider extends MatchProviderBase {
 	private final String pattern;
 	private final FormatSettings settings;
-	@Getter
-	private boolean finished;
 	private int nextIndex = 0;
 	private FormattedSection startedSection;
+
+	public RangeMatchProvider(String name, String pattern, FormatSettings settings) {
+		super(name);
+		this.pattern = pattern;
+		this.settings = settings;
+	}
 
 	@SuppressWarnings("DuplicatedCode")
 	@Override
@@ -29,9 +32,15 @@ public class RangeMatchProvider implements MatchProvider {
 		}
 		removedCharacters.add(new int[]{i, i + len - 1});
 		if (startedSection == null) {
-			startedSection = new FormattedSection(settings, i, i + len - 1, new ArrayList<>(0));
+			DebugCommand.SendDebugMessage("Started range match from " + i + " to " + (i + len - 1));
+			DebugCommand.SendDebugMessage("With settings: " + settings);
+			ChatFormatUtils.sendMessageWithPointer(message, i, i + len - 1);
+			startedSection = new FormattedSection(settings, i, i + len - 1, Collections.emptyList());
 			return null;
 		} else {
+			DebugCommand.SendDebugMessage("Finished range match from " + i + " to " + (i + len - 1));
+			DebugCommand.SendDebugMessage("With settings: " + settings);
+			ChatFormatUtils.sendMessageWithPointer(message, i, i + len - 1);
 			startedSection.End = i + len - 1;
 			return startedSection;
 		}

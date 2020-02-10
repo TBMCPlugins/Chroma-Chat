@@ -13,15 +13,10 @@ jdk:
 sudo: true
 dist: trusty # Needed for Java 8, although we might not need Java 8
 deploy:
-  # deploy develop to the staging environment
-  - provider: script
-    script: chmod +x deploy.sh && sh deploy.sh staging
+  - provider: releases
+    api_key:
+      secure: "F5YiEuD6LyRENUDMCslcSl0O0dg4IDk+nNeb4X2VLYlmb8dW9beMuIgjH8efTMeaQ3D/ntIkN0Dtf2GKvpOduhwkSbAgw4WM028X60SY9f2hmpEO3LmM4T1tKoDlI1T3BmhYP4KeTKBYn+etV1mSPbT07vUybCm/vGzvr96yMZGNFEoKsWLaEu7dZfBFULj4tXOwrLh/KO6BsdAHvZcGKWNVupPq3YoUVT0dpGcUudf5cpn+aaqMwyd709zgMbyCuqf+c5Udps43q4EKvr9z7TWxFUkGTPVVAcUVygJsi2ytuyA8TLMPq/KhYe9htnkNUnizbqv/j49xww0gVaD7OJXENJ4hAUTV4sdn1DXG45JXW+dir3V7YzbRYn3M+eCuKB2O77SXRZBkxcGtTMtCmghP9/tcRAQlXDXnxu7oAnlUVp17g/+aFApvlzZEZVx2N+fkyEe7JrUFlRCixtHyrmTLWhyV0Px9p0FHJpvSSCL0S0UKVAT/sNHYHhD5gouK7owEomEbG58XCsRDH6Et7RuDksB98ekK8brZp6S7dNIS2CVuVx1vIkXC8PzUGcpJQoztvEYUE20Axahh5s8AkE9n/O9jzs9ajcfYaHhWzYeUZzHdHllOYF9l6VoCUitTk4Sl8eJifSq3GzI+T6wGMBepZHLpe230MvBIrqGZ+Vg="
+    file: 'Chroma-Core/target/Chroma-Core.jar'
     on:
-      branch: dev
-    skip_cleanup: true
-  # deploy master to production
-  - provider: script
-    script: chmod +x deploy.sh && sh deploy.sh production
-    on:
-      branch: master
+      tags: true
     skip_cleanup: true

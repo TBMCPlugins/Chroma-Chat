@@ -1,21 +1,22 @@
 package buttondevteam.chat.components.formatter.formatting;
 
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@RequiredArgsConstructor
-public class RegexMatchProvider implements MatchProvider {
+public class RegexMatchProvider extends MatchProviderBase {
 	private final Pattern pattern;
 	private final FormatSettings settings;
 	private Matcher matcher;
-	@Getter
-	private boolean finished;
+
+	public RegexMatchProvider(String name, Pattern pattern, FormatSettings settings) {
+		super(name);
+		this.pattern = pattern;
+		this.settings = settings;
+	}
 
 	@Nullable
 	@Override

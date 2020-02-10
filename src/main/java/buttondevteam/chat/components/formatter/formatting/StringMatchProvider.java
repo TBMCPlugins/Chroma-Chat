@@ -1,15 +1,14 @@
 package buttondevteam.chat.components.formatter.formatting;
 
-import lombok.Getter;
+import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 
-public class StringMatchProvider implements MatchProvider {
+public class StringMatchProvider extends MatchProviderBase {
 	private final String[] strings;
 	private final FormatSettings settings;
-	@Getter
-	private boolean finished;
 	private int nextIndex = 0;
 
 	/**
@@ -18,7 +17,8 @@ public class StringMatchProvider implements MatchProvider {
 	 * @param settings The format settings
 	 * @param strings  The strings to match in the correct order
 	 */
-	public StringMatchProvider(FormatSettings settings, String... strings) {
+	public StringMatchProvider(String name, FormatSettings settings, String... strings) {
+		super(name);
 		this.settings = settings;
 		this.strings = strings;
 	}
@@ -37,6 +37,9 @@ public class StringMatchProvider implements MatchProvider {
 			return null;
 		}
 		nextIndex = i + len;
-		return new FormattedSection(settings, i, i + len - 1, new ArrayList<>(0));
+		DebugCommand.SendDebugMessage("Found string match from " + i + " to " + (i + len - 1));
+		DebugCommand.SendDebugMessage("With settings: " + settings);
+		ChatFormatUtils.sendMessageWithPointer(message, i, i + len - 1);
+		return new FormattedSection(settings, i, i + len - 1, Collections.emptyList());
 	}
 }
