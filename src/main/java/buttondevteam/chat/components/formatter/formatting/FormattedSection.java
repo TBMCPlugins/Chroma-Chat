@@ -1,8 +1,11 @@
 package buttondevteam.chat.components.formatter.formatting;
 
+import lombok.ToString;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@ToString
 public class FormattedSection {
 	public int Start;
 	public int End;

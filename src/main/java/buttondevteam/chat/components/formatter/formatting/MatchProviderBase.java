@@ -19,6 +19,9 @@ public abstract class MatchProviderBase implements MatchProvider {
 	@Override
 	public abstract FormattedSection getNextSection(String message, ArrayList<int[]> ignoredAreas, ArrayList<int[]> removedCharacters);
 
+	@Override
+	public abstract String toString();
+
 	ConfigData<Boolean> enabled(IHaveConfig config) {
 		return config.getData(name + ".enabled", true);
 	}

@@ -1,12 +1,15 @@
 package buttondevteam.chat.components.formatter.formatting;
 
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
+@ToString
 public class RangeMatchProvider extends MatchProviderBase {
 	private final String pattern;
+	@ToString.Exclude
 	private final FormatSettings settings;
 	private int nextIndex = 0;
 	private FormattedSection startedSection;

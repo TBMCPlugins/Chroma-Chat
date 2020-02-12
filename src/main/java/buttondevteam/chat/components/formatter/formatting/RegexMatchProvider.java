@@ -1,14 +1,17 @@
 package buttondevteam.chat.components.formatter.formatting;
 
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
+import lombok.ToString;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@ToString
 public class RegexMatchProvider extends MatchProviderBase {
 	private final Pattern pattern;
+	@ToString.Exclude
 	private final FormatSettings settings;
 	private Matcher matcher;
 

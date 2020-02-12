@@ -1,13 +1,16 @@
 package buttondevteam.chat.components.formatter.formatting;
 
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
+import lombok.ToString;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 
+@ToString
 public class StringMatchProvider extends MatchProviderBase {
 	private final String[] strings;
+	@ToString.Exclude
 	private final FormatSettings settings;
 	private int nextIndex = 0;
 

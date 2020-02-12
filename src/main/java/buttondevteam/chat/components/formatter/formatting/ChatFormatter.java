@@ -25,7 +25,7 @@ public final class ChatFormatter {
 		R apply(T1 x1, T2 x2, T3 x3);
 	}
 
-	public static void Combine(List<MatchProviderBase> formatters, String str, TellrawPart tp, IHaveConfig config) {
+	public static void Combine(List<MatchProviderBase> formatters, String str, TellrawPart tp, IHaveConfig config, FormatSettings defaults) {
 		/*
 		 * A global formatter is no longer needed
 		 */
@@ -40,7 +40,7 @@ public final class ChatFormatter {
 		 */
 		val remchars = new ArrayList<int[]>();
 
-		createSections(formatters, str, sections, excluded, remchars);
+		createSections(formatters, str, sections, excluded, remchars, defaults);
 		sortSections(sections);
 
 		header("Section combining");
@@ -52,12 +52,18 @@ public final class ChatFormatter {
 	}
 
 	private static void createSections(List<MatchProviderBase> formatters, String str, ArrayList<FormattedSection> sections,
-									   ArrayList<int[]> excludedAreas, ArrayList<int[]> removedCharacters) {
-		sections.add(new FormattedSection(FormatSettings.builder().color(Color.White).build(), 0, str.length() - 1, Collections.emptyList())); //Add entire message
-		for (var formatter : formatters) {
-			var sect = formatter.getNextSection(str, excludedAreas, removedCharacters);
-			if (sect != null)
-				sections.add(sect);
+									   ArrayList<int[]> excludedAreas, ArrayList<int[]> removedCharacters, FormatSettings defaults) {
+		sections.add(new FormattedSection(defaults, 0, str.length() - 1, Collections.emptyList())); //Add entire message
+		while (formatters.size() > 0) {
+			for (var iterator = formatters.iterator(); iterator.hasNext(); ) {
+				MatchProviderBase formatter = iterator.next();
+				DebugCommand.SendDebugMessage("Checking provider: " + formatter);
+				var sect = formatter.getNextSection(str, excludedAreas, removedCharacters);
+				if (sect != null)
+					sections.add(sect);
+				if (formatter.isFinished())
+					iterator.remove();
+			}
 		}
 	}
 
