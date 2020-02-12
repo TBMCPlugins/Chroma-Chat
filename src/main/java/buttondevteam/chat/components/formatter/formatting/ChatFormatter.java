@@ -3,8 +3,6 @@ package buttondevteam.chat.components.formatter.formatting;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.lib.architecture.IHaveConfig;
 import buttondevteam.lib.chat.Color;
-import lombok.Builder;
-import lombok.Data;
 import lombok.val;
 
 import java.util.*;
@@ -17,9 +15,7 @@ import java.util.stream.Collectors;
  * again.
  *
  * @author NorbiPeti
- */
-@Data
-@Builder
+ */ //TODO: Update doc
 public final class ChatFormatter {
 	private ChatFormatter() {
 	}
@@ -31,7 +27,7 @@ public final class ChatFormatter {
 
 	public static void Combine(List<MatchProviderBase> formatters, String str, TellrawPart tp, IHaveConfig config) {
 		/*
-		 * This method assumes that there is always a global formatter
+		 * A global formatter is no longer needed
 		 */
 		header("ChatFormatter.Combine begin");
 		ArrayList<FormattedSection> sections = new ArrayList<>();
@@ -57,7 +53,7 @@ public final class ChatFormatter {
 
 	private static void createSections(List<MatchProviderBase> formatters, String str, ArrayList<FormattedSection> sections,
 									   ArrayList<int[]> excludedAreas, ArrayList<int[]> removedCharacters) {
-		sections.add(new FormattedSection(FormatSettings.builder().color(Color.White).build(), 0, str.length() - 1, Collections.emptyList()));
+		sections.add(new FormattedSection(FormatSettings.builder().color(Color.White).build(), 0, str.length() - 1, Collections.emptyList())); //Add entire message
 		for (var formatter : formatters) {
 			var sect = formatter.getNextSection(str, excludedAreas, removedCharacters);
 			if (sect != null)
