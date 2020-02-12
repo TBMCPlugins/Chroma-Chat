@@ -4,6 +4,7 @@ import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public final class ChatFormatUtils {
 	private ChatFormatUtils() {}
@@ -26,6 +27,9 @@ public final class ChatFormatUtils {
 	 * Check if the given start and end position is inside any of the ranges
 	 */
 	static boolean isInRange(int start, int end, ArrayList<int[]> ranges) {
-		return ranges.stream().anyMatch(range -> range[1] >= start && range[0] <= end - 1);
+		System.out.println("Ranges: " + ranges.stream().map(x -> x[0] + "-" + x[1]).collect(Collectors.joining(", ")));
+		System.out.println("In range: " + start + " " + end + ": " +
+			ranges.stream().filter(range -> range[1] >= start && range[0] <= end).map(x -> x[0] + "-" + x[1]).findAny().orElse("none"));
+		return ranges.stream().anyMatch(range -> range[1] >= start && range[0] <= end);
 	}
 }

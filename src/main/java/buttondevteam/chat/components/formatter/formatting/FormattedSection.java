@@ -15,7 +15,8 @@ public class FormattedSection {
 	FormattedSection(FormatSettings settings, int start, int end, List<String> matches) {
 		Start = start;
 		End = end;
-		Settings = settings;
+		Settings = FormatSettings.builder().build();
+		Settings.copyFrom(settings);
 		Matches.addAll(matches);
 	}
 }

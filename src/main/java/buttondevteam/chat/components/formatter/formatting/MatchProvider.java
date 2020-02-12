@@ -10,4 +10,9 @@ public interface MatchProvider {
 	boolean isFinished();
 
 	String getName();
+
+	@Override
+	String toString();
+
+	void reset();
 }

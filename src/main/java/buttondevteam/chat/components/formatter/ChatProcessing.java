@@ -50,26 +50,26 @@ public class ChatProcessing {
 	private static ArrayList<MatchProviderBase> commonFormatters = Lists.newArrayList(
 		new RangeMatchProvider("bold", "**", FormatSettings.builder().bold(true).build()),
 		new RangeMatchProvider("italic", "*", FormatSettings.builder().italic(true).build()),
-		new RangeMatchProvider("italic2", "_", FormatSettings.builder().italic(true).build()),
 		new RangeMatchProvider("underlined", "__", FormatSettings.builder().underlined(true).build()),
+		new RangeMatchProvider("italic2", "_", FormatSettings.builder().italic(true).build()),
 		new RangeMatchProvider("strikethrough", "~~", FormatSettings.builder().strikethrough(true).build()),
 		new RangeMatchProvider("spoiler", "||", FormatSettings.builder().obfuscated(true)
 			.onmatch((match, cf, fs) -> {
 				cf.setHoverText(match);
 				return match;
 			}).build()),
-		new StringMatchProvider("nullMention", FormatSettings.builder().color(Color.DarkRed).build(), "null"), // Properly added a bug as a feature
+		new StringMatchProvider("nullMention", FormatSettings.builder().color(Color.DarkRed).build(), true, "null"), // Properly added a bug as a feature
 		new StringMatchProvider("consolePing", FormatSettings.builder().color(Color.Aqua)
 			.onmatch((match, builder, section) -> {
 				if (!pingedconsole) {
 					System.out.print("\007");
 					pingedconsole = true; // Will set it to false in ProcessChat
 				}
-				return match;
-			}).build(), "@console"),
+				return "@console";
+			}).build(), true, "@console"),
 
 		new RegexMatchProvider("hashtag", HASHTAG_PATTERN, FormatSettings.builder().color(Color.Blue).openlink("https://twitter.com/hashtag/$1").build()),
-		new StringMatchProvider("cyan", FormatSettings.builder().color(Color.Aqua).build(), "cyan"), // #55
+		new StringMatchProvider("cyan", FormatSettings.builder().color(Color.Aqua).build(), true, "cyan"), // #55
 		new RangeMatchProvider("code", "`", FormatSettings.builder().color(Color.DarkGray).build()),
 		new RegexMatchProvider("maskedLink", MASKED_LINK_PATTERN, FormatSettings.builder().underlined(true)
 			.onmatch((match, builder, section) -> {
@@ -88,7 +88,7 @@ public class ChatProcessing {
 				var player = players.get(playerC);
 				playPingSound(player, ComponentManager.getIfEnabled(FormatterComponent.class));
 				return "@someone (" + player.getDisplayName() + "§r)";
-			}).build()));
+			}).build(), true, "@someone"));
 	private static Gson gson = new GsonBuilder()
 		.registerTypeHierarchyAdapter(TellrawSerializableEnum.class, new TellrawSerializer.TwEnum())
 		.registerTypeHierarchyAdapter(Collection.class, new TellrawSerializer.TwCollection())
@@ -265,8 +265,8 @@ public class ChatProcessing {
 					System.out.println(message);
 			};
 
-			if (names.length > 0)
-				formatters.add(new StringMatchProvider("name", FormatSettings.builder().color(Color.Aqua)
+			if (names.length > 0) //Add as first so it handles special characters (_) - TODO: But after URLs
+				formatters.add(0, new StringMatchProvider("name", FormatSettings.builder().color(Color.Aqua)
 					.onmatch((match, builder, section) -> {
 						Player p = Bukkit.getPlayer(match);
 						Optional<String> pn = nottest ? Optional.empty()
@@ -281,10 +281,10 @@ public class ChatProcessing {
 						}
 						String color = String.format("§%x", (mpp.GetFlairColor() == 0x00 ? 0xb : mpp.GetFlairColor()));
 						return color + (nottest ? p.getName() : pn.get()) + "§r"; //Fix name casing, except when testing
-					}).build(), names));
+					}).build(), true, names));
 
-			if (nicknames.length > 0)
-				formatters.add(new StringMatchProvider("nickname", FormatSettings.builder().color(Color.Aqua)
+			if (nicknames.length > 0) //Add as first so it handles special characters
+				formatters.add(0, new StringMatchProvider("nickname", FormatSettings.builder().color(Color.Aqua)
 					.onmatch((match, builder, section) -> {
 						if (PlayerListener.nicknames.containsKey(match.toLowerCase())) { //Made a stream and all that but I can actually store it lowercased
 							Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(match.toLowerCase()));
@@ -299,7 +299,7 @@ public class ChatProcessing {
 						error.accept("Player nicknamed " + match.toLowerCase()
 							+ " not found in nickname map but was reported as online.");
 						return "§c" + match + "§r";
-					}).build(), nicknames));
+					}).build(), true, nicknames));
 		}
 		return formatters;
 	}

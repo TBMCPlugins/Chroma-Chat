@@ -19,11 +19,15 @@ public class FormatSettings {
 
 	public void copyFrom(FormatSettings settings) {
 		try {
-			for (var field : FormatSettings.class.getDeclaredFields())
-				if (field.getType() == boolean.class && field.getBoolean(settings))
-					field.setBoolean(this, true); //Set to true if either of them are true
-				else if (field.get(this) == null)
+			for (var field : FormatSettings.class.getDeclaredFields()) {
+				if (field.getType() == boolean.class) {
+					if (field.getBoolean(settings))
+						field.setBoolean(this, true); //Set to true if either of them are true
+				} else if (field.get(settings) != null) {
+					//System.out.println("Setting " + field.getType() + " " + field.getName() + " from " + field.get(this) + " to " + field.get(settings));
 					field.set(this, field.get(settings));
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

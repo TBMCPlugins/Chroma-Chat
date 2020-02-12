@@ -35,7 +35,7 @@ public class RegexMatchProvider extends MatchProviderBase {
 		DebugCommand.SendDebugMessage("With settings: " + settings);
 		ChatFormatUtils.sendMessageWithPointer(message, start, end);
 		if (ChatFormatUtils.isInRange(start, end, ignoredAreas)) {
-			DebugCommand.SendDebugMessage("Formatter is in ignored area, skipping");
+			DebugCommand.SendDebugMessage("Match is in ignored area, skipping");
 			return null; //Not setting finished to true, so it will go to the next match
 		}
 		ArrayList<String> groups = new ArrayList<>();
@@ -43,6 +43,12 @@ public class RegexMatchProvider extends MatchProviderBase {
 			groups.add(matcher.group(i + 1));
 		if (groups.size() > 0)
 			DebugCommand.SendDebugMessage("First group: " + groups.get(0));
+		ignoredAreas.add(new int[]{start, end});
 		return new FormattedSection(settings, matcher.start(), matcher.end() - 1, groups);
+	}
+
+	@Override
+	public void resetSubclass() {
+		matcher = null;
 	}
 }

@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * A {@link ChatFormatter} shows what formatting to use based on regular expressions. {@link ChatFormatter#Combine(List, String, TellrawPart, IHaveConfig)} is used to turn it into a {@link TellrawPart}, combining
+ * A {@link ChatFormatter} shows what formatting to use based on regular expressions. {@link ChatFormatter#Combine(List, String, TellrawPart, IHaveConfig, FormatSettings)}} is used to turn it into a {@link TellrawPart}, combining
  * intersecting parts found, for example when {@code _abc*def*ghi_} is said in chat, it'll turn it into an underlined part, then an underlined <i>and italics</i> part, finally an underlined part
  * again.
  *
@@ -40,6 +40,8 @@ public final class ChatFormatter {
 		 */
 		val remchars = new ArrayList<int[]>();
 
+		escapeThings(str, excluded, remchars);
+
 		createSections(formatters, str, sections, excluded, remchars, defaults);
 		sortSections(sections);
 
@@ -51,18 +53,32 @@ public final class ChatFormatter {
 		header("ChatFormatter.Combine done");
 	}
 
+	private static void escapeThings(String str, ArrayList<int[]> ignoredAreas, ArrayList<int[]> remchars) {
+		boolean escaped = false;
+		for (int i = 0; i < str.length(); i++) {
+			if (str.charAt(i) == '\\') {
+				remchars.add(new int[]{i, i});
+				ignoredAreas.add(new int[]{i + 1, i + 1});
+				i++; //Ignore a potential second slash
+			}
+		}
+	}
+
 	private static void createSections(List<MatchProviderBase> formatters, String str, ArrayList<FormattedSection> sections,
-									   ArrayList<int[]> excludedAreas, ArrayList<int[]> removedCharacters, FormatSettings defaults) {
+	                                   ArrayList<int[]> excludedAreas, ArrayList<int[]> removedCharacters, FormatSettings defaults) {
 		sections.add(new FormattedSection(defaults, 0, str.length() - 1, Collections.emptyList())); //Add entire message
+		formatters.forEach(MatchProviderBase::reset); //Reset state information, as we aren't doing deep cloning
 		while (formatters.size() > 0) {
 			for (var iterator = formatters.iterator(); iterator.hasNext(); ) {
 				MatchProviderBase formatter = iterator.next();
 				DebugCommand.SendDebugMessage("Checking provider: " + formatter);
 				var sect = formatter.getNextSection(str, excludedAreas, removedCharacters);
-				if (sect != null)
+				if (sect != null) //Not excluding the area here because the range matcher shouldn't take it all
 					sections.add(sect);
-				if (formatter.isFinished())
+				if (formatter.isFinished()) {
+					DebugCommand.SendDebugMessage("Provider finished");
 					iterator.remove();
+				}
 			}
 		}
 	}
@@ -103,12 +119,8 @@ public final class ChatFormatter {
 				FormattedSection section = new FormattedSection(firstSection.Settings, lastSection.Start, origend,
 					firstSection.Matches);
 				section.Settings.copyFrom(lastSection.Settings);
-				section.Matches.addAll(lastSection.Matches); // TODO: Clean
+				section.Matches.addAll(lastSection.Matches);
 				sections.add(i, section);
-				// Use the properties of the first section not the second one
-				lastSection.Settings = firstSection.Settings;
-				lastSection.Matches.clear();
-				lastSection.Matches.addAll(firstSection.Matches);
 
 				lastSection.Start = origend + 1;
 				lastSection.End = origend2;

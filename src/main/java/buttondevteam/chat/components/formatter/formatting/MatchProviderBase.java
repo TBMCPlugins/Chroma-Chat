@@ -22,6 +22,13 @@ public abstract class MatchProviderBase implements MatchProvider {
 	@Override
 	public abstract String toString();
 
+	protected abstract void resetSubclass();
+
+	public void reset() {
+		finished = false;
+		resetSubclass();
+	}
+
 	ConfigData<Boolean> enabled(IHaveConfig config) {
 		return config.getData(name + ".enabled", true);
 	}
