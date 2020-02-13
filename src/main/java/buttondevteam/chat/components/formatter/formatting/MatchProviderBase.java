@@ -20,7 +20,9 @@ public abstract class MatchProviderBase implements MatchProvider {
 	public abstract FormattedSection getNextSection(String message, ArrayList<int[]> ignoredAreas, ArrayList<int[]> removedCharacters);
 
 	@Override
-	public abstract String toString();
+	public String toString() {
+		return name;
+	}
 
 	protected abstract void resetSubclass();
 

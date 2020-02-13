@@ -62,7 +62,7 @@ public class ChatFormatIT {
 		list.add(new ChatFormatIT(sender, "*https://norbipeti.github.io/ heh*", new TellrawPart("https://norbipeti.github.io/").setItalic(true).setUnderlined(true)
 			.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
 				new TellrawPart("Click to open").setColor(Color.Blue)))
-			.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/")), new TellrawPart(" heh").setItalic(true)));
+			.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/")).setColor(Color.White), new TellrawPart(" heh").setItalic(true).setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "*test _test_ test*", new TellrawPart("test test test").setItalic(true).setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "*test __test__ test*", new TellrawPart("test ").setItalic(true).setColor(Color.White),
 			new TellrawPart("test").setItalic(true).setUnderlined(true).setColor(Color.White), new TellrawPart(" test").setItalic(true).setColor(Color.White)));

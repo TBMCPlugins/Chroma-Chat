@@ -6,7 +6,6 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.Collections;
 
-@ToString
 public class RangeMatchProvider extends MatchProviderBase {
 	private final String pattern;
 	@ToString.Exclude

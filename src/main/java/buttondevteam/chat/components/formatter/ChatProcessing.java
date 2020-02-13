@@ -68,7 +68,6 @@ public class ChatProcessing {
 				return "@console";
 			}).build(), true, "@console"),
 
-		new RegexMatchProvider("hashtag", HASHTAG_PATTERN, FormatSettings.builder().color(Color.Blue).openlink("https://twitter.com/hashtag/$1").build()),
 		new StringMatchProvider("cyan", FormatSettings.builder().color(Color.Aqua).build(), true, "cyan"), // #55
 		new RangeMatchProvider("code", "`", FormatSettings.builder().color(Color.DarkGray).build()),
 		new RegexMatchProvider("maskedLink", MASKED_LINK_PATTERN, FormatSettings.builder().underlined(true)
@@ -80,6 +79,7 @@ public class ChatProcessing {
 				return text;
 			}).build()),
 		new RegexMatchProvider("url", URL_PATTERN, FormatSettings.builder().underlined(true).openlink("$1").build()),
+		new RegexMatchProvider("hashtag", HASHTAG_PATTERN, FormatSettings.builder().color(Color.Blue).openlink("https://twitter.com/hashtag/$1").build()),
 		new StringMatchProvider("someone", FormatSettings.builder().color(Color.Aqua)
 			.onmatch((match, builder, section) -> {
 				if (Bukkit.getOnlinePlayers().size() == 0) return match;

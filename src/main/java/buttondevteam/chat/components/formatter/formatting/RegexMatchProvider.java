@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@ToString
 public class RegexMatchProvider extends MatchProviderBase {
 	private final Pattern pattern;
 	@ToString.Exclude

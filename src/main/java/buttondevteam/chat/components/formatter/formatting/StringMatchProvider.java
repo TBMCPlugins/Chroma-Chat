@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 
-@ToString
 public class StringMatchProvider extends MatchProviderBase {
 	private final String[] strings;
 	@ToString.Exclude

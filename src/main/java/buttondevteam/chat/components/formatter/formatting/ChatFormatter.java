@@ -42,7 +42,13 @@ public final class ChatFormatter {
 
 		escapeThings(str, excluded, remchars);
 
-		createSections(formatters, str, sections, excluded, remchars, defaults);
+		sections.add(new FormattedSection(defaults, 0, str.length() - 1, Collections.emptyList())); //Add entire message
+		var providers = formatters.stream().filter(mp -> mp instanceof RegexMatchProvider).collect(Collectors.toList());
+		createSections(providers, str, sections, excluded, remchars, defaults);
+		providers = formatters.stream().filter(mp -> mp instanceof StringMatchProvider).collect(Collectors.toList());
+		createSections(providers, str, sections, excluded, remchars, defaults);
+		providers = formatters.stream().filter(mp -> mp instanceof RangeMatchProvider).collect(Collectors.toList());
+		createSections(providers, str, sections, excluded, remchars, defaults);
 		sortSections(sections);
 
 		header("Section combining");
@@ -66,7 +72,6 @@ public final class ChatFormatter {
 
 	private static void createSections(List<MatchProviderBase> formatters, String str, ArrayList<FormattedSection> sections,
 	                                   ArrayList<int[]> excludedAreas, ArrayList<int[]> removedCharacters, FormatSettings defaults) {
-		sections.add(new FormattedSection(defaults, 0, str.length() - 1, Collections.emptyList())); //Add entire message
 		formatters.forEach(MatchProviderBase::reset); //Reset state information, as we aren't doing deep cloning
 		while (formatters.size() > 0) {
 			for (var iterator = formatters.iterator(); iterator.hasNext(); ) {
@@ -91,7 +96,8 @@ public final class ChatFormatter {
 			{
 				FormattedSection firstSect = sections.get(i - 1);
 				FormattedSection lastSect = sections.get(i);
-				if (firstSect.Start > lastSect.Start) { //The first can't start later
+				if (firstSect.Start > lastSect.Start //The first can't start later
+					|| (firstSect.Start == lastSect.Start && firstSect.End < lastSect.End)) {
 					var section = firstSect;
 					firstSect = lastSect;
 					lastSect = section;
@@ -112,18 +118,23 @@ public final class ChatFormatter {
 				i = 0;
 				sortSections(sections);
 				continue;
-			} else if (firstSection.End > lastSection.Start && firstSection.Start < lastSection.End) {
-				int origend2 = firstSection.End;
+			} else if (firstSection.End >= lastSection.Start && firstSection.Start <= lastSection.End) {
+				int firstSectEnd = firstSection.End;
 				firstSection.End = lastSection.Start - 1;
-				int origend = lastSection.End;
-				FormattedSection section = new FormattedSection(firstSection.Settings, lastSection.Start, origend,
+				int lastSectEnd = lastSection.End;
+				FormattedSection section = new FormattedSection(firstSection.Settings, lastSection.Start, lastSectEnd,
 					firstSection.Matches);
 				section.Settings.copyFrom(lastSection.Settings);
 				section.Matches.addAll(lastSection.Matches);
 				sections.add(i, section);
 
-				lastSection.Start = origend + 1;
-				lastSection.End = origend2;
+				if (firstSectEnd > lastSection.End) { //Copy first section info to last as the lastSection initially cuts the firstSection in half
+					lastSection.Settings = FormatSettings.builder().build();
+					lastSection.Settings.copyFrom(firstSection.Settings);
+				}
+
+				lastSection.Start = lastSectEnd + 1;
+				lastSection.End = firstSectEnd;
 
 				Predicate<FormattedSection> removeIfNeeded = s -> {
 					if (s.Start < 0 || s.End < 0 || s.Start > s.End) {
