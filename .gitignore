@@ -69,14 +69,12 @@ build/
 *.tlb
 *.tli
 *.tlh
-*.tmp
 *.tmp_proj
 *.log
 *.vspscc
 *.vssscc
 .builds
 *.pidb
-*.log
 *.scc
 
 # Visual C++ cache files
@@ -195,7 +193,6 @@ $RECYCLE.BIN/
 *.egg
 *.egg-info
 dist/
-build/
 eggs/
 parts/
 var/
@@ -217,7 +214,7 @@ pip-log.txt
 .mr.developer.cfg
 .metadata/*
 TheButtonAutoFlair/out/artifacts/Autoflair/Autoflair.jar
-#*.iml
+*.iml
 *.name
 .idea/compiler.xml
 *.xml

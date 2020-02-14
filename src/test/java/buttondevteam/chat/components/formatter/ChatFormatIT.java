@@ -30,7 +30,7 @@ public class ChatFormatIT {
 		DebugCommand.DebugMode = true;
 		PluginMain.permission = Mockito.mock(Permission.class);
 
-		List<Object> list = new ArrayList<Object>();
+		List<Object> list = new ArrayList<>();
 
 		list.add(new ChatFormatIT(sender, "*test*", new TellrawPart("test").setItalic(true).setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "**test**", new TellrawPart("test").setBold(true).setColor(Color.White)));

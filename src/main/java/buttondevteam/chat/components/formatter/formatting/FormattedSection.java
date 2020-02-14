@@ -10,7 +10,7 @@ public class FormattedSection {
 	public int Start;
 	public int End;
 	public FormatSettings Settings;
-	public List<String> Matches = new ArrayList<String>();
+	public List<String> Matches = new ArrayList<>();
 
 	FormattedSection(FormatSettings settings, int start, int end, List<String> matches) {
 		Start = start;

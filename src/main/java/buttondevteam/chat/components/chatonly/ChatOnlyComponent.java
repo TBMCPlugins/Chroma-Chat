@@ -1,6 +1,7 @@
 package buttondevteam.chat.components.chatonly;
 
 import buttondevteam.chat.ChatPlayer;
+import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.components.formatter.formatting.TellrawEvent;
 import buttondevteam.chat.components.formatter.formatting.TellrawPart;
 import buttondevteam.core.ComponentManager;
@@ -20,7 +21,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
  * Allows players to enter chat-only mode which puts them into spectator mode and disallows everything besides chatting.
  */
 @ComponentMetadata(enabledByDefault = false)
-public class ChatOnlyComponent extends Component implements Listener {
+public class ChatOnlyComponent extends Component<PluginMain> implements Listener {
 	@Override
 	protected void enable() {
 		registerListener(this);

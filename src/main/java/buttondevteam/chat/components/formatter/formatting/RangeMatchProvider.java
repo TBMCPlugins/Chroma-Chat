@@ -19,7 +19,6 @@ public class RangeMatchProvider extends MatchProviderBase {
 		this.settings = settings;
 	}
 
-	@SuppressWarnings("DuplicatedCode")
 	@Override
 	public FormattedSection getNextSection(String message, ArrayList<int[]> ignoredAreas, ArrayList<int[]> removedCharacters) {
 		int i, len;

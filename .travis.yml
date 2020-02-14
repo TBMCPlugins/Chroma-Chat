@@ -7,6 +7,7 @@ before_install: | # Wget BuildTools and run if cached folder not found
   # grep so that download counts don't appear in log files
   java -jar BuildTools.jar --rev 1.12.2 | grep -vE "[^/ ]*/[^/ ]*\s*KB\s*$" | grep -v "^\s*$"
   fi
+  cp ci/settings.xml $HOME/.m2/
 language: java
 jdk:
   - oraclejdk8

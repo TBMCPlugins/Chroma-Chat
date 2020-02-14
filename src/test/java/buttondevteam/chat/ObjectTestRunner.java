@@ -1,15 +1,5 @@
 package buttondevteam.chat;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -19,6 +9,12 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestClass;
+
+import java.lang.annotation.*;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Based on {@link Parameterized}
@@ -32,10 +28,10 @@ public class ObjectTestRunner extends Suite {
 	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.METHOD)
-	public static @interface Objects {
+	public @interface Objects {
 	}
 
-	private class TestClassRunnerForObjects extends BlockJUnit4ClassRunner {
+	private static class TestClassRunnerForObjects extends BlockJUnit4ClassRunner {
 
 		private List<Object> objectList;
 		private int fParameterSetNumber;
@@ -77,13 +73,13 @@ public class ObjectTestRunner extends Suite {
 		}
 	}
 
-	private final ArrayList<Runner> runners = new ArrayList<Runner>();
+	private final ArrayList<Runner> runners = new ArrayList<>();
 
 	/**
 	 * Only called reflectively. Do not use programmatically.
 	 */
 	public ObjectTestRunner(Class<?> klass) throws Throwable {
-		super(klass, Collections.<Runner>emptyList());
+		super(klass, Collections.emptyList());
 		List<Object> objectsList = getObjectsList(getTestClass());
 		for (int i = 0; i < objectsList.size(); i++)
 			runners.add(new TestClassRunnerForObjects(getTestClass().getJavaClass(), objectsList, i));

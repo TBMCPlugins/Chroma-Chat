@@ -71,6 +71,6 @@ public final class TellrawEvent<T extends TellrawEvent.Action> implements Serial
 		}
 	}
 
-	public static interface Action extends TellrawSerializableEnum {
+	public interface Action extends TellrawSerializableEnum {
 	}
 }

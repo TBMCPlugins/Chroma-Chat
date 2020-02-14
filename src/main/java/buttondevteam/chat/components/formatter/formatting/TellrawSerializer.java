@@ -48,6 +48,7 @@ public abstract class TellrawSerializer {
 			throw new UnsupportedOperationException();
 		}
 
+		@SuppressWarnings("ConstantConditions")
 		@Override
 		public void write(JsonWriter writer, Boolean val) throws IOException {
 			if (val)
