@@ -69,13 +69,13 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 		Component.registerComponent(this, new FunComponent());
 		Component.registerComponent(this, new AppendTextComponent());
 		Component.registerComponent(this, new FormatterComponent());
-		getCommand2MC().registerCommand(new DebugCommand());
-		getCommand2MC().registerCommand(new HelpCommand());
-		getCommand2MC().registerCommand(new HistoryCommand());
-		getCommand2MC().registerCommand(new InfoCommand());
-		getCommand2MC().registerCommand(new MWikiCommand());
-		getCommand2MC().registerCommand(new ReloadCommand());
-		getCommand2MC().registerCommand(new SnapCommand());
+		registerCommand(new DebugCommand());
+		registerCommand(new HelpCommand());
+		registerCommand(new HistoryCommand());
+		registerCommand(new InfoCommand());
+		registerCommand(new MWikiCommand());
+		registerCommand(new ReloadCommand());
+		registerCommand(new SnapCommand());
 	}
 
 	public static Essentials essentials = null;
