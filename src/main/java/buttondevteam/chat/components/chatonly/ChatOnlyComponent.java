@@ -17,7 +17,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 /**
- * Allows players to enter chat-only mode which puts them into spectator mode and disallows everything besides chatting.
+ * Allows players to enter chat-only mode which puts them into spectator mode and disallows moving.
  */
 @ComponentMetadata(enabledByDefault = false)
 public class ChatOnlyComponent extends Component implements Listener {
