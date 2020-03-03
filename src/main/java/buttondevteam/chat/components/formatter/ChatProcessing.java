@@ -134,19 +134,28 @@ public class ChatProcessing {
 				return true;
 		}
 
-		doFunStuff(sender, e, message);
-
-		final String channelidentifier = getChannelID(channel, e.getOrigin());
-		PluginMain.Instance.getServer().getConsoleSender()
-			.sendMessage(String.format("%s <%s§r> %s", channelidentifier, getSenderName(sender, player), message));
-
-		if (Bukkit.getOnlinePlayers().size() == 0) return false; //Don't try to send to nobody (errors on 1.14)
-
 		ChatPlayer mp;
 		if (player != null)
 			mp = TBMCPlayerBase.getPlayer(player.getUniqueId(), ChatPlayer.class);
 		else //Due to the online player map, getPlayer() can be more efficient than getAs()
 			mp = e.getUser().getAs(ChatPlayer.class); //May be null
+
+		if (mp != null) {
+			if (System.nanoTime() - mp.LastMessageTime < 1000 * component.minTimeBetweenMessages().get()) { //0.1s by default
+				sender.sendMessage("§cYou are sending messages too fast!");
+				return true;
+			}
+			mp.LastMessageTime = System.nanoTime();
+		}
+
+		doFunStuff(sender, e, message);
+
+		final String channelidentifier = getChannelID(channel, e.getOrigin());
+
+		PluginMain.Instance.getServer().getConsoleSender()
+			.sendMessage(String.format("%s <%s§r> %s", channelidentifier, getSenderName(sender, player), message));
+
+		if (Bukkit.getOnlinePlayers().size() == 0) return false; //Don't try to send to nobody (errors on 1.14)
 
 		Color colormode = channel.Color().get();
 		if (mp != null && mp.OtherColorMode != null)
@@ -226,8 +235,8 @@ public class ChatProcessing {
 	}
 
 	static TellrawPart createTellraw(CommandSender sender, String message, @Nullable Player player,
-	                                 @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier,
-	                                 String origin) {
+									 @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier,
+									 String origin) {
 		TellrawPart json = new TellrawPart("");
 		ChatOnlyComponent.tellrawCreate(mp, json); //TODO: Make nice API
 		json.addExtra(

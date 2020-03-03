@@ -51,6 +51,7 @@ public class ChatPlayer extends TBMCPlayerBase {
 	public boolean RainbowPresserColorMode = false;
 	public Color OtherColorMode = null;
 	public boolean ChatOnly = false;
+	public long LastMessageTime = 0L;
 
 	public static final int FlairTimeNonPresser = -1;
 	public static final int FlairTimeCantPress = -2;
@@ -58,9 +59,8 @@ public class ChatPlayer extends TBMCPlayerBase {
 
 	/**
 	 * Gets the player's flair, optionally formatting for Minecraft.
-	 * 
-	 * @param noformats
-	 *            The MC formatting codes will be only applied if false
+	 *
+	 * @param noformats The MC formatting codes will be only applied if false
 	 * @return The flair
 	 */
 	public String GetFormattedFlair(boolean noformats) {
@@ -76,7 +76,7 @@ public class ChatPlayer extends TBMCPlayerBase {
 
 	/**
 	 * Gets the player's flair, formatted for Minecraft.
-	 * 
+	 *
 	 * @return The flair
 	 */
 	public String GetFormattedFlair() {
@@ -100,7 +100,7 @@ public class ChatPlayer extends TBMCPlayerBase {
 		// PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard().getTeams().add()
 		Player p = Bukkit.getPlayer(uuid);
 		if (p != null)
-            p.setPlayerListName(String.format("%s%s", p.getDisplayName(), GetFormattedFlair()));
+			p.setPlayerListName(String.format("%s%s", p.getDisplayName(), GetFormattedFlair()));
 	}
 
 	public short GetFlairColor() {

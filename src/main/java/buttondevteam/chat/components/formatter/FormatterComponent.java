@@ -34,6 +34,13 @@ public class FormatterComponent extends Component<PluginMain> {
 		return getConfig().getData("notificationPitch", 1.0f);
 	}
 
+	/**
+	 * The minimum time between messages in milliseconds.
+	 */
+	public ConfigData<Integer> minTimeBetweenMessages() {
+		return getConfig().getData("minTimeBetweenMessages", 100);
+	}
+
 
 	@Override
 	protected void enable() {
