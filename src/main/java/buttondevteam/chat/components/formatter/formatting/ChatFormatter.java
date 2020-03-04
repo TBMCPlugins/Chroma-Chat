@@ -10,12 +10,12 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * A {@link ChatFormatter} shows what formatting to use based on regular expressions. {@link ChatFormatter#Combine(List, String, TellrawPart, IHaveConfig, FormatSettings)}} is used to turn it into a {@link TellrawPart}, combining
+ * A {@link MatchProvider} finds where the given {@link FormatSettings} need to be applied. {@link ChatFormatter#Combine(List, String, TellrawPart, IHaveConfig, FormatSettings)}} is used to turn it into a {@link TellrawPart}, combining
  * intersecting parts found, for example when {@code _abc*def*ghi_} is said in chat, it'll turn it into an underlined part, then an underlined <i>and italics</i> part, finally an underlined part
  * again.
  *
  * @author NorbiPeti
- */ //TODO: Update doc
+ */
 public final class ChatFormatter {
 	private ChatFormatter() {
 	}
@@ -25,7 +25,8 @@ public final class ChatFormatter {
 		R apply(T1 x1, T2 x2, T3 x3);
 	}
 
-	public static void Combine(List<MatchProviderBase> formatters, String str, TellrawPart tp, IHaveConfig config, FormatSettings defaults) {
+	//synchronized: Some of the formatters are reused, see createSections(...)
+	public static synchronized void Combine(List<MatchProviderBase> formatters, String str, TellrawPart tp, IHaveConfig config, FormatSettings defaults) {
 		/*
 		 * A global formatter is no longer needed
 		 */
@@ -44,11 +45,11 @@ public final class ChatFormatter {
 
 		sections.add(new FormattedSection(defaults, 0, str.length() - 1, Collections.emptyList())); //Add entire message
 		var providers = formatters.stream().filter(mp -> mp instanceof RegexMatchProvider).collect(Collectors.toList());
-		createSections(providers, str, sections, excluded, remchars, defaults);
+		createSections(providers, str, sections, excluded, remchars);
 		providers = formatters.stream().filter(mp -> mp instanceof StringMatchProvider).collect(Collectors.toList());
-		createSections(providers, str, sections, excluded, remchars, defaults);
+		createSections(providers, str, sections, excluded, remchars);
 		providers = formatters.stream().filter(mp -> mp instanceof RangeMatchProvider).collect(Collectors.toList());
-		createSections(providers, str, sections, excluded, remchars, defaults);
+		createSections(providers, str, sections, excluded, remchars);
 		sortSections(sections);
 
 		header("Section combining");
@@ -71,7 +72,7 @@ public final class ChatFormatter {
 	}
 
 	private static void createSections(List<MatchProviderBase> formatters, String str, ArrayList<FormattedSection> sections,
-	                                   ArrayList<int[]> excludedAreas, ArrayList<int[]> removedCharacters, FormatSettings defaults) {
+	                                   ArrayList<int[]> excludedAreas, ArrayList<int[]> removedCharacters) {
 		formatters.forEach(MatchProviderBase::reset); //Reset state information, as we aren't doing deep cloning
 		while (formatters.size() > 0) {
 			for (var iterator = formatters.iterator(); iterator.hasNext(); ) {

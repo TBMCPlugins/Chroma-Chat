@@ -4,6 +4,9 @@ import buttondevteam.lib.chat.Color;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * Describes how a matched section of the message should look. May be combined with other format settings.
+ */
 @Data
 @Builder
 public class FormatSettings {
