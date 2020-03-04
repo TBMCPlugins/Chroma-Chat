@@ -260,7 +260,7 @@ public final class ChatFormatter {
 	private static void sortSections(ArrayList<FormattedSection> sections) {
 		sections.sort(
 			(s1, s2) -> s1.Start == s2.Start
-				? s1.End == s2.End ? 0 : Integer.compare(s1.End, s2.End) //TODO: Test
+				? s1.End == s2.End ? 0 : Integer.compare(s1.End, s2.End)
 				: Integer.compare(s1.Start, s2.Start));
 	}
 

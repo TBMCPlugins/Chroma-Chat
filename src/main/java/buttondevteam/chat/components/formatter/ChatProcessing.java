@@ -265,7 +265,7 @@ public class ChatProcessing {
 					System.out.println(message);
 			};
 
-			if (names.length > 0) //Add as first so it handles special characters (_) - TODO: But after URLs
+			if (names.length > 0) //Add as first so it handles special characters (_) - though the order of the different types are defined
 				formatters.add(0, new StringMatchProvider("name", FormatSettings.builder().color(Color.Aqua)
 					.onmatch((match, builder, section) -> {
 						Player p = Bukkit.getPlayer(match);
