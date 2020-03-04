@@ -19,14 +19,12 @@ import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.dynmap.towny.DTBridge;
 
-import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
@@ -81,14 +79,10 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 		var cs = getConfig().getConfig().getConfigurationSection("towncolors");
 		if (cs != null)
 			loadTC.accept(cs);
-		else
-			load_old(loadTC, null); //Load old data
 		if (usenc) {
 			var ncs = getConfig().getConfig().getConfigurationSection("nationcolors");
 			if (ncs != null)
 				loadNC.accept(ncs);
-			else
-				load_old(null, loadNC); //Why not choose by making different args null
 		}
 
 		TownColors.keySet().removeIf(t -> !TownyComponent.TU.getTownsMap().containsKey(t)); // Removes town colors for deleted/renamed towns
@@ -226,26 +220,5 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 	@EventHandler
 	public void onPlayerJoin(TBMCPlayerJoinEvent event) {
 		updatePlayerColors(event.getPlayer(), event.GetPlayer().asPluginPlayer(ChatPlayer.class));
-	}
-
-	private static void load_old(Consumer<ConfigurationSection> loadTC,
-	                             Consumer<ConfigurationSection> loadNC) {
-		PluginMain.Instance.getLogger().info("Loading files...");
-		try {
-			File file = new File("TBMC/chatsettings.yml");
-			if (file.exists()) {
-				YamlConfiguration yc = new YamlConfiguration();
-				yc.load(file);
-				ConfigurationSection cs;
-				if (loadTC != null && (cs = yc.getConfigurationSection("towncolors")) != null)
-					loadTC.accept(cs);
-				if (loadNC != null && (cs = yc.getConfigurationSection("nationcolors")) != null)
-					loadNC.accept(cs);
-				PluginMain.Instance.getLogger().info("Loaded files!");
-			} else
-				PluginMain.Instance.getLogger().info("No files to load, first run probably.");
-		} catch (Exception e) {
-			TBMCCoreAPI.SendException("Error while loading chat files!", e);
-		}
 	}
 }

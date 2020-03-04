@@ -5,11 +5,9 @@ import buttondevteam.chat.ObjectTestRunner;
 import buttondevteam.chat.ObjectTestRunner.Objects;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
-import buttondevteam.chat.components.formatter.formatting.ChatFormatter;
-import buttondevteam.chat.components.formatter.formatting.TellrawEvent;
+import buttondevteam.chat.components.formatter.formatting.*;
 import buttondevteam.chat.components.formatter.formatting.TellrawEvent.ClickAction;
 import buttondevteam.chat.components.formatter.formatting.TellrawEvent.HoverAction;
-import buttondevteam.chat.components.formatter.formatting.TellrawPart;
 import buttondevteam.core.TestPrepare;
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.chat.Color;
@@ -32,7 +30,7 @@ public class ChatFormatIT {
 		DebugCommand.DebugMode = true;
 		PluginMain.permission = Mockito.mock(Permission.class);
 
-		List<Object> list = new ArrayList<Object>();
+		List<Object> list = new ArrayList<>();
 
 		list.add(new ChatFormatIT(sender, "*test*", new TellrawPart("test").setItalic(true).setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "**test**", new TellrawPart("test").setBold(true).setColor(Color.White)));
@@ -64,7 +62,7 @@ public class ChatFormatIT {
 		list.add(new ChatFormatIT(sender, "*https://norbipeti.github.io/ heh*", new TellrawPart("https://norbipeti.github.io/").setItalic(true).setUnderlined(true)
 			.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT,
 				new TellrawPart("Click to open").setColor(Color.Blue)))
-			.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/")), new TellrawPart(" heh").setItalic(true)));
+			.setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://norbipeti.github.io/")).setColor(Color.White), new TellrawPart(" heh").setItalic(true).setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "*test _test_ test*", new TellrawPart("test test test").setItalic(true).setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, "*test __test__ test*", new TellrawPart("test ").setItalic(true).setColor(Color.White),
 			new TellrawPart("test").setItalic(true).setUnderlined(true).setColor(Color.White), new TellrawPart(" test").setItalic(true).setColor(Color.White)));
@@ -109,12 +107,12 @@ public class ChatFormatIT {
 
 	@Test
 	public void testMessage() {
-		ArrayList<ChatFormatter> cfs = ChatProcessing.addFormatters(Color.White, p -> true, null);
+		ArrayList<MatchProviderBase> cfs = ChatProcessing.addFormatters(p -> true, null);
 		final String chid = ChatProcessing.getChannelID(Channel.GlobalChat, ChatUtils.MCORIGIN);
 		if (rainbowMode)
 			ChatProcessing.createRPC(Color.White, cfs);
 		final TellrawPart tp = ChatProcessing.createTellraw(sender, message, null, null, null, chid, ChatUtils.MCORIGIN);
-		ChatFormatter.Combine(cfs, message, tp, null);
+		ChatFormatter.Combine(cfs, message, tp, null, FormatSettings.builder().color(Color.White).build());
 		System.out.println("Testing: " + message);
 		// System.out.println(ChatProcessing.toJson(tp));
 		final TellrawPart expectedtp = ChatProcessing.createTellraw(sender, message, null, null, null, chid, ChatUtils.MCORIGIN);

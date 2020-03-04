@@ -12,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Method;
-
 @CommandClass(helpText = {
 	"Town Color", //
 	"This command allows setting a color for a town.", //
@@ -23,18 +21,6 @@ import java.lang.reflect.Method;
 @RequiredArgsConstructor
 public class TownColorCommand extends UCommandBase {
 	private final TownColorComponent component;
-	@Override
-	public String[] getHelpText(Method method, Command2.Subcommand ann) {
-		StringBuilder cns = new StringBuilder(" <colorname1>");
-		for (int i = 2; i <= component.colorCount().get(); i++)
-			cns.append(" [colorname").append(i).append("]");
-		return new String[] { //
-			"§6---- Town Color ----", //
-			"This command allows setting color(s) for a town.", //
-			"The town will be shown with this color on Dynmap and all players in the town will appear in chat with these colors.", //
-			"The colors will split the name evenly.", //
-		};
-	}
 
 	@Command2.Subcommand
 	public boolean def(Player player, String... colornames) {

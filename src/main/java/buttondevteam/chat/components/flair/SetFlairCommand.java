@@ -23,7 +23,7 @@ public class SetFlairCommand extends AdminCommandBase {
 			sender.sendMessage("§cPlayer not found.&r");
 			return true;
 		}
-		short ft = 0x00;
+		short ft;
 		if (flairtime.equalsIgnoreCase("non-presser"))
 			ft = ChatPlayer.FlairTimeNonPresser;
 		else if (flairtime.equalsIgnoreCase("cant-press"))
