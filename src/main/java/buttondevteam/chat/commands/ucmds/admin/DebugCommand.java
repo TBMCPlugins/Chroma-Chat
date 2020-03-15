@@ -13,7 +13,7 @@ public class DebugCommand extends AdminCommandBase {
 	public static boolean DebugMode = false;
 
 	@Command2.Subcommand
-	public boolean def(CommandSender sender, String alias, String[] args) {
+	public boolean def(CommandSender sender) {
 		sender.sendMessage("§eDebug mode " + ((DebugMode = !DebugMode) ? "§aenabled." : "§cdisabled."));
 		return true;
 	}

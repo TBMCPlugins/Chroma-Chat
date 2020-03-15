@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @CommandClass(helpText = {
-	"§6---- F Top ----", //
+	"F Top", //
 	"Shows the respect leaderboard" //
 })
 public class FTopCommand extends ICommand2MC {

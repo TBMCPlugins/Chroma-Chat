@@ -7,7 +7,6 @@ import buttondevteam.lib.architecture.IHaveConfig;
 import buttondevteam.lib.chat.*;
 import buttondevteam.lib.player.ChromaGamerBase;
 import lombok.val;
-import org.bukkit.command.CommandSender;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -101,9 +100,9 @@ public class AppendTextComponent extends Component<PluginMain> {
 		}
 
 		@Command2.Subcommand
-		public void def(CommandSender sender, @Command2.OptionalArg @Command2.TextArg String message) {
-			TBMCChatAPI.SendChatMessage(ChatMessage.builder(sender, ChromaGamerBase.getFromSender(sender),
-				(message == null ? "" : message + " ") + appendedText).fromCommand(true).build());
+		public void def(Command2MCSender sender, @Command2.OptionalArg @Command2.TextArg String message) {
+			TBMCChatAPI.SendChatMessage(ChatMessage.builder(sender.getSender(), ChromaGamerBase.getFromSender(sender.getSender()),
+				(message == null ? "" : message + " ") + appendedText).fromCommand(true).permCheck(sender.getPermCheck()).build());
 		}
 
 		@Override

@@ -8,7 +8,7 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 @CommandClass(modOnly = false, helpText = {
-	"§6---- Chat-only mode ----", //
+	"Chat-only mode", //
 	"This mode makes you invincible but unable to move, teleport or interact with the world in any way", //
 	"It was designed for chat clients", //
 	"Once enabled, the only way of disabling it is by relogging to the server" //

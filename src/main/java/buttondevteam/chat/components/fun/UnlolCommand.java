@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @CommandClass(modOnly = false, helpText = {
-	"§6---- Unlol/unlaugh ----",
+	"Unlol/unlaugh",
 	"This command is based on a joke between NorbiPeti and Ghostise",
 	"It will make the last person saying one of the recognized laugh strings blind for a few seconds",
 	"Note that you can only unlaugh laughs that weren't unlaughed before"

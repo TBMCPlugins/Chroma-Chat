@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 @CommandClass(helpText = {
-	"§6---- Set flair -----", "Set a flair for a player",
+	"Set flair", "Set a flair for a player",
 	"Usage: /u admin setflair <player> <flairtime (or non-presser, cant-press, none)> <cheater(true/false)> [username]",
 	"Example 1: /u admin setflair NorbiPeti 19 false NorbiPeti --> orange (19s)",
 	"Example 2: /u admin setflair iie 0 true asde --> purple (0s)"

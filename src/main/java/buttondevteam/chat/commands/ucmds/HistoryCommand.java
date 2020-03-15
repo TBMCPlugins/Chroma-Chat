@@ -15,7 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 @CommandClass(helpText = {
-	"§6--- Chat History ----", //
+	"Chat History", //
 	"Returns the last 10 messages the player can see." //
 })
 public class HistoryCommand extends UCommandBase {
