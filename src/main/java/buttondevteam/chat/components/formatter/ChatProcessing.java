@@ -221,7 +221,7 @@ public class ChatProcessing {
 			new TellrawPart(channelidentifier)
 				.setHoverEvent(
 					TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT,
-						new TellrawPart((ChatUtils.MCORIGIN.equals(origin) ? "" : "From " + origin + "n")
+						new TellrawPart((ChatUtils.MCORIGIN.equals(origin) ? "" : "From " + origin + "\n")
 							+ "Copy message").setColor(Color.Blue)))
 				.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAction.SUGGEST_COMMAND, message)));
 		if (PluginMain.permission.has(sender, "tbmc.badge.diamond"))
