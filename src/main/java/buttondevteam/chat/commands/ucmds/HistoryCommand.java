@@ -5,6 +5,7 @@ import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.chat.ChatMessage;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
+import buttondevteam.lib.chat.CustomTabCompleteMethod;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.bukkit.command.CommandSender;
@@ -61,6 +62,11 @@ public class HistoryCommand extends UCommandBase {
 		if (!sent.get())
 			sender.sendMessage("No messages can be found.");
 		return true;
+	}
+
+	@CustomTabCompleteMethod(param = "channel")
+	public Iterable<String> def() {
+		return Channel.getChannels().map(ch -> ch.ID)::iterator;
 	}
 
 	@RequiredArgsConstructor

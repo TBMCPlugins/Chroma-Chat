@@ -23,41 +23,42 @@ import java.util.stream.Collectors;
 })
 public class FTopCommand extends ICommand2MC {
 
-    private final File playerdir = new File(TBMCPlayerBase.TBMC_PLAYERS_DIR);
-    private ChatPlayer[] cached;
-    private long lastcache = 0;
+	private final File playerdir = new File(TBMCPlayerBase.TBMC_PLAYERS_DIR);
+	private ChatPlayer[] cached;
+	private long lastcache = 0;
 
-    public boolean def(CommandSender sender, @Command2.OptionalArg int page) {
-        Bukkit.getScheduler().runTaskAsynchronously(PluginMain.Instance, () -> {
-            if (cached == null || lastcache < System.nanoTime() - 60000000000L) { // 1m - (no guarantees of nanoTime's relation to 0, so we need the null check too)
-                cached = Arrays.stream(Objects.requireNonNull(playerdir.listFiles())).sequential()
-                        .filter(f -> f.getName().length() > 4)
-                        .map(f -> {
-                            try {
-                                return TBMCPlayerBase.getPlayer(
-                                        UUID.fromString(f.getName().substring(0, f.getName().length() - 4)), ChatPlayer.class);
-                            } catch (Exception e) {
-                                return null;
-                            }
-                        })
-                        .filter(Objects::nonNull)
-                        .sorted((cp1, cp2) -> Double.compare(cp2.getF(), cp1.getF()))
-                        .toArray(ChatPlayer[]::new); // TODO: Properly implement getting all players
-                lastcache = System.nanoTime();
-            }
-            int i;
-            try {
-				i = page<1?1:page;
+	@Command2.Subcommand
+	public boolean def(CommandSender sender, @Command2.OptionalArg int page) {
+		Bukkit.getScheduler().runTaskAsynchronously(PluginMain.Instance, () -> {
+			if (cached == null || lastcache < System.nanoTime() - 60000000000L) { // 1m - (no guarantees of nanoTime's relation to 0, so we need the null check too)
+				cached = Arrays.stream(Objects.requireNonNull(playerdir.listFiles())).sequential()
+					.filter(f -> f.getName().length() > 4)
+					.map(f -> {
+						try {
+							return TBMCPlayerBase.getPlayer(
+								UUID.fromString(f.getName().substring(0, f.getName().length() - 4)), ChatPlayer.class);
+						} catch (Exception e) {
+							return null;
+						}
+					})
+					.filter(Objects::nonNull)
+					.sorted((cp1, cp2) -> Double.compare(cp2.getF(), cp1.getF()))
+					.toArray(ChatPlayer[]::new); // TODO: Properly implement getting all players
+				lastcache = System.nanoTime();
+			}
+			int i;
+			try {
+				i = page < 1 ? 1 : page;
 			} catch (Exception e) {
 				i = 1;
 			}
-            val ai = new AtomicInteger();
-            sender.sendMessage("§6---- Top Fs ----");
-            sender.sendMessage(Arrays.stream(cached).skip((i - 1) * 10).limit(i * 10)
-                    .map(cp -> String.format("%d. %s - %f.2", ai.incrementAndGet(), cp.PlayerName().get(), cp.getF()))
-                    .collect(Collectors.joining("\n")));
-        });
-        return true;
-    }
+			val ai = new AtomicInteger();
+			sender.sendMessage("§6---- Top Fs ----");
+			sender.sendMessage(Arrays.stream(cached).skip((i - 1) * 10).limit(i * 10)
+				.map(cp -> String.format("%d. %s - %f.2", ai.incrementAndGet(), cp.PlayerName().get(), cp.getF()))
+				.collect(Collectors.joining("\n")));
+		});
+		return true;
+	}
 
 }

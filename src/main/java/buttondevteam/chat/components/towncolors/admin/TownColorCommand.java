@@ -7,7 +7,9 @@ import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
+import buttondevteam.lib.chat.CustomTabCompleteMethod;
 import com.palmergames.bukkit.towny.object.Town;
+import com.palmergames.bukkit.towny.object.TownyObject;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -32,6 +34,16 @@ public class TownColorCommand extends AdminCommandBase { //TODO: Command path al
 		}
 		Town targetTown = TownyComponent.TU.getTownsMap().get(town.toLowerCase());
 		return SetTownColor(sender, targetTown, colornames);
+	}
+
+	@CustomTabCompleteMethod(param = "colornames")
+	public Iterable<String> def(String town) {
+		return TownColorCommand.tabcompleteColor();
+	}
+
+	@CustomTabCompleteMethod(param = "town")
+	public Iterable<String> def() {
+		return TownyComponent.TU.getDataSource().getTowns().stream().map(TownyObject::getName)::iterator;
 	}
 
 	public static boolean SetTownColor(CommandSender sender, Town town, String[] colors) {
@@ -101,5 +113,9 @@ public class TownColorCommand extends AdminCommandBase { //TODO: Command path al
 
 	public static String getTownNameCased(String name) {
 		return TownyComponent.TU.getTownsMap().get(name.toLowerCase()).getName();
+	}
+
+	public static Iterable<String> tabcompleteColor() {
+		return Arrays.stream(Color.values()).skip(1).map(Color::getName)::iterator;
 	}
 }

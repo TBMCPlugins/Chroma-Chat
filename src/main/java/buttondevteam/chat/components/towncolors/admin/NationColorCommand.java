@@ -8,8 +8,10 @@ import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
+import buttondevteam.lib.chat.CustomTabCompleteMethod;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
+import com.palmergames.bukkit.towny.object.TownyObject;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -27,6 +29,16 @@ public class NationColorCommand extends AdminCommandBase {
 			return true;
 		}
 		return SetNationColor(sender, n, color);
+	}
+
+	@CustomTabCompleteMethod(param = "color")
+	public Iterable<String> def(String nation) {
+		return TownColorCommand.tabcompleteColor();
+	}
+
+	@CustomTabCompleteMethod(param = "nation")
+	public Iterable<String> def() {
+		return TownyComponent.TU.getDataSource().getNations().stream().map(TownyObject::getName)::iterator;
 	}
 
 	public static boolean SetNationColor(CommandSender sender, Nation nation, String color) {

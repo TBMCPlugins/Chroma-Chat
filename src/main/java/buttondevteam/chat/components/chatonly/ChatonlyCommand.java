@@ -1,6 +1,7 @@
 package buttondevteam.chat.components.chatonly;
 
 import buttondevteam.chat.ChatPlayer;
+import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.ICommand2MC;
 import buttondevteam.lib.player.TBMCPlayer;
@@ -15,6 +16,7 @@ import org.bukkit.entity.Player;
 })
 public final class ChatonlyCommand extends ICommand2MC {
 
+	@Command2.Subcommand
 	public boolean def(Player player) {
 		ChatPlayer p = TBMCPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class);
 		p.ChatOnly = true;

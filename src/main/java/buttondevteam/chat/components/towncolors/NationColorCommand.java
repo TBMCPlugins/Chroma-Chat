@@ -1,10 +1,12 @@
 package buttondevteam.chat.components.towncolors;
 
 import buttondevteam.chat.commands.ucmds.UCommandBase;
+import buttondevteam.chat.components.towncolors.admin.TownColorCommand;
 import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
+import buttondevteam.lib.chat.CustomTabCompleteMethod;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -34,5 +36,10 @@ public class NationColorCommand extends UCommandBase {
 			return true;
 		}
 		return buttondevteam.chat.components.towncolors.admin.NationColorCommand.SetNationColor(player, n, color);
+	}
+
+	@CustomTabCompleteMethod(param = "color")
+	public Iterable<String> def() {
+		return TownColorCommand.tabcompleteColor();
 	}
 }

@@ -14,7 +14,11 @@ import org.bukkit.event.Listener;
 
 import java.util.HashSet;
 
-@CommandClass
+@CommandClass(helpText = {
+	"Press",
+	"This command resets the restart countdown if it's active. Can only be used once per player.",
+	"It's based on Reddit's /r/thebutton"
+})
 public class PressCommand extends ICommand2MC implements Listener {
 	private HashSet<CommandSender> pressers; //Will be cleared with this class on shutdown/disable
 	private ScheduledRestartCommand command;

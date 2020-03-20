@@ -2,15 +2,13 @@ package buttondevteam.chat.components.fun;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
-import buttondevteam.lib.chat.Color;
-import buttondevteam.lib.chat.Command2;
-import buttondevteam.lib.chat.CommandClass;
-import buttondevteam.lib.chat.ICommand2MC;
+import buttondevteam.lib.chat.*;
 import buttondevteam.lib.player.TBMCPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @CommandClass(path = "u c", helpText = {
 	"Rainbow mode",
@@ -56,5 +54,10 @@ public class CCommand extends ICommand2MC {
 			}
 		}
 		return true;
+	}
+
+	@CustomTabCompleteMethod(param = "color")
+	public Iterable<String> def() {
+		return Stream.concat(Stream.of("off"), Arrays.stream(Color.values()).map(Color::getName))::iterator;
 	}
 }

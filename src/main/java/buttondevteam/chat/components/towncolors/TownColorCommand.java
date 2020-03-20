@@ -5,6 +5,7 @@ import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
+import buttondevteam.lib.chat.CustomTabCompleteMethod;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
@@ -44,5 +45,10 @@ public class TownColorCommand extends UCommandBase {
 			return true;
 		}
 		return buttondevteam.chat.components.towncolors.admin.TownColorCommand.SetTownColor(player, t, colornames);
+	}
+
+	@CustomTabCompleteMethod(param = "colornames")
+	public Iterable<String> def() {
+		return buttondevteam.chat.components.towncolors.admin.TownColorCommand.tabcompleteColor();
 	}
 }

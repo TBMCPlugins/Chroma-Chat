@@ -107,7 +107,7 @@ public class ChatProcessing {
 		Player player = (sender instanceof Player ? (Player) sender : null);
 		User user = PluginMain.essentials.getUser(player);
 
-		if (player != null) {
+		if (player != null && PluginMain.essentials.getSettings().cancelAfkOnInteract()) {
 			user.updateActivity(true); //Could talk in a private channel, so broadcast
 			if (user.isMuted())
 				return true;
@@ -213,8 +213,8 @@ public class ChatProcessing {
 	}
 
 	static TellrawPart createTellraw(CommandSender sender, String message, @Nullable Player player,
-									 @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier,
-									 String origin) {
+	                                 @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier,
+	                                 String origin) {
 		TellrawPart json = new TellrawPart("");
 		ChatOnlyComponent.tellrawCreate(mp, json); //TODO: Make nice API
 		json.addExtra(

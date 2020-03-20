@@ -21,7 +21,7 @@ import java.util.Map;
 
 @CommandClass(modOnly = false, helpText = {
 	"Unlol/unlaugh",
-	"This command is based on a joke between NorbiPeti and Ghostise",
+	"This command is based on an inside joke",
 	"It will make the last person saying one of the recognized laugh strings blind for a few seconds",
 	"Note that you can only unlaugh laughs that weren't unlaughed before"
 })
