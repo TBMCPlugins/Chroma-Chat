@@ -120,22 +120,25 @@ public final class ChatFormatter {
 				sortSections(sections);
 				continue;
 			} else if (firstSection.End >= lastSection.Start && firstSection.Start <= lastSection.End) {
-				int firstSectEnd = firstSection.End;
-				firstSection.End = lastSection.Start - 1;
-				int lastSectEnd = lastSection.End;
-				FormattedSection section = new FormattedSection(firstSection.Settings, lastSection.Start, lastSectEnd,
+				int middleStart = lastSection.Start;
+				// |----|--    |------|
+				// --|----|    -|----|-
+				int middleEnd = Math.min(lastSection.End, firstSection.End);
+				int lastSectEnd = Math.max(lastSection.End, firstSection.End);
+				FormattedSection section = new FormattedSection(firstSection.Settings, middleStart, middleEnd,
 					firstSection.Matches);
 				section.Settings.copyFrom(lastSection.Settings);
 				section.Matches.addAll(lastSection.Matches);
 				sections.add(i, section);
 
-				if (firstSectEnd > lastSection.End) { //Copy first section info to last as the lastSection initially cuts the firstSection in half
+				if (firstSection.End > lastSection.End) { //Copy first section info to last as the lastSection initially cuts the firstSection in half
 					lastSection.Settings = FormatSettings.builder().build();
 					lastSection.Settings.copyFrom(firstSection.Settings);
 				}
 
-				lastSection.Start = lastSectEnd + 1;
-				lastSection.End = firstSectEnd;
+				firstSection.End = middleStart - 1;
+				lastSection.Start = middleEnd + 1;
+				lastSection.End = lastSectEnd;
 
 				Predicate<FormattedSection> removeIfNeeded = s -> {
 					if (s.Start < 0 || s.End < 0 || s.Start > s.End) {
