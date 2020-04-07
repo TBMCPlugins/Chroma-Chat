@@ -213,6 +213,7 @@
         <dependency>
             <groupId>com.palmergames.bukkit.towny</groupId>
             <artifactId>Towny</artifactId>
+            <!-- <version>8d3b6b6</version> ButtonCore repo -->
             <version>0.96.1.0</version>
             <scope>provided</scope>
         </dependency>

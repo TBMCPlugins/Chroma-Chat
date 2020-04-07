@@ -2,7 +2,6 @@ package buttondevteam.chat.components.towncolors;
 
 import buttondevteam.chat.commands.ucmds.UCommandBase;
 import buttondevteam.chat.components.towny.TownyComponent;
-import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.CustomTabCompleteMethod;
@@ -25,26 +24,24 @@ public class TownColorCommand extends UCommandBase {
 
 	@Command2.Subcommand
 	public boolean def(Player player, String... colornames) {
-		Resident res;
-		if (!(TownyComponent.TU.getResidentMap().containsKey(player.getName().toLowerCase())
-			&& (res = TownyComponent.TU.getResidentMap().get(player.getName().toLowerCase())).isMayor())) {
-			player.sendMessage("§cYou need to be the mayor of a town to set its colors.");
-			return true;
-		}
-		val cc = component.colorCount().get();
-		if (colornames.length > cc) {
-			player.sendMessage("You can only use " + cc + " color" + (cc > 1 ? "s" : "") + ".");
-			return true;
-		}
-		final Town t;
+		String msg = "§cYou need to be the mayor of a town to set its colors.";
 		try {
-			t = res.getTown();
+			Resident res = TownyComponent.dataSource.getResident(player.getName());
+			if (!res.isMayor()) {
+				player.sendMessage(msg);
+				return true;
+			}
+			val cc = component.colorCount().get();
+			if (colornames.length > cc) {
+				player.sendMessage("You can only use " + cc + " color" + (cc > 1 ? "s" : "") + ".");
+				return true;
+			}
+			final Town t = res.getTown();
+			return buttondevteam.chat.components.towncolors.admin.TownColorCommand.SetTownColor(player, t, colornames);
 		} catch (NotRegisteredException e) {
-			TBMCCoreAPI.SendException("Failed to set town color for player " + player + "!", e);
-			player.sendMessage("§cCouldn't find your town... Error reported.");
+			player.sendMessage(msg);
 			return true;
 		}
-		return buttondevteam.chat.components.towncolors.admin.TownColorCommand.SetTownColor(player, t, colornames);
 	}
 
 	@CustomTabCompleteMethod(param = "colornames")

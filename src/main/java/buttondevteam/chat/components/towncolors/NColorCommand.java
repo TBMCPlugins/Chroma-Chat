@@ -28,8 +28,8 @@ public class NColorCommand extends UCommandBase {
 		Resident res;
 		Town town;
 		try {
-			if ((res = TownyComponent.TU.getResidentMap().get(player.getName().toLowerCase())) == null || !res.hasTown()
-					|| (town = res.getTown()) == null) {
+			if ((res = TownyComponent.dataSource.getResident(player.getName())) == null || !res.hasTown()
+				|| (town = res.getTown()) == null) {
 				player.sendMessage("§cYou need to be in a town.");
 				return true;
 			}

@@ -3,7 +3,6 @@ package buttondevteam.chat.components.towncolors;
 import buttondevteam.chat.commands.ucmds.UCommandBase;
 import buttondevteam.chat.components.towncolors.admin.TownColorCommand;
 import buttondevteam.chat.components.towny.TownyComponent;
-import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.CustomTabCompleteMethod;
@@ -21,21 +20,19 @@ import org.bukkit.entity.Player;
 public class NationColorCommand extends UCommandBase {
 	@Command2.Subcommand
 	public boolean def(Player player, String color) {
-		Resident res;
-		if (!(TownyComponent.TU.getResidentMap().containsKey(player.getName().toLowerCase())
-			&& (res = TownyComponent.TU.getResidentMap().get(player.getName().toLowerCase())).isKing())) {
-			player.sendMessage("§cYou need to be the king of a nation to set it's colors.");
-			return true;
-		}
-		final Nation n;
+		String msg = "§cYou need to be the king of a nation to set it's colors.";
 		try {
-			n = res.getTown().getNation();
+			Resident res = TownyComponent.dataSource.getResident(player.getName());
+			if (!res.isKing()) {
+				player.sendMessage(msg);
+				return true;
+			}
+			final Nation n = res.getTown().getNation();
+			return buttondevteam.chat.components.towncolors.admin.NationColorCommand.SetNationColor(player, n, color);
 		} catch (NotRegisteredException e) {
-			TBMCCoreAPI.SendException("Failed to set nation color for player " + player + "!", e);
-			player.sendMessage("§cCouldn't find your town/nation... Error reported.");
+			player.sendMessage(msg);
 			return true;
 		}
-		return buttondevteam.chat.components.towncolors.admin.NationColorCommand.SetNationColor(player, n, color);
 	}
 
 	@CustomTabCompleteMethod(param = "color")

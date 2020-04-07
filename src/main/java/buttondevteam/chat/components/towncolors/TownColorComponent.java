@@ -14,6 +14,7 @@ import buttondevteam.lib.player.TBMCPlayerJoinEvent;
 import com.earth2me.essentials.User;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
+import com.palmergames.bukkit.towny.object.Resident;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.Bukkit;
@@ -85,9 +86,9 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 				loadNC.accept(ncs);
 		}
 
-		TownColors.keySet().removeIf(t -> !TownyComponent.TU.getTownsMap().containsKey(t)); // Removes town colors for deleted/renamed towns
+		TownColors.keySet().removeIf(t -> !TownyComponent.dataSource.hasTown(t)); // Removes town colors for deleted/renamed towns
 		if (usenc)
-			NationColor.keySet().removeIf(n -> !TownyComponent.TU.getNationsMap().containsKey(n)); // Removes nation colors for deleted/renamed nations
+			NationColor.keySet().removeIf(n -> !TownyComponent.dataSource.hasNation(n)); // Removes nation colors for deleted/renamed nations
 
 		initDynmap();
 
@@ -119,7 +120,7 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 				return;
 			for (val entry : TownColors.entrySet()) {
 				try {
-					val town = TownyComponent.TU.getTownsMap().get(entry.getKey());
+					val town = TownyComponent.dataSource.getTown(entry.getKey());
 					Nation nation;
 					Color nc;
 					if (!useNationColors().get())
@@ -156,7 +157,12 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 		if (nickname.contains("~")) //StartsWith doesn't work because of color codes
 			nickname = nickname.replace("~", ""); //It gets stacked otherwise
 		String name = ChatColor.stripColor(nickname); //Enforce "town colors" on non-members
-		val res = TownyComponent.TU.getResidentMap().get(player.getName().toLowerCase());
+		Resident res;
+		try {
+			res = TownyComponent.dataSource.getResident(player.getName());
+		} catch (NotRegisteredException e) {
+			return name;
+		}
 		if (res == null || !res.hasTown())
 			return name;
 		try {

@@ -8,6 +8,7 @@ import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.CustomTabCompleteMethod;
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyObject;
 import lombok.val;
@@ -28,12 +29,17 @@ import java.util.stream.Collectors;
 public class TownColorCommand extends AdminCommandBase { //TODO: Command path aliases
 	@Command2.Subcommand
 	public boolean def(CommandSender sender, String town, String... colornames) {
-		if (!TownyComponent.TU.getTownsMap().containsKey(town.toLowerCase())) {
+		if (!TownyComponent.dataSource.hasTown(town)) {
 			sender.sendMessage("§cThe town '" + town + "' cannot be found.");
 			return true;
 		}
-		Town targetTown = TownyComponent.TU.getTownsMap().get(town.toLowerCase());
-		return SetTownColor(sender, targetTown, colornames);
+		try {
+			Town targetTown = TownyComponent.dataSource.getTown(town);
+			return SetTownColor(sender, targetTown, colornames);
+		} catch (NotRegisteredException e) {
+			sender.sendMessage("§cThe town '" + town + "' cannot be found.");
+			return true;
+		}
 	}
 
 	@CustomTabCompleteMethod(param = "colornames")
@@ -43,7 +49,7 @@ public class TownColorCommand extends AdminCommandBase { //TODO: Command path al
 
 	@CustomTabCompleteMethod(param = "town")
 	public Iterable<String> def() {
-		return TownyComponent.TU.getDataSource().getTowns().stream().map(TownyObject::getName)::iterator;
+		return TownyComponent.dataSource.getTowns().stream().map(TownyObject::getName)::iterator;
 	}
 
 	public static boolean SetTownColor(CommandSender sender, Town town, String[] colors) {
@@ -68,7 +74,7 @@ public class TownColorCommand extends AdminCommandBase { //TODO: Command path al
 			Color nc;
 			if (usenc) {
 				try {
-					nc = TownColorComponent.NationColor.get(TownyComponent.TU.getTownsMap().get(other.getKey()).getNation().getName().toLowerCase());
+					nc = TownColorComponent.NationColor.get(TownyComponent.dataSource.getTown(other.getKey()).getNation().getName().toLowerCase());
 				} catch (Exception e) { //Too lazy for lots of null-checks and it may throw exceptions anyways
 					nc = null;
 				}
@@ -112,7 +118,11 @@ public class TownColorCommand extends AdminCommandBase { //TODO: Command path al
 	}
 
 	public static String getTownNameCased(String name) {
-		return TownyComponent.TU.getTownsMap().get(name.toLowerCase()).getName();
+		try {
+			return TownyComponent.dataSource.getTown(name).getName();
+		} catch (NotRegisteredException e) {
+			return null;
+		}
 	}
 
 	public static Iterable<String> tabcompleteColor() {

@@ -7,7 +7,7 @@ import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.TBMCChatAPI;
-import com.palmergames.bukkit.towny.TownyUniverse;
+import com.palmergames.bukkit.towny.db.TownyDataSource;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -18,7 +18,6 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -27,7 +26,7 @@ import java.util.stream.Collectors;
  * It provides the TC and NC channels, and posts Towny messages (global, town, nation) to the correct channels for other platforms like Discord.
  */
 public class TownyComponent extends Component<PluginMain> {
-	public static TownyUniverse TU;
+	public static TownyDataSource dataSource;
 	private static ArrayList<String> Towns;
 	private static ArrayList<String> Nations;
 
@@ -36,9 +35,19 @@ public class TownyComponent extends Component<PluginMain> {
 
 	@Override
 	protected void enable() {
-		TU = TownyUniverse.getInstance();
-		Towns = TU.getTownsMap().values().stream().map(Town::getName).collect(Collectors.toCollection(ArrayList::new)); // Creates a snapshot of towns, new towns will be added when needed
-		Nations = TU.getNationsMap().values().stream().map(Nation::getName).collect(Collectors.toCollection(ArrayList::new)); // Same here but with nations
+		try {
+			try {
+				dataSource = (TownyDataSource) Class.forName("com.palmergames.bukkit.towny.TownyUniverse").getMethod("getDataSource")
+					.invoke(null);
+			} catch (ClassNotFoundException e) {
+				dataSource = (TownyDataSource) Class.forName("com.palmergames.bukkit.towny.object.TownyUniverse").getMethod("getDataSource")
+					.invoke(null);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to find Towny's data source!", e);
+		}
+		Towns = dataSource.getTowns().stream().map(Town::getName).collect(Collectors.toCollection(ArrayList::new)); // Creates a snapshot of towns, new towns will be added when needed
+		Nations = dataSource.getNations().stream().map(Nation::getName).collect(Collectors.toCollection(ArrayList::new)); // Same here but with nations
 		TBMCChatAPI.RegisterChatChannel(
 			TownChat = new Channel("§3TC§f", Color.DarkAqua, "tc", s -> checkTownNationChat(s, false)));
 		TBMCChatAPI.RegisterChatChannel(
@@ -62,9 +71,11 @@ public class TownyComponent extends Component<PluginMain> {
 
 	public void handleSpies(Channel channel, Player p) {
 		if (channel.ID.equals(TownChat.ID) || channel.ID.equals(NationChat.ID)) {
-			if (Optional.ofNullable(TU.getResidentMap().get(p.getName().toLowerCase()))
-				.filter(r -> r.hasMode("spy")).isPresent())
-				VanillaUtils.tellRaw(p, jsonstr);
+			try {
+				if (dataSource.getResident(p.getName()).hasMode("spy"))
+					VanillaUtils.tellRaw(p, jsonstr);
+			} catch (NotRegisteredException ignored) {
+			}
 		}
 	}
 
@@ -74,7 +85,12 @@ public class TownyComponent extends Component<PluginMain> {
 	private static Channel.RecipientTestResult checkTownNationChat(CommandSender sender, boolean nationchat) {
 		if (!(sender instanceof Player))
 			return new Channel.RecipientTestResult("§cYou are not a player!");
-		Resident resident = TU.getResidentMap().get(sender.getName().toLowerCase());
+		Resident resident;
+		try {
+			resident = dataSource.getResident(sender.getName());
+		} catch (NotRegisteredException e) {
+			resident = null;
+		}
 		Channel.RecipientTestResult result = checkTownNationChatInternal(nationchat, resident);
 		if (result.errormessage != null && resident != null && resident.getModes().contains("spy")) // Only use spy if they wouldn't see it
 			result = new Channel.RecipientTestResult(1000, "allspies"); // There won't be more than a thousand towns/nations probably
