@@ -46,3 +46,4 @@ permissions:
   tbmc.badge.diamond:
     description: Gives a cool patron badge.
     default: false
+api-version: '1.13'

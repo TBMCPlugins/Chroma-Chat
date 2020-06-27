@@ -87,7 +87,7 @@ public class PlayerListener implements Listener {
 					if (e.shouldSendTo(p))
 						p.sendMessage("[" + e.getChannel().DisplayName().get() + "] §cSome features in the message below might be unavailable due to an error.");
 			}
-			ChatUtils.sendChatMessage(e, s -> "§c!§r" + s);
+			ChatUtils.sendChatMessage(e);
 			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex);
 		}
 	}

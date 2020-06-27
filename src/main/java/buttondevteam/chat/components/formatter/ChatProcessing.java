@@ -173,7 +173,8 @@ public class ChatProcessing {
 					return true;
 				}
 				val tc = ComponentManager.getIfEnabled(TownyComponent.class);
-				if (tc != null) tc.handleSpiesInit(channel, json, ChatProcessing::toJson);
+				Consumer<Player> spyConsumer = null;
+				if (tc != null) spyConsumer = tc.handleSpiesInit(channel, json, ChatProcessing::toJson, sender, message);
 				for (Player p : Bukkit.getOnlinePlayers()) {
 					final String group;
 					if (player != null
@@ -182,13 +183,15 @@ public class ChatProcessing {
 					else
 						group = VanillaUtils.getGroupIfChatOn(p, e);
 					if (senderGroup.equals(group))
-						VanillaUtils.tellRaw(p, jsonstr);
-					else if (tc != null) tc.handleSpies(channel, p);
+						if (!VanillaUtils.tellRaw(p, jsonstr))
+							p.sendMessage(ChatUtils.getMessageString(channel, sender, message));
+						else if (tc != null) spyConsumer.accept(p);
 					//Only sends if didn't send normally
 				}
 			} else
 				for (Player p : Bukkit.getOnlinePlayers())
-					VanillaUtils.tellRaw(p, jsonstr);
+					if (!VanillaUtils.tellRaw(p, jsonstr))
+						ChatUtils.sendChatMessage(channel, sender, message, p);
 		} catch (Exception ex) {
 			TBMCCoreAPI.SendException("An error occured while sending a chat message!", ex);
 			sender.sendMessage("§cAn error occured while sending the message.");

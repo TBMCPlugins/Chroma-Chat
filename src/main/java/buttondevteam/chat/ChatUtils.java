@@ -1,12 +1,13 @@
 package buttondevteam.chat;
 
+import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.ChromaUtils;
 import buttondevteam.lib.TBMCChatEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Optional;
-import java.util.function.Function;
 
 public final class ChatUtils {
 	public static final String MCORIGIN = "Minecraft"; //Shouldn't change, like ever - TBMCPlayer.getFolderForType(TBMCPlayer.class) capitalized
@@ -44,16 +45,22 @@ public final class ChatUtils {
 	/**
 	 * Sends a regular (non-Markdown) chat message. Used as a fallback if the chat processing fails.
 	 *
-	 * @param e        The chat event
-	 * @param modifier A function that alters the message to be displayed to the player
+	 * @param e The chat event
 	 */
-	public static void sendChatMessage(TBMCChatEvent e, Function<String, String> modifier) {
-		var str = "[" + e.getChannel().DisplayName().get() + "] <"
-			+ ChromaUtils.getDisplayName(e.getSender()) + "> " + e.getMessage();
-		str = modifier.apply(str);
+	public static void sendChatMessage(TBMCChatEvent e) {
+		var str = getMessageString(e.getChannel(), e.getSender(), e.getMessage());
 		for (Player p : Bukkit.getOnlinePlayers())
 			if (e.shouldSendTo(p))
 				p.sendMessage(str);
 		Bukkit.getConsoleSender().sendMessage(str);
+	}
+
+	public static String getMessageString(Channel channel, CommandSender sender, String message) {
+		return "§c!§r[" + channel.DisplayName().get() + "] <"
+			+ ChromaUtils.getDisplayName(sender) + "> " + message;
+	}
+
+	public static void sendChatMessage(Channel channel, CommandSender sender, String message, CommandSender to) {
+		to.sendMessage(getMessageString(channel, sender, message));
 	}
 }

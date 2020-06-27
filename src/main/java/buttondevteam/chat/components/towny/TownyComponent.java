@@ -1,5 +1,6 @@
 package buttondevteam.chat.components.towny;
 
+import buttondevteam.chat.ChatUtils;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.chat.VanillaUtils;
 import buttondevteam.chat.components.formatter.formatting.TellrawPart;
@@ -18,6 +19,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,8 +39,10 @@ public class TownyComponent extends Component<PluginMain> {
 	protected void enable() {
 		try {
 			try {
-				dataSource = (TownyDataSource) Class.forName("com.palmergames.bukkit.towny.TownyUniverse").getMethod("getDataSource")
-					.invoke(null);
+				var tucl = Class.forName("com.palmergames.bukkit.towny.TownyUniverse");
+				var tu = tucl.getMethod("getInstance").invoke(null);
+				dataSource = (TownyDataSource) tucl.getMethod("getDataSource")
+					.invoke(tu);
 			} catch (ClassNotFoundException e) {
 				dataSource = (TownyDataSource) Class.forName("com.palmergames.bukkit.towny.object.TownyUniverse").getMethod("getDataSource")
 					.invoke(null);
@@ -60,20 +64,22 @@ public class TownyComponent extends Component<PluginMain> {
 		TownyAnnouncer.setdown();
 	}
 
-	public void handleSpiesInit(Channel channel, TellrawPart json, Function<TellrawPart, String> toJson) {
+	public Consumer<Player> handleSpiesInit(Channel channel, TellrawPart json, Function<TellrawPart, String> toJson,
+	                                        CommandSender sender, String message) {
 		if (channel.ID.equals(TownChat.ID) || channel.ID.equals(NationChat.ID)) {
 			((List<TellrawPart>) json.getExtra()).add(0, new TellrawPart("[SPY]"));
-			jsonstr = toJson.apply(json);
+			String jsonstr = toJson.apply(json);
+			return p -> handleSpies(channel, p, jsonstr, sender, message);
 		}
+		return p -> {};
 	}
 
-	private String jsonstr;
-
-	public void handleSpies(Channel channel, Player p) {
+	private void handleSpies(Channel channel, Player p, String jsonstr, CommandSender sender, String message) {
 		if (channel.ID.equals(TownChat.ID) || channel.ID.equals(NationChat.ID)) {
 			try {
 				if (dataSource.getResident(p.getName()).hasMode("spy"))
-					VanillaUtils.tellRaw(p, jsonstr);
+					if (!VanillaUtils.tellRaw(p, jsonstr))
+						ChatUtils.sendChatMessage(channel, sender, message, p);
 			} catch (NotRegisteredException ignored) {
 			}
 		}

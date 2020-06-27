@@ -6,6 +6,7 @@ import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Array;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
@@ -81,7 +82,9 @@ public class VanillaUtils {
 				val handle = hm.invoke(p);
 				val nms = handle.getClass().getPackage().getName();
 				val chatcompcl = Class.forName(nms + ".IChatBaseComponent");
-				val sendmsg = handle.getClass().getMethod("sendMessage", chatcompcl);
+				//val chatcomarrcl = Class.forName("[L" + chatcompcl.getName() + ";");
+				val chatcomparr = Array.newInstance(chatcompcl, 1);
+				val sendmsg = handle.getClass().getMethod("sendMessage", chatcomparr.getClass());
 
 				/*val ccucl = Class.forName(nms + ".ChatComponentUtils");
 				val iclcl = Class.forName(nms + ".ICommandListener");
@@ -97,7 +100,8 @@ public class VanillaUtils {
 						val hhandle = hm.invoke(pl);
 						val deserialized = am.invoke(null, jsonStr);
 						//val filtered = ffdm.invoke(null, hhandle, deserialized, hhandle);
-						sendmsg.invoke(hhandle, deserialized);
+						Array.set(chatcomparr, 0, deserialized);
+						sendmsg.invoke(hhandle, chatcomparr);
 						return true;
 					} catch (Exception e) {
 						e.printStackTrace();
