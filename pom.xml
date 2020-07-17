@@ -211,10 +211,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.palmergames.bukkit.towny</groupId>
+            <groupId>com.github.TownyAdvanced</groupId>
             <artifactId>Towny</artifactId>
             <!-- <version>8d3b6b6</version> ButtonCore repo -->
-            <version>0.96.1.0</version>
+            <version>0.96.2.0</version>
             <scope>provided</scope>
         </dependency>
 		<!-- <dependency> <groupId>au.com.mineauz</groupId> <artifactId>Minigames</artifactId> 

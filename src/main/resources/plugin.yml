@@ -1,6 +1,6 @@
 name: Chroma-Chat
 main: buttondevteam.chat.PluginMain
-version: '4.0'
+version: '1.0'
 commands:
   u:
     description: Auto-flair system. Accept or ignore flair.

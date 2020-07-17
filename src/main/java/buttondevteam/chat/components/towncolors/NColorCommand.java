@@ -41,7 +41,7 @@ public class NColorCommand extends UCommandBase {
 		//Don't add ~ for nicknames
 		if (!nameWithLines.replace("|", "").replace(":", "").equalsIgnoreCase(name)) {
 			player.sendMessage("§cThe name you gave doesn't match your name. Make sure to use "
-                    + name + "§c with added vertical lines (|) or colons (:).");
+				+ name + "§c with added vertical lines (|) or colons (:).");
 			return true;
 		}
 		String[] nameparts = nameWithLines.split("[|:]");
@@ -50,22 +50,30 @@ public class NColorCommand extends UCommandBase {
 			player.sendMessage("§cYour town doesn't have a color set. The town mayor can set it using /u towncolor.");
 			return true;
 		}
-		if (nameparts.length < towncolors.length + 1) { //+1: Nation color
+		var component = TownColorComponent.getComponent();
+		byte nationColors = (byte) (component.useNationColors().get() ? 1 : 0);
+		if (nameparts.length < towncolors.length + nationColors) { //+1: Nation color
 			player.sendMessage("§cYou need more vertical lines (|) or colons (:) in your name. (Should have " + (towncolors.length - 1 + 1) + ")"); //Nation color
 			return true;
 		}
-		if (nameparts.length > (towncolors.length + 1) * 2) {
+		if (nameparts.length > (towncolors.length + nationColors) * 2) {
 			player.sendMessage("§cYou have waay too many vertical lines (|) or colons (:) in your name. (Should have " + (towncolors.length - 1 + 1) + ")");
 			return true;
 		}
-		if (nameparts.length > towncolors.length + 1) {
+		if (nameparts.length > towncolors.length + nationColors) {
 			player.sendMessage("§cYou have too many vertical lines (|) or colons (:) in your name. (Should have " + (towncolors.length - 1 + 1) + ")");
 			return true;
 		}
-		ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class).NameColorLocations()
-			.set(new ArrayList<>(Arrays.stream(nameparts).map(String::length).collect(Collectors.toList()))); // No byte[], no TIntArrayList
-		TownColorComponent.updatePlayerColors(player);
-        player.sendMessage("§bName colors set: " + player.getDisplayName());
+		var cp = ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class);
+		var list = Arrays.stream(nameparts).map(String::length).collect(Collectors.toList());
+		if (list.contains(0)) {
+			player.sendMessage("§cAll colors need to be represented in your name. (Use as Test|name|123 instead of |Testname123|)");
+			return true;
+		}
+		cp.NameColorLocations().set(new ArrayList<>(list)); // No byte[], no TIntArrayList
+		TownColorComponent.updatePlayerColors(player, cp);
+		cp.save();
+		player.sendMessage("§bName colors set: " + player.getDisplayName());
 		return true;
 	}
 }

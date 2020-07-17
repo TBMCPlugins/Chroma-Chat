@@ -207,14 +207,14 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 	/**
 	 * Checks if the component is enabled
 	 */
-	public static void updatePlayerColors(Player player) { //Probably while ingame (/u ncolor)
+	public static void updatePlayerColors(Player player) { //Probably while ingame (/u ncolor - not anymore)
 		updatePlayerColors(player, ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class));
 	}
 
 	/**
 	 * Checks if the component is enabled
 	 */
-	private static void updatePlayerColors(Player player, ChatPlayer cp) { //Probably at join - nop, nicknames
+	public static void updatePlayerColors(Player player, ChatPlayer cp) { //Probably at join - nop, nicknames
 		if (!ComponentManager.isEnabled(TownColorComponent.class))
 			return;
 		User user = PluginMain.essentials.getUser(player);
