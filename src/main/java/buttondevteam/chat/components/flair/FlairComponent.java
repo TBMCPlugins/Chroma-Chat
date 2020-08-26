@@ -12,16 +12,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.TagNode;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This component checks a specific Reddit thread every 10 seconds for comments such as "IGN: NorbiPeti" to link Reddit accounts and to determine their /r/thebutton flair.
@@ -166,7 +161,7 @@ public class FlairComponent extends Component<PluginMain> {
 	}
 
 	private static boolean JoinedBefore(ChatPlayer mp, int year, int month, int day) throws Exception {
-		URL url = new URL("https://www.reddit.com/u/" + mp.UserName());
+		/*URL url = new URL("https://www.reddit.com/u/" + mp.UserName());
 		URLConnection con = url.openConnection();
 		con.setRequestProperty("User-Agent", "TheButtonAutoFlair");
 		InputStream in = con.getInputStream();
@@ -180,7 +175,8 @@ public class FlairComponent extends Component<PluginMain> {
 		joindate = joindate.split("T")[0];
 		Date date = parserSDF.parse(joindate);
 		return date.before(new Calendar.Builder().setTimeZone(TimeZone.getTimeZone("UTC")).setDate(year, month, day)
-			.build().getTime());
+			.build().getTime());*/
+		return true;
 	}
 
 	public static void ConfirmUserMessage(ChatPlayer mp) {

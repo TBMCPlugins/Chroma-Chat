@@ -111,6 +111,7 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 		if (useNationColors().get())
 			getConfig().getConfig().createSection("nationcolors", NationColor.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
 				v -> v.getValue().toString())));
+		getConfig().signalChange();
 	}
 
 	private void initDynmap() {

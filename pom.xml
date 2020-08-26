@@ -33,26 +33,6 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<artifactSet>
-								<includes>
-									<include>net.sourceforge.htmlcleaner:htmlcleaner</include>
-								</includes>
-							</artifactSet>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>3.0.1</version>
 				<executions>
@@ -191,18 +171,6 @@
 			<groupId>com.github.TBMCPlugins.ChromaCore</groupId>
 			<artifactId>Chroma-Core</artifactId>
             <version>${branch}-SNAPSHOT</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/net.sourceforge.htmlcleaner/htmlcleaner -->
-		<dependency>
-			<groupId>net.sourceforge.htmlcleaner</groupId>
-			<artifactId>htmlcleaner</artifactId>
-			<version>2.16</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
-		<dependency>
-			<groupId>org.reflections</groupId>
-			<artifactId>reflections</artifactId>
-			<version>0.9.10</version>
 		</dependency>
         <dependency>
             <groupId>net.ess3</groupId>

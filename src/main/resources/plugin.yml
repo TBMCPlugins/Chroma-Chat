@@ -36,9 +36,9 @@ depend:
 - Vault
 - ChromaCore
 soft-depend:
-- Minigames
 - Dynmap-Towny
 - Towny
+- dynmap
 permissions:
   tbmc.badge.gold:
     description: Gives a patron badge.
