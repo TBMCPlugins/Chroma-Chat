@@ -30,6 +30,8 @@ commands:
     description: Lenny face.
   ftop:
     description: Top respect.
+  me:
+    description: Me command with Chroma support.
 author: NorbiPeti
 depend:
 - Essentials

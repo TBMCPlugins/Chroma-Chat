@@ -67,7 +67,7 @@ public class AppendTextComponent extends Component<PluginMain> {
 			});
 			appendedText(conf).set("( ͡° ͜ʖ ͡°)");
 		});
-		map.put("ww", conf -> {
+		map.put("waitwhat", conf -> {
 			helpText(conf).set(new String[]{
 				"Wait what", //
 				"Wait what" //
