@@ -96,9 +96,9 @@ public class PlayerListener implements Listener {
 	public void onNickChange(NickChangeEvent e) {
 		String nick = e.getValue();
 		if (nick == null)
-			nicknames.inverse().remove(e.getAffected().getBase().getUniqueId());
+			nicknames.inverse().remove(e.getController().getBase().getUniqueId()); //EssentialsX has it swapped
 		else
-			nicknames.inverse().forcePut(e.getAffected().getBase().getUniqueId(), ChatColor.stripColor(nick).toLowerCase());
+			nicknames.inverse().forcePut(e.getController().getBase().getUniqueId(), ChatColor.stripColor(nick).toLowerCase());
 
 		Bukkit.getScheduler().runTaskLater(PluginMain.Instance, () -> {
 			TownColorComponent.updatePlayerColors(e.getAffected().getBase()); //Won't fire this event again
