@@ -87,6 +87,7 @@ public class ChatFormatIT {
 			space, new TellrawPart("O").setColor(Color.DarkPurple)).setRainbowMode());
 		list.add(new ChatFormatIT(sender, "***test*** test", new TellrawPart("test").setColor(Color.White)
 			.setItalic(true).setBold(true), new TellrawPart(" test").setColor(Color.White)));
+		list.add(new ChatFormatIT(sender, ">test message\nheh", new TellrawPart(">test message\nheh").setColor(Color.Green)));
 
 		return list;
 	}

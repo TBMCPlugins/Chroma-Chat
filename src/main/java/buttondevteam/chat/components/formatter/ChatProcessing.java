@@ -45,9 +45,10 @@ public class ChatProcessing {
 	private static final Color[] RainbowPresserColors = new Color[]{Color.Red, Color.Gold, Color.Yellow, Color.Green,
 		Color.Blue, Color.DarkPurple};
 	private static final Pattern WORD_PATTERN = Pattern.compile("\\S+");
+	private static final Pattern GREENTEXT_PATTERN = Pattern.compile("^>(?:.|\\s)*");
 	private static boolean pingedconsole = false;
 
-	private static ArrayList<MatchProviderBase> commonFormatters = Lists.newArrayList(
+	private static final ArrayList<MatchProviderBase> commonFormatters = Lists.newArrayList(
 		new RangeMatchProvider("bold", "**", FormatSettings.builder().bold(true).build()),
 		new RangeMatchProvider("italic", "*", FormatSettings.builder().italic(true).build()),
 		new RangeMatchProvider("underlined", "__", FormatSettings.builder().underlined(true).build()),
@@ -88,8 +89,9 @@ public class ChatProcessing {
 				var player = players.get(playerC);
 				playPingSound(player, ComponentManager.getIfEnabled(FormatterComponent.class));
 				return "@someone (" + player.getDisplayName() + "§r)";
-			}).build(), true, "@someone"));
-	private static Gson gson = new GsonBuilder()
+			}).build(), true, "@someone"),
+		new RegexMatchProvider("greentext", GREENTEXT_PATTERN, FormatSettings.builder().color(Color.Green).build()));
+	private static final Gson gson = new GsonBuilder()
 		.registerTypeHierarchyAdapter(TellrawSerializableEnum.class, new TellrawSerializer.TwEnum())
 		.registerTypeHierarchyAdapter(Collection.class, new TellrawSerializer.TwCollection())
 		.registerTypeAdapter(Boolean.class, new TellrawSerializer.TwBool())
@@ -120,12 +122,18 @@ public class ChatProcessing {
 			mp = e.getUser().getAs(ChatPlayer.class); //May be null
 
 		if (mp != null) {
-			if (System.nanoTime() - mp.LastMessageTime < 1000 * component.minTimeBetweenMessages().get()) { //0.1s by default
-				sender.sendMessage("§cYou are sending messages too fast!");
+			if (System.nanoTime() - mp.LastMessageTime < 1000 * 1000 * component.minTimeBetweenMessages().get()) { //0.1s by default
+				sender.sendMessage("§cYou are sending messages too quickly!");
 				return true;
 			}
 			mp.LastMessageTime = System.nanoTime();
 		}
+		//DimensionManager.a()
+		//IRegistry.ae
+		//Bukkit.createWorld()
+		//MinecraftServer.reload()
+		//IRegistry
+		//CraftServer
 
 		doFunStuff(sender, e, message);
 
@@ -139,9 +147,6 @@ public class ChatProcessing {
 		Color colormode = channel.Color().get();
 		if (mp != null && mp.OtherColorMode != null)
 			colormode = mp.OtherColorMode;
-		if (message.startsWith(">"))
-			colormode = Color.Green;
-		// If greentext, ignore channel or player colors
 
 		ArrayList<MatchProviderBase> formatters;
 		if (component.allowFormatting().get()) {
@@ -174,7 +179,8 @@ public class ChatProcessing {
 				}
 				val tc = ComponentManager.getIfEnabled(TownyComponent.class);
 				Consumer<Player> spyConsumer = null;
-				if (tc != null) spyConsumer = tc.handleSpiesInit(channel, json, ChatProcessing::toJson, sender, message);
+				if (tc != null)
+					spyConsumer = tc.handleSpiesInit(channel, json, ChatProcessing::toJson, sender, message);
 				for (Player p : Bukkit.getOnlinePlayers()) {
 					final String group;
 					if (player != null

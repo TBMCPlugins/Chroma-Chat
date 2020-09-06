@@ -10,7 +10,7 @@ import buttondevteam.lib.architecture.ConfigData;
 /**
  * This component handles the custom processing of chat messages. If this component is disabled channels won't be supported in Minecraft.
  * If you only want to disable the formatting features, set allowFormatting to false.
- * If you're using another chat plugin, you should disable the whole component.
+ * If you're using another chat plugin, you should disable the whole component but that will make it impossible to use channels.
  */
 public class FormatterComponent extends Component<PluginMain> {
 	/**
@@ -41,10 +41,9 @@ public class FormatterComponent extends Component<PluginMain> {
 		return getConfig().getData("minTimeBetweenMessages", 100);
 	}
 
-
 	@Override
 	protected void enable() {
-		MainPlugin.Instance.setChatHandlerEnabled(false); //Disable Core chat handler - if this component is disabled then let it do it's job
+		MainPlugin.Instance.setChatHandlerEnabled(false); //Disable Core chat handler - if this component is disabled then let it do its job
 	}
 
 	@Override
