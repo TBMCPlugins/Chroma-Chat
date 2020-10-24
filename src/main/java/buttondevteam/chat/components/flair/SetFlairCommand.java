@@ -35,22 +35,22 @@ public class SetFlairCommand extends AdminCommandBase {
 				ft = Short.parseShort(flairtime);
 			} catch (Exception e) {
 				sender.sendMessage(
-						"§cFlairtime must be a number, \"non-presser\", \"cant-press\" or \"none\". Run without args to see usage.");
+					"§cFlairtime must be a number, \"non-presser\", \"cant-press\" or \"none\". Run without args to see usage.");
 				return true;
 			}
 		}
 		ChatPlayer mp = TBMCPlayerBase.getPlayer(p.getUniqueId(), ChatPlayer.class);
 		mp.SetFlair(ft, cheater);
-		mp.FlairState().set(FlairStates.Accepted);
+		mp.FlairState.set(FlairStates.Accepted);
 		if (username == null)
-			mp.UserName().set("");
+			mp.UserName.set("");
 		else {
-			mp.UserName().set(username);
-			if (!mp.UserNames().contains(username))
-				mp.UserNames().add(username);
+			mp.UserName.set(username);
+			if (!mp.UserNames.get().contains(username))
+				mp.UserNames.get().add(username);
 		}
 		sender.sendMessage(
-				"§bThe flair has been set. Player: " + mp.PlayerName() + " Flair: " + mp.GetFormattedFlair() + "§r");
+			"§bThe flair has been set. Player: " + mp.PlayerName() + " Flair: " + mp.GetFormattedFlair() + "§r");
 		return true;
 	}
 

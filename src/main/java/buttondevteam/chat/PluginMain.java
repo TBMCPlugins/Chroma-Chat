@@ -25,7 +25,6 @@ import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import com.earth2me.essentials.Essentials;
-import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
@@ -60,8 +59,8 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 
 		TBMCChatAPI.RegisterChatChannel(new Channel("§7RP§f", Color.Gray, "rp", null)); //Since it's null, it's recognised as global
 
-		if (!setupEconomy() || !setupPermissions())
-			TBMCCoreAPI.SendException("We're in trouble", new Exception("Failed to set up economy or permissions!"));
+		if (!setupPermissions())
+			TBMCCoreAPI.SendException("We're in trouble", new Exception("Failed to set up permissions!"), this);
 
 		if (Bukkit.getPluginManager().isPluginEnabled("Towny"))
 			Component.registerComponent(this, new TownColorComponent());
@@ -88,7 +87,6 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 	}
 
 	public static Permission permission = null;
-	public static Economy economy = null;
 
 	private boolean setupPermissions() {
 		RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager()
@@ -97,16 +95,6 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 			permission = permissionProvider.getProvider();
 		}
 		return (permission != null);
-	}
-
-	private boolean setupEconomy() {
-		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager()
-			.getRegistration(net.milkbowl.vault.economy.Economy.class);
-		if (economyProvider != null) {
-			economy = economyProvider.getProvider();
-		}
-
-		return (economy != null);
 	}
 
 }

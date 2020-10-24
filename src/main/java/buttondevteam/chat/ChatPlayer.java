@@ -1,50 +1,32 @@
 package buttondevteam.chat;
 
 import buttondevteam.chat.components.flair.FlairStates;
+import buttondevteam.lib.architecture.ConfigData;
+import buttondevteam.lib.architecture.ListConfigData;
 import buttondevteam.lib.chat.Color;
-import buttondevteam.lib.player.EnumPlayerData;
 import buttondevteam.lib.player.PlayerClass;
-import buttondevteam.lib.player.PlayerData;
 import buttondevteam.lib.player.TBMCPlayerBase;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @PlayerClass(pluginname = "Button1Chat")
 public class ChatPlayer extends TBMCPlayerBase {
-	public PlayerData<String> UserName() {
-		return data(null);
-	}
+	public final ConfigData<String> UserName = getConfig().getData("UserName", "");
 
-	public List<String> UserNames() {
-		return data(new ArrayList<String>()).get();
-	}
+	public final ListConfigData<String> UserNames = getConfig().getListData("UserNames");
 
-	public PlayerData<Integer> FlairTime() {
-		return data(FlairTimeNone);
-	}
+	public final ConfigData<Integer> FlairTime = getConfig().getData("FlairTime", FlairTimeNone);
 
-	public EnumPlayerData<FlairStates> FlairState() {
-		return dataEnum(FlairStates.class, FlairStates.NoComment);
-	}
+	public final ConfigData<FlairStates> FlairState = getConfig().getData("FlairState", FlairStates.NoComment,
+		fs -> FlairStates.valueOf((String) fs), FlairStates::toString);
 
-	public PlayerData<Integer> FCount() {
-		return data(0);
-	}
+	public final ConfigData<Integer> FCount = getConfig().getData("FCount", 0);
 
-	public PlayerData<Integer> FDeaths() {
-		return data(0);
-	}
+	public final ConfigData<Integer> FDeaths = getConfig().getData("FDeaths", 0);
 
-	public PlayerData<Boolean> FlairCheater() {
-		return data(false);
-	}
+	public final ConfigData<Boolean> FlairCheater = getConfig().getData("FlairCheater", false);
 
-	public PlayerData<ArrayList<Integer>> NameColorLocations() { // No byte[], no TIntArrayList
-		return data(null);
-	}
+	public final ListConfigData<Integer> NameColorLocations = getConfig().getListData("NameColorLocations"); // No byte[], no TIntArrayList
 
 	public boolean Working;
 	// public int Tables = 10;
@@ -64,7 +46,7 @@ public class ChatPlayer extends TBMCPlayerBase {
 	 * @return The flair
 	 */
 	public String GetFormattedFlair(boolean noformats) {
-		int time = FlairTime().get();
+		int time = FlairTime.get();
 		if (time == FlairTimeCantPress)
 			return noformats ? "(can't press)" : "§r(--s)§r";
 		if (time == FlairTimeNonPresser)
@@ -84,13 +66,13 @@ public class ChatPlayer extends TBMCPlayerBase {
 	}
 
 	public void SetFlair(int time) {
-		FlairTime().set(time);
+		FlairTime.set(time);
 		FlairUpdate();
 	}
 
 	public void SetFlair(int time, boolean cheater) {
-		FlairTime().set(time);
-		FlairCheater().set(cheater);
+		FlairTime.set(time);
+		FlairCheater.set(cheater);
 		FlairUpdate();
 	}
 
@@ -104,9 +86,9 @@ public class ChatPlayer extends TBMCPlayerBase {
 	}
 
 	public short GetFlairColor() {
-		if (FlairCheater().get())
+		if (FlairCheater.get())
 			return 0x5;
-		final int flairTime = FlairTime().get();
+		final int flairTime = FlairTime.get();
 		if (flairTime == FlairTimeNonPresser)
 			return 0x7;
 		else if (flairTime == FlairTimeCantPress)
@@ -127,6 +109,6 @@ public class ChatPlayer extends TBMCPlayerBase {
 	}
 
 	public double getF() {
-		return (double) FCount().get() / (double) FDeaths().get();
+		return (double) FCount.get() / (double) FDeaths.get();
 	}
 }

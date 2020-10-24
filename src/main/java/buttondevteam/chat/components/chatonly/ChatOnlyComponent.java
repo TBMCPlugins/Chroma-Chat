@@ -8,12 +8,12 @@ import buttondevteam.core.ComponentManager;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ComponentMetadata;
 import buttondevteam.lib.player.TBMCPlayer;
-import buttondevteam.lib.player.TBMCPlayerJoinEvent;
 import lombok.val;
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -34,9 +34,9 @@ public class ChatOnlyComponent extends Component<PluginMain> implements Listener
 	}
 
 	@EventHandler
-	public void playerJoin(TBMCPlayerJoinEvent event) {
+	public void playerJoin(PlayerJoinEvent event) {
 		val p = event.getPlayer();
-		val cp = event.GetPlayer().asPluginPlayer(ChatPlayer.class);
+		val cp = TBMCPlayer.getPlayer(p.getUniqueId(), ChatPlayer.class);
 		if (cp.ChatOnly || p.getGameMode().equals(GameMode.SPECTATOR)) {
 			cp.ChatOnly = false;
 			p.setGameMode(GameMode.SURVIVAL);
@@ -44,7 +44,7 @@ public class ChatOnlyComponent extends Component<PluginMain> implements Listener
 	}
 
 	public static void tellrawCreate(ChatPlayer mp, TellrawPart json) {
-		if(!ComponentManager.isEnabled(ChatOnlyComponent.class))
+		if (!ComponentManager.isEnabled(ChatOnlyComponent.class))
 			return;
 		if (mp != null && mp.ChatOnly) {
 			json.addExtra(new TellrawPart("[C]")

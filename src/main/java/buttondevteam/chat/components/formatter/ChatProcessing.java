@@ -199,7 +199,7 @@ public class ChatProcessing {
 					if (!VanillaUtils.tellRaw(p, jsonstr))
 						ChatUtils.sendChatMessage(channel, sender, message, p);
 		} catch (Exception ex) {
-			TBMCCoreAPI.SendException("An error occured while sending a chat message!", ex);
+			TBMCCoreAPI.SendException("An error occured while sending a chat message!", ex, PluginMain.Instance);
 			sender.sendMessage("§cAn error occured while sending the message.");
 			return true;
 		}

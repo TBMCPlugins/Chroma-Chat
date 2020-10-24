@@ -78,20 +78,19 @@ public class FlairComponent extends Component<PluginMain> {
 					ign = ign.trim();
 					if (PlayersWithFlairs.contains(ign))
 						continue;
-					try (ChatPlayer mp = TBMCPlayerBase.getFromName(ign, ChatPlayer.class)) { // Loads player file
-						if (mp == null)
-							continue;
-						/*
-						 * if (!JoinedBefore(mp, 2015, 6, 5)) continue;
-						 */
-						if (!mp.UserNames().contains(author))
-							mp.UserNames().add(author);
-						if (mp.FlairState().get().equals(FlairStates.NoComment)) {
-							mp.FlairState().set(FlairStates.Commented);
-							ConfirmUserMessage(mp);
-						}
-						PlayersWithFlairs.add(ign); // Don't redownload even if flair isn't accepted
+					ChatPlayer mp = TBMCPlayerBase.getFromName(ign, ChatPlayer.class); // Loads player file
+					if (mp == null)
+						continue;
+					/*
+					 * if (!JoinedBefore(mp, 2015, 6, 5)) continue;
+					 */
+					if (!mp.UserNames.get().contains(author))
+						mp.UserNames.get().add(author);
+					if (mp.FlairState.get().equals(FlairStates.NoComment)) {
+						mp.FlairState.set(FlairStates.Commented);
+						ConfirmUserMessage(mp);
 					}
+					PlayersWithFlairs.add(ign); // Don't redownload even if flair isn't accepted
 				}
 			} catch (Exception e) {
 				errorcount++;
@@ -99,7 +98,7 @@ public class FlairComponent extends Component<PluginMain> {
 					errorcount = 0;
 					if (!e.getMessage().contains("Server returned HTTP response code")
 						&& !(e instanceof UnknownHostException))
-						TBMCCoreAPI.SendException("Error while getting flairs from Reddit!", e);
+						TBMCCoreAPI.SendException("Error while getting flairs from Reddit!", e, this);
 				}
 			}
 			try {
@@ -108,11 +107,12 @@ public class FlairComponent extends Component<PluginMain> {
 				Thread.currentThread().interrupt();
 			}
 		}
+
 	}
 
 	void DownloadFlair(ChatPlayer mp) throws IOException {
 		String[] flairdata = TBMCCoreAPI
-			.DownloadString("http://karmadecay.com/thebutton-data.php?users=" + mp.UserName().get())
+			.DownloadString("http://karmadecay.com/thebutton-data.php?users=" + mp.UserName.get())
 			.replace("\"", "").split(":");
 		String flair;
 		if (flairdata.length > 1)
@@ -124,12 +124,12 @@ public class FlairComponent extends Component<PluginMain> {
 			flairclass = flairdata[2];
 		else
 			flairclass = "unknown";
-		SetFlair(mp, flair, flairclass, mp.UserName().get());
+		SetFlair(mp, flair, flairclass, mp.UserName.get());
 	}
 
-	private static void SetFlair(ChatPlayer p, String text, String flairclass, String username) {
-		p.UserName().set(username);
-		p.FlairState().set(FlairStates.Recognised);
+	private void SetFlair(ChatPlayer p, String text, String flairclass, String username) {
+		p.UserName.set(username);
+		p.FlairState.set(FlairStates.Recognised);
 		switch (flairclass) {
 			case "cheater":
 				p.SetFlair(Short.parseShort(text), true);
@@ -145,9 +145,9 @@ public class FlairComponent extends Component<PluginMain> {
 						p.SetFlair(ChatPlayer.FlairTimeCantPress);
 					}
 				} catch (Exception e) {
-					p.FlairState().set(FlairStates.Commented); // Flair unknown
+					p.FlairState.set(FlairStates.Commented); // Flair unknown
 					p.SetFlair(ChatPlayer.FlairTimeNone);
-					TBMCCoreAPI.SendException("Error while checking join date for player " + p.PlayerName() + "!", e);
+					TBMCCoreAPI.SendException("Error while checking join date for player " + p.PlayerName() + "!", e, this);
 				}
 				return;
 			default:
@@ -181,8 +181,8 @@ public class FlairComponent extends Component<PluginMain> {
 
 	public static void ConfirmUserMessage(ChatPlayer mp) {
 		Player p = Bukkit.getPlayer(mp.getUUID());
-		if (mp.FlairState().get().equals(FlairStates.Commented) && p != null)
-			if (mp.UserNames().size() > 1)
+		if (mp.FlairState.get().equals(FlairStates.Commented) && p != null)
+			if (mp.UserNames.get().size() > 1)
 				p.sendMessage(
 					"§9Multiple Reddit users commented your name. You can select with /u accept.§r §6Type /u accept or /u ignore§r");
 			else

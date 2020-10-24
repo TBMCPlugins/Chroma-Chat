@@ -10,7 +10,7 @@ import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ComponentMetadata;
 import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.chat.Color;
-import buttondevteam.lib.player.TBMCPlayerJoinEvent;
+import buttondevteam.lib.player.TBMCPlayer;
 import com.earth2me.essentials.User;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
@@ -22,7 +22,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.dynmap.towny.DTBridge;
 
@@ -130,7 +132,7 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 						nc = Color.White;
 					setTownColor(dtp, buttondevteam.chat.components.towncolors.admin.TownColorCommand.getTownNameCased(entry.getKey()), entry.getValue(), nc);
 				} catch (Exception e) {
-					TBMCCoreAPI.SendException("Error while setting town color for town " + entry.getKey() + "!", e);
+					TBMCCoreAPI.SendException("Error while setting town color for town " + entry.getKey() + "!", e, this);
 				}
 			}
 		});
@@ -149,7 +151,7 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 			DTBridge.setTownColor(dtp, town, c2i.apply(nationcolor == null ? colors[0] : nationcolor),
 				c2i.apply(colors.length > 1 && nationcolor != null ? colors[1] : colors[0]));
 		} catch (Exception e) {
-			TBMCCoreAPI.SendException("Failed to set town color for town " + town + "!", e);
+			TBMCCoreAPI.SendException("Failed to set town color for town " + town + "!", e, component);
 		}
 	}
 
@@ -186,7 +188,7 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 	        else
 	        	len = name.length() / clrs.length;*/
 			boolean usenc = component.useNationColors().get();
-			val nclar = cp.NameColorLocations().get();
+			val nclar = cp.NameColorLocations.get();
 			int[] ncl = nclar == null ? null : nclar.stream().mapToInt(Integer::intValue).toArray();
 			if (ncl != null && (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length + (usenc ? 1 : 0))) //+1: Nation color
 				ncl = null; // Reset if name length changed
@@ -224,8 +226,8 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 		cp.FlairUpdate(); //Update in list
 	}
 
-	@EventHandler
-	public void onPlayerJoin(TBMCPlayerJoinEvent event) {
-		updatePlayerColors(event.getPlayer(), event.GetPlayer().asPluginPlayer(ChatPlayer.class));
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		updatePlayerColors(event.getPlayer(), TBMCPlayer.getPlayer(event.getPlayer().getUniqueId(), ChatPlayer.class));
 	}
 }

@@ -11,7 +11,6 @@ import com.palmergames.bukkit.towny.object.Town;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -70,9 +69,10 @@ public class NColorCommand extends UCommandBase {
 			player.sendMessage("§cAll colors need to be represented in your name. (Use as Test|name|123 instead of |Testname123|)");
 			return true;
 		}
-		cp.NameColorLocations().set(new ArrayList<>(list)); // No byte[], no TIntArrayList
+		var clist = cp.NameColorLocations.get(); // No byte[], no TIntArrayList
+		clist.clear();
+		clist.addAll(list);
 		TownColorComponent.updatePlayerColors(player, cp);
-		cp.save();
 		player.sendMessage("§bName colors set: " + player.getDisplayName());
 		return true;
 	}

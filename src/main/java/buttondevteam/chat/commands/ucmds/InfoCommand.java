@@ -1,7 +1,6 @@
 package buttondevteam.chat.commands.ucmds;
 
 import buttondevteam.chat.PluginMain;
-import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
@@ -19,16 +18,12 @@ public class InfoCommand extends UCommandBase {
 	@Command2.Subcommand
 	public boolean def(CommandSender sender, OfflinePlayer player) {
 		Bukkit.getScheduler().runTaskAsynchronously(PluginMain.Instance, () -> {
-			try (TBMCPlayer p = TBMCPlayerBase.getPlayer(player.getUniqueId(), TBMCPlayer.class)) {
-				if (p == null) {
-					sender.sendMessage("§cThe specified player cannot be found");
-					return;
-				}
-				sender.sendMessage(p.getInfo(InfoTarget.MCCommand));
-			} catch (Exception e) {
-				TBMCCoreAPI.SendException("Error while getting player information!", e);
-				sender.sendMessage("§cError while getting player information!");
+			TBMCPlayer p = TBMCPlayerBase.getPlayer(player.getUniqueId(), TBMCPlayer.class);
+			if (p == null) {
+				sender.sendMessage("§cThe specified player cannot be found");
+				return;
 			}
+			sender.sendMessage(p.getInfo(InfoTarget.MCCommand));
 		});
 		return true;
 	}

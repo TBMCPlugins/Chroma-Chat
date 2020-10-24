@@ -7,31 +7,26 @@ import buttondevteam.chat.commands.ucmds.HistoryCommand;
 import buttondevteam.chat.components.flair.FlairComponent;
 import buttondevteam.chat.components.flair.FlairStates;
 import buttondevteam.core.ComponentManager;
-import buttondevteam.lib.player.TBMCPlayerJoinEvent;
-import buttondevteam.lib.player.TBMCPlayerLoadEvent;
-import buttondevteam.lib.player.TBMCPlayerSaveEvent;
+import buttondevteam.lib.player.TBMCPlayerBase;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Timer;
 
 public class PlayerJoinLeaveListener implements Listener {
 
-	@EventHandler
-	public void onPlayerLoad(TBMCPlayerLoadEvent e) {
-		ChatPlayer cp = e.GetPlayer().asPluginPlayer(ChatPlayer.class);
-		cp.FlairUpdate();
-	}
-
-	@EventHandler
-	public void onPlayerTBMCJoin(TBMCPlayerJoinEvent e) {
-		ChatPlayer cp = e.GetPlayer().asPluginPlayer(ChatPlayer.class);
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onPlayerJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
+		ChatPlayer cp = TBMCPlayerBase.getPlayer(p.getUniqueId(), ChatPlayer.class);
+		cp.FlairUpdate();
 
 		if (ComponentManager.isEnabled(FlairComponent.class)) {
-			if (!cp.FlairState().get().equals(FlairStates.NoComment)) {
+			if (!cp.FlairState.get().equals(FlairStates.NoComment)) {
 				FlairComponent.ConfirmUserMessage(cp);
 				Timer timer = new Timer();
 				PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
@@ -59,10 +54,6 @@ public class PlayerJoinLeaveListener implements Listener {
 
 		if (PluginMain.Instance.storeChatHistory().get())
 			HistoryCommand.showHistory(e.getPlayer(), null);
-	}
-
-	@EventHandler
-	public void onPlayerSave(TBMCPlayerSaveEvent e) {
 	}
 
 	@EventHandler

@@ -53,21 +53,18 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onGetInfo(TBMCPlayerGetInfoEvent e) {
-		try (ChatPlayer cp = e.getPlayer().getAs(ChatPlayer.class)) {
-			if (cp == null)
-				return;
-			e.addInfo("Minecraft name: " + cp.PlayerName().get());
-			if (cp.UserName().get() != null && cp.UserName().get().length() > 0)
-				e.addInfo("Reddit name: " + cp.UserName().get());
-			if (ComponentManager.isEnabled(FlairComponent.class)) {
-				final String flair = cp.GetFormattedFlair(e.getTarget() != InfoTarget.MCCommand);
-				if (flair.length() > 0)
-					e.addInfo("/r/TheButton flair: " + flair);
-			}
-			e.addInfo(String.format("Respect: %.2f", cp.getF()));
-		} catch (Exception ex) {
-			TBMCCoreAPI.SendException("Error while providing chat info for player " + e.getPlayer().getFileName(), ex);
+		ChatPlayer cp = e.getPlayer().getAs(ChatPlayer.class);
+		if (cp == null)
+			return;
+		e.addInfo("Minecraft name: " + cp.PlayerName().get());
+		if (cp.UserName.get() != null && cp.UserName.get().length() > 0)
+			e.addInfo("Reddit name: " + cp.UserName.get());
+		if (ComponentManager.isEnabled(FlairComponent.class)) {
+			final String flair = cp.GetFormattedFlair(e.getTarget() != InfoTarget.MCCommand);
+			if (flair.length() > 0)
+				e.addInfo("/r/TheButton flair: " + flair);
 		}
+		e.addInfo(String.format("Respect: %.2f", cp.getF()));
 	}
 
 	private long lastError = 0;
@@ -88,7 +85,7 @@ public class PlayerListener implements Listener {
 						p.sendMessage("[" + e.getChannel().DisplayName().get() + "] §cSome features in the message below might be unavailable due to an error.");
 			}
 			ChatUtils.sendChatMessage(e);
-			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex);
+			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex, PluginMain.Instance);
 		}
 	}
 

@@ -24,21 +24,21 @@ public class AcceptCommand extends UCommandBase {
 	@Command2.Subcommand
 	public boolean def(Player player, @Command2.OptionalArg String username) {
 		ChatPlayer p = TBMCPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class);
-		if (username == null && p.UserNames().size() > 1) {
+		if (username == null && p.UserNames.get().size() > 1) {
 			player.sendMessage("§9Multiple users commented your name. §bPlease pick one using /u accept <username>");
 			StringBuilder sb = new StringBuilder();
 			sb.append("§6Usernames:");
-			for (String name : p.UserNames())
+			for (String name : p.UserNames.get())
 				sb.append(" ").append(name);
 			player.sendMessage(sb.toString());
 			return true;
 		}
-		if (p.FlairState().get().equals(FlairStates.NoComment) || p.UserNames().size() == 0) {
+		if (p.FlairState.get().equals(FlairStates.NoComment) || p.UserNames.get().size() == 0) {
 			player.sendMessage("§cError: You need to write your username to the reddit thread§r");
 			player.sendMessage(component.flairThreadURL().get());
 			return true;
 		}
-		if (username != null && !p.UserNames().contains(username)) {
+		if (username != null && !p.UserNames.get().contains(username)) {
 			player.sendMessage("§cError: Unknown name: " + username + "§r");
 			return true;
 		}
@@ -47,14 +47,14 @@ public class AcceptCommand extends UCommandBase {
 			return true;
 		}
 
-		if ((username != null ? username : p.UserNames().get(0)).equals(p.UserName().get())) {
+		if ((username != null ? username : p.UserNames.get().get(0)).equals(p.UserName.get())) {
 			player.sendMessage("§cYou already have this user's flair.§r");
 			return true;
 		}
 		if (username != null)
-			p.UserName().set(username);
+			p.UserName.set(username);
 		else
-			p.UserName().set(p.UserNames().get(0));
+			p.UserName.set(p.UserNames.get().get(0));
 
 		player.sendMessage("§bObtaining flair...");
 		p.Working = true;
@@ -65,22 +65,19 @@ public class AcceptCommand extends UCommandBase {
 				try {
 					component.DownloadFlair(mp);
 				} catch (Exception e) {
-					TBMCCoreAPI.SendException(
-							"An error occured while downloading flair for " + player.getCustomName() + "!", e);
-					player.sendMessage(
-							"Sorry, but an error occured while trying to get your flair. Please contact a mod.");
+					TBMCCoreAPI.SendException("An error occured while downloading flair for " + player.getCustomName() + "!", e, component);
+					player.sendMessage("Sorry, but an error occured while trying to get your flair. Please contact a mod.");
 					mp.Working = false;
 					return;
 				}
 
-				if (mp.FlairState().get().equals(FlairStates.Commented)) {
-					player.sendMessage(
-							"Sorry, but your flair isn't recorded. Please ask an admin to set it for you. Also, prepare a comment on /r/thebutton, if possible.");
+				if (mp.FlairState.get().equals(FlairStates.Commented)) {
+					player.sendMessage("Sorry, but your flair isn't recorded. Please ask an admin to set it for you. Also, prepare a comment on /r/thebutton, if possible.");
 					mp.Working = false;
 					return;
 				}
 				String flair = mp.GetFormattedFlair();
-				mp.FlairState().set(FlairStates.Accepted);
+				mp.FlairState.set(FlairStates.Accepted);
 				FlairComponent.ConfirmUserMessage(mp);
 				player.sendMessage("§bYour flair has been set:§r " + flair);
 				mp.Working = false;

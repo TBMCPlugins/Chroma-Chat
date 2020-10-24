@@ -116,8 +116,8 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 			Runnable tt = () -> {
 				if (ActiveF) {
 					ActiveF = false;
-					if (FPlayer != null && FPlayer.FCount().get() < Integer.MAX_VALUE - 1)
-						FPlayer.FCount().set(FPlayer.FCount().get() + Fs.size());
+					if (FPlayer != null && FPlayer.FCount.get() < Integer.MAX_VALUE - 1)
+						FPlayer.FCount.set(FPlayer.FCount.get() + Fs.size());
 					TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL,
 						"§b" + Fs.size() + " " + (Fs.size() == 1 ? "person" : "people")
 							+ " paid their respects.§r", fTarget);
@@ -131,7 +131,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 			ActiveF = true;
 			Fs.clear();
 			FPlayer = TBMCPlayer.getPlayer(e.getEntity().getUniqueId(), ChatPlayer.class);
-			FPlayer.FDeaths().set(FPlayer.FDeaths().get() + 1);
+			FPlayer.FDeaths.set(FPlayer.FDeaths.get() + 1);
 			TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL,
 				"§bPress F to pay respects.§r", fTarget);
 			Ftask = Bukkit.getScheduler().runTaskLaterAsynchronously(PluginMain.Instance, tt, 15 * 20);
@@ -170,7 +170,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 				}
 				val user = ChromaGamerBase.getFromSender(event.getSender());
 				target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 5, false, false));
-				val chan = user.channel().get();
+				val chan = user.channel.get();
 				TBMCChatAPI.SendSystemMessage(chan, chan.getRTR(event.getSender()), ChromaUtils.getDisplayName(event.getSender()) + " un" + s
 					+ "'d " + target.getDisplayName(), unlolTarget);
 			}

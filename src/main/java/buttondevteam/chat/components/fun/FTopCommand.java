@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 })
 public class FTopCommand extends ICommand2MC {
 
-	private final File playerdir = new File(TBMCPlayerBase.TBMC_PLAYERS_DIR);
+	private final File playerdir = new File("TBMC/players/");
 	private ChatPlayer[] cached;
 	private long lastcache = 0;
 
