@@ -35,7 +35,7 @@ public class AcceptCommand extends UCommandBase {
 		}
 		if (p.FlairState.get().equals(FlairStates.NoComment) || p.UserNames.get().size() == 0) {
 			player.sendMessage("§cError: You need to write your username to the reddit thread§r");
-			player.sendMessage(component.flairThreadURL().get());
+			player.sendMessage(component.flairThreadURL.get());
 			return true;
 		}
 		if (username != null && !p.UserNames.get().contains(username)) {

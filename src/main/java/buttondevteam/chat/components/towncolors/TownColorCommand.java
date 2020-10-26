@@ -31,7 +31,7 @@ public class TownColorCommand extends UCommandBase {
 				player.sendMessage(msg);
 				return true;
 			}
-			val cc = component.colorCount().get();
+			val cc = component.colorCount.get();
 			if (colornames.length > cc) {
 				player.sendMessage("You can only use " + cc + " color" + (cc > 1 ? "s" : "") + ".");
 				return true;

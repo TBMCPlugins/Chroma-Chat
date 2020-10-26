@@ -27,9 +27,7 @@ public class FlairComponent extends Component<PluginMain> {
 	/**
 	 * The Reddit thread to check for account connections. Re-enable the component if this was empty.
 	 */
-	ConfigData<String> flairThreadURL() {
-		return getConfig().getData("flairThreadURL", "");
-	}
+	ConfigData<String> flairThreadURL = getConfig().getData("flairThreadURL", "");
 
 	/**
 	 * <p>
@@ -39,7 +37,7 @@ public class FlairComponent extends Component<PluginMain> {
 	 * It's used because normally it has to load all associated player files every time to read the flair state
 	 * </p>
 	 */
-	private Set<String> PlayersWithFlairs = new HashSet<>();
+	private final Set<String> PlayersWithFlairs = new HashSet<>();
 
 	@Override
 	protected void enable() {
@@ -56,9 +54,9 @@ public class FlairComponent extends Component<PluginMain> {
 
 	private void FlairGetterThreadMethod() {
 		int errorcount = 0;
-		while (isEnabled() && flairThreadURL().get().length() > 0) {
+		while (isEnabled() && flairThreadURL.get().length() > 0) {
 			try {
-				String body = TBMCCoreAPI.DownloadString(flairThreadURL().get() + ".json?limit=1000");
+				String body = TBMCCoreAPI.DownloadString(flairThreadURL.get() + ".json?limit=1000");
 				JsonArray json = new JsonParser().parse(body).getAsJsonArray().get(1).getAsJsonObject().get("data")
 					.getAsJsonObject().get("children").getAsJsonArray();
 				for (Object obj : json) {
@@ -147,7 +145,7 @@ public class FlairComponent extends Component<PluginMain> {
 				} catch (Exception e) {
 					p.FlairState.set(FlairStates.Commented); // Flair unknown
 					p.SetFlair(ChatPlayer.FlairTimeNone);
-					TBMCCoreAPI.SendException("Error while checking join date for player " + p.PlayerName() + "!", e, this);
+					TBMCCoreAPI.SendException("Error while checking join date for player " + p.PlayerName + "!", e, this);
 				}
 				return;
 			default:

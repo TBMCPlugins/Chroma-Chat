@@ -16,30 +16,22 @@ public class FormatterComponent extends Component<PluginMain> {
 	/**
 	 * Determines whether Markdown formatting, name mentioning and similar features are enabled.
 	 */
-	ConfigData<Boolean> allowFormatting() {
-		return getConfig().getData("allowFormatting", true);
-	}
+	ConfigData<Boolean> allowFormatting = getConfig().getData("allowFormatting", true);
 
 	/**
 	 * The sound to play when a player is mentioned. Leave empty to use default.
 	 */
-	public ConfigData<String> notificationSound() {
-		return getConfig().getData("notificationSound", "");
-	}
+	public ConfigData<String> notificationSound = getConfig().getData("notificationSound", "");
 
 	/**
 	 * The pitch of the notification sound.
 	 */
-	public ConfigData<Float> notificationPitch() {
-		return getConfig().getData("notificationPitch", 1.0f);
-	}
+	public ConfigData<Float> notificationPitch = getConfig().getData("notificationPitch", 1.0f);
 
 	/**
 	 * The minimum time between messages in milliseconds.
 	 */
-	public ConfigData<Integer> minTimeBetweenMessages() {
-		return getConfig().getData("minTimeBetweenMessages", 100);
-	}
+	public ConfigData<Integer> minTimeBetweenMessages = getConfig().getData("minTimeBetweenMessages", 100);
 
 	@Override
 	protected void enable() {

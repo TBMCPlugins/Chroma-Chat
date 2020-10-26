@@ -122,7 +122,7 @@ public class ChatProcessing {
 			mp = e.getUser().getAs(ChatPlayer.class); //May be null
 
 		if (mp != null) {
-			if (System.nanoTime() - mp.LastMessageTime < 1000 * 1000 * component.minTimeBetweenMessages().get()) { //0.1s by default
+			if (System.nanoTime() - mp.LastMessageTime < 1000 * 1000 * component.minTimeBetweenMessages.get()) { //0.1s by default
 				sender.sendMessage("§cYou are sending messages too quickly!");
 				return true;
 			}
@@ -144,14 +144,14 @@ public class ChatProcessing {
 
 		if (Bukkit.getOnlinePlayers().size() == 0) return false; //Don't try to send to nobody (errors on 1.14)
 
-		Color colormode = channel.Color().get();
+		Color colormode = channel.Color.get();
 		if (mp != null && mp.OtherColorMode != null)
 			colormode = mp.OtherColorMode;
 
 		ArrayList<MatchProviderBase> formatters;
-		if (component.allowFormatting().get()) {
+		if (component.allowFormatting.get()) {
 			formatters = addFormatters(e::shouldSendTo, component);
-			if (colormode == channel.Color().get() && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
+			if (colormode == channel.Color.get() && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
 				createRPC(colormode, formatters);
 			}
 			pingedconsole = false; // Will set it to true onmatch (static constructor)
@@ -256,7 +256,7 @@ public class ChatProcessing {
 	}
 
 	static String getChannelID(Channel channel, String origin) {
-		return ("[" + (ChatUtils.MCORIGIN.equals(origin) ? "" : "§8" + origin.substring(0, 1) + "§r|") + channel.DisplayName().get())
+		return ("[" + (ChatUtils.MCORIGIN.equals(origin) ? "" : "§8" + origin.charAt(0) + "§r|") + channel.DisplayName.get())
 			+ "]";
 	}
 
@@ -323,11 +323,11 @@ public class ChatProcessing {
 	}
 
 	private static void playPingSound(Player p, @Nullable FormatterComponent component) {
-		if (component == null || component.notificationSound().get().length() == 0)
+		if (component == null || component.notificationSound.get().length() == 0)
 			p.playSound(p.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 0.5f); // TODO: Airhorn
 		else
-			p.playSound(p.getLocation(), component.notificationSound().get(), 1.0f,
-				component.notificationPitch().get());
+			p.playSound(p.getLocation(), component.notificationSound.get(), 1.0f,
+				component.notificationPitch.get());
 	}
 
 	static void doFunStuff(CommandSender sender, TBMCChatEventBase event, String message) {

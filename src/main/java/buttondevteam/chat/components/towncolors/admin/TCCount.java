@@ -15,7 +15,7 @@ public class TCCount extends AdminCommandBase {
 	@Command2.Subcommand
 	public boolean def(CommandSender sender, byte count) {
 		val comp = TownColorComponent.getComponent();
-		comp.colorCount().set(count);
+		comp.colorCount.set(count);
 		sender.sendMessage("Color count set to " + count);
 		return true;
 	}

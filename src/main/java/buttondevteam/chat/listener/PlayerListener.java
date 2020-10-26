@@ -56,7 +56,7 @@ public class PlayerListener implements Listener {
 		ChatPlayer cp = e.getPlayer().getAs(ChatPlayer.class);
 		if (cp == null)
 			return;
-		e.addInfo("Minecraft name: " + cp.PlayerName().get());
+		e.addInfo("Minecraft name: " + cp.PlayerName.get());
 		if (cp.UserName.get() != null && cp.UserName.get().length() > 0)
 			e.addInfo("Reddit name: " + cp.UserName.get());
 		if (ComponentManager.isEnabled(FlairComponent.class)) {
@@ -82,7 +82,7 @@ public class PlayerListener implements Listener {
 				lastError = System.nanoTime(); //I put the whole thing in the if to protect against race conditions
 				for (Player p : Bukkit.getOnlinePlayers())
 					if (e.shouldSendTo(p))
-						p.sendMessage("[" + e.getChannel().DisplayName().get() + "] §cSome features in the message below might be unavailable due to an error.");
+						p.sendMessage("[" + e.getChannel().DisplayName.get() + "] §cSome features in the message below might be unavailable due to an error.");
 			}
 			ChatUtils.sendChatMessage(e);
 			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex, PluginMain.Instance);

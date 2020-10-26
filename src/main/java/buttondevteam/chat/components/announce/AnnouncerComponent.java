@@ -16,16 +16,12 @@ public class AnnouncerComponent extends Component<PluginMain> implements Runnabl
 	/**
 	 * The messages to display to players.
 	 */
-	public ListConfigData<String> announceMessages() {
-		return getConfig().getListData("announceMessages");
-	}
+	public ListConfigData<String> announceMessages = getConfig().getListData("announceMessages");
 
 	/**
 	 * The time in milliseconds between the messages. Use /u announce settime to set minutes.
 	 */
-	public ConfigData<Integer> announceTime() {
-		return getConfig().getData("announceTime", 15 * 60 * 1000);
-	}
+	public ConfigData<Integer> announceTime = getConfig().getData("announceTime", 15 * 60 * 1000);
 
 	private TBMCSystemChatEvent.BroadcastTarget target;
 
@@ -35,15 +31,15 @@ public class AnnouncerComponent extends Component<PluginMain> implements Runnabl
 	public void run() {
 		while (isEnabled()) {
 			try {
-				Thread.sleep(announceTime().get());
+				Thread.sleep(announceTime.get());
 			} catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
 			}
 			if (Bukkit.getOnlinePlayers().size() == 0) continue; //Don't post to Discord if nobody is on
-			if (announceMessages().get().size() > AnnounceMessageIndex) {
-				TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, announceMessages().get().get(AnnounceMessageIndex), target);
+			if (announceMessages.get().size() > AnnounceMessageIndex) {
+				TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, announceMessages.get().get(AnnounceMessageIndex), target);
 				AnnounceMessageIndex++;
-				if (AnnounceMessageIndex == announceMessages().get().size())
+				if (AnnounceMessageIndex == announceMessages.get().size())
 					AnnounceMessageIndex = 0;
 			}
 		}

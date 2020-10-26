@@ -61,7 +61,7 @@ public class TownColorCommand extends AdminCommandBase { //TODO: Command path al
 			clrs[i] = c.get();
 		}
 		Color tnc;
-		boolean usenc = TownColorComponent.getComponent().useNationColors().get();
+		boolean usenc = TownColorComponent.getComponent().useNationColors.get();
 		if (usenc) {
 			try {
 				tnc = TownColorComponent.NationColor.get(town.getNation().getName().toLowerCase());

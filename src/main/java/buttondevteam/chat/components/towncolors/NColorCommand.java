@@ -50,7 +50,7 @@ public class NColorCommand extends UCommandBase {
 			return true;
 		}
 		var component = TownColorComponent.getComponent();
-		byte nationColors = (byte) (component.useNationColors().get() ? 1 : 0);
+		byte nationColors = (byte) (component.useNationColors.get() ? 1 : 0);
 		if (nameparts.length < towncolors.length + nationColors) { //+1: Nation color
 			player.sendMessage("§cYou need more vertical lines (|) or colons (:) in your name. (Should have " + (towncolors.length - 1 + 1) + ")"); //Nation color
 			return true;

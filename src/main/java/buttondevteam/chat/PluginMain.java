@@ -40,9 +40,7 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 	 * If enabled, stores and displays the last 10 messages the player can see (public, their town chat etc.)
 	 * Can be used with the Discord plugin so players can see some of the conversation they missed that's visible on Discord anyways.
 	 */
-	public ConfigData<Boolean> storeChatHistory() {
-		return getIConfig().getData("storeChatHistory", true);
-	}
+	public ConfigData<Boolean> storeChatHistory = getIConfig().getData("storeChatHistory", true);
 
 	// Fired when plugin is first enabled
 	@Override

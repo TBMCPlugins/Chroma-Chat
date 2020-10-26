@@ -56,7 +56,7 @@ public final class ChatUtils {
 	}
 
 	public static String getMessageString(Channel channel, CommandSender sender, String message) {
-		return "§c!§r[" + channel.DisplayName().get() + "] <"
+		return "§c!§r[" + channel.DisplayName.get() + "] <"
 			+ ChromaUtils.getDisplayName(sender) + "> " + message;
 	}
 

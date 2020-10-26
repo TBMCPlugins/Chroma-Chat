@@ -53,17 +53,13 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 	/**
 	 * The amount of town colors allowed. If more than one is used, players can change how many letters to be in a specific color using /u ncolor.
 	 */
-	public ConfigData<Byte> colorCount() {
-		return getConfig().getData("colorCount", (byte) 1, cc -> ((Integer) cc).byteValue(), Byte::intValue);
-	}
+	public ConfigData<Byte> colorCount = getConfig().getData("colorCount", (byte) 1, cc -> ((Integer) cc).byteValue(), Byte::intValue);
 
 	/**
 	 * If enabled, players will have a nation-defined color in addition to town colors, white by default.
 	 * They can change how much of each color they want with this as well.
 	 */
-	public ConfigData<Boolean> useNationColors() {
-		return getConfig().getData("useNationColors", true);
-	}
+	public ConfigData<Boolean> useNationColors = getConfig().getData("useNationColors", true);
 
 	@Getter
 	private static TownColorComponent component;
@@ -75,7 +71,7 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 		Consumer<ConfigurationSection> loadTC = cs -> TownColorComponent.TownColors.putAll(cs.getValues(true).entrySet().stream()
 			.collect(Collectors.toMap(Map.Entry::getKey, v -> ((List<String>) v.getValue()).stream()
 				.map(Color::valueOf).toArray(Color[]::new))));
-		boolean usenc = useNationColors().get();
+		boolean usenc = useNationColors.get();
 		Consumer<ConfigurationSection> loadNC = ncs ->
 			TownColorComponent.NationColor.putAll(ncs.getValues(true).entrySet().stream()
 				.collect(Collectors.toMap(Map.Entry::getKey, v -> Color.valueOf((String) v.getValue()))));
@@ -95,10 +91,10 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 		initDynmap();
 
 		registerCommand(new TownColorCommand(this));
-		if (useNationColors().get())
+		if (useNationColors.get())
 			registerCommand(new NationColorCommand());
 		registerCommand(new buttondevteam.chat.components.towncolors.admin.TownColorCommand());
-		if (useNationColors().get())
+		if (useNationColors.get())
 			registerCommand(new buttondevteam.chat.components.towncolors.admin.NationColorCommand());
 		registerCommand(new TCCount());
 		registerCommand(new NColorCommand());
@@ -110,7 +106,7 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 	protected void disable() {
 		getConfig().getConfig().createSection("towncolors", TownColors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
 			v -> Arrays.stream(v.getValue()).map(Enum::toString).toArray(String[]::new))));
-		if (useNationColors().get())
+		if (useNationColors.get())
 			getConfig().getConfig().createSection("nationcolors", NationColor.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
 				v -> v.getValue().toString())));
 		getConfig().signalChange();
@@ -126,7 +122,7 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 					val town = TownyComponent.dataSource.getTown(entry.getKey());
 					Nation nation;
 					Color nc;
-					if (!useNationColors().get())
+					if (!useNationColors.get())
 						nc = null;
 					else if (!town.hasNation() || (nation = town.getNation()) == null || (nc = NationColor.get(nation.getName().toLowerCase())) == null)
 						nc = Color.White;
@@ -187,7 +183,7 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 	        	len = name.length() / (clrs.length+1);
 	        else
 	        	len = name.length() / clrs.length;*/
-			boolean usenc = component.useNationColors().get();
+			boolean usenc = component.useNationColors.get();
 			val nclar = cp.NameColorLocations.get();
 			int[] ncl = nclar == null ? null : nclar.stream().mapToInt(Integer::intValue).toArray();
 			if (ncl != null && (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length + (usenc ? 1 : 0))) //+1: Nation color

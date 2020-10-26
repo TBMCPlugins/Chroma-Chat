@@ -31,7 +31,7 @@ public class HistoryCommand extends UCommandBase {
 	}
 
 	public static boolean showHistory(CommandSender sender, String channel) {
-		if (!PluginMain.Instance.storeChatHistory().get()) {
+		if (!PluginMain.Instance.storeChatHistory.get()) {
 			sender.sendMessage("§6Chat history is disabled");
 			return true;
 		}
@@ -55,7 +55,7 @@ public class HistoryCommand extends UCommandBase {
 			for (int i = Math.max(0, arr.length - 10); i < arr.length; i++) {
 				HistoryEntry e = arr[i];
 				val cm = e.chatMessage;
-				sender.sendMessage("[" + e.channel.DisplayName().get() + "] " + cm.getSender().getName() + ": " + cm.getMessage());
+				sender.sendMessage("[" + e.channel.DisplayName.get() + "] " + cm.getSender().getName() + ": " + cm.getMessage());
 				sent.set(true);
 			}
 		}
@@ -80,7 +80,7 @@ public class HistoryCommand extends UCommandBase {
 	}
 
 	public static void addChatMessage(ChatMessage chatMessage, Channel channel) {
-		if (!PluginMain.Instance.storeChatHistory().get()) return;
+		if (!PluginMain.Instance.storeChatHistory.get()) return;
 		val groupID = channel.getGroupID(chatMessage.getPermCheck());
 		if (groupID == null) return; //Just to be sure
 		synchronized (messages) {

@@ -50,7 +50,7 @@ public class SetFlairCommand extends AdminCommandBase {
 				mp.UserNames.get().add(username);
 		}
 		sender.sendMessage(
-			"§bThe flair has been set. Player: " + mp.PlayerName() + " Flair: " + mp.GetFormattedFlair() + "§r");
+			"§bThe flair has been set. Player: " + mp.PlayerName + " Flair: " + mp.GetFormattedFlair() + "§r");
 		return true;
 	}
 

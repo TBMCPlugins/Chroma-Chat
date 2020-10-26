@@ -36,7 +36,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 	private boolean ActiveF = false;
 	private ChatPlayer FPlayer = null;
 	private BukkitTask Ftask = null;
-	private HashSet<CommandSender> Fs = new HashSet<>();
+	private final HashSet<CommandSender> Fs = new HashSet<>();
 	private UnlolCommand command;
 	private TBMCSystemChatEvent.BroadcastTarget unlolTarget;
 	private TBMCSystemChatEvent.BroadcastTarget fTarget;
@@ -44,26 +44,20 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 	/**
 	 * The strings that count as laughs, see unlol.
 	 */
-	private ConfigData<String[]> laughStrings() {
-		return getConfig().getData("laughStrings", () -> new String[]{"xd", "lel", "lawl", "kek", "lmao", "hue", "hah", "rofl"});
-	}
+	private final ConfigData<String[]> laughStrings = getConfig().getData("laughStrings", () -> new String[]{"xd", "lel", "lawl", "kek", "lmao", "hue", "hah", "rofl"});
 
 	/**
 	 * The "Press F to pay respects" meme in Minecraft. It will randomly appear on player death and keep track of how many "F"s are said in chat.
 	 * You can hover over a player's name to see their respect.
 	 */
-	private ConfigData<Boolean> respect() {
-		return getConfig().getData("respect", true);
-	}
+	private final ConfigData<Boolean> respect = getConfig().getData("respect", true);
 
 	/**
 	 * This is an inside joke on our server.
 	 * It keeps track of laughs (lols and what's defined in laughStrings) and if someone does /unlol or /unlaugh it will unlaugh the last person who laughed.
 	 * Which also blinds the laughing person for a few seconds. This action can only be performed once per laugh.
 	 */
-	private ConfigData<Boolean> unlol() {
-		return getConfig().getData("unlol", true);
-	}
+	private final ConfigData<Boolean> unlol = getConfig().getData("unlol", true);
 
 	@Override
 	protected void enable() {
@@ -89,14 +83,14 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 		if (ActiveF && !Fs.contains(sender) && message.equalsIgnoreCase("F"))
 			Fs.add(sender);
 
-		if (unlol().get()) {
+		if (unlol.get()) {
 			String msg = message.toLowerCase();
 			val lld = new UnlolCommand.LastlolData(sender, event, System.nanoTime());
 			boolean add;
 			if (add = msg.contains("lol"))
 				lld.setLolornot(true);
 			else {
-				String[] laughs = laughStrings().get();
+				String[] laughs = laughStrings.get();
 				for (String laugh : laughs) {
 					if (add = msg.contains(laugh)) {
 						lld.setLolornot(false);
@@ -112,7 +106,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		// MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(e.getEntity());
-		if (e.getDeathMessage().length() > 0 && respect().get() && new Random().nextBoolean()) { // Don't store Fs for NPCs
+		if (e.getDeathMessage().length() > 0 && respect.get() && new Random().nextBoolean()) { // Don't store Fs for NPCs
 			Runnable tt = () -> {
 				if (ActiveF) {
 					ActiveF = false;
@@ -140,14 +134,14 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) {
-		if (unlol().get())
+		if (unlol.get())
 			command.Lastlol.values().removeIf(lld -> lld.getLolowner().equals(event.getPlayer()));
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onCommandPreprocess(TBMCCommandPreprocessEvent event) {
 		if (event.isCancelled()) return;
-		if (!unlol().get()) return;
+		if (!unlol.get()) return;
 		final String cmd = event.getMessage();
 		// We don't care if we have arguments
 		if (cmd.toLowerCase().startsWith("/un")) {
