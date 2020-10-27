@@ -9,7 +9,7 @@ import buttondevteam.lib.player.TBMCPlayerBase;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-@PlayerClass(pluginname = "Button1Chat")
+@PlayerClass(pluginname = "Chroma-Chat")
 public class ChatPlayer extends TBMCPlayerBase {
 	public final ConfigData<String> UserName = getConfig().getData("UserName", "");
 

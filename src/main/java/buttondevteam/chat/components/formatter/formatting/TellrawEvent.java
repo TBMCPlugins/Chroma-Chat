@@ -6,9 +6,9 @@ import java.io.Serializable;
 
 public final class TellrawEvent<T extends TellrawEvent.Action> implements Serializable {
 	private static final long serialVersionUID = -1681364161210561505L;
-	private transient boolean hoverEvent;
-	private T action;
-	private Object value;
+	private final transient boolean hoverEvent;
+	private final T action;
+	private final Object value;
 
 	private TellrawEvent(T action, String value) {
 		this.hoverEvent = action instanceof HoverAction;
@@ -44,7 +44,7 @@ public final class TellrawEvent<T extends TellrawEvent.Action> implements Serial
 
 	public enum ClickAction implements Action {
 		OPEN_URL("open_url"), RUN_COMMAND("run_command"), SUGGEST_COMMAND("suggest_command");
-		private String action;
+		private final String action;
 
 		ClickAction(String action) {
 			this.action = action;
@@ -58,8 +58,8 @@ public final class TellrawEvent<T extends TellrawEvent.Action> implements Serial
 
 	public enum HoverAction implements Action {
 		SHOW_TEXT("show_text"), SHOW_ITEM("show_item"), SHOW_ACHIEVEMENT("show_achievement"), SHOW_ENTITY(
-				"show_entity");
-		private String action;
+			"show_entity");
+		private final String action;
 
 		HoverAction(String action) {
 			this.action = action;

@@ -44,22 +44,22 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 	/**
 	 * Names lowercased
 	 */
-	public static Map<String, Color[]> TownColors = new HashMap<>();
+	public static final Map<String, Color[]> TownColors = new HashMap<>();
 	/**
 	 * Names lowercased - nation color gets added to town colors when needed
 	 */
-	public static Map<String, Color> NationColor = new HashMap<>();
+	public static final Map<String, Color> NationColor = new HashMap<>();
 
 	/**
 	 * The amount of town colors allowed. If more than one is used, players can change how many letters to be in a specific color using /u ncolor.
 	 */
-	public ConfigData<Byte> colorCount = getConfig().getData("colorCount", (byte) 1, cc -> ((Integer) cc).byteValue(), Byte::intValue);
+	public final ConfigData<Byte> colorCount = getConfig().getData("colorCount", (byte) 1, cc -> ((Integer) cc).byteValue(), Byte::intValue);
 
 	/**
 	 * If enabled, players will have a nation-defined color in addition to town colors, white by default.
 	 * They can change how much of each color they want with this as well.
 	 */
-	public ConfigData<Boolean> useNationColors = getConfig().getData("useNationColors", true);
+	public final ConfigData<Boolean> useNationColors = getConfig().getData("useNationColors", true);
 
 	@Getter
 	private static TownColorComponent component;

@@ -1,32 +1,32 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.github.TBMCPlugins.ChromaCore</groupId>
         <artifactId>CorePOM</artifactId>
         <version>master-SNAPSHOT</version>
     </parent>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>Chroma-Chat Plugin</name>
-	<description>Chroma-Chat Plugin</description>
-	<build>
-		<sourceDirectory>src/main/java</sourceDirectory>
-		<resources>
-			<resource>
-				<directory>src</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-				<includes>
-					<include>*.properties</include>
-					<include>*.yml</include>
-					<include>*.csv</include>
-					<include>*.txt</include>
-				</includes>
-				<filtering>true</filtering>
+    <version>v${noprefix.version}-SNAPSHOT</version>
+    <name>Chroma-Chat Plugin</name>
+    <description>Chroma-Chat Plugin</description>
+    <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>src</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>*.properties</include>
+                    <include>*.yml</include>
+                    <include>*.csv</include>
+                    <include>*.txt</include>
+                </includes>
+                <filtering>true</filtering>
 			</resource>
 		</resources>
 		<finalName>Chroma-Chat</finalName>
@@ -72,49 +72,6 @@
 					</useSystemClassLoader> <!-- https://stackoverflow.com/a/53012553/2703239 -->
 				</configuration>
 			</plugin>
-			<!-- <plugin>
-				<groupId>pl.project13.maven</groupId>
-				<artifactId>git-commit-id-plugin</artifactId>
-				<version>2.2.5</version>
-				<executions>
-					<execution>
-						<id>get-the-git-infos</id>
-						<goals>
-							<goal>revision</goal>
-						</goals>
-						*NOTE*: The default phase of revision is initialize, but in case you want to change it, you can do so by adding the phase here
-						<phase>initialize</phase>
-						<configuration>
-							<injectAllReactorProjects>true</injectAllReactorProjects>
-						</configuration>
-					</execution>
-					<execution>
-						<id>validate-the-git-infos</id>
-						<goals>
-							<goal>validateRevision</goal>
-						</goals>
-						*NOTE*: The default phase of validateRevision is verify, but in case you want to change it, you can do so by adding the phase here
-						<phase>package</phase>
-						<configuration>
-							<validationProperties>
-								- <validationProperty>
-									<name>validating git dirty</name>
-									<value>${git.branch}</value>
-									<shouldMatchTo>dev</shouldMatchTo>
-								</validationProperty> -
-							</validationProperties>
-						</configuration>
-					</execution>
-				</executions>
-				<configuration>
-					<injectAllReactorProjects>true</injectAllReactorProjects>
-					<verbose>true</verbose>
-					<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
-				</configuration>
-			</plugin> -->
-			<!-- <plugin> <groupId>org.basepom.maven</groupId> <artifactId>duplicate-finder-maven-plugin</artifactId> 
-				<version>1.2.1</version> <executions> <execution> <goals> <goal>check</goal> 
-				</goals> </execution> </executions> </plugin> -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <executions>
@@ -170,7 +127,7 @@
 		<dependency>
 			<groupId>com.github.TBMCPlugins.ChromaCore</groupId>
 			<artifactId>Chroma-Core</artifactId>
-            <version>${branch}-SNAPSHOT</version>
+            <version>v1.0.0</version>
 		</dependency>
         <dependency>
             <groupId>net.ess3</groupId>
@@ -204,7 +161,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.16.3-R0.1-SNAPSHOT</version>
+            <version>1.12.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- <dependency>
@@ -254,23 +211,6 @@
 		<!-- github server corresponds to entry in ~/.m2/settings.xml -->
 		<github.global.server>githubo</github.global.server>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <branch>
-            master
-        </branch> <!-- Should be master if building ButtonCore locally - the CI will overwrite it (see below) -->
+        <noprefix.version>1.0.0</noprefix.version>
     </properties>
-
-    <profiles>
-        <profile>
-            <id>ci</id>
-            <activation>
-                <property>
-                    <name>env.TRAVIS_BRANCH</name>
-                </property>
-            </activation>
-            <properties>
-                <!-- Override only if necessary -->
-                <branch>${env.TRAVIS_BRANCH}</branch>
-            </properties>
-        </profile>
-    </profiles>
 </project>

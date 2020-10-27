@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 	"The town will be shown with this color on Dynmap and all players in the town will appear in chat with these colors.", //
 	"The colors will split the name evenly.", //
 })
-public class TownColorCommand extends AdminCommandBase { //TODO: Command path aliases
+public class TownColorCommand extends AdminCommandBase {
 	@Command2.Subcommand
 	public boolean def(CommandSender sender, String town, String... colornames) {
 		if (!TownyComponent.dataSource.hasTown(town)) {

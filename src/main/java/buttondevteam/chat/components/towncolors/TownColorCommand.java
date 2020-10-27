@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 	"This command allows setting a color for a town.", //
 	"The town will be shown with this color on Dynmap and all players in the town will appear in chat with these colors.", //
 	"The colors will split the name evenly but residents can override that with /u ncolor.", //
-}) // TODO: /u u when annotation not present
+})
 @RequiredArgsConstructor
 public class TownColorCommand extends UCommandBase {
 	private final TownColorComponent component;

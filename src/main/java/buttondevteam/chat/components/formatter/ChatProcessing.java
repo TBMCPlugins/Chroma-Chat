@@ -122,7 +122,7 @@ public class ChatProcessing {
 			mp = e.getUser().getAs(ChatPlayer.class); //May be null
 
 		if (mp != null) {
-			if (System.nanoTime() - mp.LastMessageTime < 1000 * 1000 * component.minTimeBetweenMessages.get()) { //0.1s by default
+			if (System.nanoTime() - mp.LastMessageTime < 1000L * 1000L * component.minTimeBetweenMessages.get()) { //0.1s by default
 				sender.sendMessage("§cYou are sending messages too quickly!");
 				return true;
 			}

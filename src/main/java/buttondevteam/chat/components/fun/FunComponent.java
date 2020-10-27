@@ -40,6 +40,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 	private UnlolCommand command;
 	private TBMCSystemChatEvent.BroadcastTarget unlolTarget;
 	private TBMCSystemChatEvent.BroadcastTarget fTarget;
+	private final Random random = new Random();
 
 	/**
 	 * The strings that count as laughs, see unlol.
@@ -66,7 +67,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 		val pc = new PressCommand();
 		registerCommand(pc);
 		registerListener(pc);
-		registerCommand(command=new UnlolCommand(unlolTarget));
+		registerCommand(command = new UnlolCommand(unlolTarget));
 		registerListener(this);
 		registerCommand(new FTopCommand());
 		registerCommand(new OpmeCommand());
@@ -106,7 +107,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		// MinigamePlayer mgp = Minigames.plugin.pdata.getMinigamePlayer(e.getEntity());
-		if (e.getDeathMessage().length() > 0 && respect.get() && new Random().nextBoolean()) { // Don't store Fs for NPCs
+		if (e.getDeathMessage().length() > 0 && respect.get() && random.nextBoolean()) { // Don't store Fs for NPCs
 			Runnable tt = () -> {
 				if (ActiveF) {
 					ActiveF = false;

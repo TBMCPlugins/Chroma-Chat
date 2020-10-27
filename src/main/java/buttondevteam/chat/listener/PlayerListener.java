@@ -31,7 +31,7 @@ public class PlayerListener implements Listener {
 	/**
 	 * Does not contain format codes, lowercased
 	 */
-	public static BiMap<String, UUID> nicknames = HashBiMap.create();
+	public static final BiMap<String, UUID> nicknames = HashBiMap.create();
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
