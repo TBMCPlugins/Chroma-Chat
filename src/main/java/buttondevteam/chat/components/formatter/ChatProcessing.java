@@ -75,7 +75,7 @@ public class ChatProcessing {
 			.onmatch((match, builder, section) -> {
 				String text, link;
 				if (section.Matches.size() < 2 || (text = section.Matches.get(0)).length() == 0 || (link = section.Matches.get(1)).length() == 0)
-					return "";
+					return "[MISSING LINK]"; //Doesn't actually happen, because of the regex
 				builder.setOpenlink(link);
 				return text;
 			}).build()),

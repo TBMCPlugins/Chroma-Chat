@@ -10,7 +10,10 @@ import buttondevteam.chat.components.formatter.formatting.TellrawEvent.ClickActi
 import buttondevteam.chat.components.formatter.formatting.TellrawEvent.HoverAction;
 import buttondevteam.core.TestPrepare;
 import buttondevteam.core.component.channel.Channel;
+import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.chat.Color;
+import buttondevteam.lib.player.TBMCPlayer;
+import buttondevteam.lib.player.TBMCPlayerBase;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.command.CommandSender;
 import org.junit.Assert;
@@ -20,6 +23,7 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 @RunWith(ObjectTestRunner.class)
 public class ChatFormatIT {
@@ -29,6 +33,7 @@ public class ChatFormatIT {
 		final CommandSender sender = Mockito.mock(CommandSender.class);
 		DebugCommand.DebugMode = true;
 		PluginMain.permission = Mockito.mock(Permission.class);
+		TBMCCoreAPI.RegisterUserClass(TBMCPlayerBase.class, TBMCPlayer::new);
 
 		List<Object> list = new ArrayList<>();
 
@@ -88,6 +93,23 @@ public class ChatFormatIT {
 		list.add(new ChatFormatIT(sender, "***test*** test", new TellrawPart("test").setColor(Color.White)
 			.setItalic(true).setBold(true), new TellrawPart(" test").setColor(Color.White)));
 		list.add(new ChatFormatIT(sender, ">test message\nheh", new TellrawPart(">test message\nheh").setColor(Color.Green)));
+		list.add(new ChatFormatIT(sender, "[here's a link]()", new TellrawPart("[here's a link]()").setColor(Color.White)));
+		list.add(new ChatFormatIT(sender, "[](fakelink)", new TellrawPart("[](fakelink)").setColor(Color.White)));
+		list.add(new ChatFormatIT(sender, "||this is a spoiler||", new TellrawPart("this is a spoiler").setColor(Color.White)
+			.setObfuscated(true).setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT, "this is a spoiler"))));
+		Function<String, TellrawPart> whiteBoldItalic = text -> new TellrawPart(text).setColor(Color.White).setBold(true).setItalic(true);
+		list.add(new ChatFormatIT(sender, "***some complicated ||test message|| with [links](https://chromagaming.figytuna.com) and other __greatness__ by NorbiPeti***",
+			whiteBoldItalic.apply("some complicated "),
+			whiteBoldItalic.apply("test message").setObfuscated(true).setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT, "test message")),
+			whiteBoldItalic.apply(" with "),
+			whiteBoldItalic.apply("links").setClickEvent(TellrawEvent.create(ClickAction.OPEN_URL, "https://chromagaming.figytuna.com")).setUnderlined(true)
+				.setHoverEvent(TellrawEvent.create(HoverAction.SHOW_TEXT, new TellrawPart("Click to open").setColor(Color.Blue))),
+			whiteBoldItalic.apply(" and other "),
+			whiteBoldItalic.apply("greatness").setUnderlined(true),
+			whiteBoldItalic.apply(" by "),
+			whiteBoldItalic.apply("§bNorbiPeti§r").setColor(Color.Aqua))); //§b: flair color
+		list.add(new ChatFormatIT(sender, "hey @console", new TellrawPart("hey ").setColor(Color.White),
+			new TellrawPart("@console").setColor(Color.Aqua)));
 
 		return list;
 	}
@@ -97,10 +119,10 @@ public class ChatFormatIT {
 	private final TellrawPart[] extras;
 	private boolean rainbowMode;
 
-	public ChatFormatIT(CommandSender sender, String message, TellrawPart... expectedextras) {
+	public ChatFormatIT(CommandSender sender, String message, TellrawPart... expectedExtras) {
 		this.sender = sender;
 		this.message = message;
-		this.extras = expectedextras;
+		this.extras = expectedExtras;
 	}
 
 	private ChatFormatIT setRainbowMode() {
@@ -110,16 +132,14 @@ public class ChatFormatIT {
 
 	@Test
 	public void testMessage() {
+		System.out.println("Testing: " + message);
 		ArrayList<MatchProviderBase> cfs = ChatProcessing.addFormatters(p -> true, null);
 		final String chid = ChatProcessing.getChannelID(Channel.GlobalChat, ChatUtils.MCORIGIN);
 		if (rainbowMode)
 			ChatProcessing.createRPC(Color.White, cfs);
 		final TellrawPart tp = ChatProcessing.createTellraw(sender, message, null, null, null, chid, ChatUtils.MCORIGIN);
 		ChatFormatter.Combine(cfs, message, tp, null, FormatSettings.builder().color(Color.White).build());
-		System.out.println("Testing: " + message);
-		// System.out.println(ChatProcessing.toJson(tp));
 		final TellrawPart expectedtp = ChatProcessing.createTellraw(sender, message, null, null, null, chid, ChatUtils.MCORIGIN);
-		// System.out.println("Raw: " + ChatProcessing.toJson(expectedtp));
 		for (TellrawPart extra : extras)
 			expectedtp.addExtra(extra);
 		Assert.assertEquals(ChatProcessing.toJson(expectedtp), ChatProcessing.toJson(tp));

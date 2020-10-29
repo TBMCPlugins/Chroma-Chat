@@ -4,6 +4,7 @@ import buttondevteam.chat.PluginMain;
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCSystemChatEvent;
 import buttondevteam.lib.architecture.Component;
+import buttondevteam.lib.architecture.ComponentMetadata;
 import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.architecture.ListConfigData;
 import buttondevteam.lib.chat.TBMCChatAPI;
@@ -12,6 +13,7 @@ import org.bukkit.Bukkit;
 /**
  * Displays the configured messages at the set interval when someone is online.
  */
+@ComponentMetadata(enabledByDefault = false)
 public class AnnouncerComponent extends Component<PluginMain> implements Runnable {
 	/**
 	 * The messages to display to players.

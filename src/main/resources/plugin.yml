@@ -1,18 +1,14 @@
 name: Chroma-Chat
 main: buttondevteam.chat.PluginMain
-version: '1.0'
+version: '${noprefix.version}'
 commands:
   u:
-    description: Auto-flair system. Accept or ignore flair.
-  ooc:
-    description: Send message Out-of-Character.
-    alias: nrp
+    description: The main command for Chroma-Chat.
   unlol:
     description: Unlaugh the last laugh.
     alias: unlaugh
   mwiki:
     description: Search the wiki.
-  dontrunthiscmd: null
   tableflip:
     description: Flip a table.
   unflip:
@@ -34,9 +30,9 @@ commands:
     description: Me command with Chroma support.
 author: NorbiPeti
 depend:
-- Essentials
+  - Essentials
 - Vault
-- ChromaCore
+  - Chroma-Core
 soft-depend:
 - Dynmap-Towny
 - Towny

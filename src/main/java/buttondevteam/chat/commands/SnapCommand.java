@@ -10,7 +10,10 @@ import org.bukkit.command.CommandSender;
 import java.util.ArrayList;
 import java.util.Random;
 
-@CommandClass(modOnly = true)
+@CommandClass(modOnly = true, helpText = {
+	"Snap",
+	"Perfectly balanced as all things should be."
+})
 public class SnapCommand extends ICommand2MC {
 	@Command2.Subcommand
 	public void def(CommandSender sender) {

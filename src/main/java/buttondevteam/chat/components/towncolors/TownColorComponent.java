@@ -51,7 +51,7 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 	public static final Map<String, Color> NationColor = new HashMap<>();
 
 	/**
-	 * The amount of town colors allowed. If more than one is used, players can change how many letters to be in a specific color using /u ncolor.
+	 * The amount of town colors allowed. If more than one is used (or nation colors are enabled), players can change how many letters to be in a specific color using /u ncolor.
 	 */
 	public final ConfigData<Byte> colorCount = getConfig().getData("colorCount", (byte) 1, cc -> ((Integer) cc).byteValue(), Byte::intValue);
 

@@ -14,7 +14,7 @@ public final class TellrawPart implements Serializable {
 	private boolean underlined;
 	private boolean strikethrough;
 	private boolean obfuscated;
-	private List<TellrawPart> extra = new ArrayList<>();
+	private final List<TellrawPart> extra = new ArrayList<>();
 	private String text;
 	private TellrawEvent<TellrawEvent.HoverAction> hoverEvent;
 	private TellrawEvent<TellrawEvent.ClickAction> clickEvent;

@@ -166,16 +166,6 @@ public final class ChatFormatter {
 				i = 0;
 			}
 			sortSections(sections);
-			if (i == 0) continue;
-			for (int j = i - 1; j <= i + 1; j++) {
-				if (j < sections.size() && sections.get(j).End < sections.get(j).Start) {
-					DebugCommand.SendDebugMessage("Removing section: " + sections.get(j));
-					ChatFormatUtils.sendMessageWithPointer(str, sections.get(j).Start, sections.get(j).End);
-					sections.remove(j);
-					j--;
-					i = 0;
-				}
-			}
 		}
 	}
 

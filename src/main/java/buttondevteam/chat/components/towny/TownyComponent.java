@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 /**
  * This component manages the town and nation chat. It's also needed for the TownColorComponent.
  * It provides the TC and NC channels, and posts Towny messages (global, town, nation) to the correct channels for other platforms like Discord.
+ * You can disable /tc and /nc in Chroma-Core's config if you only want to use the TownColorComponent.
  */
 public class TownyComponent extends Component<PluginMain> {
 	public static TownyDataSource dataSource;

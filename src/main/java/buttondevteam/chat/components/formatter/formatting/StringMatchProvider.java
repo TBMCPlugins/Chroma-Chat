@@ -12,7 +12,7 @@ public class StringMatchProvider extends MatchProviderBase {
 	@ToString.Exclude
 	private final FormatSettings settings;
 	private int nextIndex = 0;
-	private boolean ignoreCase;
+	private final boolean ignoreCase;
 
 	/**
 	 * Matches the given strings in the order given
