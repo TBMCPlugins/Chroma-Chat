@@ -31,12 +31,12 @@ commands:
 author: NorbiPeti
 depend:
   - Essentials
-- Vault
+  - Vault
   - Chroma-Core
-soft-depend:
-- Dynmap-Towny
-- Towny
-- dynmap
+softdepend:
+  - Dynmap-Towny
+  - Towny
+  - dynmap
 permissions:
   tbmc.badge.gold:
     description: Gives a patron badge.

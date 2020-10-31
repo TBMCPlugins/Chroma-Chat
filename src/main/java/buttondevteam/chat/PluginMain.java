@@ -31,8 +31,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15.
-	// A user, which flair isn't obtainable:
-	// https://www.reddit.com/r/thebutton/comments/31c32v/i_pressed_the_button_without_really_thinking/
 	public static PluginMain Instance;
 	public static ConsoleCommandSender Console;
 
