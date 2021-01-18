@@ -7,6 +7,8 @@ import lombok.val;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.util.UUID;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
@@ -84,7 +86,16 @@ public class VanillaUtils {
 				val chatcompcl = Class.forName(nms + ".IChatBaseComponent");
 				//val chatcomarrcl = Class.forName("[L" + chatcompcl.getName() + ";");
 				val chatcomparr = Array.newInstance(chatcompcl, 1);
-				val sendmsg = handle.getClass().getMethod("sendMessage", chatcomparr.getClass());
+				final Method sendmsg;
+				{
+					Method sendmsg1;
+					try {
+						sendmsg1 = handle.getClass().getMethod("sendMessage", UUID.class, chatcomparr.getClass());
+					} catch (NoSuchMethodException e) {
+						sendmsg1 = handle.getClass().getMethod("sendMessage", chatcomparr.getClass());
+					}
+					sendmsg = sendmsg1;
+				}
 
 				/*val ccucl = Class.forName(nms + ".ChatComponentUtils");
 				val iclcl = Class.forName(nms + ".ICommandListener");
@@ -101,7 +112,10 @@ public class VanillaUtils {
 						val deserialized = am.invoke(null, jsonStr);
 						//val filtered = ffdm.invoke(null, hhandle, deserialized, hhandle);
 						Array.set(chatcomparr, 0, deserialized);
-						sendmsg.invoke(hhandle, chatcomparr);
+						if (sendmsg.getParameterCount() == 2)
+							sendmsg.invoke(hhandle, null, chatcomparr); //
+						else
+							sendmsg.invoke(hhandle, chatcomparr);
 						return true;
 					} catch (Exception e) {
 						e.printStackTrace();
