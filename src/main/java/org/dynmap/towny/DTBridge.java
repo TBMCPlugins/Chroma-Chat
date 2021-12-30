@@ -4,7 +4,7 @@ import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
-import org.dynmap.bukkit.DynmapPlugin;
+import org.dynmap.DynmapCommonAPI;
 import org.dynmap.markers.MarkerAPI;
 
 import java.lang.reflect.Constructor;
@@ -35,7 +35,7 @@ public class DTBridge {
 			Constructor<?> c = cl.getDeclaredConstructor(FileConfiguration.class, String.class, MarkerAPI.class);
 			c.setAccessible(true);
 			style = c.newInstance(dtp.getConfig(), "custstyle." + townname,
-				((DynmapPlugin) Bukkit.getPluginManager().getPlugin("dynmap")).getMarkerAPI());
+				((DynmapCommonAPI) Bukkit.getPluginManager().getPlugin("dynmap")).getMarkerAPI());
 			map.put(townname, style);
 		}
 		set(cl, style, "fillcolor", fillcolor);

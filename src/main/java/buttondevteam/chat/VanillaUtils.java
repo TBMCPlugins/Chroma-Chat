@@ -82,8 +82,10 @@ public class VanillaUtils {
 				if (notCraftPlayer(pcl)) return false;
 				val hm = pcl.getMethod("getHandle");
 				val handle = hm.invoke(p);
-				val nms = handle.getClass().getPackage().getName();
-				val chatcompcl = Class.forName(nms + ".IChatBaseComponent");
+				var nmsOrChat = handle.getClass().getPackage().getName();
+				if (!nmsOrChat.contains(".v1_"))
+					nmsOrChat = "net.minecraft.network.chat";
+				val chatcompcl = Class.forName(nmsOrChat + ".IChatBaseComponent");
 				//val chatcomarrcl = Class.forName("[L" + chatcompcl.getName() + ";");
 				val chatcomparr = Array.newInstance(chatcompcl, 1);
 				final Method sendmsg;

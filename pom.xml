@@ -95,22 +95,26 @@
 		</repository>
         <repository>
             <id>ess-repo</id>
-            <url>https://ci.ender.zone/plugin/repository/everything/</url>
+            <url>https://repo.essentialsx.net/releases/</url>
         </repository>
         <!-- <repository>
             <id>Minigames</id>
             <url>http://maven.addstar.com.au/artifactory/release</url>
         </repository> -->
-		<!-- <repository>
-			<id>vault-repo</id>
-			<url>http://nexus.hc.to/content/repositories/pub_releases</url>
-		</repository> -->
-		<!-- <repository> <id>WorldEdit</id> <url>http://maven.sk89q.com/artifactory/repo</url> 
-			</repository> -->
-		<repository>
-			<id>projectlombok.org</id>
-			<url>http://projectlombok.org/mavenrepo</url>
-		</repository>
+        <!-- <repository>
+            <id>vault-repo</id>
+            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
+        </repository> -->
+        <!-- <repository> <id>WorldEdit</id> <url>http://maven.sk89q.com/artifactory/repo</url>
+            </repository> -->
+        <repository>
+            <id>projectlombok.org</id>
+            <url>https://projectlombok.org/mavenrepo</url>
+        </repository>
+        <repository>
+            <id>Dynmap</id>
+            <url>https://repo.mikeprimm.com</url>
+        </repository>
     </repositories>
 	<dependencies>
 		<dependency>
@@ -124,9 +128,9 @@
             <version>v1.0.0</version>
 		</dependency>
         <dependency>
-            <groupId>net.ess3</groupId>
+            <groupId>net.essentialsx</groupId>
             <artifactId>EssentialsX</artifactId>
-            <version>2.17.1</version>
+            <version>2.19.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -136,19 +140,19 @@
             <version>0.96.2.0</version>
             <scope>provided</scope>
         </dependency>
-		<!-- <dependency> <groupId>au.com.mineauz</groupId> <artifactId>Minigames</artifactId> 
-			<version>1.8.0</version> </dependency> -->
-		<dependency>
-			<groupId>com.github.milkbowl</groupId>
-			<artifactId>VaultAPI</artifactId>
-			<version>master-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- <dependency> <groupId>au.com.mineauz</groupId> <artifactId>Minigames</artifactId>
+            <version>1.8.0</version> </dependency> -->
+        <dependency>
+            <groupId>com.github.MilkBowl</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.7</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.10</version>
+            <version>1.18.22</version>
             <scope>provided</scope>
         </dependency>
 
@@ -164,20 +168,20 @@
             <version>1.16.4-R0.1-SNAPSHOT</version>
         </dependency> -->
 		<dependency>
-			<groupId>com.github.webbukkit</groupId>
+            <groupId>com.github.TownyAdvanced</groupId>
 			<artifactId>Dynmap-Towny</artifactId>
-			<version>master-SNAPSHOT</version>
+            <version>0.89</version>
 		</dependency>
-		<dependency>
-			<groupId>com.github.webbukkit</groupId>
-			<artifactId>Dynmap</artifactId>
-			<version>v2.5</version>
-		</dependency>
+        <dependency>
+            <groupId>us.dynmap</groupId>
+            <artifactId>dynmap-api</artifactId>
+            <version>3.2-beta-1</version>
+        </dependency>
 		<!-- https://mvnrepository.com/artifact/junit/junit -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
         <!-- Included in vanilla minecraft's JAR -->
@@ -191,7 +195,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>3.0.0</version>
+            <version>4.2.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
