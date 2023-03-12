@@ -66,21 +66,6 @@
 					</useSystemClassLoader> <!-- https://stackoverflow.com/a/53012553/2703239 -->
 				</configuration>
 			</plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-testCompile</id>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                        <configuration>
-                            <source>1.8</source>
-                            <target>1.8</target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
 		</plugins>
 	</build>
 	<groupId>buttondevteam</groupId>
@@ -137,7 +122,7 @@
             <groupId>com.github.TownyAdvanced</groupId>
             <artifactId>Towny</artifactId>
             <!-- <version>8d3b6b6</version> ButtonCore repo -->
-            <version>0.96.2.0</version>
+            <version>0.98.6.0</version>
             <scope>provided</scope>
         </dependency>
         <!-- <dependency> <groupId>au.com.mineauz</groupId> <artifactId>Minigames</artifactId>

@@ -8,7 +8,6 @@ import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.CustomTabCompleteMethod;
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyObject;
 import lombok.val;
@@ -29,17 +28,16 @@ import java.util.stream.Collectors;
 public class TownColorCommand extends AdminCommandBase {
 	@Command2.Subcommand
 	public boolean def(CommandSender sender, String town, String... colornames) {
-		if (!TownyComponent.dataSource.hasTown(town)) {
+		if (TownyComponent.dataSource.getTown(town) == null) {
 			sender.sendMessage("§cThe town '" + town + "' cannot be found.");
 			return true;
 		}
-		try {
-			Town targetTown = TownyComponent.dataSource.getTown(town);
-			return SetTownColor(sender, targetTown, colornames);
-		} catch (NotRegisteredException e) {
+		Town targetTown = TownyComponent.dataSource.getTown(town);
+		if (targetTown == null) {
 			sender.sendMessage("§cThe town '" + town + "' cannot be found.");
 			return true;
 		}
+		return SetTownColor(sender, targetTown, colornames);
 	}
 
 	@CustomTabCompleteMethod(param = "colornames")
@@ -118,11 +116,11 @@ public class TownColorCommand extends AdminCommandBase {
 	}
 
 	public static String getTownNameCased(String name) {
-		try {
-			return TownyComponent.dataSource.getTown(name).getName();
-		} catch (NotRegisteredException e) {
+		val town = TownyComponent.dataSource.getTown(name);
+		if (town == null) {
 			return null;
 		}
+		return town.getName();
 	}
 
 	public static Iterable<String> tabcompleteColor() {
