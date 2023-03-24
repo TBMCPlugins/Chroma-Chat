@@ -1,6 +1,7 @@
 package buttondevteam.chat.components.fun;
 
 import buttondevteam.core.component.channel.Channel;
+import buttondevteam.core.component.restart.RestartComponent;
 import buttondevteam.core.component.restart.ScheduledRestartCommand;
 import buttondevteam.lib.ChromaUtils;
 import buttondevteam.lib.ScheduledServerRestartEvent;
@@ -36,7 +37,7 @@ public class PressCommand extends ICommand2MC implements Listener {
 			return;
 		}
 		pressers.add(sender);
-		TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, String.format("§b-- %s §bpressed at %.0fs", ChromaUtils.getDisplayName(sender), command.getRestartCounter() / 20f), command.getComponent().getRestartBroadcast());
+		TBMCChatAPI.SendSystemMessage(Channel.globalChat, Channel.RecipientTestResult.ALL, String.format("§b-- %s §bpressed at %.0fs", ChromaUtils.getDisplayName(sender), command.getRestartCounter() / 20f), ((RestartComponent) command.getComponent()).getRestartBroadcast());
 		command.setRestartCounter(startTicks);
 	}
 
@@ -46,6 +47,6 @@ public class PressCommand extends ICommand2MC implements Listener {
 		pressers = new HashSet<>();
 		startTicks = event.getRestartTicks();
 		if (Bukkit.getOnlinePlayers().size() > 0)
-			TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, "§b-- Do /press to reset the timer. You may only press once.", command.getComponent().getRestartBroadcast());
+			TBMCChatAPI.SendSystemMessage(Channel.globalChat, Channel.RecipientTestResult.ALL, "§b-- Do /press to reset the timer. You may only press once.", ((RestartComponent) command.getComponent()).getRestartBroadcast());
 	}
 }

@@ -44,7 +44,7 @@ public final class UnlolCommand extends ICommand2MC {
 		String msg = ChromaUtils.getDisplayName(sender)
 				+ (lol.Lolornot ? " unlolled " : " unlaughed ")
 			+ ChromaUtils.getDisplayName(lol.Lolowner);
-		TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, msg, target);
+		TBMCChatAPI.SendSystemMessage(Channel.globalChat, Channel.RecipientTestResult.ALL, msg, target);
 		Lastlol.remove(lol.Chatevent.getChannel());
 		return true;
 	}

@@ -53,9 +53,9 @@ public class TownyComponent extends Component<PluginMain> {
 		}
 		Towns = dataSource.getTowns().stream().map(Town::getName).collect(Collectors.toCollection(ArrayList::new)); // Creates a snapshot of towns, new towns will be added when needed
 		Nations = dataSource.getNations().stream().map(Nation::getName).collect(Collectors.toCollection(ArrayList::new)); // Same here but with nations
-		TBMCChatAPI.RegisterChatChannel(
+		TBMCChatAPI.registerChatChannel(
 			TownChat = new Channel("§3TC§f", Color.DarkAqua, "tc", s -> checkTownNationChat(s, false)));
-		TBMCChatAPI.RegisterChatChannel(
+		TBMCChatAPI.registerChatChannel(
 			NationChat = new Channel("§6NC§f", Color.Gold, "nc", s -> checkTownNationChat(s, true)));
 		TownyAnnouncer.setup(TownChat, NationChat);
 	}
@@ -67,7 +67,7 @@ public class TownyComponent extends Component<PluginMain> {
 
 	public Consumer<Player> handleSpiesInit(Channel channel, TellrawPart json, Function<TellrawPart, String> toJson,
 	                                        CommandSender sender, String message) {
-		if (channel.ID.equals(TownChat.ID) || channel.ID.equals(NationChat.ID)) {
+		if (channel.getIdentifier().equals(TownChat.getIdentifier()) || channel.getIdentifier().equals(NationChat.getIdentifier())) {
 			((List<TellrawPart>) json.getExtra()).add(0, new TellrawPart("[SPY]"));
 			String jsonstr = toJson.apply(json);
 			return p -> handleSpies(channel, p, jsonstr, sender, message);
@@ -76,7 +76,7 @@ public class TownyComponent extends Component<PluginMain> {
 	}
 
 	private void handleSpies(Channel channel, Player p, String jsonstr, CommandSender sender, String message) {
-		if (channel.ID.equals(TownChat.ID) || channel.ID.equals(NationChat.ID)) {
+		if (channel.getIdentifier().equals(TownChat.getIdentifier()) || channel.getIdentifier().equals(NationChat.getIdentifier())) {
 			try {
 				if (dataSource.getResident(p.getName()).hasMode("spy"))
 					if (!VanillaUtils.tellRaw(p, jsonstr))

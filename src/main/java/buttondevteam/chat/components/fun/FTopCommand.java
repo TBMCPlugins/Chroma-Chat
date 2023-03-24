@@ -55,7 +55,7 @@ public class FTopCommand extends ICommand2MC {
 			val ai = new AtomicInteger();
 			sender.sendMessage("§6---- Top Fs ----");
 			sender.sendMessage(Arrays.stream(cached).skip((i - 1) * 10).limit(i * 10)
-				.map(cp -> String.format("%d. %s - %f.2", ai.incrementAndGet(), cp.PlayerName.get(), cp.getF()))
+				.map(cp -> String.format("%d. %s - %f.2", ai.incrementAndGet(), cp.playerName.get(), cp.getF()))
 				.collect(Collectors.joining("\n")));
 		});
 		return true;

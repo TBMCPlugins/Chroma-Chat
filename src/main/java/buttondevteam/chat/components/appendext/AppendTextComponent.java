@@ -21,7 +21,7 @@ public class AppendTextComponent extends Component<PluginMain> {
 	private Map<String, IHaveConfig> appendTexts;
 
 	private ConfigData<String[]> helpText(IHaveConfig config) {
-		return config.getData("helpText", () -> new String[]{
+		return config.getData("helpText", new String[]{
 			"Tableflip", //
 			"This command appends a tableflip after your message", //
 			"Or just makes you tableflip", //
@@ -29,7 +29,7 @@ public class AppendTextComponent extends Component<PluginMain> {
 	}
 
 	private ConfigData<String> appendedText(IHaveConfig config) {
-		return config.getData("appendedText", () -> "tableflip");
+		return config.getData("appendedText", "tableflip");
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class AppendTextComponent extends Component<PluginMain> {
 
 		@Command2.Subcommand
 		public void def(Command2MCSender sender, @Command2.OptionalArg @Command2.TextArg String message) {
-			TBMCChatAPI.SendChatMessage(ChatMessage.builder(sender.getSender(), ChromaGamerBase.getFromSender(sender.getSender()),
+			TBMCChatAPI.sendChatMessage(ChatMessage.builder(sender.getSender(), ChromaGamerBase.getFromSender(sender.getSender()),
 				(message == null ? "" : message + " ") + appendedText).fromCommand(true).permCheck(sender.getPermCheck()).build());
 		}
 

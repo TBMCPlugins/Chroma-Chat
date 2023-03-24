@@ -45,7 +45,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 	/**
 	 * The strings that count as laughs, see unlol.
 	 */
-	private final ConfigData<String[]> laughStrings = getConfig().getData("laughStrings", () -> new String[]{"xd", "lel", "lawl", "kek", "lmao", "hue", "hah", "rofl"});
+	private final ConfigData<String[]> laughStrings = getConfig().getData("laughStrings", new String[]{"xd", "lel", "lawl", "kek", "lmao", "hue", "hah", "rofl"});
 
 	/**
 	 * The "Press F to pay respects" meme in Minecraft. It will randomly appear on player death and keep track of how many "F"s are said in chat.
@@ -113,7 +113,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 					ActiveF = false;
 					if (FPlayer != null && FPlayer.FCount.get() < Integer.MAX_VALUE - 1)
 						FPlayer.FCount.set(FPlayer.FCount.get() + Fs.size());
-					TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL,
+					TBMCChatAPI.SendSystemMessage(Channel.globalChat, Channel.RecipientTestResult.ALL,
 						"§b" + Fs.size() + " " + (Fs.size() == 1 ? "person" : "people")
 							+ " paid their respects.§r", fTarget);
 					Fs.clear();
@@ -127,7 +127,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 			Fs.clear();
 			FPlayer = TBMCPlayer.getPlayer(e.getEntity().getUniqueId(), ChatPlayer.class);
 			FPlayer.FDeaths.set(FPlayer.FDeaths.get() + 1);
-			TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL,
+			TBMCChatAPI.SendSystemMessage(Channel.globalChat, Channel.RecipientTestResult.ALL,
 				"§bPress F to pay respects.§r", fTarget);
 			Ftask = Bukkit.getScheduler().runTaskLaterAsynchronously(PluginMain.Instance, tt, 15 * 20);
 		}

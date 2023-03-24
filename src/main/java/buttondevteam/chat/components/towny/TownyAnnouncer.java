@@ -44,7 +44,7 @@ public class TownyAnnouncer {
 						message, target, ChatUtils.MCORIGIN);
 					break;
 				case "Global":
-					TBMCChatAPI.SendSystemMessage(Channel.GlobalChat,
+					TBMCChatAPI.SendSystemMessage(Channel.globalChat,
 						Channel.RecipientTestResult.ALL,
 						message, target, ChatUtils.MCORIGIN);
 					break;

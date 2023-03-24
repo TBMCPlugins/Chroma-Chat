@@ -145,7 +145,7 @@ public class FlairComponent extends Component<PluginMain> {
 				} catch (Exception e) {
 					p.FlairState.set(FlairStates.Commented); // Flair unknown
 					p.SetFlair(ChatPlayer.FlairTimeNone);
-					TBMCCoreAPI.SendException("Error while checking join date for player " + p.PlayerName + "!", e, this);
+					TBMCCoreAPI.SendException("Error while checking join date for player " + p.playerName + "!", e, this);
 				}
 				return;
 			default:
@@ -178,7 +178,7 @@ public class FlairComponent extends Component<PluginMain> {
 	}
 
 	public static void ConfirmUserMessage(ChatPlayer mp) {
-		Player p = Bukkit.getPlayer(mp.getUUID());
+		Player p = Bukkit.getPlayer(mp.getUniqueId());
 		if (mp.FlairState.get().equals(FlairStates.Commented) && p != null)
 			if (mp.UserNames.get().size() > 1)
 				p.sendMessage(

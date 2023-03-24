@@ -134,7 +134,7 @@ public class ChatFormatIT {
 	public void testMessage() {
 		System.out.println("Testing: " + message);
 		ArrayList<MatchProviderBase> cfs = ChatProcessing.addFormatters(p -> true, null);
-		final String chid = ChatProcessing.getChannelID(Channel.GlobalChat, ChatUtils.MCORIGIN);
+		final String chid = ChatProcessing.getChannelID(Channel.globalChat, ChatUtils.MCORIGIN);
 		if (rainbowMode)
 			ChatProcessing.createRPC(Color.White, cfs);
 		final TellrawPart tp = ChatProcessing.createTellraw(sender, message, null, null, null, chid, ChatUtils.MCORIGIN);

@@ -21,7 +21,7 @@ public class VanillaUtils {
 			else
 				return null;
 		} catch (NoClassDefFoundError ex) {
-			MainPlugin.Instance.getLogger().warning("Compatibility error, can't check if the chat is hidden by the player.");
+			MainPlugin.instance.getLogger().warning("Compatibility error, can't check if the chat is hidden by the player.");
 			return e.getGroupID(p);
 		}
 	}

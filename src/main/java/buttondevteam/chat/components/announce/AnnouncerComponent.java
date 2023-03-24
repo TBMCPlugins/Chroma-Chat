@@ -10,6 +10,8 @@ import buttondevteam.lib.architecture.ListConfigData;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import org.bukkit.Bukkit;
 
+import java.util.Collections;
+
 /**
  * Displays the configured messages at the set interval when someone is online.
  */
@@ -18,7 +20,7 @@ public class AnnouncerComponent extends Component<PluginMain> implements Runnabl
 	/**
 	 * The messages to display to players.
 	 */
-	public ListConfigData<String> announceMessages = getConfig().getListData("announceMessages");
+	public ListConfigData<String> announceMessages = getConfig().getListData("announceMessages", Collections.emptyList());
 
 	/**
 	 * The time in milliseconds between the messages. Use /u announce settime to set minutes.
@@ -39,7 +41,7 @@ public class AnnouncerComponent extends Component<PluginMain> implements Runnabl
 			}
 			if (Bukkit.getOnlinePlayers().size() == 0) continue; //Don't post to Discord if nobody is on
 			if (announceMessages.get().size() > AnnounceMessageIndex) {
-				TBMCChatAPI.SendSystemMessage(Channel.GlobalChat, Channel.RecipientTestResult.ALL, announceMessages.get().get(AnnounceMessageIndex), target);
+				TBMCChatAPI.SendSystemMessage(Channel.globalChat, Channel.RecipientTestResult.ALL, announceMessages.get().get(AnnounceMessageIndex), target);
 				AnnounceMessageIndex++;
 				if (AnnounceMessageIndex == announceMessages.get().size())
 					AnnounceMessageIndex = 0;

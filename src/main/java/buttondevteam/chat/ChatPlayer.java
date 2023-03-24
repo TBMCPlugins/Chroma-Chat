@@ -9,11 +9,13 @@ import buttondevteam.lib.player.TBMCPlayerBase;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
+
 @PlayerClass(pluginname = "Chroma-Chat")
 public class ChatPlayer extends TBMCPlayerBase {
 	public final ConfigData<String> UserName = getConfig().getData("UserName", "");
 
-	public final ListConfigData<String> UserNames = getConfig().getListData("UserNames");
+	public final ListConfigData<String> UserNames = getConfig().getListData("UserNames", Collections.emptyList());
 
 	public final ConfigData<Integer> FlairTime = getConfig().getData("FlairTime", FlairTimeNone);
 
@@ -26,7 +28,7 @@ public class ChatPlayer extends TBMCPlayerBase {
 
 	public final ConfigData<Boolean> FlairCheater = getConfig().getData("FlairCheater", false);
 
-	public final ListConfigData<Integer> NameColorLocations = getConfig().getListData("NameColorLocations"); // No byte[], no TIntArrayList
+	public final ListConfigData<Integer> NameColorLocations = getConfig().getListData("NameColorLocations", Collections.emptyList()); // No byte[], no TIntArrayList
 
 	public boolean Working;
 	// public int Tables = 10;
@@ -80,7 +82,7 @@ public class ChatPlayer extends TBMCPlayerBase {
 
 		// Flairs from Command Block The Button - Teams
 		// PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard().getTeams().add()
-		Player p = Bukkit.getPlayer(uuid);
+		Player p = Bukkit.getPlayer(getUniqueId());
 		if (p != null)
 			p.setPlayerListName(String.format("%s%s", p.getDisplayName(), GetFormattedFlair()));
 	}

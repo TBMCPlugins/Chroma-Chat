@@ -49,8 +49,8 @@ public final class HelpCommand extends UCommandBase {
 				"§nunderline      - &n§r   | §oitalic        - &o§r", //
 				"The format codes in tellraw should be used like \"italic\":\"true\""}); //
 		} else {
-			String[] text = getManager().getHelpText(topicOrCommand);
-			if (text == null)
+			String[] text = getManager().getCommandNode(topicOrCommand).getData().getHelpText(sender); // TODO: This only works for the main command, not subcommands
+			if (text == null) // TODO: Null check for command node
 				sender.sendMessage(
 					new String[]{"§cError: Command not found: " + topicOrCommand,
 						"Usage example: /u accept --> /u help u accept"});

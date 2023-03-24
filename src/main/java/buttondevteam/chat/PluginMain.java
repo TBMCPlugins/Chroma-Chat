@@ -53,7 +53,7 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 		if (Bukkit.getPluginManager().isPluginEnabled("Towny"))
 			Component.registerComponent(this, new TownyComponent());
 
-		TBMCChatAPI.RegisterChatChannel(new Channel("§7RP§f", Color.Gray, "rp", null)); //Since it's null, it's recognised as global
+		TBMCChatAPI.registerChatChannel(new Channel("§7RP§f", Color.Gray, "rp", null)); //Since it's null, it's recognised as global
 
 		if (!setupPermissions())
 			TBMCCoreAPI.SendException("We're in trouble", new Exception("Failed to set up permissions!"), this);

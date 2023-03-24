@@ -125,7 +125,7 @@
 		<dependency>
 			<groupId>com.github.TBMCPlugins.ChromaCore</groupId>
 			<artifactId>Chroma-Core</artifactId>
-            <version>v1.0.0</version>
+            <version>v2.0.0-SNAPSHOT</version>
 		</dependency>
         <dependency>
             <groupId>net.essentialsx</groupId>
@@ -197,6 +197,13 @@
             <artifactId>mockito-core</artifactId>
             <version>4.2.0</version>
             <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.mojang/brigadier -->
+        <dependency>
+            <groupId>com.mojang</groupId>
+            <artifactId>brigadier</artifactId>
+            <version>1.0.500</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 	<artifactId>Chroma-Chat</artifactId>

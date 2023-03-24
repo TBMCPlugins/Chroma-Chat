@@ -144,14 +144,14 @@ public class ChatProcessing {
 
 		if (Bukkit.getOnlinePlayers().size() == 0) return false; //Don't try to send to nobody (errors on 1.14)
 
-		Color colormode = channel.Color.get();
+		Color colormode = channel.color.get();
 		if (mp != null && mp.OtherColorMode != null)
 			colormode = mp.OtherColorMode;
 
 		ArrayList<MatchProviderBase> formatters;
 		if (component.allowFormatting.get()) {
 			formatters = addFormatters(e::shouldSendTo, component);
-			if (colormode == channel.Color.get() && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
+			if (colormode == channel.color.get() && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
 				createRPC(colormode, formatters);
 			}
 			pingedconsole = false; // Will set it to true onmatch (static constructor)
@@ -256,7 +256,7 @@ public class ChatProcessing {
 	}
 
 	static String getChannelID(Channel channel, String origin) {
-		return ("[" + (ChatUtils.MCORIGIN.equals(origin) ? "" : "§8" + origin.charAt(0) + "§r|") + channel.DisplayName.get())
+		return ("[" + (ChatUtils.MCORIGIN.equals(origin) ? "" : "§8" + origin.charAt(0) + "§r|") + channel.displayName.get())
 			+ "]";
 	}
 
