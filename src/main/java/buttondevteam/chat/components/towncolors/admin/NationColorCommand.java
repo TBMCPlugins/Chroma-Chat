@@ -9,7 +9,6 @@ import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.CustomTabCompleteMethod;
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyObject;
@@ -24,13 +23,12 @@ import org.bukkit.command.CommandSender;
 public class NationColorCommand extends AdminCommandBase {
 	@Command2.Subcommand
 	public boolean def(CommandSender sender, String nation, String color) {
-		try {
-			final Nation n = TownyComponent.dataSource.getNation(nation);
-			return SetNationColor(sender, n, color);
-		} catch (NotRegisteredException e) {
+		final Nation n = TownyComponent.dataSource.getNation(nation);
+		if (n == null) {
 			sender.sendMessage("§cThe nation '" + nation + "' cannot be found.");
 			return true;
 		}
+		return SetNationColor(sender, n, color);
 	}
 
 	@CustomTabCompleteMethod(param = "color")

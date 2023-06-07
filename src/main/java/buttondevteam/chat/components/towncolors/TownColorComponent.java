@@ -84,9 +84,9 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 				loadNC.accept(ncs);
 		}
 
-		TownColors.keySet().removeIf(t -> !TownyComponent.dataSource.hasTown(t)); // Removes town colors for deleted/renamed towns
+		TownColors.keySet().removeIf(t -> TownyComponent.dataSource.getTown(t) == null); // Removes town colors for deleted/renamed towns
 		if (usenc)
-			NationColor.keySet().removeIf(n -> !TownyComponent.dataSource.hasNation(n)); // Removes nation colors for deleted/renamed nations
+			NationColor.keySet().removeIf(n -> TownyComponent.dataSource.getNation(n) == null); // Removes nation colors for deleted/renamed nations
 
 		initDynmap();
 
@@ -156,12 +156,7 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 		if (nickname.contains("~")) //StartsWith doesn't work because of color codes
 			nickname = nickname.replace("~", ""); //It gets stacked otherwise
 		String name = ChatColor.stripColor(nickname); //Enforce "town colors" on non-members
-		Resident res;
-		try {
-			res = TownyComponent.dataSource.getResident(player.getName());
-		} catch (NotRegisteredException e) {
-			return name;
-		}
+		Resident res = TownyComponent.dataSource.getResident(player.getName());
 		if (res == null || !res.hasTown())
 			return name;
 		try {
