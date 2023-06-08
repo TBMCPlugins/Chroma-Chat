@@ -3,7 +3,6 @@ package buttondevteam.chat.components.fun;
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
 import buttondevteam.core.component.channel.Channel;
-import buttondevteam.lib.ChromaUtils;
 import buttondevteam.lib.TBMCChatEventBase;
 import buttondevteam.lib.TBMCCommandPreprocessEvent;
 import buttondevteam.lib.TBMCSystemChatEvent;
@@ -12,9 +11,9 @@ import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.TBMCPlayer;
+import buttondevteam.lib.player.TBMCPlayerBase;
 import lombok.val;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -36,7 +35,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 	private boolean ActiveF = false;
 	private ChatPlayer FPlayer = null;
 	private BukkitTask Ftask = null;
-	private final HashSet<CommandSender> Fs = new HashSet<>();
+	private final HashSet<ChromaGamerBase> Fs = new HashSet<>();
 	private UnlolCommand command;
 	private TBMCSystemChatEvent.BroadcastTarget unlolTarget;
 	private TBMCSystemChatEvent.BroadcastTarget fTarget;
@@ -80,20 +79,21 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 
 	}
 
-	public void onChat(CommandSender sender, TBMCChatEventBase event, String message) {
+	public void onChat(ChromaGamerBase sender, TBMCChatEventBase event, String message) {
 		if (ActiveF && !Fs.contains(sender) && message.equalsIgnoreCase("F"))
 			Fs.add(sender);
 
 		if (unlol.get()) {
 			String msg = message.toLowerCase();
 			val lld = new UnlolCommand.LastlolData(sender, event, System.nanoTime());
-			boolean add;
-			if (add = msg.contains("lol"))
+			boolean add = msg.contains("lol");
+			if (add)
 				lld.setLolornot(true);
 			else {
 				String[] laughs = laughStrings.get();
 				for (String laugh : laughs) {
-					if (add = msg.contains(laugh)) {
+					add = msg.contains(laugh);
+					if (add) {
 						lld.setLolornot(false);
 						break;
 					}
@@ -136,7 +136,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) {
 		if (unlol.get())
-			command.Lastlol.values().removeIf(lld -> lld.getLolowner().equals(event.getPlayer()));
+			command.Lastlol.values().removeIf(lld -> lld.getLolowner().equals(ChromaGamerBase.getFromSender(event.getPlayer())));
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -150,7 +150,14 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 				if (ht.getName().equalsIgnoreCase(cmd))
 					return;
 			}
-			if (PluginMain.permission.has(event.getSender(), "chroma.unanything")) {
+			val user = event.getSender();
+			if (!(user instanceof TBMCPlayerBase)) {
+				// TODO: Cross-platform permission check; console is not supported here
+				user.sendMessage("§cError: You must be a player to use this command.");
+				return;
+			}
+			val player = ((TBMCPlayerBase) user).getPlayer();
+			if (player != null && PluginMain.permission.has(player, "chroma.unanything")) {
 				event.setCancelled(true);
 				int index = cmd.lastIndexOf(' ');
 				if (index == -1) {
@@ -163,10 +170,9 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 					event.getSender().sendMessage("§cError: Player not found. (/un" + s + " <player>)");
 					return;
 				}
-				val user = ChromaGamerBase.getFromSender(event.getSender());
 				target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10 * 20, 5, false, false));
-				val chan = user.channel.get();
-				TBMCChatAPI.SendSystemMessage(chan, chan.getRTR(event.getSender()), ChromaUtils.getDisplayName(event.getSender()) + " un" + s
+				val chan = user.getChannel().get();
+				TBMCChatAPI.SendSystemMessage(chan, chan.getRTR(event.getSender()), event.getSender().getName() + " un" + s
 					+ "'d " + target.getDisplayName(), unlolTarget);
 			}
 		}

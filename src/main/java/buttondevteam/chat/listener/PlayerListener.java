@@ -10,6 +10,7 @@ import buttondevteam.chat.components.towncolors.TownColorComponent;
 import buttondevteam.core.ComponentManager;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCCoreAPI;
+import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
 import buttondevteam.lib.player.TBMCPlayerGetInfoEvent;
 import com.google.common.collect.BiMap;
@@ -81,7 +82,7 @@ public class PlayerListener implements Listener {
 				&& Bukkit.getOnlinePlayers().size() > 0) { //If there are no players on, display to the first person
 				lastError = System.nanoTime(); //I put the whole thing in the if to protect against race conditions
 				for (Player p : Bukkit.getOnlinePlayers())
-					if (e.shouldSendTo(p))
+					if (e.shouldSendTo(ChromaGamerBase.getFromSender(p)))
 						p.sendMessage("[" + e.getChannel().displayName.get() + "] §cSome features in the message below might be unavailable due to an error.");
 			}
 			ChatUtils.sendChatMessage(e);

@@ -5,7 +5,6 @@ import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.architecture.IHaveConfig;
 import buttondevteam.lib.chat.*;
-import buttondevteam.lib.player.ChromaGamerBase;
 import lombok.val;
 
 import java.lang.reflect.Method;
@@ -101,7 +100,7 @@ public class AppendTextComponent extends Component<PluginMain> {
 
 		@Command2.Subcommand
 		public void def(Command2MCSender sender, @Command2.OptionalArg @Command2.TextArg String message) {
-			TBMCChatAPI.sendChatMessage(ChatMessage.builder(sender.getSender(), ChromaGamerBase.getFromSender(sender.getSender()),
+			TBMCChatAPI.sendChatMessage(ChatMessage.builder(sender.getSender(),
 				(message == null ? "" : message + " ") + appendedText).fromCommand(true).permCheck(sender.getPermCheck()).build());
 		}
 

@@ -2,6 +2,7 @@ package buttondevteam.chat;
 
 import buttondevteam.core.MainPlugin;
 import buttondevteam.lib.TBMCChatEvent;
+import buttondevteam.lib.player.ChromaGamerBase;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.bukkit.entity.Player;
@@ -16,14 +17,12 @@ import java.util.function.Predicate;
 public class VanillaUtils {
 	public String getGroupIfChatOn(Player p, TBMCChatEvent e) {
 		try {
-			if (isChatOn(p)) // Only send if client allows chat
-				return e.getGroupID(p);
-			else
+			if (!isChatOn(p)) // Only send if client allows chat
 				return null;
 		} catch (NoClassDefFoundError ex) {
 			MainPlugin.instance.getLogger().warning("Compatibility error, can't check if the chat is hidden by the player.");
-			return e.getGroupID(p);
 		}
+		return e.getGroupID(ChromaGamerBase.getFromSender(p));
 	}
 
 	private Predicate<Player> isChatOn;

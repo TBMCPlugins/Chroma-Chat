@@ -7,6 +7,7 @@ import buttondevteam.chat.commands.ucmds.HistoryCommand;
 import buttondevteam.chat.components.flair.FlairComponent;
 import buttondevteam.chat.components.flair.FlairStates;
 import buttondevteam.core.ComponentManager;
+import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.TBMCPlayerBase;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -53,7 +54,7 @@ public class PlayerJoinLeaveListener implements Listener {
 		PlayerListener.nicknames.forcePut(nwithoutformatting.toLowerCase(), p.getUniqueId());
 
 		if (PluginMain.Instance.storeChatHistory.get())
-			HistoryCommand.showHistory(e.getPlayer(), null);
+			HistoryCommand.showHistory(ChromaGamerBase.getFromSender(e.getPlayer()), null);
 	}
 
 	@EventHandler

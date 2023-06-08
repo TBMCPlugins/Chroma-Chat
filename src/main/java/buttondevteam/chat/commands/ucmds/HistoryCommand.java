@@ -6,9 +6,8 @@ import buttondevteam.lib.chat.ChatMessage;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
 import buttondevteam.lib.chat.CustomTabCompleteMethod;
-import lombok.RequiredArgsConstructor;
+import buttondevteam.lib.player.ChromaGamerBase;
 import lombok.val;
-import org.bukkit.command.CommandSender;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -26,11 +25,11 @@ public class HistoryCommand extends UCommandBase {
 	private static final HashMap<String, LinkedList<HistoryEntry>> messages = new HashMap<>();
 
 	@Command2.Subcommand
-	public boolean def(CommandSender sender, @Command2.OptionalArg String channel) {
+	public boolean def(ChromaGamerBase sender, @Command2.OptionalArg String channel) {
 		return showHistory(sender, channel);
 	}
 
-	public static boolean showHistory(CommandSender sender, String channel) {
+	public static boolean showHistory(ChromaGamerBase sender, String channel) {
 		if (!PluginMain.Instance.storeChatHistory.get()) {
 			sender.sendMessage("§6Chat history is disabled");
 			return true;
@@ -55,7 +54,7 @@ public class HistoryCommand extends UCommandBase {
 			for (int i = Math.max(0, arr.length - 10); i < arr.length; i++) {
 				HistoryEntry e = arr[i];
 				val cm = e.chatMessage;
-				sender.sendMessage("[" + e.channel.displayName.get() + "] " + cm.getSender().getName() + ": " + cm.getMessage());
+				sender.sendMessage("[" + e.channel.displayName.get() + "] " + cm.getUser().getName() + ": " + cm.getMessage());
 				sent.set(true);
 			}
 		}
@@ -69,14 +68,10 @@ public class HistoryCommand extends UCommandBase {
 		return Channel.getChannels().map(Channel::getIdentifier)::iterator;
 	}
 
-	@RequiredArgsConstructor
-	private static class HistoryEntry {
-		/**
-		 * System.nanoTime()
-		 */
-		private final long timestamp;
-		private final ChatMessage chatMessage;
-		private final Channel channel;
+	/**
+	 * @param timestamp System.nanoTime()
+	 */
+	private record HistoryEntry(long timestamp, ChatMessage chatMessage, Channel channel) {
 	}
 
 	public static void addChatMessage(ChatMessage chatMessage, Channel channel) {

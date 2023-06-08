@@ -8,6 +8,8 @@ import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.TBMCChatAPI;
+import buttondevteam.lib.player.ChromaGamerBase;
+import buttondevteam.lib.player.TBMCPlayerBase;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
@@ -15,7 +17,6 @@ import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 import lombok.val;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class TownyComponent extends Component<PluginMain> {
 	}
 
 	public Consumer<Player> handleSpiesInit(Channel channel, TellrawPart json, Function<TellrawPart, String> toJson,
-	                                        CommandSender sender, String message) {
+	                                        ChromaGamerBase sender, String message) {
 		if (channel.getIdentifier().equals(TownChat.getIdentifier()) || channel.getIdentifier().equals(NationChat.getIdentifier())) {
 			((List<TellrawPart>) json.getExtra()).add(0, new TellrawPart("[SPY]"));
 			String jsonstr = toJson.apply(json);
@@ -64,7 +65,7 @@ public class TownyComponent extends Component<PluginMain> {
 		return p -> {};
 	}
 
-	private void handleSpies(Channel channel, Player p, String jsonstr, CommandSender sender, String message) {
+	private void handleSpies(Channel channel, Player p, String jsonstr, ChromaGamerBase sender, String message) {
 		if (channel.getIdentifier().equals(TownChat.getIdentifier()) || channel.getIdentifier().equals(NationChat.getIdentifier())) {
 			val res = dataSource.getResident(p.getName());
 			if (res == null) {
@@ -79,9 +80,10 @@ public class TownyComponent extends Component<PluginMain> {
 	/**
 	 * Return the error message for the message sender if they can't send it and the score
 	 */
-	private static Channel.RecipientTestResult checkTownNationChat(CommandSender sender, boolean nationchat) {
-		if (!(sender instanceof Player))
+	private static Channel.RecipientTestResult checkTownNationChat(ChromaGamerBase user, boolean nationchat) {
+		if (!(user instanceof TBMCPlayerBase))
 			return new Channel.RecipientTestResult("§cYou are not a player!");
+		val sender = ((TBMCPlayerBase) user).getOfflinePlayer();
 		Resident resident = dataSource.getResident(sender.getName());
 		Channel.RecipientTestResult result = checkTownNationChatInternal(nationchat, resident);
 		if (result.errormessage != null && resident != null && resident.getModes().contains("spy")) // Only use spy if they wouldn't see it

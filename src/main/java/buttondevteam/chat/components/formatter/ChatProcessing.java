@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.val;
+import net.ess3.api.events.AfkStatusChangeEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
@@ -103,14 +104,14 @@ public class ChatProcessing {
 
 	public static boolean ProcessChat(TBMCChatEvent e, FormatterComponent component) {
 		Channel channel = e.getChannel();
-		CommandSender sender = e.getSender();
+		ChromaGamerBase cuser = e.getUser();
 		String message = e.getMessage();
 		long processstart = System.nanoTime();
-		Player player = (sender instanceof Player ? (Player) sender : null);
+		Player player = (cuser instanceof TBMCPlayerBase ? ((TBMCPlayerBase) cuser).getPlayer() : null);
 		User user = PluginMain.essentials.getUser(player);
 
 		if (player != null && PluginMain.essentials.getSettings().cancelAfkOnInteract()) {
-			user.updateActivity(true); //Could talk in a private channel, so broadcast
+			user.updateActivity(true, AfkStatusChangeEvent.Cause.CHAT); //Could talk in a private channel, so broadcast
 			if (user.isMuted())
 				return true;
 		}
@@ -123,7 +124,7 @@ public class ChatProcessing {
 
 		if (mp != null) {
 			if (System.nanoTime() - mp.LastMessageTime < 1000L * 1000L * component.minTimeBetweenMessages.get()) { //0.1s by default
-				sender.sendMessage("§cYou are sending messages too quickly!");
+				cuser.sendMessage("§cYou are sending messages too quickly!");
 				return true;
 			}
 			mp.LastMessageTime = System.nanoTime();
@@ -135,12 +136,12 @@ public class ChatProcessing {
 		//IRegistry
 		//CraftServer
 
-		doFunStuff(sender, e, message);
+		doFunStuff(cuser, e, message);
 
 		final String channelidentifier = getChannelID(channel, e.getOrigin());
 
 		PluginMain.Instance.getServer().getConsoleSender()
-			.sendMessage(String.format("%s <%s§r> %s", channelidentifier, getSenderName(sender, player), message));
+			.sendMessage(String.format("%s <%s§r> %s", channelidentifier, cuser.getName(), message));
 
 		if (Bukkit.getOnlinePlayers().size() == 0) return false; //Don't try to send to nobody (errors on 1.14)
 
@@ -150,7 +151,7 @@ public class ChatProcessing {
 
 		ArrayList<MatchProviderBase> formatters;
 		if (component.allowFormatting.get()) {
-			formatters = addFormatters(e::shouldSendTo, component);
+			formatters = addFormatters(sender -> e.shouldSendTo(ChromaGamerBase.getFromSender(sender)), component);
 			if (colormode == channel.color.get() && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
 				createRPC(colormode, formatters);
 			}
@@ -158,14 +159,13 @@ public class ChatProcessing {
 		} else
 			formatters = Lists.newArrayList();
 
-		TellrawPart json = createTellraw(sender, message, player, mp, e.getUser(), channelidentifier, e.getOrigin());
+		TellrawPart json = createTellraw(cuser, message, player, mp, e.getUser(), channelidentifier, e.getOrigin());
 		long combinetime = System.nanoTime();
 		ChatFormatter.Combine(formatters, message, json, component.getConfig(), FormatSettings.builder().color(colormode).build());
 		combinetime = System.nanoTime() - combinetime;
 		String jsonstr = toJson(json);
 		if (jsonstr.length() >= 32767) {
-			sender.sendMessage(
-				"§cError: Message too long. Try shortening it, or remove hashtags and other formatting.");
+			cuser.sendMessage("§cError: Message too long. Try shortening it, or remove hashtags and other formatting.");
 			return true;
 		}
 		DebugCommand.SendDebugMessage(jsonstr);
@@ -180,7 +180,7 @@ public class ChatProcessing {
 				val tc = ComponentManager.getIfEnabled(TownyComponent.class);
 				Consumer<Player> spyConsumer = null;
 				if (tc != null)
-					spyConsumer = tc.handleSpiesInit(channel, json, ChatProcessing::toJson, sender, message);
+					spyConsumer = tc.handleSpiesInit(channel, json, ChatProcessing::toJson, cuser, message);
 				for (Player p : Bukkit.getOnlinePlayers()) {
 					final String group;
 					if (player != null
@@ -221,11 +221,11 @@ public class ChatProcessing {
 		return gson.toJson(json);
 	}
 
-	static TellrawPart createTellraw(CommandSender sender, String message, @Nullable Player player,
+	static TellrawPart createTellraw(ChromaGamerBase user, String message, @Nullable Player player,
 	                                 @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier,
 	                                 String origin) {
 		TellrawPart json = new TellrawPart("");
-		ChatOnlyComponent.tellrawCreate(mp, json); //TODO: Make nice API
+		ChatOnlyComponent.tellrawCreate(mp, json); //TODO: Use nice API (Paper)
 		json.addExtra(
 			new TellrawPart(channelidentifier)
 				.setHoverEvent(
@@ -243,7 +243,7 @@ public class ChatProcessing {
 		TellrawPart hovertp = new TellrawPart("");
 		if (cg != null)
 			hovertp.addExtra(new TellrawPart(cg.getInfo(ChromaGamerBase.InfoTarget.MCHover)));
-		json.addExtra(new TellrawPart(getSenderName(sender, player))
+		json.addExtra(new TellrawPart(user.getName())
 			.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, hovertp)));
 		json.addExtra(new TellrawPart("> "));
 		return json;
@@ -330,8 +330,8 @@ public class ChatProcessing {
 				component.notificationPitch.get());
 	}
 
-	static void doFunStuff(CommandSender sender, TBMCChatEventBase event, String message) {
+	static void doFunStuff(ChromaGamerBase user, TBMCChatEventBase event, String message) {
 		val fc = ComponentManager.getIfEnabled(FunComponent.class);
-		if (fc != null) fc.onChat(sender, event, message);
+		if (fc != null) fc.onChat(user, event, message);
 	}
 }

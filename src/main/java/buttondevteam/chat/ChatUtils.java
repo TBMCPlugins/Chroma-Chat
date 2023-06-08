@@ -1,8 +1,8 @@
 package buttondevteam.chat;
 
 import buttondevteam.core.component.channel.Channel;
-import buttondevteam.lib.ChromaUtils;
 import buttondevteam.lib.TBMCChatEvent;
+import buttondevteam.lib.player.ChromaGamerBase;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -48,19 +48,18 @@ public final class ChatUtils {
 	 * @param e The chat event
 	 */
 	public static void sendChatMessage(TBMCChatEvent e) {
-		var str = getMessageString(e.getChannel(), e.getSender(), e.getMessage());
+		var str = getMessageString(e.getChannel(), e.getUser(), e.getMessage());
 		for (Player p : Bukkit.getOnlinePlayers())
-			if (e.shouldSendTo(p))
+			if (e.shouldSendTo(ChromaGamerBase.getFromSender(p)))
 				p.sendMessage(str);
 		Bukkit.getConsoleSender().sendMessage(str);
 	}
 
-	public static String getMessageString(Channel channel, CommandSender sender, String message) {
-		return "§c!§r[" + channel.displayName.get() + "] <"
-			+ ChromaUtils.getDisplayName(sender) + "> " + message;
+	public static String getMessageString(Channel channel, ChromaGamerBase sender, String message) {
+		return "§c!§r[" + channel.displayName.get() + "] <" + sender.getName() + "> " + message;
 	}
 
-	public static void sendChatMessage(Channel channel, CommandSender sender, String message, CommandSender to) {
+	public static void sendChatMessage(Channel channel, ChromaGamerBase sender, String message, CommandSender to) {
 		to.sendMessage(getMessageString(channel, sender, message));
 	}
 }
