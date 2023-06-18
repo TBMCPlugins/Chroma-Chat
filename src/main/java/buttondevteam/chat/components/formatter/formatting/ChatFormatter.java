@@ -2,15 +2,24 @@ package buttondevteam.chat.components.formatter.formatting;
 
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.lib.architecture.IHaveConfig;
-import buttondevteam.lib.chat.Color;
 import lombok.val;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.event.ClickEvent.Action.OPEN_URL;
+import static net.kyori.adventure.text.event.ClickEvent.clickEvent;
+import static net.kyori.adventure.text.event.HoverEvent.Action.SHOW_TEXT;
+import static net.kyori.adventure.text.event.HoverEvent.hoverEvent;
+
 /**
- * A {@link MatchProvider} finds where the given {@link FormatSettings} need to be applied. {@link ChatFormatter#Combine(List, String, TellrawPart, IHaveConfig, FormatSettings)}} is used to turn it into a {@link TellrawPart}, combining
+ * A {@link MatchProvider} finds where the given {@link FormatSettings} need to be applied. {@link ChatFormatter#Combine(List, String, TextComponent.Builder, IHaveConfig, FormatSettings)}} is used to turn it into a {@link TellrawPart}, combining
  * intersecting parts found, for example when {@code _abc*def*ghi_} is said in chat, it'll turn it into an underlined part, then an underlined <i>and italics</i> part, finally an underlined part
  * again.
  *
@@ -26,7 +35,7 @@ public final class ChatFormatter {
 	}
 
 	//synchronized: Some of the formatters are reused, see createSections(...)
-	public static synchronized void Combine(List<MatchProviderBase> formatters, String str, TellrawPart tp, IHaveConfig config, FormatSettings defaults) {
+	public static synchronized void Combine(List<MatchProviderBase> formatters, String str, TextComponent.Builder tp, IHaveConfig config, FormatSettings defaults) {
 		/*
 		 * A global formatter is no longer needed
 		 */
@@ -152,11 +161,11 @@ public final class ChatFormatter {
 
 				DebugCommand.SendDebugMessage("To sections");
 				if (!removeIfNeeded.test(firstSection)) {
-					DebugCommand.SendDebugMessage("  1:" + firstSection + "");
+					DebugCommand.SendDebugMessage("  1:" + firstSection);
 					ChatFormatUtils.sendMessageWithPointer(str, firstSection.Start, firstSection.End);
 				}
 				if (!removeIfNeeded.test(section)) {
-					DebugCommand.SendDebugMessage("  2:" + section + "");
+					DebugCommand.SendDebugMessage("  2:" + section);
 					ChatFormatUtils.sendMessageWithPointer(str, section.Start, section.End);
 				}
 				if (!removeIfNeeded.test(lastSection)) {
@@ -169,8 +178,8 @@ public final class ChatFormatter {
 		}
 	}
 
-	private static void applySections(String str, TellrawPart tp, ArrayList<FormattedSection> sections, ArrayList<int[]> remchars) {
-		TellrawPart lasttp = null;
+	private static void applySections(String str, TextComponent.Builder tp, ArrayList<FormattedSection> sections, ArrayList<int[]> remchars) {
+		TextComponent lasttp = null;
 		String lastlink = null;
 		for (FormattedSection section : sections) {
 			DebugCommand.SendDebugMessage("Applying section: " + section);
@@ -178,21 +187,9 @@ public final class ChatFormatter {
 			int start = section.Start, end = section.End;
 			DebugCommand.SendDebugMessage("Start: " + start + " - End: " + end);
 			ChatFormatUtils.sendMessageWithPointer(str, start, end);
-			/*DebugCommand.SendDebugMessage("RCS: "+remchars.stream().filter(rc -> rc[0] <= start && start <= rc[1]).count());
-			DebugCommand.SendDebugMessage("RCE: "+remchars.stream().filter(rc -> rc[0] <= end && end <= rc[1]).count());
-			DebugCommand.SendDebugMessage("RCI: "+remchars.stream().filter(rc -> start < rc[0] || rc[1] < end).count());*/
 			val rci = remchars.stream().filter(rc -> (rc[0] <= start && rc[1] >= start)
 				|| (rc[0] >= start && rc[1] <= end)
 				|| (rc[0] <= end && rc[1] >= end)).sorted(Comparator.comparingInt(rc -> rc[0] * 10000 + rc[1])).toArray(int[][]::new);
-			/*if (rcs.isPresent())
-				s = rcs.get()[1] + 1;
-			if (rce.isPresent())
-				e = rce.get()[0] - 1;
-			DebugCommand.SendDebugMessage("After RC - Start: " + s + " - End: " + e);
-			if (e - s < 0) { //e-s==0 means the end char is the same as start char, so one char message
-				DebugCommand.SendDebugMessage("Skipping section because of remchars (length would be " + (e - s + 1) + ")");
-				continue;
-			}*/
 			DebugCommand.SendDebugMessage("Applying RC: " + Arrays.stream(rci).map(Arrays::toString).collect(Collectors.joining(", ", "[", "]")));
 			originaltext = str.substring(start, end + 1);
 			val sb = new StringBuilder(originaltext);
@@ -205,50 +202,52 @@ public final class ChatFormatter {
 			}
 			DebugCommand.SendDebugMessage("Section text: " + originaltext);
 			String openlink = null;
-			//section.Formatters.sort(Comparator.comparing(cf2 -> cf2.priority.GetValue())); //Apply the highest last, to overwrite previous ones
-			TellrawPart newtp = new TellrawPart("");
 			var settings = section.Settings;
 			DebugCommand.SendDebugMessage("Applying settings: " + settings);
+			if (lasttp != null && hasSameDecorations(lasttp, settings) && Objects.equals(lastlink, settings.openlink)) {
+				DebugCommand.SendDebugMessage("This part has the same properties as the previous one, combining.");
+				lasttp = lasttp.content(lasttp.content() + originaltext);
+				continue; //Combine parts with the same properties
+			}
+			TextComponent.@NotNull Builder newtp = text();
 			if (settings.onmatch != null)
 				originaltext = settings.onmatch.apply(originaltext, settings, section);
 			if (settings.color != null)
-				newtp.setColor(settings.color);
+				newtp.color(settings.color);
 			if (settings.bold)
-				newtp.setBold(true);
+				newtp.decorate(TextDecoration.BOLD);
 			if (settings.italic)
-				newtp.setItalic(true);
+				newtp.decorate(TextDecoration.ITALIC);
 			if (settings.underlined)
-				newtp.setUnderlined(true);
+				newtp.decorate(TextDecoration.UNDERLINED);
 			if (settings.strikethrough)
-				newtp.setStrikethrough(true);
+				newtp.decorate(TextDecoration.STRIKETHROUGH);
 			if (settings.obfuscated)
-				newtp.setObfuscated(true);
+				newtp.decorate(TextDecoration.OBFUSCATED);
 			if (settings.openlink != null)
 				openlink = settings.openlink;
 			if (settings.hoverText != null)
-				newtp.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, settings.hoverText));
-			if (lasttp != null && newtp.getColor() == lasttp.getColor()
-				&& newtp.isBold() == lasttp.isBold()
-				&& newtp.isItalic() == lasttp.isItalic()
-				&& newtp.isUnderlined() == lasttp.isUnderlined()
-				&& newtp.isStrikethrough() == lasttp.isStrikethrough()
-				&& newtp.isObfuscated() == lasttp.isObfuscated()
-				&& Objects.equals(openlink, lastlink)) {
-				DebugCommand.SendDebugMessage("This part has the same properties as the previous one, combining.");
-				lasttp.setText(lasttp.getText() + originaltext);
-				continue; //Combine parts with the same properties
-			}
+				newtp.hoverEvent(hoverEvent(SHOW_TEXT, text(settings.hoverText)));
+			if (lasttp != null) tp.append(lasttp);
 			lastlink = openlink;
-			newtp.setText(originaltext);
+			newtp.content(originaltext);
 			if (openlink != null && openlink.length() > 0) {
-				newtp.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAction.OPEN_URL,
-					(section.Matches.size() > 0 ? openlink.replace("$1", section.Matches.get(0)) : openlink)))
-					.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT,
-						new TellrawPart("Click to open").setColor(Color.Blue)));
+				if (section.Matches.size() > 0)
+					openlink = openlink.replace("$1", section.Matches.get(0));
+				newtp.clickEvent(clickEvent(OPEN_URL, openlink)).hoverEvent(hoverEvent(SHOW_TEXT, text("Click to open").color(NamedTextColor.BLUE)));
 			}
-			tp.addExtra(newtp);
-			lasttp = newtp;
+			lasttp = newtp.build();
 		}
+		if (lasttp != null) tp.append(lasttp);
+	}
+
+	private static boolean hasSameDecorations(TextComponent c1, FormatSettings settings) {
+		return Objects.equals(c1.color(), settings.color)
+			&& c1.hasDecoration(TextDecoration.BOLD) == settings.bold
+			&& c1.hasDecoration(TextDecoration.ITALIC) == settings.italic
+			&& c1.hasDecoration(TextDecoration.UNDERLINED) == settings.underlined
+			&& c1.hasDecoration(TextDecoration.STRIKETHROUGH) == settings.strikethrough
+			&& c1.hasDecoration(TextDecoration.OBFUSCATED) == settings.obfuscated;
 	}
 
 	private static void sortSections(ArrayList<FormattedSection> sections) {

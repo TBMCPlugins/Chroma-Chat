@@ -1,8 +1,8 @@
 package buttondevteam.chat.components.formatter.formatting;
 
-import buttondevteam.lib.chat.Color;
 import lombok.Builder;
 import lombok.Data;
+import net.kyori.adventure.text.format.TextColor;
 
 /**
  * Describes how a matched section of the message should look. May be combined with other format settings.
@@ -15,7 +15,7 @@ public class FormatSettings {
 	boolean underlined;
 	boolean strikethrough;
 	boolean obfuscated;
-	Color color;
+	TextColor color;
 	ChatFormatter.TriFunc<String, FormatSettings, FormattedSection, String> onmatch;
 	String openlink;
 	String hoverText;

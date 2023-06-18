@@ -21,7 +21,7 @@ import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.architecture.ButtonPlugin;
 import buttondevteam.lib.architecture.Component;
-import buttondevteam.lib.architecture.ConfigData;
+import buttondevteam.lib.architecture.config.IConfigData;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import com.earth2me.essentials.Essentials;
@@ -38,7 +38,7 @@ public class PluginMain extends ButtonPlugin { // Translated to Java: 2015.07.15
 	 * If enabled, stores and displays the last 10 messages the player can see (public, their town chat etc.)
 	 * Can be used with the Discord plugin so players can see some of the conversation they missed that's visible on Discord anyways.
 	 */
-	public ConfigData<Boolean> storeChatHistory = getIConfig().getData("storeChatHistory", true);
+	public IConfigData<Boolean> storeChatHistory = getIConfig().getData("storeChatHistory", true);
 
 	// Fired when plugin is first enabled
 	@Override

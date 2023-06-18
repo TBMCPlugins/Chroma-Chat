@@ -5,7 +5,7 @@ import buttondevteam.core.ComponentManager;
 import buttondevteam.core.MainPlugin;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.architecture.Component;
-import buttondevteam.lib.architecture.ConfigData;
+import buttondevteam.lib.architecture.config.IConfigData;
 
 /**
  * This component handles the custom processing of chat messages. If this component is disabled channels won't be supported in Minecraft.
@@ -16,22 +16,22 @@ public class FormatterComponent extends Component<PluginMain> {
 	/**
 	 * Determines whether Markdown formatting, name mentioning and similar features are enabled.
 	 */
-	ConfigData<Boolean> allowFormatting = getConfig().getData("allowFormatting", true);
+	IConfigData<Boolean> allowFormatting = getConfig().getData("allowFormatting", true);
 
 	/**
 	 * The sound to play when a player is mentioned. Leave empty to use default.
 	 */
-	public ConfigData<String> notificationSound = getConfig().getData("notificationSound", "");
+	public IConfigData<String> notificationSound = getConfig().getData("notificationSound", "");
 
 	/**
 	 * The pitch of the notification sound.
 	 */
-	public ConfigData<Float> notificationPitch = getConfig().getData("notificationPitch", 1.0f);
+	public IConfigData<Float> notificationPitch = getConfig().getData("notificationPitch", 1.0f);
 
 	/**
 	 * The minimum time between messages in milliseconds.
 	 */
-	public ConfigData<Integer> minTimeBetweenMessages = getConfig().getData("minTimeBetweenMessages", 100);
+	public IConfigData<Integer> minTimeBetweenMessages = getConfig().getData("minTimeBetweenMessages", 100);
 
 	@Override
 	protected void enable() {

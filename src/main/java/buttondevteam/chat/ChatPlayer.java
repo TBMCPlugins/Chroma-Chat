@@ -1,8 +1,8 @@
 package buttondevteam.chat;
 
 import buttondevteam.chat.components.flair.FlairStates;
-import buttondevteam.lib.architecture.ConfigData;
-import buttondevteam.lib.architecture.ListConfigData;
+import buttondevteam.lib.architecture.config.IConfigData;
+import buttondevteam.lib.architecture.config.IListConfigData;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.player.PlayerClass;
 import buttondevteam.lib.player.TBMCPlayerBase;
@@ -13,22 +13,22 @@ import java.util.Collections;
 
 @PlayerClass(pluginname = "Chroma-Chat")
 public class ChatPlayer extends TBMCPlayerBase {
-	public final ConfigData<String> UserName = getConfig().getData("UserName", "");
+	public final IConfigData<String> UserName = getConfig().getData("UserName", "");
 
-	public final ListConfigData<String> UserNames = getConfig().getListData("UserNames", Collections.emptyList());
+	public final IListConfigData<String> UserNames = getConfig().getListData("UserNames", Collections.emptyList());
 
-	public final ConfigData<Integer> FlairTime = getConfig().getData("FlairTime", FlairTimeNone);
+	public final IConfigData<Integer> FlairTime = getConfig().getData("FlairTime", FlairTimeNone);
 
-	public final ConfigData<FlairStates> FlairState = getConfig().getData("FlairState", FlairStates.NoComment,
+	public final IConfigData<FlairStates> FlairState = getConfig().getData("FlairState", FlairStates.NoComment,
 		fs -> FlairStates.valueOf((String) fs), FlairStates::toString);
 
-	public final ConfigData<Integer> FCount = getConfig().getData("FCount", 0);
+	public final IConfigData<Integer> FCount = getConfig().getData("FCount", 0);
 
-	public final ConfigData<Integer> FDeaths = getConfig().getData("FDeaths", 0);
+	public final IConfigData<Integer> FDeaths = getConfig().getData("FDeaths", 0);
 
-	public final ConfigData<Boolean> FlairCheater = getConfig().getData("FlairCheater", false);
+	public final IConfigData<Boolean> FlairCheater = getConfig().getData("FlairCheater", false);
 
-	public final ListConfigData<Integer> NameColorLocations = getConfig().getListData("NameColorLocations", Collections.emptyList()); // No byte[], no TIntArrayList
+	public final IListConfigData<Integer> NameColorLocations = getConfig().getListData("NameColorLocations", Collections.emptyList()); // No byte[], no TIntArrayList
 
 	public boolean Working;
 	// public int Tables = 10;

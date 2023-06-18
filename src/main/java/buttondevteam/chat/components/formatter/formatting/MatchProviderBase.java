@@ -1,7 +1,7 @@
 package buttondevteam.chat.components.formatter.formatting;
 
-import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.architecture.IHaveConfig;
+import buttondevteam.lib.architecture.config.IConfigData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -31,7 +31,7 @@ public abstract class MatchProviderBase implements MatchProvider {
 		resetSubclass();
 	}
 
-	ConfigData<Boolean> enabled(IHaveConfig config) {
+	IConfigData<Boolean> enabled(IHaveConfig config) {
 		return config.getData(name + ".enabled", true);
 	}
 

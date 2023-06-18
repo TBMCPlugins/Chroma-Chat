@@ -7,11 +7,13 @@ import buttondevteam.lib.TBMCChatEventBase;
 import buttondevteam.lib.TBMCCommandPreprocessEvent;
 import buttondevteam.lib.TBMCSystemChatEvent;
 import buttondevteam.lib.architecture.Component;
-import buttondevteam.lib.architecture.ConfigData;
+import buttondevteam.lib.architecture.config.IConfigData;
+import buttondevteam.lib.architecture.config.IListConfigData;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerBase;
+import com.google.common.collect.Lists;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -44,20 +46,20 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 	/**
 	 * The strings that count as laughs, see unlol.
 	 */
-	private final ConfigData<String[]> laughStrings = getConfig().getData("laughStrings", new String[]{"xd", "lel", "lawl", "kek", "lmao", "hue", "hah", "rofl"});
+	private final IListConfigData<String> laughStrings = getConfig().getListData("laughStrings", Lists.newArrayList("xd", "lel", "lawl", "kek", "lmao", "hue", "hah", "rofl"));
 
 	/**
 	 * The "Press F to pay respects" meme in Minecraft. It will randomly appear on player death and keep track of how many "F"s are said in chat.
 	 * You can hover over a player's name to see their respect.
 	 */
-	private final ConfigData<Boolean> respect = getConfig().getData("respect", true);
+	private final IConfigData<Boolean> respect = getConfig().getData("respect", true);
 
 	/**
 	 * This is an inside joke on our server.
 	 * It keeps track of laughs (lols and what's defined in laughStrings) and if someone does /unlol or /unlaugh it will unlaugh the last person who laughed.
 	 * Which also blinds the laughing person for a few seconds. This action can only be performed once per laugh.
 	 */
-	private final ConfigData<Boolean> unlol = getConfig().getData("unlol", true);
+	private final IConfigData<Boolean> unlol = getConfig().getData("unlol", true);
 
 	@Override
 	protected void enable() {
@@ -90,7 +92,7 @@ public class FunComponent extends Component<PluginMain> implements Listener {
 			if (add)
 				lld.setLolornot(true);
 			else {
-				String[] laughs = laughStrings.get();
+				val laughs = laughStrings.get();
 				for (String laugh : laughs) {
 					add = msg.contains(laugh);
 					if (add) {

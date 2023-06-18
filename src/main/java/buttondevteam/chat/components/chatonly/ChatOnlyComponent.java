@@ -2,13 +2,12 @@ package buttondevteam.chat.components.chatonly;
 
 import buttondevteam.chat.ChatPlayer;
 import buttondevteam.chat.PluginMain;
-import buttondevteam.chat.components.formatter.formatting.TellrawEvent;
-import buttondevteam.chat.components.formatter.formatting.TellrawPart;
 import buttondevteam.core.ComponentManager;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ComponentMetadata;
 import buttondevteam.lib.player.TBMCPlayer;
 import lombok.val;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,6 +15,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.event.HoverEvent.Action.SHOW_TEXT;
+import static net.kyori.adventure.text.event.HoverEvent.hoverEvent;
 
 /**
  * Allows players to enter chat-only mode which puts them into spectator mode and disallows moving.
@@ -43,12 +46,11 @@ public class ChatOnlyComponent extends Component<PluginMain> implements Listener
 		}
 	}
 
-	public static void tellrawCreate(ChatPlayer mp, TellrawPart json) {
+	public static void tellrawCreate(ChatPlayer mp, TextComponent.Builder json) {
 		if (!ComponentManager.isEnabled(ChatOnlyComponent.class))
 			return;
 		if (mp != null && mp.ChatOnly) {
-			json.addExtra(new TellrawPart("[C]")
-				.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, "Chat only")));
+			json.append(text("[C]").hoverEvent(hoverEvent(SHOW_TEXT, text("Chat only"))));
 		}
 	}
 

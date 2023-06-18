@@ -5,7 +5,7 @@ import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ComponentMetadata;
-import buttondevteam.lib.architecture.ConfigData;
+import buttondevteam.lib.architecture.config.IConfigData;
 import buttondevteam.lib.player.TBMCPlayerBase;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -27,7 +27,7 @@ public class FlairComponent extends Component<PluginMain> {
 	/**
 	 * The Reddit thread to check for account connections. Re-enable the component if this was empty.
 	 */
-	ConfigData<String> flairThreadURL = getConfig().getData("flairThreadURL", "");
+	IConfigData<String> flairThreadURL = getConfig().getData("flairThreadURL", "");
 
 	/**
 	 * <p>

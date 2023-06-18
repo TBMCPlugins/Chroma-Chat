@@ -8,7 +8,7 @@ import buttondevteam.core.ComponentManager;
 import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ComponentMetadata;
-import buttondevteam.lib.architecture.ConfigData;
+import buttondevteam.lib.architecture.config.IConfigData;
 import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.player.TBMCPlayer;
 import com.earth2me.essentials.User;
@@ -53,13 +53,13 @@ public class TownColorComponent extends Component<PluginMain> implements Listene
 	/**
 	 * The amount of town colors allowed. If more than one is used (or nation colors are enabled), players can change how many letters to be in a specific color using /u ncolor.
 	 */
-	public final ConfigData<Byte> colorCount = getConfig().getData("colorCount", (byte) 1, cc -> ((Integer) cc).byteValue(), Byte::intValue);
+	public final IConfigData<Byte> colorCount = getConfig().getData("colorCount", (byte) 1, cc -> ((Integer) cc).byteValue(), Byte::intValue);
 
 	/**
 	 * If enabled, players will have a nation-defined color in addition to town colors, white by default.
 	 * They can change how much of each color they want with this as well.
 	 */
-	public final ConfigData<Boolean> useNationColors = getConfig().getData("useNationColors", true);
+	public final IConfigData<Boolean> useNationColors = getConfig().getData("useNationColors", true);
 
 	@Getter
 	private static TownColorComponent component;

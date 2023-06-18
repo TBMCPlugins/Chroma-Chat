@@ -1,9 +1,6 @@
 package buttondevteam.chat.components.towny;
 
-import buttondevteam.chat.ChatUtils;
 import buttondevteam.chat.PluginMain;
-import buttondevteam.chat.VanillaUtils;
-import buttondevteam.chat.components.formatter.formatting.TellrawPart;
 import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.chat.Color;
@@ -17,12 +14,11 @@ import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 import lombok.val;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -55,25 +51,23 @@ public class TownyComponent extends Component<PluginMain> {
 		TownyAnnouncer.setdown();
 	}
 
-	public Consumer<Player> handleSpiesInit(Channel channel, TellrawPart json, Function<TellrawPart, String> toJson,
-	                                        ChromaGamerBase sender, String message) {
+	public Consumer<Player> handleSpiesInit(Channel channel, TextComponent.Builder json) {
 		if (channel.getIdentifier().equals(TownChat.getIdentifier()) || channel.getIdentifier().equals(NationChat.getIdentifier())) {
-			((List<TellrawPart>) json.getExtra()).add(0, new TellrawPart("[SPY]"));
-			String jsonstr = toJson.apply(json);
-			return p -> handleSpies(channel, p, jsonstr, sender, message);
+			// TODO: Cannot prepend to json, so we need to run this ealier
+			//((List<TellrawPart>) json.getExtra()).add(0, new TellrawPart("[SPY]"));
+			return p -> handleSpies(channel, p, json);
 		}
 		return p -> {};
 	}
 
-	private void handleSpies(Channel channel, Player p, String jsonstr, ChromaGamerBase sender, String message) {
+	private void handleSpies(Channel channel, Player p, TextComponent.Builder jsonstr) {
 		if (channel.getIdentifier().equals(TownChat.getIdentifier()) || channel.getIdentifier().equals(NationChat.getIdentifier())) {
 			val res = dataSource.getResident(p.getName());
 			if (res == null) {
 				return;
 			}
 			if (res.hasMode("spy"))
-				if (!VanillaUtils.tellRaw(p, jsonstr))
-					ChatUtils.sendChatMessage(channel, sender, message, p);
+				p.sendMessage(jsonstr.build());
 		}
 	}
 

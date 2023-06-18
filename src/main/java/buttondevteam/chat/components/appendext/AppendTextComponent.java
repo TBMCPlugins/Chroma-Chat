@@ -2,8 +2,8 @@ package buttondevteam.chat.components.appendext;
 
 import buttondevteam.chat.PluginMain;
 import buttondevteam.lib.architecture.Component;
-import buttondevteam.lib.architecture.ConfigData;
 import buttondevteam.lib.architecture.IHaveConfig;
+import buttondevteam.lib.architecture.config.IConfigData;
 import buttondevteam.lib.chat.*;
 import lombok.val;
 
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 public class AppendTextComponent extends Component<PluginMain> {
 	private Map<String, IHaveConfig> appendTexts;
 
-	private ConfigData<String[]> helpText(IHaveConfig config) {
+	private IConfigData<String[]> helpText(IHaveConfig config) {
 		return config.getData("helpText", new String[]{
 			"Tableflip", //
 			"This command appends a tableflip after your message", //
@@ -27,7 +27,7 @@ public class AppendTextComponent extends Component<PluginMain> {
 		});
 	}
 
-	private ConfigData<String> appendedText(IHaveConfig config) {
+	private IConfigData<String> appendedText(IHaveConfig config) {
 		return config.getData("appendedText", "tableflip");
 	}
 

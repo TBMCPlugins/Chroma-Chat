@@ -15,7 +15,6 @@ import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCChatEventBase;
 import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.chat.Color;
 import buttondevteam.lib.chat.TellrawSerializableEnum;
 import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.TBMCPlayer;
@@ -27,6 +26,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.val;
 import net.ess3.api.events.AfkStatusChangeEvent;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
@@ -39,12 +42,18 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.event.ClickEvent.suggestCommand;
+import static net.kyori.adventure.text.event.HoverEvent.Action.SHOW_TEXT;
+import static net.kyori.adventure.text.event.HoverEvent.hoverEvent;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
+
 public class ChatProcessing {
 	private static final Pattern HASHTAG_PATTERN = Pattern.compile("#(\\w+)");
 	private static final Pattern URL_PATTERN = Pattern.compile("(http[\\w:/?=$\\-_.+!*'(),&]+(?:#[\\w]+)?)");
 	private static final Pattern MASKED_LINK_PATTERN = Pattern.compile("\\[([^\\[\\]]+)]\\(([^()]+)\\)");
-	private static final Color[] RainbowPresserColors = new Color[]{Color.Red, Color.Gold, Color.Yellow, Color.Green,
-		Color.Blue, Color.DarkPurple};
+	private static final NamedTextColor[] RainbowPresserColors = new NamedTextColor[]{RED, GOLD, YELLOW, GREEN,
+		BLUE, DARK_PURPLE};
 	private static final Pattern WORD_PATTERN = Pattern.compile("\\S+");
 	private static final Pattern GREENTEXT_PATTERN = Pattern.compile("^>(?:.|\\s)*");
 	private static boolean pingedconsole = false;
@@ -60,8 +69,8 @@ public class ChatProcessing {
 				cf.setHoverText(match);
 				return match;
 			}).build()),
-		new StringMatchProvider("nullMention", FormatSettings.builder().color(Color.DarkRed).build(), true, "null"), // Properly added a bug as a feature
-		new StringMatchProvider("consolePing", FormatSettings.builder().color(Color.Aqua)
+		new StringMatchProvider("nullMention", FormatSettings.builder().color(DARK_RED).build(), true, "null"), // Properly added a bug as a feature
+		new StringMatchProvider("consolePing", FormatSettings.builder().color(AQUA)
 			.onmatch((match, builder, section) -> {
 				if (!pingedconsole) {
 					System.out.print("\007");
@@ -70,8 +79,8 @@ public class ChatProcessing {
 				return "@console";
 			}).build(), true, "@console"),
 
-		new StringMatchProvider("cyan", FormatSettings.builder().color(Color.Aqua).build(), true, "cyan"), // #55
-		new RangeMatchProvider("code", "`", FormatSettings.builder().color(Color.DarkGray).build()),
+		new StringMatchProvider("cyan", FormatSettings.builder().color(AQUA).build(), true, "cyan"), // #55
+		new RangeMatchProvider("code", "`", FormatSettings.builder().color(DARK_GRAY).build()),
 		new RegexMatchProvider("maskedLink", MASKED_LINK_PATTERN, FormatSettings.builder().underlined(true)
 			.onmatch((match, builder, section) -> {
 				String text, link;
@@ -81,8 +90,8 @@ public class ChatProcessing {
 				return text;
 			}).build()),
 		new RegexMatchProvider("url", URL_PATTERN, FormatSettings.builder().underlined(true).openlink("$1").build()),
-		new RegexMatchProvider("hashtag", HASHTAG_PATTERN, FormatSettings.builder().color(Color.Blue).openlink("https://twitter.com/hashtag/$1").build()),
-		new StringMatchProvider("someone", FormatSettings.builder().color(Color.Aqua)
+		new RegexMatchProvider("hashtag", HASHTAG_PATTERN, FormatSettings.builder().color(BLUE).openlink("https://twitter.com/hashtag/$1").build()),
+		new StringMatchProvider("someone", FormatSettings.builder().color(AQUA)
 			.onmatch((match, builder, section) -> {
 				if (Bukkit.getOnlinePlayers().size() == 0) return match;
 				var players = ImmutableList.copyOf(Bukkit.getOnlinePlayers());
@@ -91,7 +100,7 @@ public class ChatProcessing {
 				playPingSound(player, ComponentManager.getIfEnabled(FormatterComponent.class));
 				return "@someone (" + player.getDisplayName() + "§r)";
 			}).build(), true, "@someone"),
-		new RegexMatchProvider("greentext", GREENTEXT_PATTERN, FormatSettings.builder().color(Color.Green).build()));
+		new RegexMatchProvider("greentext", GREENTEXT_PATTERN, FormatSettings.builder().color(GREEN).build()));
 	private static final Gson gson = new GsonBuilder()
 		.registerTypeHierarchyAdapter(TellrawSerializableEnum.class, new TellrawSerializer.TwEnum())
 		.registerTypeHierarchyAdapter(Collection.class, new TellrawSerializer.TwCollection())
@@ -145,42 +154,39 @@ public class ChatProcessing {
 
 		if (Bukkit.getOnlinePlayers().size() == 0) return false; //Don't try to send to nobody (errors on 1.14)
 
-		Color colormode = channel.color.get();
-		if (mp != null && mp.OtherColorMode != null)
-			colormode = mp.OtherColorMode;
+		TextColor colormode = NAMES.value(channel.color.get().getName());
+		boolean colorModeChanged = false;
+		if (mp != null && mp.OtherColorMode != null) {
+			colormode = NAMES.value(mp.OtherColorMode.getName());
+			colorModeChanged = true;
+		}
 
 		ArrayList<MatchProviderBase> formatters;
 		if (component.allowFormatting.get()) {
 			formatters = addFormatters(sender -> e.shouldSendTo(ChromaGamerBase.getFromSender(sender)), component);
-			if (colormode == channel.color.get() && mp != null && mp.RainbowPresserColorMode) { // Only overwrite channel color
+			if (colorModeChanged && mp.RainbowPresserColorMode) { // Only overwrite channel color
 				createRPC(colormode, formatters);
 			}
 			pingedconsole = false; // Will set it to true onmatch (static constructor)
 		} else
 			formatters = Lists.newArrayList();
 
-		TellrawPart json = createTellraw(cuser, message, player, mp, e.getUser(), channelidentifier, e.getOrigin());
+		TextComponent.Builder builder = createEmptyMessageLine(cuser, message, player, channelidentifier, e.getOrigin());
 		long combinetime = System.nanoTime();
-		ChatFormatter.Combine(formatters, message, json, component.getConfig(), FormatSettings.builder().color(colormode).build());
+		ChatFormatter.Combine(formatters, message, builder, component.getConfig(), FormatSettings.builder().color(colormode).build());
 		combinetime = System.nanoTime() - combinetime;
-		String jsonstr = toJson(json);
-		if (jsonstr.length() >= 32767) {
-			cuser.sendMessage("§cError: Message too long. Try shortening it, or remove hashtags and other formatting.");
-			return true;
-		}
-		DebugCommand.SendDebugMessage(jsonstr);
 
 		try {
 			if (!channel.isGlobal()) {
-				String senderGroup = e.getGroupID(sender);
+				String senderGroup = e.getGroupID(cuser);
 				if (senderGroup == null) { // Never send messages if the group is null
-					sender.sendMessage("§cYou don't have permission to send this message or something went wrong");
+					cuser.sendMessage("§cYou don't have permission to send this message or something went wrong");
 					return true;
 				}
 				val tc = ComponentManager.getIfEnabled(TownyComponent.class);
 				Consumer<Player> spyConsumer = null;
 				if (tc != null)
-					spyConsumer = tc.handleSpiesInit(channel, json, ChatProcessing::toJson, cuser, message);
+					spyConsumer = tc.handleSpiesInit(channel, builder);
 				for (Player p : Bukkit.getOnlinePlayers()) {
 					final String group;
 					if (player != null
@@ -188,19 +194,18 @@ public class ChatProcessing {
 						group = null; // Don't send the message to them
 					else
 						group = VanillaUtils.getGroupIfChatOn(p, e);
-					if (senderGroup.equals(group))
-						if (!VanillaUtils.tellRaw(p, jsonstr))
-							p.sendMessage(ChatUtils.getMessageString(channel, sender, message));
-						else if (tc != null) spyConsumer.accept(p);
+					if (senderGroup.equals(group)) {
+						p.sendMessage(builder.build());
+						if (tc != null) spyConsumer.accept(p);
+					}
 					//Only sends if didn't send normally
 				}
 			} else
 				for (Player p : Bukkit.getOnlinePlayers())
-					if (!VanillaUtils.tellRaw(p, jsonstr))
-						ChatUtils.sendChatMessage(channel, sender, message, p);
+					p.sendMessage(builder.build());
 		} catch (Exception ex) {
 			TBMCCoreAPI.SendException("An error occured while sending a chat message!", ex, PluginMain.Instance);
-			sender.sendMessage("§cAn error occured while sending the message.");
+			cuser.sendMessage("§cAn error occured while sending the message.");
 			return true;
 		}
 		DebugCommand.SendDebugMessage(
@@ -209,7 +214,7 @@ public class ChatProcessing {
 		return false;
 	}
 
-	static void createRPC(Color colormode, ArrayList<MatchProviderBase> formatters) {
+	static void createRPC(TextColor colormode, ArrayList<MatchProviderBase> formatters) {
 		final AtomicInteger rpc = new AtomicInteger(0);
 		formatters.add(new RegexMatchProvider("rpc", WORD_PATTERN, FormatSettings.builder().color(colormode).onmatch((match, cf, s) -> {
 			cf.setColor(RainbowPresserColors[rpc.getAndUpdate(i -> ++i < RainbowPresserColors.length ? i : 0)]);
@@ -221,38 +226,23 @@ public class ChatProcessing {
 		return gson.toJson(json);
 	}
 
-	static TellrawPart createTellraw(ChromaGamerBase user, String message, @Nullable Player player,
-	                                 @Nullable ChatPlayer mp, @Nullable ChromaGamerBase cg, final String channelidentifier,
-	                                 String origin) {
-		TellrawPart json = new TellrawPart("");
-		ChatOnlyComponent.tellrawCreate(mp, json); //TODO: Use nice API (Paper)
-		json.addExtra(
-			new TellrawPart(channelidentifier)
-				.setHoverEvent(
-					TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT,
-						new TellrawPart((ChatUtils.MCORIGIN.equals(origin) ? "" : "From " + origin + "\n")
-							+ "Copy message").setColor(Color.Blue)))
-				.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAction.SUGGEST_COMMAND, message)));
-		if (PluginMain.permission.has(sender, "tbmc.badge.diamond"))
-			json.addExtra(new TellrawPart("[P]").setColor(Color.Aqua).setBold(true)
-				.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, "Diamond Patreon supporter")));
-		else if (PluginMain.permission.has(sender, "tbmc.badge.gold"))
-			json.addExtra(new TellrawPart("[P]").setColor(Color.Gold).setBold(true)
-				.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, "Gold Patreon supporter")));
-		json.addExtra(new TellrawPart(" <"));
-		TellrawPart hovertp = new TellrawPart("");
-		if (cg != null)
-			hovertp.addExtra(new TellrawPart(cg.getInfo(ChromaGamerBase.InfoTarget.MCHover)));
-		json.addExtra(new TellrawPart(user.getName())
-			.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, hovertp)));
-		json.addExtra(new TellrawPart("> "));
+	static TextComponent.Builder createEmptyMessageLine(ChromaGamerBase user, String message, @Nullable Player player,
+	                                                    final String channelidentifier, String origin) {
+		val json = text();
+		ChatOnlyComponent.tellrawCreate(user.getAs(ChatPlayer.class), json);
+		val channelHover = (ChatUtils.MCORIGIN.equals(origin) ? "" : "From " + origin + "\n") + "Copy message";
+		json.append(text(channelidentifier)
+			.hoverEvent(hoverEvent(SHOW_TEXT, text(channelHover).color(BLUE))).clickEvent(suggestCommand(message)));
+		if (PluginMain.permission.has(player, "tbmc.badge.diamond")) // TODO: Cross-platform permissions
+			json.append(text("[P]").color(AQUA).decorate(TextDecoration.BOLD)
+				.hoverEvent(hoverEvent(SHOW_TEXT, text("Diamond Patreon supporter"))));
+		else if (PluginMain.permission.has(player, "tbmc.badge.gold"))
+			json.append(text("[P]").color(GOLD).decorate(TextDecoration.BOLD)
+				.hoverEvent(hoverEvent(SHOW_TEXT, text("Gold Patreon supporter"))));
+		json.append(text(" <"));
+		json.append(text(user.getName()).hoverEvent(hoverEvent(SHOW_TEXT, text(user.getInfo(ChromaGamerBase.InfoTarget.MCHover)))));
+		json.append(text("> "));
 		return json;
-	}
-
-	private static String getSenderName(CommandSender sender, Player player) {
-		if (player == null)
-			return sender.getName();
-		return player.getDisplayName();
 	}
 
 	static String getChannelID(Channel channel, String origin) {
@@ -284,12 +274,12 @@ public class ChatProcessing {
 			};
 
 			if (names.length > 0) //Add as first so it handles special characters (_) - though the order of the different types are defined
-				formatters.add(0, new StringMatchProvider("name", FormatSettings.builder().color(Color.Aqua)
+				formatters.add(0, new StringMatchProvider("name", FormatSettings.builder().color(AQUA)
 					.onmatch((match, builder, section) -> {
 						Player p = Bukkit.getPlayer(match);
 						Optional<String> pn = nottest ? Optional.empty()
 							: Arrays.stream(testPlayers).filter(tp -> tp.equalsIgnoreCase(match)).findAny();
-						if (nottest ? p == null : !pn.isPresent()) {
+						if (nottest ? p == null : pn.isEmpty()) {
 							error.accept("Error: Can't find player " + match + " but was reported as online.");
 							return "§c" + match + "§r";
 						}
@@ -302,7 +292,7 @@ public class ChatProcessing {
 					}).build(), true, names));
 
 			if (nicknames.length > 0) //Add as first so it handles special characters
-				formatters.add(0, new StringMatchProvider("nickname", FormatSettings.builder().color(Color.Aqua)
+				formatters.add(0, new StringMatchProvider("nickname", FormatSettings.builder().color(AQUA)
 					.onmatch((match, builder, section) -> {
 						if (PlayerListener.nicknames.containsKey(match.toLowerCase())) { //Made a stream and all that but I can actually store it lowercased
 							Player p = Bukkit.getPlayer(PlayerListener.nicknames.get(match.toLowerCase()));

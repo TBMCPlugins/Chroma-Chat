@@ -5,8 +5,8 @@ import buttondevteam.core.component.channel.Channel;
 import buttondevteam.lib.TBMCSystemChatEvent;
 import buttondevteam.lib.architecture.Component;
 import buttondevteam.lib.architecture.ComponentMetadata;
-import buttondevteam.lib.architecture.ConfigData;
-import buttondevteam.lib.architecture.ListConfigData;
+import buttondevteam.lib.architecture.config.IConfigData;
+import buttondevteam.lib.architecture.config.IListConfigData;
 import buttondevteam.lib.chat.TBMCChatAPI;
 import org.bukkit.Bukkit;
 
@@ -20,12 +20,12 @@ public class AnnouncerComponent extends Component<PluginMain> implements Runnabl
 	/**
 	 * The messages to display to players.
 	 */
-	public ListConfigData<String> announceMessages = getConfig().getListData("announceMessages", Collections.emptyList());
+	public IListConfigData<String> announceMessages = getConfig().getListData("announceMessages", Collections.emptyList());
 
 	/**
 	 * The time in milliseconds between the messages. Use /u announce settime to set minutes.
 	 */
-	public ConfigData<Integer> announceTime = getConfig().getData("announceTime", 15 * 60 * 1000);
+	public IConfigData<Integer> announceTime = getConfig().getData("announceTime", 15 * 60 * 1000);
 
 	private TBMCSystemChatEvent.BroadcastTarget target;
 
