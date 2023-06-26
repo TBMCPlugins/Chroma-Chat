@@ -9,24 +9,23 @@ import buttondevteam.chat.commands.ucmds.admin.DebugCommand;
 import buttondevteam.chat.components.formatter.formatting.ChatFormatter;
 import buttondevteam.chat.components.formatter.formatting.FormatSettings;
 import buttondevteam.chat.components.formatter.formatting.MatchProviderBase;
-import buttondevteam.core.TestPrepare;
+import buttondevteam.core.MainPlugin;
 import buttondevteam.core.component.channel.Channel;
-import buttondevteam.lib.TBMCCoreAPI;
 import buttondevteam.lib.player.ChromaGamerBase;
-import buttondevteam.lib.player.TBMCPlayer;
-import buttondevteam.lib.player.TBMCPlayerBase;
+import buttondevteam.lib.test.TestPermissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.milkbowl.vault.permission.Permission;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 
+import static be.seeseemelk.mockbukkit.MockBukkit.load;
+import static be.seeseemelk.mockbukkit.MockBukkit.mock;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.event.ClickEvent.Action.OPEN_URL;
 import static net.kyori.adventure.text.event.ClickEvent.clickEvent;
@@ -39,11 +38,11 @@ import static net.kyori.adventure.text.format.TextDecoration.*;
 public class ChatFormatIT {
 	@Objects
 	public static List<Object> data() {
-		TestPrepare.PrepareServer();
-		var sender = ChromaGamerBase.getUser("test", ChatPlayer.class);
+		mock();
+		load(MainPlugin.class, true);
+		var sender = ChromaGamerBase.getUser(UUID.randomUUID().toString(), ChatPlayer.class);
 		DebugCommand.DebugMode = true;
-		PluginMain.permission = Mockito.mock(Permission.class);
-		TBMCCoreAPI.RegisterUserClass(TBMCPlayerBase.class, TBMCPlayer::new);
+		PluginMain.permission = new TestPermissions();
 
 		List<Object> list = new ArrayList<>();
 

@@ -233,12 +233,14 @@ public class ChatProcessing {
 		val channelHover = (ChatUtils.MCORIGIN.equals(origin) ? "" : "From " + origin + "\n") + "Copy message";
 		json.append(text(channelidentifier)
 			.hoverEvent(hoverEvent(SHOW_TEXT, text(channelHover).color(BLUE))).clickEvent(suggestCommand(message)));
-		if (PluginMain.permission.has(player, "tbmc.badge.diamond")) // TODO: Cross-platform permissions
-			json.append(text("[P]").color(AQUA).decorate(TextDecoration.BOLD)
-				.hoverEvent(hoverEvent(SHOW_TEXT, text("Diamond Patreon supporter"))));
-		else if (PluginMain.permission.has(player, "tbmc.badge.gold"))
-			json.append(text("[P]").color(GOLD).decorate(TextDecoration.BOLD)
-				.hoverEvent(hoverEvent(SHOW_TEXT, text("Gold Patreon supporter"))));
+		if (player != null) {
+			if (PluginMain.permission.has(player, "tbmc.badge.diamond")) // TODO: Cross-platform permissions
+				json.append(text("[P]").color(AQUA).decorate(TextDecoration.BOLD)
+					.hoverEvent(hoverEvent(SHOW_TEXT, text("Diamond Patreon supporter"))));
+			else if (PluginMain.permission.has(player, "tbmc.badge.gold"))
+				json.append(text("[P]").color(GOLD).decorate(TextDecoration.BOLD)
+					.hoverEvent(hoverEvent(SHOW_TEXT, text("Gold Patreon supporter"))));
+		}
 		json.append(text(" <"));
 		json.append(text(user.getName()).hoverEvent(hoverEvent(SHOW_TEXT, text(user.getInfo(ChromaGamerBase.InfoTarget.MCHover)))));
 		json.append(text("> "));
