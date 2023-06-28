@@ -1,10 +1,7 @@
 package buttondevteam.chat.components.announce;
 
 import buttondevteam.chat.commands.ucmds.UCommandBase;
-import buttondevteam.chat.components.formatter.ChatProcessing;
 import buttondevteam.chat.components.formatter.FormatterComponent;
-import buttondevteam.chat.components.formatter.formatting.TellrawEvent;
-import buttondevteam.chat.components.formatter.formatting.TellrawPart;
 import buttondevteam.core.ComponentManager;
 import buttondevteam.lib.chat.Command2;
 import buttondevteam.lib.chat.CommandClass;
@@ -12,6 +9,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.event.ClickEvent.Action.SUGGEST_COMMAND;
+import static net.kyori.adventure.text.event.ClickEvent.clickEvent;
+import static net.kyori.adventure.text.event.HoverEvent.Action.SHOW_TEXT;
+import static net.kyori.adventure.text.event.HoverEvent.hoverEvent;
 
 @CommandClass(modOnly = true)
 @RequiredArgsConstructor
@@ -60,11 +63,9 @@ public class AnnounceCommand extends UCommandBase {
 				sender.sendMessage(msg);
 				continue;
 			}
-			String json = ChatProcessing.toJson(new TellrawPart(msg)
-				.setHoverEvent(TellrawEvent.create(TellrawEvent.HoverAction.SHOW_TEXT, "Click to edit"))
-				.setClickEvent(TellrawEvent.create(TellrawEvent.ClickAction.SUGGEST_COMMAND,
-					"/" + getCommandPath() + " edit " + (i - 1) + " " + message.replace('§', '&'))));
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + sender.getName() + " " + json);
+			sender.sendMessage(text(msg)
+				.hoverEvent(hoverEvent(SHOW_TEXT, text("Click to edit")))
+				.clickEvent(clickEvent(SUGGEST_COMMAND, "/" + getCommandPath() + " edit " + (i - 1) + " " + message.replace('§', '&'))));
 		}
 		sender.sendMessage("§bCurrent wait time between announcements: "
 			+ component.announceTime.get() / 60 / 1000 + " minute(s)§r");

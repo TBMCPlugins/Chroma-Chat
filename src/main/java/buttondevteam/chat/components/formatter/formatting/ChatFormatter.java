@@ -204,7 +204,8 @@ public final class ChatFormatter {
 			String openlink = null;
 			var settings = section.Settings;
 			DebugCommand.SendDebugMessage("Applying settings: " + settings);
-			if (lasttp != null && hasSameDecorations(lasttp, settings) && Objects.equals(lastlink, settings.openlink)) {
+			if (lasttp != null && hasSameDecorations(lasttp, settings) && Objects.equals(lastlink, settings.openlink)
+				&& settings.onmatch == null) { // The onmatch function can change the settings
 				DebugCommand.SendDebugMessage("This part has the same properties as the previous one, combining.");
 				lasttp = lasttp.content(lasttp.content() + originaltext);
 				continue; //Combine parts with the same properties

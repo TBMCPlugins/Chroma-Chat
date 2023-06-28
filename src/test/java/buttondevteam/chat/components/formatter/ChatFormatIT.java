@@ -97,7 +97,7 @@ public class ChatFormatIT {
 		list.add(new ChatFormatIT(sender, "[here's a link]()", text("[here's a link]()").color(WHITE)));
 		list.add(new ChatFormatIT(sender, "[](fakelink)", text("[](fakelink)").color(WHITE)));
 		list.add(new ChatFormatIT(sender, "||this is a spoiler||", text("this is a spoiler").color(WHITE)
-			.decorate(OBFUSCATED).hoverEvent(hoverEvent(SHOW_TEXT, text("this is a spoiler").color(WHITE)))));
+			.decorate(OBFUSCATED).hoverEvent(hoverEvent(SHOW_TEXT, text("this is a spoiler")))));
 		Function<String, TextComponent> whiteBoldItalic = text -> text(text).color(WHITE).decorate(BOLD).decorate(ITALIC);
 		list.add(new ChatFormatIT(sender, "***some complicated ||test message|| with [links](https://chromagaming.figytuna.com) and other __greatness__ by NorbiPeti***",
 			whiteBoldItalic.apply("some complicated "),

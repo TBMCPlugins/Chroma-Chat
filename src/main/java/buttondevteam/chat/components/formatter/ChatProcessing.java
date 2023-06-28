@@ -12,18 +12,16 @@ import buttondevteam.chat.components.towny.TownyComponent;
 import buttondevteam.chat.listener.PlayerListener;
 import buttondevteam.core.ComponentManager;
 import buttondevteam.core.component.channel.Channel;
+import buttondevteam.lib.ChromaUtils;
 import buttondevteam.lib.TBMCChatEvent;
 import buttondevteam.lib.TBMCChatEventBase;
 import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.chat.TellrawSerializableEnum;
 import buttondevteam.lib.player.ChromaGamerBase;
 import buttondevteam.lib.player.TBMCPlayer;
 import buttondevteam.lib.player.TBMCPlayerBase;
 import com.earth2me.essentials.User;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import lombok.val;
 import net.ess3.api.events.AfkStatusChangeEvent;
 import net.kyori.adventure.text.TextComponent;
@@ -101,11 +99,6 @@ public class ChatProcessing {
 				return "@someone (" + player.getDisplayName() + "§r)";
 			}).build(), true, "@someone"),
 		new RegexMatchProvider("greentext", GREENTEXT_PATTERN, FormatSettings.builder().color(GREEN).build()));
-	private static final Gson gson = new GsonBuilder()
-		.registerTypeHierarchyAdapter(TellrawSerializableEnum.class, new TellrawSerializer.TwEnum())
-		.registerTypeHierarchyAdapter(Collection.class, new TellrawSerializer.TwCollection())
-		.registerTypeAdapter(Boolean.class, new TellrawSerializer.TwBool())
-		.registerTypeAdapter(boolean.class, new TellrawSerializer.TwBool()).disableHtmlEscaping().create();
 	private static final String[] testPlayers = {"Koiiev", "iie", "Alisolarflare", "NorbiPeti", "Arsen_Derby_FTW", "carrot_lynx"};
 
 	private ChatProcessing() {
@@ -222,10 +215,6 @@ public class ChatProcessing {
 		}).build()));
 	}
 
-	public static String toJson(TellrawPart json) {
-		return gson.toJson(json);
-	}
-
 	static TextComponent.Builder createEmptyMessageLine(ChromaGamerBase user, String message, @Nullable Player player,
 	                                                    final String channelidentifier, String origin) {
 		val json = text();
@@ -257,7 +246,7 @@ public class ChatProcessing {
 		ArrayList<MatchProviderBase> formatters = (ArrayList<MatchProviderBase>) commonFormatters.clone();
 
 		boolean nottest; //Not assigning a default value, so that it can only be used in the if
-		if ((nottest = Bukkit.getOnlinePlayers().size() > 0) || Bukkit.getVersion().equals("test")) {
+		if ((nottest = Bukkit.getOnlinePlayers().size() > 0) || ChromaUtils.isTest()) {
 			String[] names;
 			if (nottest)
 				names = Bukkit.getOnlinePlayers().stream().filter(canSee).map(CommandSender::getName).toArray(String[]::new);
