@@ -106,7 +106,7 @@
         </repository>
     </repositories>
     <dependencies>
-        <dependency>
+        <dependency> <!-- TODO: Can't update MockBukkit because of a ByteBuddy exception and the old version relies on 1.19.1 -->
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>1.19.1-R0.1-SNAPSHOT</version>

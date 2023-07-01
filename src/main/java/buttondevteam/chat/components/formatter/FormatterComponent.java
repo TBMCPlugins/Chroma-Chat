@@ -35,12 +35,12 @@ public class FormatterComponent extends Component<PluginMain> {
 
 	@Override
 	protected void enable() {
-		MainPlugin.instance.setChatHandlerEnabled(false); //Disable Core chat handler - if this component is disabled then let it do its job
+		MainPlugin.getInstance().setChatHandlerEnabled(false); //Disable Core chat handler - if this component is disabled then let it do its job
 	}
 
 	@Override
 	protected void disable() {
-		MainPlugin.instance.setChatHandlerEnabled(true);
+		MainPlugin.getInstance().setChatHandlerEnabled(true);
 	}
 
 	/**

@@ -20,7 +20,7 @@ public class VanillaUtils {
 			if (!isChatOn(p)) // Only send if client allows chat
 				return null;
 		} catch (NoClassDefFoundError ex) {
-			MainPlugin.instance.getLogger().warning("Compatibility error, can't check if the chat is hidden by the player.");
+			MainPlugin.getInstance().getLogger().warning("Compatibility error, can't check if the chat is hidden by the player.");
 		}
 		return e.getGroupID(ChromaGamerBase.getFromSender(p));
 	}

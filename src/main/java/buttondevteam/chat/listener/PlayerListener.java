@@ -57,7 +57,7 @@ public class PlayerListener implements Listener {
 		ChatPlayer cp = e.getPlayer().getAs(ChatPlayer.class);
 		if (cp == null)
 			return;
-		e.addInfo("Minecraft name: " + cp.playerName.get());
+		e.addInfo("Minecraft name: " + cp.getPlayerName());
 		if (cp.UserName.get() != null && cp.UserName.get().length() > 0)
 			e.addInfo("Reddit name: " + cp.UserName.get());
 		if (ComponentManager.isEnabled(FlairComponent.class)) {

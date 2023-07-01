@@ -145,7 +145,7 @@ public class FlairComponent extends Component<PluginMain> {
 				} catch (Exception e) {
 					p.FlairState.set(FlairStates.Commented); // Flair unknown
 					p.SetFlair(ChatPlayer.FlairTimeNone);
-					TBMCCoreAPI.SendException("Error while checking join date for player " + p.playerName + "!", e, this);
+					TBMCCoreAPI.SendException("Error while checking join date for player " + p.getPlayerName() + "!", e, this);
 				}
 				return;
 			default:
