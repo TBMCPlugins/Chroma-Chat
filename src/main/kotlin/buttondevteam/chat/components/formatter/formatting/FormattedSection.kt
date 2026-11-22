@@ -1,22 +1,20 @@
-package buttondevteam.chat.components.formatter.formatting;
+package buttondevteam.chat.components.formatter.formatting
 
-import lombok.ToString;
-
-import java.util.ArrayList;
-import java.util.List;
+import lombok.ToString
 
 @ToString
-public class FormattedSection {
-	public int Start;
-	public int End;
-	public FormatSettings Settings;
-	public List<String> Matches = new ArrayList<>();
+class FormattedSection internal constructor(
+    settings: FormatSettings?,
+    var Start: kotlin.Int,
+    var End: kotlin.Int,
+    matches: kotlin.collections.MutableList<kotlin.String?>
+) {
+    var Settings: FormatSettings
+    var Matches: kotlin.collections.MutableList<kotlin.String?> = java.util.ArrayList<kotlin.String?>()
 
-	FormattedSection(FormatSettings settings, int start, int end, List<String> matches) {
-		Start = start;
-		End = end;
-		Settings = FormatSettings.builder().build();
-		Settings.copyFrom(settings);
-		Matches.addAll(matches);
-	}
+    init {
+        Settings = builder().build()
+        Settings.copyFrom(settings)
+        Matches.addAll(matches)
+    }
 }

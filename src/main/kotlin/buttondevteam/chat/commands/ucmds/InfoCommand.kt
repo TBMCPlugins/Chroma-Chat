@@ -1,30 +1,31 @@
-package buttondevteam.chat.commands.ucmds;
+package buttondevteam.chat.commands.ucmds
 
-import buttondevteam.chat.PluginMain;
-import buttondevteam.lib.chat.Command2;
-import buttondevteam.lib.chat.CommandClass;
-import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
-import buttondevteam.lib.player.TBMCPlayer;
-import buttondevteam.lib.player.TBMCPlayerBase;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
+import buttondevteam.chat.PluginMain
+import buttondevteam.lib.chat.Command2.Subcommand
+import buttondevteam.lib.chat.CommandClass
+import buttondevteam.lib.player.ChromaGamerBase.InfoTarget
+import buttondevteam.lib.player.TBMCPlayer
+import buttondevteam.lib.player.TBMCPlayerBase.Companion.getPlayer
+import org.bukkit.Bukkit
+import org.bukkit.OfflinePlayer
+import org.bukkit.command.CommandSender
 
-@CommandClass(modOnly = false, helpText = {
-	"User information", //
-	"Get some information known about the user.", //
-})
-public class InfoCommand extends UCommandBase {
-	@Command2.Subcommand
-	public boolean def(CommandSender sender, OfflinePlayer player) {
-		Bukkit.getScheduler().runTaskAsynchronously(PluginMain.Instance, () -> {
-			TBMCPlayer p = TBMCPlayerBase.getPlayer(player.getUniqueId(), TBMCPlayer.class);
-			if (p == null) {
-				sender.sendMessage("§cThe specified player cannot be found");
-				return;
-			}
-			sender.sendMessage(p.getInfo(InfoTarget.MCCommand));
-		});
-		return true;
-	}
+@CommandClass(
+    modOnly = false, helpText = ["User information" //
+        , "Get some information known about the user." //
+    ]
+)
+class InfoCommand : UCommandBase() {
+    @Subcommand
+    fun def(sender: CommandSender, player: OfflinePlayer): Boolean {
+        Bukkit.getScheduler().runTaskAsynchronously(PluginMain.Companion.Instance, Runnable {
+            val p = getPlayer<TBMCPlayer>(player.getUniqueId(), TBMCPlayer::class.java)
+            if (p == null) {
+                sender.sendMessage("§cThe specified player cannot be found")
+                return@runTaskAsynchronously
+            }
+            sender.sendMessage(p.getInfo(InfoTarget.MCCommand))
+        })
+        return true
+    }
 }

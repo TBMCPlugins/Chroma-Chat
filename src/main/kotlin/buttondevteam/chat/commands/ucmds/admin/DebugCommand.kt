@@ -1,28 +1,31 @@
-package buttondevteam.chat.commands.ucmds.admin;
+package buttondevteam.chat.commands.ucmds.admin
 
-import buttondevteam.chat.PluginMain;
-import buttondevteam.lib.chat.Command2;
-import buttondevteam.lib.chat.CommandClass;
-import org.bukkit.command.CommandSender;
+import buttondevteam.chat.PluginMain
+import buttondevteam.lib.chat.Command2.Subcommand
+import buttondevteam.lib.chat.CommandClass
+import org.bukkit.command.CommandSender
 
-@CommandClass(helpText = {
-	"Debug mode",
-	"Toggles debug mode, which prints debug messages to the console."
-})
-public class DebugCommand extends AdminCommandBase {
-	public static boolean DebugMode = false;
+@CommandClass(
+    helpText = ["Debug mode", "Toggles debug mode, which prints debug messages to the console."
+    ]
+)
+class DebugCommand : AdminCommandBase() {
+    @Subcommand
+    fun def(sender: CommandSender): Boolean {
+        sender.sendMessage("§eDebug mode " + (if ((!DebugMode).also {
+                DebugMode = it
+            }) "§aenabled." else "§cdisabled."))
+        return true
+    }
 
-	@Command2.Subcommand
-	public boolean def(CommandSender sender) {
-		sender.sendMessage("§eDebug mode " + ((DebugMode = !DebugMode) ? "§aenabled." : "§cdisabled."));
-		return true;
-	}
+    companion object {
+        @JvmField
+        var DebugMode: Boolean = false
 
-	public static void SendDebugMessage(String message) {
-		if (DebugMode)
-			if (PluginMain.Instance != null)
-				PluginMain.Instance.getLogger().info(message);
-			else
-				System.out.println(message);
-	}
+        fun SendDebugMessage(message: String?) {
+            if (DebugMode) if (PluginMain.Instance != null) PluginMain.Instance.getLogger()
+                .info(message)
+            else println(message)
+        }
+    }
 }

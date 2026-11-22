@@ -1,224 +1,194 @@
-package buttondevteam.chat.components.towncolors;
+package buttondevteam.chat.components.towncolors
 
-import buttondevteam.chat.ChatPlayer;
-import buttondevteam.chat.PluginMain;
-import buttondevteam.chat.components.towncolors.admin.TCCount;
-import buttondevteam.chat.components.towny.TownyComponent;
-import buttondevteam.core.ComponentManager;
-import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.architecture.Component;
-import buttondevteam.lib.architecture.ComponentMetadata;
-import buttondevteam.lib.architecture.config.IConfigData;
-import buttondevteam.lib.chat.Color;
-import buttondevteam.lib.player.TBMCPlayer;
-import com.earth2me.essentials.User;
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.object.Nation;
-import com.palmergames.bukkit.towny.object.Resident;
-import lombok.Getter;
-import lombok.val;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.plugin.Plugin;
-import org.dynmap.towny.DTBridge;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import buttondevteam.chat.ChatPlayer
+import buttondevteam.chat.PluginMain
+import buttondevteam.chat.components.towncolors.admin.NationColorCommand
+import buttondevteam.chat.components.towncolors.admin.TCCount
+import buttondevteam.chat.components.towncolors.admin.TownColorCommand
+import buttondevteam.chat.components.towny.TownyComponent
+import buttondevteam.core.ComponentManager
+import buttondevteam.lib.architecture.Component
+import buttondevteam.lib.architecture.ComponentMetadata
+import buttondevteam.lib.player.TBMCPlayerBase
+import com.earth2me.essentials.User
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
+import org.bukkit.ChatColor
+import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerJoinEvent
+import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.function.BiFunction
+import java.util.function.Consumer
 
 /**
  * Town colors for Towny. It allows mayors and kings to set a color for their town/nation (nation can be disabled).
  * This color is applied to the player names in chat and on Dynmap, if used.
  */
-@ComponentMetadata(depends = TownyComponent.class)
-public class TownColorComponent extends Component<PluginMain> implements Listener {
-	/**
-	 * Names lowercased
-	 */
-	public static final Map<String, Color[]> TownColors = new HashMap<>();
-	/**
-	 * Names lowercased - nation color gets added to town colors when needed
-	 */
-	public static final Map<String, Color> NationColor = new HashMap<>();
+@ComponentMetadata(depends = [TownyComponent::class])
+class TownColorComponent : Component<PluginMain>(), Listener {
+    /**
+     * The amount of town colors allowed. If more than one is used (or nation colors are enabled), players can change how many letters to be in a specific color using /u ncolor.
+     */
+    var colorCount by config.getData(
+        "colorCount", 1.toByte(),
+        { cc: Any? -> (cc as Int).toByte() },
+        { obj: Byte? -> obj!!.toInt() })
 
-	/**
-	 * The amount of town colors allowed. If more than one is used (or nation colors are enabled), players can change how many letters to be in a specific color using /u ncolor.
-	 */
-	public final IConfigData<Byte> colorCount = getConfig().getData("colorCount", (byte) 1, cc -> ((Integer) cc).byteValue(), Byte::intValue);
+    /**
+     * If enabled, players will have a nation-defined color in addition to town colors, white by default.
+     * They can change how much of each color they want with this as well.
+     */
+    val useNationColors by config.getData("useNationColors", true)
 
-	/**
-	 * If enabled, players will have a nation-defined color in addition to town colors, white by default.
-	 * They can change how much of each color they want with this as well.
-	 */
-	public final IConfigData<Boolean> useNationColors = getConfig().getData("useNationColors", true);
+    override fun enable() {
+        component = this
+        val loadTC = Consumer { cs: ConfigurationSection? ->
+            TownColors.putAll(
+                cs!!.getValues(true)
+                    .mapValues {
+                        (it.value as MutableList<*>)
+                            .map { TextColor.fromHexString(it as String) ?: NamedTextColor.WHITE }.toTypedArray()
+                    }
+            )
+        }
+        val usenc = useNationColors
+        val loadNC = Consumer { ncs: ConfigurationSection? ->
+            NationColor.putAll(
+                ncs!!.getValues(true).mapValues {
+                    TextColor.fromHexString(it.value as String) ?: NamedTextColor.WHITE
+                },
+            )
+        }
+        val cs = config.config!!.getConfigurationSection("towncolors")
+        if (cs != null) loadTC.accept(cs)
+        if (usenc) {
+            val ncs = config.config!!.getConfigurationSection("nationcolors")
+            if (ncs != null) loadNC.accept(ncs)
+        }
 
-	@Getter
-	private static TownColorComponent component;
+        TownColors.keys.removeIf { t: String? -> TownyComponent.dataSource!!.getTown(t) == null }  // Removes town colors for deleted/renamed towns
+        if (usenc) NationColor.keys.removeIf { n: String? -> TownyComponent.dataSource!!.getNation(n) == null }  // Removes nation colors for deleted/renamed nations
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void enable() {
-		component = this;
-		Consumer<ConfigurationSection> loadTC = cs -> TownColorComponent.TownColors.putAll(cs.getValues(true).entrySet().stream()
-			.collect(Collectors.toMap(Map.Entry::getKey, v -> ((List<String>) v.getValue()).stream()
-				.map(Color::valueOf).toArray(Color[]::new))));
-		boolean usenc = useNationColors.get();
-		Consumer<ConfigurationSection> loadNC = ncs ->
-			TownColorComponent.NationColor.putAll(ncs.getValues(true).entrySet().stream()
-				.collect(Collectors.toMap(Map.Entry::getKey, v -> Color.valueOf((String) v.getValue()))));
-		var cs = getConfig().getConfig().getConfigurationSection("towncolors");
-		if (cs != null)
-			loadTC.accept(cs);
-		if (usenc) {
-			var ncs = getConfig().getConfig().getConfigurationSection("nationcolors");
-			if (ncs != null)
-				loadNC.accept(ncs);
-		}
+        registerCommand(TownColorCommand())
+        if (useNationColors) registerCommand(NationColorCommand())
+        registerCommand(TownColorCommand())
+        if (useNationColors) registerCommand(NationColorCommand())
+        registerCommand(TCCount())
+        registerCommand(NColorCommand())
+        registerListener(TownyListener())
+        registerListener(this)
+    }
 
-		TownColors.keySet().removeIf(t -> TownyComponent.dataSource.getTown(t) == null); // Removes town colors for deleted/renamed towns
-		if (usenc)
-			NationColor.keySet().removeIf(n -> TownyComponent.dataSource.getNation(n) == null); // Removes nation colors for deleted/renamed nations
+    override fun disable() {
+        config.config!!.createSection("towncolors", TownColors.mapValues { it.value.map { it.asHexString() } })
+        if (useNationColors) config.config!!.createSection(
+            "nationcolors",
+            NationColor.mapValues { it.value.asHexString() })
+        config.signalChange()
+    }
 
-		initDynmap();
+    @EventHandler(priority = EventPriority.HIGHEST)
+    fun onPlayerJoin(event: PlayerJoinEvent) {
+        updatePlayerColors(
+            event.getPlayer(),
+            TBMCPlayerBase.getPlayer(event.getPlayer().uniqueId, ChatPlayer::class.java)
+        )
+    }
 
-		registerCommand(new TownColorCommand(this));
-		if (useNationColors.get())
-			registerCommand(new NationColorCommand());
-		registerCommand(new buttondevteam.chat.components.towncolors.admin.TownColorCommand());
-		if (useNationColors.get())
-			registerCommand(new buttondevteam.chat.components.towncolors.admin.NationColorCommand());
-		registerCommand(new TCCount());
-		registerCommand(new NColorCommand());
-		registerListener(new TownyListener());
-		registerListener(this);
-	}
+    companion object {
+        /**
+         * Names lowercased
+         */
+        val TownColors = mutableMapOf<String, Array<TextColor>>()
 
-	@Override
-	protected void disable() {
-		getConfig().getConfig().createSection("towncolors", TownColors.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
-			v -> Arrays.stream(v.getValue()).map(Enum::toString).toArray(String[]::new))));
-		if (useNationColors.get())
-			getConfig().getConfig().createSection("nationcolors", NationColor.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
-				v -> v.getValue().toString())));
-		getConfig().signalChange();
-	}
+        /**
+         * Names lowercased - nation color gets added to town colors when needed
+         */
+        val NationColor = mutableMapOf<String, TextColor>()
 
-	private void initDynmap() {
-		Bukkit.getScheduler().runTask(getPlugin(), () -> {
-			val dtp = Bukkit.getPluginManager().getPlugin("Dynmap-Towny");
-			if (dtp == null)
-				return;
-			for (val entry : TownColors.entrySet()) {
-				try {
-					val town = TownyComponent.dataSource.getTown(entry.getKey());
-					Nation nation;
-					Color nc;
-					if (!useNationColors.get())
-						nc = null;
-					else if (!town.hasNation() || (nation = town.getNation()) == null || (nc = NationColor.get(nation.getName().toLowerCase())) == null)
-						nc = Color.White;
-					setTownColor(dtp, buttondevteam.chat.components.towncolors.admin.TownColorCommand.getTownNameCased(entry.getKey()), entry.getValue(), nc);
-				} catch (Exception e) {
-					TBMCCoreAPI.SendException("Error while setting town color for town " + entry.getKey() + "!", e, this);
-				}
-			}
-		});
-	}
+        var component: TownColorComponent? = null
+            private set
 
-	/**
-	 * Sets a town's color on Dynmap.
-	 *
-	 * @param dtp    A reference for the Dynmap-Towny plugin
-	 * @param town   The town's name using the correct casing
-	 * @param colors The town's colors
-	 */
-	public static void setTownColor(Plugin dtp, String town, Color[] colors, Color nationcolor) {
-		Function<Color, Integer> c2i = c -> c.getRed() << 16 | c.getGreen() << 8 | c.getBlue();
-		try {
-			DTBridge.setTownColor(dtp, town, c2i.apply(nationcolor == null ? colors[0] : nationcolor),
-				c2i.apply(colors.length > 1 && nationcolor != null ? colors[1] : colors[0]));
-		} catch (Exception e) {
-			TBMCCoreAPI.SendException("Failed to set town color for town " + town + "!", e, component);
-		}
-	}
+        // TODO: Dynmap color update removed, might not even need it anymore, check official support
 
-	private static String getPlayerNickname(Player player, User user, ChatPlayer cp) {
-		String nickname = user.getNick(true);
-		if (nickname.contains("~")) //StartsWith doesn't work because of color codes
-			nickname = nickname.replace("~", ""); //It gets stacked otherwise
-		String name = ChatColor.stripColor(nickname); //Enforce "town colors" on non-members
-		Resident res = TownyComponent.dataSource.getResident(player.getName());
-		if (res == null || !res.hasTown())
-			return name;
-		try {
-			Color[] clrs = Optional.ofNullable(
-				TownColors.get(res.getTown().getName().toLowerCase())
-			).orElse(new Color[]{Color.White}); //Use white as default town color
-			StringBuilder ret = new StringBuilder();
-			AtomicInteger prevlen = new AtomicInteger();
-			BiFunction<Color, Integer, String> anyColoredNamePart = (c, len) -> "§" //Len==0 if last part
-				+ Integer.toHexString(c.ordinal()) // 'Odds' are the last character is chopped off so we make sure to include all chars at the end
-				+ (len == 0 ? name.substring(prevlen.get())
-				: name.substring(prevlen.get(), prevlen.addAndGet(len)));
-			BiFunction<Integer, Integer, String> coloredNamePart = (len, i)
-				-> anyColoredNamePart.apply(clrs[i], i + 1 == clrs.length ? 0 : len);
-			final int len = name.length() / (clrs.length + 1); //The above param is needed because this isn't always passed
-			Color nc;
-	        /*if(res.getTown().hasNation()
-			        &&(nc=PluginMain.NationColor.get(res.getTown().getNation().getName().toLowerCase()))!=null)
-	        	len = name.length() / (clrs.length+1);
-	        else
-	        	len = name.length() / clrs.length;*/
-			boolean usenc = component.useNationColors.get();
-			val nclar = cp.NameColorLocations.get();
-			int[] ncl = nclar == null ? null : nclar.stream().mapToInt(Integer::intValue).toArray();
-			if (ncl != null && (Arrays.stream(ncl).sum() != name.length() || ncl.length != clrs.length + (usenc ? 1 : 0))) //+1: Nation color
-				ncl = null; // Reset if name length changed
-			//System.out.println("ncl: "+Arrays.toString(ncl)+" - sum: "+Arrays.stream(ncl).sum()+" - name len: "+name.length());
-			if (usenc) {
-				if (!res.getTown().hasNation()
-					|| (nc = NationColor.get(res.getTown().getNation().getName().toLowerCase())) == null)
-					nc = Color.White;
-				ret.append(anyColoredNamePart.apply(nc, ncl == null ? len : ncl[0])); //Make first color the nation color
-			}
-			for (int i = 0; i < clrs.length; i++)
-				ret.append(coloredNamePart.apply(ncl == null ? len : (usenc ? ncl[i + 1] : ncl[i]), i));
-			return ret.toString();
-		} catch (NotRegisteredException e) {
-			return nickname;
-		}
-	}
+        private fun getPlayerNickname(player: Player, user: User, cp: ChatPlayer): String {
+            var nickname = user.getNick(true)
+            if (nickname.contains("~"))  //StartsWith doesn't work because of color codes
+                nickname = nickname.replace("~", "") //It gets stacked otherwise
 
-	/**
-	 * Checks if the component is enabled
-	 */
-	public static void updatePlayerColors(Player player) { //Probably while ingame (/u ncolor - not anymore)
-		updatePlayerColors(player, ChatPlayer.getPlayer(player.getUniqueId(), ChatPlayer.class));
-	}
+            val name: String = ChatColor.stripColor(nickname)!! //Enforce "town colors" on non-members
+            val res = TownyComponent.dataSource!!.getResident(player.name)
+            if (res == null || !res.hasTown()) return name
+            try {
+                val clrs = TownColors[res.town.name.lowercase(Locale.getDefault())]
+                    ?: arrayOf(NamedTextColor.WHITE)//Use white as default town color
+                val ret = StringBuilder()
+                val prevlen = AtomicInteger()
+                //Len==0 if last part
+                // 'Odds' are the last character is chopped off so we make sure to include all chars at the end
+                val anyColoredNamePart = BiFunction { c: TextColor, len: Int ->
+                    net.kyori.adventure.text.Component.text(
+                        if (len == 0) name.substring(prevlen.get())
+                        else name.substring(prevlen.get(), prevlen.addAndGet(len)),
+                        c
+                    )
+                }
+                val coloredNamePart = BiFunction { len: Int, i: Int ->
+                    anyColoredNamePart.apply(
+                        clrs[i],
+                        if (i + 1 == clrs.size) 0 else len
+                    )
+                }
+                val len = name.length / (clrs.size + 1) //The above param is needed because this isn't always passed
+                val usenc: Boolean = component!!.useNationColors
+                val nclar = cp.NameColorLocations
+                var ncl: IntArray? = nclar.toIntArray()
+                if (ncl == null || ncl.sum() != name.length || ncl.size != clrs.size + (if (usenc) 1 else 0))  //+1: Nation color
+                    ncl = null // Reset if name length changed
 
-	/**
-	 * Checks if the component is enabled
-	 */
-	public static void updatePlayerColors(Player player, ChatPlayer cp) { //Probably at join - nop, nicknames
-		if (!ComponentManager.isEnabled(TownColorComponent.class))
-			return;
-		User user = PluginMain.essentials.getUser(player);
-		user.setNickname(getPlayerNickname(player, user, cp));
-		user.setDisplayNick(); //These won't fire the nick change event
-		cp.FlairUpdate(); //Update in list
-	}
+                if (usenc) {
+                    val nc = (if (res.town.hasNation()) NationColor[res.town.nation.name.lowercase(Locale.getDefault())]
+                    else null) ?: NamedTextColor.WHITE
+                    ret.append(
+                        anyColoredNamePart.apply(
+                            nc,
+                            if (ncl == null) len else ncl[0]
+                        )
+                    ) //Make first color the nation color
+                }
+                for (i in clrs.indices) ret.append(
+                    coloredNamePart.apply(
+                        if (ncl == null) len else (if (usenc) ncl[i + 1] else ncl[i]),
+                        i
+                    )
+                )
+                return ret.toString()
+            } catch (_: NotRegisteredException) {
+                return nickname
+            }
+        }
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		updatePlayerColors(event.getPlayer(), TBMCPlayer.getPlayer(event.getPlayer().getUniqueId(), ChatPlayer.class));
-	}
+        /**
+         * Checks if the component is enabled
+         */
+        /**
+         * Checks if the component is enabled
+         */
+        fun updatePlayerColors(
+            player: Player,
+            cp: ChatPlayer = TBMCPlayerBase.getPlayer(player.uniqueId, ChatPlayer::class.java)
+        ) { //Probably at join - nop, nicknames
+            if (!ComponentManager.isEnabled(TownColorComponent::class.java)) return
+            val user: User = PluginMain.essentials!!.getUser(player)
+            user.setNickname(getPlayerNickname(player, user, cp))
+            user.setDisplayNick() //These won't fire the nick change event
+            cp.FlairUpdate() //Update in list
+        }
+    }
 }

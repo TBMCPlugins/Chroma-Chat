@@ -1,38 +1,34 @@
-package buttondevteam.chat.components.formatter.formatting;
+package buttondevteam.chat.components.formatter.formatting
 
-import buttondevteam.lib.architecture.IHaveConfig;
-import buttondevteam.lib.architecture.config.IConfigData;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
+import lombok.Getter
 
 @RequiredArgsConstructor
-public abstract class MatchProviderBase implements MatchProvider {
-	@Getter
-	protected boolean finished;
-	@Getter
-	private final String name;
+abstract class MatchProviderBase : MatchProvider {
+    @Getter
+    protected var finished: kotlin.Boolean = false
 
-	@Nullable
-	@Override
-	public abstract FormattedSection getNextSection(String message, ArrayList<int[]> ignoredAreas, ArrayList<int[]> removedCharacters);
+    @Getter
+    private val name: kotlin.String? = null
 
-	@Override
-	public String toString() {
-		return name;
-	}
+    @Nullable
+    abstract override fun getNextSection(
+        message: kotlin.String?,
+        ignoredAreas: java.util.ArrayList<kotlin.IntArray?>?,
+        removedCharacters: java.util.ArrayList<kotlin.IntArray?>?
+    ): FormattedSection?
 
-	protected abstract void resetSubclass();
+    override fun toString(): kotlin.String {
+        return name!!
+    }
 
-	public void reset() {
-		finished = false;
-		resetSubclass();
-	}
+    protected abstract fun resetSubclass()
 
-	IConfigData<Boolean> enabled(IHaveConfig config) {
-		return config.getData(name + ".enabled", true);
-	}
+    override fun reset() {
+        finished = false
+        resetSubclass()
+    }
 
+    fun enabled(config: IHaveConfig): IConfigData<kotlin.Boolean?> {
+        return config.getData<kotlin.Boolean?>(name + ".enabled", true)
+    }
 }

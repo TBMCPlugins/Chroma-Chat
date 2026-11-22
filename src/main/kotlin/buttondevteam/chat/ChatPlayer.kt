@@ -1,116 +1,112 @@
-package buttondevteam.chat;
+package buttondevteam.chat
 
-import buttondevteam.chat.components.flair.FlairStates;
-import buttondevteam.lib.architecture.config.IConfigData;
-import buttondevteam.lib.architecture.config.IListConfigData;
-import buttondevteam.lib.chat.Color;
-import buttondevteam.lib.player.PlayerClass;
-import buttondevteam.lib.player.TBMCPlayerBase;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
-import java.util.Collections;
+import buttondevteam.chat.components.flair.FlairStates
+import buttondevteam.lib.player.PlayerClass
+import buttondevteam.lib.player.TBMCPlayerBase
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
 
 @PlayerClass(pluginname = "Chroma-Chat")
-public class ChatPlayer extends TBMCPlayerBase {
-	public final IConfigData<String> UserName = getConfig().getData("UserName", "");
+class ChatPlayer : TBMCPlayerBase() {
+    val UserName by config.getData("UserName", "")
 
-	public final IListConfigData<String> UserNames = getConfig().getListData("UserNames", Collections.emptyList());
+    val UserNames by config.getListData("UserNames", kotlin.collections.mutableListOf<String>())
 
-	public final IConfigData<Integer> FlairTime = getConfig().getData("FlairTime", FlairTimeNone);
+    var FlairTime by config.getData<Int>("FlairTime", FlairTimeNone)
 
-	public final IConfigData<FlairStates> FlairState = getConfig().getData("FlairState", FlairStates.NoComment,
-		fs -> FlairStates.valueOf((String) fs), FlairStates::toString);
+    val FlairState by config.getData<FlairStates>(
+        "FlairState",
+        FlairStates.NoComment,
+        { fs -> FlairStates.valueOf((fs as String)) },
+        java.util.function.Function { obj: FlairStates -> obj.toString() })
 
-	public final IConfigData<Integer> FCount = getConfig().getData("FCount", 0);
+    var FCount by config.getData<Int>("FCount", 0)
 
-	public final IConfigData<Integer> FDeaths = getConfig().getData("FDeaths", 0);
+    var FDeaths by config.getData<Int>("FDeaths", 0)
 
-	public final IConfigData<Boolean> FlairCheater = getConfig().getData("FlairCheater", false);
+    var FlairCheater by config.getData<Boolean>("FlairCheater", false)
 
-	public final IListConfigData<Integer> NameColorLocations = getConfig().getListData("NameColorLocations", Collections.emptyList()); // No byte[], no TIntArrayList
+    val NameColorLocations by config.getListData<Int>(
+        "NameColorLocations",
+        kotlin.collections.mutableListOf<Int>()
+    ) // No byte[], no TIntArrayList
 
-	public boolean Working;
-	// public int Tables = 10;
-	public boolean RainbowPresserColorMode = false;
-	public Color OtherColorMode = null;
-	public boolean ChatOnly = false;
-	public long LastMessageTime = 0L;
+    @Deprecated("")
+    var Working: Boolean = false
+    // public int Tables = 10;
+    /**
+     * Whether the player has enabled rainbow mode.
+     */
+    var RainbowPresserColorMode: Boolean = false
 
-	public static final int FlairTimeNonPresser = -1;
-	public static final int FlairTimeCantPress = -2;
-	public static final int FlairTimeNone = -3;
+    /**
+     * The custom chat text color that the player set.
+     */
+    var OtherColorMode: TextColor? = null
+    var ChatOnly: Boolean = false
+    var LastMessageTime: Long = 0L
 
-	/**
-	 * Gets the player's flair, optionally formatting for Minecraft.
-	 *
-	 * @param noformats The MC formatting codes will be only applied if false
-	 * @return The flair
-	 */
-	public String GetFormattedFlair(boolean noformats) {
-		int time = FlairTime.get();
-		if (time == FlairTimeCantPress)
-			return noformats ? "(can't press)" : "§r(--s)§r";
-		if (time == FlairTimeNonPresser)
-			return noformats ? "(non-presser)" : "§7(--s)§r";
-		if (time == FlairTimeNone)
-			return "";
-		return noformats ? String.format("(%ds)", time) : String.format("§%x(%ds)§r", GetFlairColor(), time);
-	}
+    /**
+     * Gets the player's flair, optionally formatting for Minecraft.
+     *
+     * @param noformats The MC formatting codes will be only applied if false
+     * @return The flair
+     */
+    /**
+     * Gets the player's flair, formatted for Minecraft.
+     *
+     * @return The flair
+     */
+    fun GetFormattedFlair(noformats: Boolean = false): Component {
+        val time = FlairTime
+        if (time == FlairTimeCantPress)
+            return Component.text(if (noformats) "(can't press)" else "§r(--s)§r", NamedTextColor.WHITE)
+        if (time == FlairTimeNonPresser)
+            return Component.text(if (noformats) "(non-presser)" else "§7(--s)§r", NamedTextColor.GRAY)
+        if (time == FlairTimeNone) return Component.text("")
+        return Component.text("(${time}s)", GetFlairColor())
+    }
 
-	/**
-	 * Gets the player's flair, formatted for Minecraft.
-	 *
-	 * @return The flair
-	 */
-	public String GetFormattedFlair() {
-		return GetFormattedFlair(false);
-	}
+    fun SetFlair(time: Int) {
+        FlairTime = time
+        FlairUpdate()
+    }
 
-	public void SetFlair(int time) {
-		FlairTime.set(time);
-		FlairUpdate();
-	}
+    fun SetFlair(time: Int, cheater: Boolean) {
+        FlairTime = time
+        FlairCheater = cheater
+        FlairUpdate()
+    }
 
-	public void SetFlair(int time, boolean cheater) {
-		FlairTime.set(time);
-		FlairCheater.set(cheater);
-		FlairUpdate();
-	}
+    fun FlairUpdate() {
+        // Flairs from Command Block The Button - Teams
+        // PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard().getTeams().add()
 
-	public void FlairUpdate() {
+        val p = org.bukkit.Bukkit.getPlayer(uniqueId)
+        p?.playerListName(p.displayName().append(GetFormattedFlair()))
+    }
 
-		// Flairs from Command Block The Button - Teams
-		// PluginMain.Instance.getServer().getScoreboardManager().getMainScoreboard().getTeams().add()
-		Player p = Bukkit.getPlayer(getUniqueId());
-		if (p != null)
-			p.setPlayerListName(String.format("%s%s", p.getDisplayName(), GetFormattedFlair()));
-	}
+    fun GetFlairColor(): TextColor? {
+        if (FlairCheater) return NamedTextColor.DARK_PURPLE
+        val flairTime = FlairTime
+        if (flairTime == FlairTimeNonPresser) return NamedTextColor.GRAY
+        else if (flairTime == FlairTimeCantPress) return NamedTextColor.WHITE
+        else if (flairTime in 52..60) return NamedTextColor.DARK_PURPLE
+        else if (flairTime in 42..51) return NamedTextColor.BLUE
+        else if (flairTime in 32..41) return NamedTextColor.GREEN
+        else if (flairTime in 22..31) return NamedTextColor.YELLOW
+        else if (flairTime in 11..21) return NamedTextColor.GOLD
+        else if (flairTime in 0..11) return NamedTextColor.RED
+        return null //Return null if none or too high, so names will get aqua default color, not white
+    }
 
-	public short GetFlairColor() {
-		if (FlairCheater.get())
-			return 0x5;
-		final int flairTime = FlairTime.get();
-		if (flairTime == FlairTimeNonPresser)
-			return 0x7;
-		else if (flairTime == FlairTimeCantPress)
-			return 0xf;
-		else if (flairTime <= 60 && flairTime >= 52)
-			return 0x5;
-		else if (flairTime <= 51 && flairTime >= 42)
-			return 0x9;
-		else if (flairTime <= 41 && flairTime >= 32)
-			return 0xa;
-		else if (flairTime <= 31 && flairTime >= 22)
-			return 0xe;
-		else if (flairTime <= 21 && flairTime >= 11)
-			return 0x6;
-		else if (flairTime <= 11 && flairTime >= 0)
-			return 0xc;
-		return 0x00; //Return 0 if none or too high, so names will get aqua default color, not white
-	}
+    val f: Double
+        get() = FCount.toDouble() / FDeaths.toDouble()
 
-	public double getF() {
-		return (double) FCount.get() / (double) FDeaths.get();
-	}
+    companion object {
+        val FlairTimeNonPresser: Int = -1
+        val FlairTimeCantPress: Int = -2
+        val FlairTimeNone: Int = -3
+    }
 }

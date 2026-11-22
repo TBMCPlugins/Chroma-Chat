@@ -1,117 +1,115 @@
-package buttondevteam.chat.components.appendext;
+package buttondevteam.chat.components.appendext
 
-import buttondevteam.chat.PluginMain;
-import buttondevteam.lib.architecture.Component;
-import buttondevteam.lib.architecture.IHaveConfig;
-import buttondevteam.lib.architecture.config.IConfigData;
-import buttondevteam.lib.chat.*;
-import lombok.val;
-
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.function.Consumer;
+import buttondevteam.lib.architecture.Component
+import java.lang.reflect.Method
+import java.util.function.Consumer
 
 /**
  * Allows players to append tableflips and other things to their messages. Everything is configurable here.
  */
-public class AppendTextComponent extends Component<PluginMain> {
-	private Map<String, IHaveConfig> appendTexts;
+class AppendTextComponent : Component<PluginMain?>() {
+    private var appendTexts: MutableMap<String, IHaveConfig>? = null
 
-	private IConfigData<String[]> helpText(IHaveConfig config) {
-		return config.getData("helpText", new String[]{
-			"Tableflip", //
-			"This command appends a tableflip after your message", //
-			"Or just makes you tableflip", //
-		});
-	}
+    private fun helpText(config: IHaveConfig): IConfigData<Array<String?>?> {
+        return config.getData<Array<String?>?>(
+            "helpText", arrayOf<String>(
+                "Tableflip",  //
+                "This command appends a tableflip after your message",  //
+                "Or just makes you tableflip",  //
+            )
+        )
+    }
 
-	private IConfigData<String> appendedText(IHaveConfig config) {
-		return config.getData("appendedText", "tableflip");
-	}
+    private fun appendedText(config: IHaveConfig): IConfigData<String?> {
+        return config.getData<String?>("appendedText", "tableflip")
+    }
 
-	@Override
-	protected void enable() {
-		val map = new HashMap<String, Consumer<IHaveConfig>>();
-		map.put("tableflip", conf -> {
-			helpText(conf).set(new String[]{
-				"Tableflip", //
-				"This command appends a tableflip after your message", //
-				"Or just makes you tableflip", //
-			});
-			appendedText(conf).set("(╯°□°）╯︵ ┻━┻");
-		});
-		map.put("unflip", conf -> {
-			helpText(conf).set(new String[]{
-				"Unflip", //
-				"This command appends an unflip after your message", //
-				"Or just unflips as you", //
-			});
-			appendedText(conf).set("┬─┬ ノ( ゜-゜ノ)");
-		});
-		map.put("shrug", conf -> {
-			helpText(conf).set(new String[]{
-				"Shrug", //
-				"This command appends a shrug after your message", //
-				"Or just makes you shrug", //
-			});
-			appendedText(conf).set("¯\\\\\\_(ツ)\\_/¯");
-		});
-		map.put("lenny", conf -> {
-			helpText(conf).set(new String[]{
-				"Lenny", //
-				"This command appends a Lenny face after your message", //
-				"Or just sends one", //
-			});
-			appendedText(conf).set("( ͡° ͜ʖ ͡°)");
-		});
-		map.put("waitwhat", conf -> {
-			helpText(conf).set(new String[]{
-				"Wait what", //
-				"Wait what" //
-			});
-			appendedText(conf).set("wait what");
-		});
-		appendTexts = getConfigMap("texts", map);
-		for (String cmd : appendTexts.keySet())
-			registerCommand(new CommandHandler(cmd));
-	}
+    override fun enable() {
+        val map = HashMap<String?, Consumer<IHaveConfig?>?>()
+        map.put("tableflip", { conf ->
+            helpText(conf).set(
+                arrayOf<String>(
+                    "Tableflip",  //
+                    "This command appends a tableflip after your message",  //
+                    "Or just makes you tableflip",  //
+                )
+            )
+            appendedText(conf).set("(╯°□°）╯︵ ┻━┻")
+        })
+        map.put("unflip", { conf ->
+            helpText(conf).set(
+                arrayOf<String>(
+                    "Unflip",  //
+                    "This command appends an unflip after your message",  //
+                    "Or just unflips as you",  //
+                )
+            )
+            appendedText(conf).set("┬─┬ ノ( ゜-゜ノ)")
+        })
+        map.put("shrug", { conf ->
+            helpText(conf).set(
+                arrayOf<String>(
+                    "Shrug",  //
+                    "This command appends a shrug after your message",  //
+                    "Or just makes you shrug",  //
+                )
+            )
+            appendedText(conf).set("¯\\\\\\_(ツ)\\_/¯")
+        })
+        map.put("lenny", { conf ->
+            helpText(conf).set(
+                arrayOf<String>(
+                    "Lenny",  //
+                    "This command appends a Lenny face after your message",  //
+                    "Or just sends one",  //
+                )
+            )
+            appendedText(conf).set("( ͡° ͜ʖ ͡°)")
+        })
+        map.put("waitwhat", { conf ->
+            helpText(conf).set(
+                arrayOf<String>(
+                    "Wait what",  //
+                    "Wait what" //
+                )
+            )
+            appendedText(conf).set("wait what")
+        })
+        appendTexts = getConfigMap("texts", map)
+        for (cmd in appendTexts!!.keys) registerCommand(CommandHandler(cmd))
+    }
 
-	@Override
-	protected void disable() {
+    override fun disable() {
+    }
 
-	}
+    @CommandClass
+    inner class CommandHandler internal constructor(command: String) : ICommand2MC() {
+        val commandPath: String
+        private val helpText: Array<String?>?
+        private val appendedText: String?
 
-	@CommandClass
-	public class CommandHandler extends ICommand2MC {
-		private final String path;
-		private final String[] helpText;
-		private final String appendedText;
+        init {
+            val conf = appendTexts!!.get(command)
+            if (conf == null) throw NoSuchElementException("AppendText command not found: " + command)
+            this.commandPath = command
+            println("Help text for " + command + ":")
+            println(helpText(conf).get().contentToString())
+            helpText = helpText(conf).get()
+            appendedText = appendedText(conf).get()
+        }
 
-		CommandHandler(String command) {
-			val conf = appendTexts.get(command);
-			if (conf == null) throw new NoSuchElementException("AppendText command not found: " + command);
-			path = command;
-			helpText = helpText(conf).get();
-			appendedText = appendedText(conf).get();
+        @Subcommand
+        fun def(sender: Command2MCSender, @OptionalArg @TextArg message: String?) {
+            sendChatMessage(
+                ChatMessage.Companion.builder(
+                    sender.sender,
+                    (if (message == null) "" else message + " ") + appendedText
+                ).fromCommand(true).permCheck(sender.permCheck).build()
+            )
+        }
 
-		}
-
-		@Command2.Subcommand
-		public void def(Command2MCSender sender, @Command2.OptionalArg @Command2.TextArg String message) {
-			TBMCChatAPI.sendChatMessage(ChatMessage.builder(sender.getSender(),
-				(message == null ? "" : message + " ") + appendedText).fromCommand(true).permCheck(sender.getPermCheck()).build());
-		}
-
-		@Override
-		public String getCommandPath() {
-			return path;
-		}
-
-		@Override
-		public String[] getHelpText(Method method, Command2.Subcommand ann) {
-			return helpText;
-		}
-	}
+        override fun getHelpText(method: Method?, ann: Subcommand?): Array<String?>? {
+            return helpText
+        }
+    }
 }

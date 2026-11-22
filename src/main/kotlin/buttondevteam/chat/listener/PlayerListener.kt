@@ -1,105 +1,109 @@
-package buttondevteam.chat.listener;
+package buttondevteam.chat.listener
 
-import buttondevteam.chat.ChatPlayer;
-import buttondevteam.chat.ChatUtils;
-import buttondevteam.chat.PluginMain;
-import buttondevteam.chat.commands.ucmds.HistoryCommand;
-import buttondevteam.chat.components.flair.FlairComponent;
-import buttondevteam.chat.components.formatter.FormatterComponent;
-import buttondevteam.chat.components.towncolors.TownColorComponent;
-import buttondevteam.core.ComponentManager;
-import buttondevteam.lib.TBMCChatEvent;
-import buttondevteam.lib.TBMCCoreAPI;
-import buttondevteam.lib.player.ChromaGamerBase;
-import buttondevteam.lib.player.ChromaGamerBase.InfoTarget;
-import buttondevteam.lib.player.TBMCPlayerGetInfoEvent;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import net.ess3.api.events.NickChangeEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerChatTabCompleteEvent;
+import buttondevteam.chat.ChatPlayer
+import buttondevteam.chat.ChatUtils
+import buttondevteam.chat.PluginMain
+import buttondevteam.chat.commands.ucmds.HistoryCommand
+import buttondevteam.chat.components.flair.FlairComponent
+import buttondevteam.chat.components.formatter.FormatterComponent
+import buttondevteam.core.ComponentManager.isEnabled
+import buttondevteam.lib.TBMCChatEvent
+import buttondevteam.lib.TBMCCoreAPI.SendException
+import buttondevteam.lib.player.ChromaGamerBase.Companion.getFromSender
+import buttondevteam.lib.player.ChromaGamerBase.InfoTarget
+import buttondevteam.lib.player.TBMCPlayerGetInfoEvent
+import com.google.common.collect.BiMap
+import com.google.common.collect.HashBiMap
+import net.ess3.api.events.NickChangeEvent
+import org.bukkit.Bukkit
+import org.bukkit.ChatColor
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.Listener
+import org.bukkit.event.player.AsyncPlayerChatEvent
+import org.bukkit.event.player.PlayerChatTabCompleteEvent
+import java.util.*
 
-import java.util.Map.Entry;
-import java.util.UUID;
+class PlayerListener : Listener {
+    @EventHandler(priority = EventPriority.HIGHEST)
+    fun onPlayerChat(event: AsyncPlayerChatEvent) {
+        if (event.isCancelled()) return
+        //The custom event is called in the core, but doesn't cancel the MC event
+        if (isEnabled(FormatterComponent::class.java))  //If not enabled, then let the other plugins deal with the message
+            event.setCancelled(true) // The custom event should only be cancelled when muted or similar
+    }
 
-public class PlayerListener implements Listener {
-	/**
-	 * Does not contain format codes, lowercased
-	 */
-	public static final BiMap<String, UUID> nicknames = HashBiMap.create();
+    @EventHandler
+    fun onTabComplete(e: PlayerChatTabCompleteEvent) {
+        val name = e.getLastToken()
+        for (nicknamekv in nicknames.entries) {
+            if (nicknamekv.key.startsWith(name.lowercase(Locale.getDefault()))) e.getTabCompletions().add(
+                PluginMain.Companion.essentials.getUser(Bukkit.getPlayer(nicknamekv.value)).getNick(true)
+            ) //Tabcomplete with the correct case
+        }
+    }
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		if (event.isCancelled())
-			return;
-		//The custom event is called in the core, but doesn't cancel the MC event
-		if (ComponentManager.isEnabled(FormatterComponent.class)) //If not enabled, then let the other plugins deal with the message
-			event.setCancelled(true); // The custom event should only be cancelled when muted or similar
-	}
+    @EventHandler
+    fun onGetInfo(e: TBMCPlayerGetInfoEvent) {
+        val cp = e.player!!.getAs<ChatPlayer?>(ChatPlayer::class.java)
+        if (cp == null) return
+        e.addInfo("Minecraft name: " + cp.playerName)
+        if (cp.UserName.get() != null && cp.UserName.get().length > 0) e.addInfo("Reddit name: " + cp.UserName.get())
+        if (isEnabled(FlairComponent::class.java)) {
+            val flair = cp.GetFormattedFlair(e.target != InfoTarget.MCCommand)
+            if (flair.length > 0) e.addInfo("/r/TheButton flair: " + flair)
+        }
+        e.addInfo(String.format("Respect: %.2f", cp.getF()))
+    }
 
-	@EventHandler
-	public void onTabComplete(PlayerChatTabCompleteEvent e) {
-		String name = e.getLastToken();
-		for (Entry<String, UUID> nicknamekv : nicknames.entrySet()) {
-			if (nicknamekv.getKey().startsWith(name.toLowerCase()))
-				e.getTabCompletions().add(PluginMain.essentials.getUser(Bukkit.getPlayer(nicknamekv.getValue())).getNick(true)); //Tabcomplete with the correct case
-		}
-	}
+    private var lastError: Long = 0
 
-	@EventHandler
-	public void onGetInfo(TBMCPlayerGetInfoEvent e) {
-		ChatPlayer cp = e.getPlayer().getAs(ChatPlayer.class);
-		if (cp == null)
-			return;
-		e.addInfo("Minecraft name: " + cp.getPlayerName());
-		if (cp.UserName.get() != null && cp.UserName.get().length() > 0)
-			e.addInfo("Reddit name: " + cp.UserName.get());
-		if (ComponentManager.isEnabled(FlairComponent.class)) {
-			final String flair = cp.GetFormattedFlair(e.getTarget() != InfoTarget.MCCommand);
-			if (flair.length() > 0)
-				e.addInfo("/r/TheButton flair: " + flair);
-		}
-		e.addInfo(String.format("Respect: %.2f", cp.getF()));
-	}
+    @EventHandler
+    fun onPlayerTBMCChat(e: TBMCChatEvent) {
+        try {
+            if (e.isCancelled) return
+            HistoryCommand.Companion.addChatMessage(e.chatMessage, e.channel)
+            e.isCancelled = FormatterComponent.Companion.handleChat(e)
+        } catch (ex: NoClassDefFoundError) { // Weird things can happen
+            if (lastError < System.nanoTime() - 1000L * 1000L * 1000L * 60 * 60 //60 mins
+                && Bukkit.getOnlinePlayers().size > 0
+            ) { //If there are no players on, display to the first person
+                lastError = System.nanoTime() //I put the whole thing in the if to protect against race conditions
+                for (p in Bukkit.getOnlinePlayers()) if (e.shouldSendTo(getFromSender(p))) p.sendMessage("[" + e.channel.displayName.get() + "] §cSome features in the message below might be unavailable due to an error.")
+            }
+            ChatUtils.sendChatMessage(e)
+            SendException("An error occured while processing a chat message!", ex, PluginMain.Companion.Instance)
+        } catch (ex: Exception) {
+            if (lastError < System.nanoTime() - 1000L * 1000L * 1000L * 60 * 60
+                && Bukkit.getOnlinePlayers().size > 0
+            ) {
+                lastError = System.nanoTime()
+                for (p in Bukkit.getOnlinePlayers()) if (e.shouldSendTo(getFromSender(p))) p.sendMessage("[" + e.channel.displayName.get() + "] §cSome features in the message below might be unavailable due to an error.")
+            }
+            ChatUtils.sendChatMessage(e)
+            SendException("An error occured while processing a chat message!", ex, PluginMain.Companion.Instance)
+        }
+    }
 
-	private long lastError = 0;
+    @EventHandler
+    fun onNickChange(e: NickChangeEvent) {
+        val nick = e.getValue()
+        if (nick == null) nicknames.inverse()
+            .remove(e.getController().getBase().getUniqueId()) //EssentialsX has it swapped
+        else nicknames.inverse().forcePut(
+            e.getController().getBase().getUniqueId(),
+            ChatColor.stripColor(nick)!!.lowercase(Locale.getDefault())
+        )
 
-	@EventHandler
-	public void onPlayerTBMCChat(TBMCChatEvent e) {
-		try {
-			if (e.isCancelled())
-				return;
-			HistoryCommand.addChatMessage(e.getChatMessage(), e.getChannel());
-			e.setCancelled(FormatterComponent.handleChat(e));
-		} catch (NoClassDefFoundError | Exception ex) { // Weird things can happen
-			if (lastError < System.nanoTime() - 1000L * 1000L * 1000L * 60 * 60 //60 mins
-				&& Bukkit.getOnlinePlayers().size() > 0) { //If there are no players on, display to the first person
-				lastError = System.nanoTime(); //I put the whole thing in the if to protect against race conditions
-				for (Player p : Bukkit.getOnlinePlayers())
-					if (e.shouldSendTo(ChromaGamerBase.getFromSender(p)))
-						p.sendMessage("[" + e.getChannel().displayName.get() + "] §cSome features in the message below might be unavailable due to an error.");
-			}
-			ChatUtils.sendChatMessage(e);
-			TBMCCoreAPI.SendException("An error occured while processing a chat message!", ex, PluginMain.Instance);
-		}
-	}
+        Bukkit.getScheduler().runTaskLater(PluginMain.Companion.Instance, Runnable {
+            updatePlayerColors(e.getAffected().getBase()) //Won't fire this event again
+        }, 1)
+    }
 
-	@EventHandler
-	public void onNickChange(NickChangeEvent e) {
-		String nick = e.getValue();
-		if (nick == null)
-			nicknames.inverse().remove(e.getController().getBase().getUniqueId()); //EssentialsX has it swapped
-		else
-			nicknames.inverse().forcePut(e.getController().getBase().getUniqueId(), ChatColor.stripColor(nick).toLowerCase());
-
-		Bukkit.getScheduler().runTaskLater(PluginMain.Instance, () -> {
-			TownColorComponent.updatePlayerColors(e.getAffected().getBase()); //Won't fire this event again
-		}, 1);
-	}
+    companion object {
+        /**
+         * Does not contain format codes, lowercased
+         */
+        val nicknames: BiMap<String, UUID> = HashBiMap.create<String, UUID>()
+    }
 }

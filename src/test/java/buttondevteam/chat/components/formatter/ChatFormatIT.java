@@ -94,6 +94,7 @@ public class ChatFormatIT {
 		list.add(new ChatFormatIT(sender, "***test*** test", text("test").color(WHITE)
 			.decorate(ITALIC).decorate(BOLD), text(" test").color(WHITE)));
 		list.add(new ChatFormatIT(sender, ">test message\nheh", text(">test message\nheh").color(GREEN)));
+		list.add(new ChatFormatIT(sender, ">A rainbow greentext for testing.", text(">A rainbow greentext for testing.").color(GREEN)));
 		list.add(new ChatFormatIT(sender, "[here's a link]()", text("[here's a link]()").color(WHITE)));
 		list.add(new ChatFormatIT(sender, "[](fakelink)", text("[](fakelink)").color(WHITE)));
 		list.add(new ChatFormatIT(sender, "||this is a spoiler||", text("this is a spoiler").color(WHITE)

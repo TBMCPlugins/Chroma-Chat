@@ -1,6 +1,6 @@
 name: Chroma-Chat
 main: buttondevteam.chat.PluginMain
-version: '${noprefix.version}'
+version: '${version}'
 commands:
   u:
     description: The main command for Chroma-Chat.

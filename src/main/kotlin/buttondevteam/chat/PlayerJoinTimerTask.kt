@@ -1,12 +1,9 @@
-package buttondevteam.chat;
+package buttondevteam.chat
 
-import java.util.TimerTask;
+import java.util.*
 
-public abstract class PlayerJoinTimerTask extends TimerTask {
+abstract class PlayerJoinTimerTask : TimerTask() {
+    abstract override fun run()
 
-	@Override
-	public abstract void run();
-
-	public ChatPlayer mp;
-
+    var mp: ChatPlayer? = null
 }

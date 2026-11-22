@@ -1,95 +1,88 @@
-package buttondevteam.chat.components.towncolors;
+package buttondevteam.chat.components.towncolors
 
-import buttondevteam.chat.PluginMain;
-import com.earth2me.essentials.User;
-import com.palmergames.bukkit.towny.event.*;
-import com.palmergames.bukkit.towny.object.Town;
-import lombok.val;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import buttondevteam.chat.PluginMain
+import com.earth2me.essentials.User
+import com.palmergames.bukkit.towny.event.*
+import com.palmergames.bukkit.towny.`object`.Town
+import org.bukkit.Bukkit
+import org.bukkit.ChatColor
+import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import java.util.*
 
-import java.util.Objects;
+class TownyListener : Listener {
+    @EventHandler
+    fun onTownRename(event: RenameTownEvent) {
+        val clrs = TownColorComponent.TownColors.remove(event.oldName.lowercase(Locale.getDefault()))
+        if (clrs != null) TownColorComponent.TownColors[event.town.name.lowercase(Locale.getDefault())] = clrs
+    }
 
-public class TownyListener implements Listener {
-	@EventHandler
-	public void onTownRename(RenameTownEvent event) {
-		val clrs = TownColorComponent.TownColors.remove(event.getOldName().toLowerCase());
-		if (clrs != null)
-			TownColorComponent.TownColors.put(event.getTown().getName().toLowerCase(), clrs);
-	}
+    @EventHandler //Gets called on town load as well
+    fun onTownJoin(event: TownAddResidentEvent) {
+        val p = Bukkit.getPlayer(event.resident.name)
+        if (p != null) TownColorComponent.updatePlayerColors(p)
+    }
 
-	@EventHandler //Gets called on town load as well
-	public void onTownJoin(TownAddResidentEvent event) {
-		Player p = Bukkit.getPlayer(event.getResident().getName());
-		if (p != null)
-			TownColorComponent.updatePlayerColors(p);
-	}
+    @EventHandler
+    fun onTownLeave(event: TownRemoveResidentEvent) {
+        val p: Player? = Bukkit.getPlayer(event.resident.name)
+        if (p != null) resetNameColor(p)
+    }
 
-	public static void updateTownMembers(Town town) {
-		town.getResidents().stream().map(r -> Bukkit.getPlayer(r.getName()))
-			.filter(Objects::nonNull).forEach(TownColorComponent::updatePlayerColors);
-	}
+    private fun resetNameColor(p: Player) {
+        val user: User = PluginMain.essentials!!.getUser(p)
+        user.setNickname(ChatColor.stripColor(user.getNick(true).replace("~", "")))
+    }
 
-	@EventHandler
-	public void onTownLeave(TownRemoveResidentEvent event) {
-		Player p = Bukkit.getPlayer(event.getResident().getName());
-		if (p != null)
-			resetNameColor(p);
-	}
+    @EventHandler
+    fun onTownDelete(event: DeleteTownEvent) {
+        TownColorComponent.TownColors.remove(event.townName.lowercase(Locale.getDefault()))
+    }
 
-	private void resetNameColor(Player p) {
-		User user = PluginMain.essentials.getUser(p);
-		user.setNickname(ChatColor.stripColor(user.getNick(true).replace("~", "")));
-	}
+    @EventHandler
+    fun onTownCreate(event: NewTownEvent) {
+        val p: Player? = Bukkit.getPlayer(event.town.mayor.name)
+        p?.sendMessage("§6Use /u towncolor to set a color for the town.")
+    }
 
-	@EventHandler
-	public void onTownDelete(DeleteTownEvent event) {
-		TownColorComponent.TownColors.remove(event.getTownName().toLowerCase());
-	}
+    //-----------------------------------------------------------------------------
+    @EventHandler
+    fun onNationRename(event: RenameNationEvent) {
+        if (!TownColorComponent.component!!.useNationColors) return
+        val clrs = TownColorComponent.NationColor.remove(event.oldName.lowercase(Locale.getDefault()))
+        if (clrs != null) TownColorComponent.NationColor[event.nation.name.lowercase(Locale.getDefault())] = clrs
+    }
 
-	@EventHandler
-	public void onTownCreate(NewTownEvent event) {
-		Player p = Bukkit.getPlayer(event.getTown().getMayor().getName());
-		if (p != null)
-			p.sendMessage("§6Use /u towncolor to set a color for the town.");
-	}
+    @EventHandler //Gets called on town load as well
+    fun onNationJoin(event: NationAddTownEvent) {
+        if (!TownColorComponent.component!!.useNationColors) return
+        updateTownMembers(event.town)
+    }
 
-	//-----------------------------------------------------------------------------
+    @EventHandler
+    fun onNationLeave(event: NationRemoveTownEvent) {
+        if (!TownColorComponent.component!!.useNationColors) return
+        TownyListener.updateTownMembers(event.town) //The town still has it's colours
+    }
 
-	@EventHandler
-	public void onNationRename(RenameNationEvent event) {
-		if (!TownColorComponent.getComponent().useNationColors.get()) return;
-		val clrs = TownColorComponent.NationColor.remove(event.getOldName().toLowerCase());
-		if (clrs != null)
-			TownColorComponent.NationColor.put(event.getNation().getName().toLowerCase(), clrs);
-	}
+    @EventHandler
+    fun onNationDelete(event: DeleteNationEvent) {
+        if (!TownColorComponent.component!!.useNationColors) return
+        TownColorComponent.NationColor.remove(event.nationName.lowercase(Locale.getDefault()))
+    }
 
-	@EventHandler //Gets called on town load as well
-	public void onNationJoin(NationAddTownEvent event) {
-		if (!TownColorComponent.getComponent().useNationColors.get()) return;
-		updateTownMembers(event.getTown());
-	}
+    @EventHandler
+    fun onNationCreate(event: NewNationEvent) {
+        if (!TownColorComponent.component!!.useNationColors) return
+        val p = Bukkit.getPlayer(event.nation.capital.mayor.name)
+        p?.sendMessage("§6Use /u nationcolor to set a color for the nation.")
+    }
 
-	@EventHandler
-	public void onNationLeave(NationRemoveTownEvent event) {
-		if (!TownColorComponent.getComponent().useNationColors.get()) return;
-		updateTownMembers(event.getTown()); //The town still has it's colours
-	}
-
-	@EventHandler
-	public void onNationDelete(DeleteNationEvent event) {
-		if (!TownColorComponent.getComponent().useNationColors.get()) return;
-		TownColorComponent.NationColor.remove(event.getNationName().toLowerCase());
-	}
-
-	@EventHandler
-	public void onNationCreate(NewNationEvent event) {
-		if (!TownColorComponent.getComponent().useNationColors.get()) return;
-		Player p = Bukkit.getPlayer(event.getNation().getCapital().getMayor().getName());
-		if (p != null)
-			p.sendMessage("§6Use /u nationcolor to set a color for the nation.");
-	}
+    companion object {
+        fun updateTownMembers(town: Town) {
+            town.getResidents().mapNotNull { r -> Bukkit.getPlayer(r.name) }
+                .forEach { TownColorComponent.updatePlayerColors(it) }
+        }
+    }
 }

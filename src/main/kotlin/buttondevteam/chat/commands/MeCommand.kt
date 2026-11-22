@@ -1,15 +1,25 @@
-package buttondevteam.chat.commands;
+package buttondevteam.chat.commands
 
-import buttondevteam.lib.TBMCSystemChatEvent;
-import buttondevteam.lib.chat.*;
+import buttondevteam.lib.TBMCSystemChatEvent.BroadcastTarget
+import buttondevteam.lib.chat.Command2.Subcommand
+import buttondevteam.lib.chat.Command2.TextArg
+import buttondevteam.lib.chat.Command2MCSender
+import buttondevteam.lib.chat.CommandClass
+import buttondevteam.lib.chat.ICommand2MC
+import buttondevteam.lib.chat.TBMCChatAPI.SendSystemMessage
 
-@CommandClass(helpText = {
-	"Me",
-	"Displays a message starting with your name in your current channel."
-})
-public class MeCommand extends ICommand2MC {
-	@Command2.Subcommand
-	public void def(Command2MCSender sender, @Command2.TextArg String message) {
-		TBMCChatAPI.SendSystemMessage(sender.getChannel(), sender.getChannel().getRTR(sender.getPermCheck()), "§5* " + sender.getSender().getName() + " " + message, TBMCSystemChatEvent.BroadcastTarget.ALL);
-	}
+@CommandClass(
+    helpText = ["Me", "Displays a message starting with your name in your current channel."
+    ]
+)
+class MeCommand : ICommand2MC() {
+    @Subcommand
+    fun def(sender: Command2MCSender, @TextArg message: String?) {
+        SendSystemMessage(
+            sender.channel,
+            sender.channel.getRTR(sender.permCheck),
+            "§5* " + sender.sender.name + " " + message,
+            BroadcastTarget.ALL
+        )
+    }
 }

@@ -1,65 +1,65 @@
-package buttondevteam.chat.listener;
+package buttondevteam.chat.listener
 
-import buttondevteam.chat.ChatPlayer;
-import buttondevteam.chat.PlayerJoinTimerTask;
-import buttondevteam.chat.PluginMain;
-import buttondevteam.chat.commands.ucmds.HistoryCommand;
-import buttondevteam.chat.components.flair.FlairComponent;
-import buttondevteam.chat.components.flair.FlairStates;
-import buttondevteam.core.ComponentManager;
-import buttondevteam.lib.player.ChromaGamerBase;
-import buttondevteam.lib.player.TBMCPlayerBase;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import buttondevteam.chat.ChatPlayer
+import buttondevteam.chat.PlayerJoinTimerTask
+import buttondevteam.chat.PluginMain
+import buttondevteam.chat.commands.ucmds.HistoryCommand
+import buttondevteam.chat.components.flair.FlairComponent
+import buttondevteam.chat.components.flair.FlairStates
+import buttondevteam.core.ComponentManager.isEnabled
+import buttondevteam.lib.player.ChromaGamerBase.Companion.getFromSender
+import buttondevteam.lib.player.TBMCPlayerBase.Companion.getPlayer
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
+import java.util.*
 
-import java.util.Timer;
+class PlayerJoinLeaveListener : Listener {
+    @EventHandler(priority = EventPriority.HIGHEST)
+    fun onPlayerJoin(e: PlayerJoinEvent) {
+        val p = e.getPlayer()
+        val cp = getPlayer<ChatPlayer>(p.getUniqueId(), ChatPlayer::class.java)
+        cp.FlairUpdate()
 
-public class PlayerJoinLeaveListener implements Listener {
+        if (isEnabled(FlairComponent::class.java)) {
+            if (cp.FlairState.get() != FlairStates.NoComment) {
+                FlairComponent.Companion.ConfirmUserMessage(cp)
+                val timer = Timer()
+                val tt: PlayerJoinTimerTask = object : PlayerJoinTimerTask() {
+                    public override fun run() {
+                        mp.FlairUpdate()
+                    }
+                }
+                tt.mp = cp
+                timer.schedule(tt, 1000)
+            } //TODO: Better Reddit integration (OAuth)
+        }
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerJoin(PlayerJoinEvent e) {
-		Player p = e.getPlayer();
-		ChatPlayer cp = TBMCPlayerBase.getPlayer(p.getUniqueId(), ChatPlayer.class);
-		cp.FlairUpdate();
+        var nwithoutformatting: String? = PluginMain.Companion.essentials.getUser(p).getNickname()
 
-		if (ComponentManager.isEnabled(FlairComponent.class)) {
-			if (!cp.FlairState.get().equals(FlairStates.NoComment)) {
-				FlairComponent.ConfirmUserMessage(cp);
-				Timer timer = new Timer();
-				PlayerJoinTimerTask tt = new PlayerJoinTimerTask() {
-					@Override
-					public void run() {
-						mp.FlairUpdate();
-					}
-				};
-				tt.mp = cp;
-				timer.schedule(tt, 1000);
-			} //TODO: Better Reddit integration (OAuth)
-		}
+        var index: Int
+        if (nwithoutformatting != null) {
+            while ((nwithoutformatting!!.indexOf("§k").also { index = it }) != -1) nwithoutformatting =
+                nwithoutformatting.replace(
+                    "§k" + nwithoutformatting.get(index + 2),
+                    ""
+                ) // Support for one random char
 
-		String nwithoutformatting = PluginMain.essentials.getUser(p).getNickname();
+            while ((nwithoutformatting!!.indexOf('§').also { index = it }) != -1) nwithoutformatting =
+                nwithoutformatting.replace("§" + nwithoutformatting.get(index + 1), "")
+        } else nwithoutformatting = p.getName()
+        PlayerListener.Companion.nicknames.forcePut(nwithoutformatting.lowercase(Locale.getDefault()), p.getUniqueId())
 
-		int index;
-		if (nwithoutformatting != null) {
-			while ((index = nwithoutformatting.indexOf("§k")) != -1)
-				nwithoutformatting = nwithoutformatting.replace("§k" + nwithoutformatting.charAt(index + 2), ""); // Support for one random char
-			while ((index = nwithoutformatting.indexOf('§')) != -1)
-				nwithoutformatting = nwithoutformatting.replace("§" + nwithoutformatting.charAt(index + 1), "");
-		} else
-			nwithoutformatting = p.getName();
-		PlayerListener.nicknames.forcePut(nwithoutformatting.toLowerCase(), p.getUniqueId());
+        if (PluginMain.Companion.Instance.storeChatHistory.get()) HistoryCommand.Companion.showHistory(
+            getFromSender(e.getPlayer()),
+            null
+        )
+    }
 
-		if (PluginMain.Instance.storeChatHistory.get())
-			HistoryCommand.showHistory(ChromaGamerBase.getFromSender(e.getPlayer()), null);
-	}
-
-	@EventHandler
-	public void onPlayerLeave(PlayerQuitEvent event) {
-		PlayerListener.nicknames.inverse().remove(event.getPlayer().getUniqueId());
-	}
-
+    @EventHandler
+    fun onPlayerLeave(event: PlayerQuitEvent) {
+        PlayerListener.Companion.nicknames.inverse().remove(event.getPlayer().getUniqueId())
+    }
 }

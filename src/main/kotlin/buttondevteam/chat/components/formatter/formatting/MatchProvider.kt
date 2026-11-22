@@ -1,21 +1,21 @@
-package buttondevteam.chat.components.formatter.formatting;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
+package buttondevteam.chat.components.formatter.formatting
 
 /**
  * Attempts to find a match for the provided message, returning null if none was found.
  */
-public interface MatchProvider {
-	@Nullable
-	FormattedSection getNextSection(String message, ArrayList<int[]> ignoredAreas, ArrayList<int[]> removedCharacters);
+interface MatchProvider {
+    @Nullable
+    fun getNextSection(
+        message: String?,
+        ignoredAreas: ArrayList<IntArray?>?,
+        removedCharacters: ArrayList<IntArray?>?
+    ): FormattedSection?
 
-	boolean isFinished();
+    val isFinished: Boolean
 
-	String getName();
+    val name: String?
 
-	@Override
-	String toString();
+    override fun toString(): String
 
-	void reset();
+    fun reset()
 }

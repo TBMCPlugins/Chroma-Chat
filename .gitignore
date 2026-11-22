@@ -3,6 +3,7 @@
 #################
 
 *.pydevproject
+.project
 .metadata/
 bin/
 tmp/
@@ -15,7 +16,6 @@ local.properties
 .settings/
 .loadpath
 target/
-.project
 
 # External tool builders
 .externalToolBuilders/
@@ -179,7 +179,7 @@ Desktop.ini
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
-# Mac crap
+# MacOS DS_Store files
 .DS_Store
 
 
@@ -213,9 +213,30 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 .metadata/*
-TheButtonAutoFlair/out/artifacts/Autoflair/Autoflair.jar
-*.iml
 *.name
-.idea/compiler.xml
-*.xml
+dependency-reduced-pom.xml
+
+TBMC/
 /.apt_generated/
+.attach_pid*
+
+# Gradle cache folder
+.gradle
+
+# Gradle build folder
+build
+
+# IntelliJ
+out/
+.idea
+*.iml
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# Common working directory
+run
+
+.kotlin

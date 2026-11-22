@@ -1,115 +1,90 @@
-package buttondevteam.chat.components.formatter.formatting;
+package buttondevteam.chat.components.formatter.formatting
 
-import buttondevteam.lib.chat.Color;
+import buttondevteam.lib.chat.Color
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+class TellrawPart(var text: kotlin.String?) : java.io.Serializable {
+    private var color: Color? = null
+    var isItalic: kotlin.Boolean = false
+        private set
+    var isBold: kotlin.Boolean = false
+        private set
+    var isUnderlined: kotlin.Boolean = false
+        private set
+    var isStrikethrough: kotlin.Boolean = false
+        private set
+    var isObfuscated: kotlin.Boolean = false
+        private set
+    private val extra: kotlin.collections.MutableList<TellrawPart?> = java.util.ArrayList<TellrawPart?>()
+    private var hoverEvent: TellrawEvent<HoverAction?>? = null
+    private var clickEvent: TellrawEvent<ClickAction?>? = null
 
-public final class TellrawPart implements Serializable {
-	private static final long serialVersionUID = 4125357644462144024L;
-	private Color color;
-	private boolean italic;
-	private boolean bold;
-	private boolean underlined;
-	private boolean strikethrough;
-	private boolean obfuscated;
-	private final List<TellrawPart> extra = new ArrayList<>();
-	private String text;
-	private TellrawEvent<TellrawEvent.HoverAction> hoverEvent;
-	private TellrawEvent<TellrawEvent.ClickAction> clickEvent;
+    fun getColor(): Color? {
+        return color
+    }
 
-	public TellrawPart(String text) {
-		this.text = text;
-	}
+    fun setColor(color: Color?): TellrawPart {
+        this.color = color
+        return this
+    }
 
-	public Color getColor() {
-		return color;
-	}
+    fun setItalic(italic: kotlin.Boolean): TellrawPart {
+        this.isItalic = italic
+        return this
+    }
 
-	public TellrawPart setColor(Color color) {
-		this.color = color;
-		return this;
-	}
+    fun setBold(bold: kotlin.Boolean): TellrawPart {
+        this.isBold = bold
+        return this
+    }
 
-	public boolean isItalic() {
-		return italic;
-	}
+    fun setUnderlined(underlined: kotlin.Boolean): TellrawPart {
+        this.isUnderlined = underlined
+        return this
+    }
 
-	public TellrawPart setItalic(boolean italic) {
-		this.italic = italic;
-		return this;
-	}
+    fun setStrikethrough(strikethrough: kotlin.Boolean): TellrawPart {
+        this.isStrikethrough = strikethrough
+        return this
+    }
 
-	public boolean isBold() {
-		return bold;
-	}
+    fun setObfuscated(obfuscated: kotlin.Boolean): TellrawPart {
+        this.isObfuscated = obfuscated
+        return this
+    }
 
-	public TellrawPart setBold(boolean bold) {
-		this.bold = bold;
-		return this;
-	}
+    fun getExtra(): kotlin.collections.Iterable<TellrawPart?> {
+        return extra
+    }
 
-	public boolean isUnderlined() {
-		return underlined;
-	}
+    fun addExtra(extra: TellrawPart?): TellrawPart {
+        this.extra.add(extra)
+        return this
+    }
 
-	public TellrawPart setUnderlined(boolean underlined) {
-		this.underlined = underlined;
-		return this;
-	}
+    fun setText(text: kotlin.String?): TellrawPart {
+        this.text = text
+        return this
+    }
 
-	public boolean isStrikethrough() {
-		return strikethrough;
-	}
+    fun getHoverEvent(): TellrawEvent<HoverAction?>? {
+        return hoverEvent
+    }
 
-	public TellrawPart setStrikethrough(boolean strikethrough) {
-		this.strikethrough = strikethrough;
-		return this;
-	}
+    fun setHoverEvent(hoverEvent: TellrawEvent<HoverAction?>?): TellrawPart {
+        this.hoverEvent = hoverEvent
+        return this
+    }
 
-	public boolean isObfuscated() {
-		return obfuscated;
-	}
+    fun getClickEvent(): TellrawEvent<ClickAction?>? {
+        return clickEvent
+    }
 
-	public TellrawPart setObfuscated(boolean obfuscated) {
-		this.obfuscated = obfuscated;
-		return this;
-	}
+    fun setClickEvent(clickEvent: TellrawEvent<ClickAction?>?): TellrawPart {
+        this.clickEvent = clickEvent
+        return this
+    }
 
-	public Iterable<TellrawPart> getExtra() {
-		return extra;
-	}
-
-	public TellrawPart addExtra(TellrawPart extra) {
-		this.extra.add(extra);
-		return this;
-	}
-
-	public String getText() {
-		return text;
-	}
-
-	public TellrawPart setText(String text) {
-		this.text = text;
-		return this;
-	}
-
-	public TellrawEvent<TellrawEvent.HoverAction> getHoverEvent() {
-		return hoverEvent;
-	}
-
-	public TellrawPart setHoverEvent(TellrawEvent<TellrawEvent.HoverAction> hoverEvent) {
-		this.hoverEvent = hoverEvent;
-		return this;
-	}
-
-	public TellrawEvent<TellrawEvent.ClickAction> getClickEvent() {
-		return clickEvent;
-	}
-
-	public TellrawPart setClickEvent(TellrawEvent<TellrawEvent.ClickAction> clickEvent) {
-		this.clickEvent = clickEvent;
-		return this;
-	}
+    companion object {
+        private const val serialVersionUID = 4125357644462144024L
+    }
 }

@@ -1,60 +1,50 @@
-package buttondevteam.chat.components.formatter.formatting;
+package buttondevteam.chat.components.formatter.formatting
 
-import buttondevteam.lib.chat.TellrawSerializableEnum;
-import com.google.gson.*;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import buttondevteam.lib.chat.TellrawSerializableEnum
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.Collection;
+abstract class TellrawSerializer {
+    class TwEnum : com.google.gson.TypeAdapter<TellrawSerializableEnum?>() {
+        @kotlin.Throws(java.io.IOException::class)
+        override fun read(reader: com.google.gson.stream.JsonReader?): TellrawSerializableEnum? {
+            throw java.lang.UnsupportedOperationException()
+        }
 
-public abstract class TellrawSerializer {
-	public static class TwEnum extends TypeAdapter<TellrawSerializableEnum> {
-		@Override
-		public TellrawSerializableEnum read(JsonReader reader) throws IOException {
-			throw new UnsupportedOperationException();
-		}
+        @kotlin.Throws(java.io.IOException::class)
+        override fun write(writer: com.google.gson.stream.JsonWriter, enumval: TellrawSerializableEnum?) {
+            if (enumval == null) writer.nullValue()
+            else writer.value(enumval.getName())
+        }
+    }
 
-		@Override
-		public void write(JsonWriter writer, TellrawSerializableEnum enumval) throws IOException {
-			if (enumval == null)
-				writer.nullValue();
-			else
-				writer.value(enumval.getName());
-		}
-	}
+    class TwCollection : com.google.gson.JsonSerializer<kotlin.collections.MutableCollection<*>?> {
+        override fun serialize(
+            src: kotlin.collections.MutableCollection<*>?,
+            typeOfSrc: java.lang.reflect.Type?,
+            context: com.google.gson.JsonSerializationContext
+        ): com.google.gson.JsonElement? {
+            if (src == null || src.isEmpty()) return null
 
-	public static class TwCollection implements JsonSerializer<Collection<?>> {
-		@Override
-		public JsonElement serialize(Collection<?> src, Type typeOfSrc, JsonSerializationContext context) {
-			if (src == null || src.isEmpty())
-				return null;
+            val array = com.google.gson.JsonArray()
 
-			JsonArray array = new JsonArray();
+            for (child in src) {
+                val element = context.serialize(child)
+                array.add(element)
+            }
 
-			for (Object child : src) {
-				JsonElement element = context.serialize(child);
-				array.add(element);
-			}
+            return array
+        }
+    }
 
-			return array;
-		}
-	}
+    class TwBool : com.google.gson.TypeAdapter<kotlin.Boolean?>() {
+        @kotlin.Throws(java.io.IOException::class)
+        override fun read(reader: com.google.gson.stream.JsonReader?): kotlin.Boolean? {
+            throw java.lang.UnsupportedOperationException()
+        }
 
-	public static class TwBool extends TypeAdapter<Boolean> {
-		@Override
-		public Boolean read(JsonReader reader) throws IOException {
-			throw new UnsupportedOperationException();
-		}
-
-		@SuppressWarnings("ConstantConditions")
-		@Override
-		public void write(JsonWriter writer, Boolean val) throws IOException {
-			if (val)
-				writer.value(val);
-			else
-				writer.nullValue();
-		}
-	}
+        @kotlin.Throws(java.io.IOException::class)
+        override fun write(writer: com.google.gson.stream.JsonWriter, `val`: kotlin.Boolean) {
+            if (`val`) writer.value(`val`)
+            else writer.nullValue()
+        }
+    }
 }

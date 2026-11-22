@@ -1,65 +1,60 @@
-package buttondevteam.chat;
+package buttondevteam.chat
 
-import buttondevteam.core.component.channel.Channel;
-import buttondevteam.lib.TBMCChatEvent;
-import buttondevteam.lib.player.ChromaGamerBase;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import buttondevteam.core.component.channel.Channel
+import buttondevteam.lib.TBMCChatEvent
+import buttondevteam.lib.player.ChromaGamerBase
+import buttondevteam.lib.player.ChromaGamerBase.Companion.getFromSender
+import org.bukkit.Bukkit
+import org.bukkit.command.CommandSender
+import java.util.*
 
-import java.util.Optional;
+object ChatUtils {
+    const val MCORIGIN: String =
+        "Minecraft" //Shouldn't change, like ever - TBMCPlayer.getFolderForType(TBMCPlayer.class) capitalized
 
-public final class ChatUtils {
-	public static final String MCORIGIN = "Minecraft"; //Shouldn't change, like ever - TBMCPlayer.getFolderForType(TBMCPlayer.class) capitalized
+    /**
+     * Dispatch a console command.
+     *
+     * @param command The command
+     * @param async   Whether the caller is async
+     */
+    fun dispatchConsoleCommand(command: String, async: Boolean) {
+        if (async) Bukkit.getScheduler().runTask(
+            PluginMain.Companion.Instance,
+            Runnable { Bukkit.dispatchCommand(PluginMain.Companion.Console, command) })
+        else Bukkit.dispatchCommand(PluginMain.Companion.Console, command)
+    }
 
-	private ChatUtils() {
-	}
+    /**
+     * Returns the string between the start and end strings (exclusive).
+     *
+     * @param str   The original string
+     * @param start The start string
+     * @param end   The end string
+     * @return The result string
+     */
+    fun coolSubstring(str: String, start: String, end: String): Optional<String> {
+        val a = str.indexOf(start) + start.length
+        val b = str.indexOf(end, a)
+        return if (a != -1 && b != -1) Optional.of<String>(str.substring(a, b)) else Optional.empty<String>()
+    }
 
-	/**
-	 * Dispatch a console command.
-	 *
-	 * @param command The command
-	 * @param async   Whether the caller is async
-	 */
-	public static void dispatchConsoleCommand(String command, boolean async) {
-		if (async)
-			Bukkit.getScheduler().runTask(PluginMain.Instance, () -> Bukkit.dispatchCommand(PluginMain.Console, command));
-		else
-			Bukkit.dispatchCommand(PluginMain.Console, command);
-	}
+    /**
+     * Sends a regular (non-Markdown) chat message. Used as a fallback if the chat processing fails.
+     *
+     * @param e The chat event
+     */
+    fun sendChatMessage(e: TBMCChatEvent) {
+        val str = ChatUtils.getMessageString(e.channel, e.user, e.message)
+        for (p in Bukkit.getOnlinePlayers()) if (e.shouldSendTo(getFromSender(p))) p.sendMessage(str)
+        Bukkit.getConsoleSender().sendMessage(str)
+    }
 
-	/**
-	 * Returns the string between the start and end strings (exclusive).
-	 *
-	 * @param str   The original string
-	 * @param start The start string
-	 * @param end   The end string
-	 * @return The result string
-	 */
-	public static Optional<String> coolSubstring(String str, String start, String end) {
-		int a = str.indexOf(start) + start.length();
-		int b = str.indexOf(end, a);
-		return a != -1 && b != -1 ? Optional.of(str.substring(a, b)) : Optional.empty();
-	}
+    fun getMessageString(channel: Channel, sender: ChromaGamerBase, message: String?): String {
+        return "§c!§r[" + channel.displayName.get() + "] <" + sender.name + "> " + message
+    }
 
-	/**
-	 * Sends a regular (non-Markdown) chat message. Used as a fallback if the chat processing fails.
-	 *
-	 * @param e The chat event
-	 */
-	public static void sendChatMessage(TBMCChatEvent e) {
-		var str = getMessageString(e.getChannel(), e.getUser(), e.getMessage());
-		for (Player p : Bukkit.getOnlinePlayers())
-			if (e.shouldSendTo(ChromaGamerBase.getFromSender(p)))
-				p.sendMessage(str);
-		Bukkit.getConsoleSender().sendMessage(str);
-	}
-
-	public static String getMessageString(Channel channel, ChromaGamerBase sender, String message) {
-		return "§c!§r[" + channel.displayName.get() + "] <" + sender.getName() + "> " + message;
-	}
-
-	public static void sendChatMessage(Channel channel, ChromaGamerBase sender, String message, CommandSender to) {
-		to.sendMessage(getMessageString(channel, sender, message));
-	}
+    fun sendChatMessage(channel: Channel, sender: ChromaGamerBase, message: String?, to: CommandSender) {
+        to.sendMessage(getMessageString(channel, sender, message))
+    }
 }
