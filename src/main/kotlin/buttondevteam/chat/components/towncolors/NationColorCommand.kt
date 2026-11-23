@@ -17,7 +17,7 @@ import org.bukkit.entity.Player
 )
 class NationColorCommand : UCommandBase() {
     @Subcommand
-    fun def(player: Player, color: String?): Boolean {
+    fun def(player: Player, color: String): Boolean {
         val msg = "§cYou need to be the king of a nation to set it's colors."
         try {
             val res = TownyComponent.dataSource!!.getResident(player.name)
@@ -27,7 +27,7 @@ class NationColorCommand : UCommandBase() {
             }
             val n = res.town.nation
             return NationColorCommand.SetNationColor(player, n, color)
-        } catch (e: NotRegisteredException) {
+        } catch (_: NotRegisteredException) {
             player.sendMessage(msg)
             return true
         }

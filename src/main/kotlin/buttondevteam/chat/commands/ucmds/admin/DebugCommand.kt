@@ -23,7 +23,7 @@ class DebugCommand : AdminCommandBase() {
         var DebugMode: Boolean = false
 
         fun SendDebugMessage(message: String?) {
-            if (DebugMode) if (PluginMain.Instance != null) PluginMain.Instance.getLogger()
+            if (DebugMode) if (PluginMain.Instance != null) PluginMain.Instance!!.logger
                 .info(message)
             else println(message)
         }

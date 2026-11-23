@@ -12,7 +12,7 @@ import org.bukkit.command.CommandSender
 class ReloadCommand : UCommandBase() {
     @Subcommand
     fun def(sender: CommandSender) {
-        if (PluginMain.Companion.Instance.tryReloadConfig()) sender.sendMessage("§bReloaded config")
+        if (PluginMain.Instance!!.tryReloadConfig()) sender.sendMessage("§bReloaded config")
         else sender.sendMessage("§cFailed to reload config.")
     }
 }

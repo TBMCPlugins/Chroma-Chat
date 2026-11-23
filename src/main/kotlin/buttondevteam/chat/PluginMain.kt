@@ -3,8 +3,10 @@ package buttondevteam.chat
 import buttondevteam.chat.commands.MWikiCommand
 import buttondevteam.chat.commands.MeCommand
 import buttondevteam.chat.commands.SnapCommand
+import buttondevteam.chat.commands.ucmds.HelpCommand
 import buttondevteam.chat.commands.ucmds.HistoryCommand
 import buttondevteam.chat.commands.ucmds.InfoCommand
+import buttondevteam.chat.commands.ucmds.ReloadCommand
 import buttondevteam.chat.commands.ucmds.admin.DebugCommand
 import buttondevteam.chat.components.announce.AnnouncerComponent
 import buttondevteam.chat.components.appendext.AppendTextComponent
@@ -64,11 +66,11 @@ class PluginMain : ButtonPlugin() {
         Component.registerComponent<PluginMain>(this, AppendTextComponent())
         Component.registerComponent<PluginMain>(this, FormatterComponent())
         registerCommand(DebugCommand())
-        registerCommand(buttondevteam.chat.commands.ucmds.HelpCommand())
+        registerCommand(HelpCommand())
         registerCommand(HistoryCommand())
         registerCommand(InfoCommand())
         registerCommand(MWikiCommand())
-        registerCommand(buttondevteam.chat.commands.ucmds.ReloadCommand())
+        registerCommand(ReloadCommand())
         registerCommand(SnapCommand())
         registerCommand(MeCommand())
     }

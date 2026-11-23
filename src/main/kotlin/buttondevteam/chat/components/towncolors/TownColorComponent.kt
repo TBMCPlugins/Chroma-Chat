@@ -77,8 +77,8 @@ class TownColorComponent : Component<PluginMain>(), Listener {
 
         registerCommand(TownColorCommand())
         if (useNationColors) registerCommand(NationColorCommand())
-        registerCommand(TownColorCommand())
-        if (useNationColors) registerCommand(NationColorCommand())
+        registerCommand(buttondevteam.chat.components.towncolors.TownColorCommand())
+        if (useNationColors) registerCommand(buttondevteam.chat.components.towncolors.NationColorCommand())
         registerCommand(TCCount())
         registerCommand(NColorCommand())
         registerListener(TownyListener())

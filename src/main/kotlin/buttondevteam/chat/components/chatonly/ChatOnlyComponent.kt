@@ -1,6 +1,10 @@
 package buttondevteam.chat.components.chatonly
 
+import buttondevteam.chat.ChatPlayer
+import buttondevteam.chat.PluginMain
+import buttondevteam.core.ComponentManager
 import buttondevteam.lib.architecture.ComponentMetadata
+import buttondevteam.lib.player.TBMCPlayerBase
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.event.HoverEvent
@@ -16,7 +20,7 @@ import org.bukkit.event.player.PlayerTeleportEvent
  * Allows players to enter chat-only mode which puts them into spectator mode and disallows moving.
  */
 @ComponentMetadata(enabledByDefault = false)
-class ChatOnlyComponent : buttondevteam.lib.architecture.Component<PluginMain?>(), Listener {
+class ChatOnlyComponent : buttondevteam.lib.architecture.Component<PluginMain>(), Listener {
     override fun enable() {
         registerListener(this)
         registerCommand(ChatonlyCommand())
@@ -28,39 +32,34 @@ class ChatOnlyComponent : buttondevteam.lib.architecture.Component<PluginMain?>(
     @EventHandler
     fun playerJoin(event: PlayerJoinEvent) {
         val p = event.getPlayer()
-        val cp = TBMCPlayerBase.Companion.getPlayer<T>(p.getUniqueId(), ChatPlayer::class.java)
-        if (cp.ChatOnly || p.getGameMode().equals(GameMode.SPECTATOR)) {
+        val cp = TBMCPlayerBase.getPlayer(p.uniqueId, ChatPlayer::class.java)
+        if (cp.ChatOnly || p.gameMode == GameMode.SPECTATOR) {
             cp.ChatOnly = false
-            p.setGameMode(GameMode.SURVIVAL)
+            p.gameMode = GameMode.SURVIVAL
         }
     }
 
     @EventHandler
     fun onPlayerMove(e: PlayerMoveEvent) {
-        val mp: ChatPlayer =
-            TBMCPlayerBase.Companion.getPlayer<ChatPlayer>(e.getPlayer().getUniqueId(), ChatPlayer::class.java)
-        if (mp.ChatOnly) e.setCancelled(true)
+        val mp: ChatPlayer = TBMCPlayerBase.getPlayer(e.getPlayer().uniqueId, ChatPlayer::class.java)
+        if (mp.ChatOnly) e.isCancelled = true
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerTeleport(e: PlayerTeleportEvent) {
-        if (TBMCPlayerBase.Companion.getPlayer<ChatPlayer?>(
-                e.getPlayer().getUniqueId(),
-                ChatPlayer::class.java
-            ).ChatOnly
-        ) {
-            e.setCancelled(true)
+        if (TBMCPlayerBase.getPlayer(e.getPlayer().uniqueId, ChatPlayer::class.java).ChatOnly) {
+            e.isCancelled = true
             e.getPlayer().sendMessage("§cYou are not allowed to teleport while in chat-only mode.")
         }
     }
 
     companion object {
         fun tellrawCreate(mp: ChatPlayer?, json: TextComponent.Builder) {
-            if (!isEnabled(ChatOnlyComponent::class.java)) return
+            if (!ComponentManager.isEnabled(ChatOnlyComponent::class.java)) return
             if (mp != null && mp.ChatOnly) {
                 json.append(
                     Component.text("[C]").hoverEvent(
-                        HoverEvent.hoverEvent<Component>(
+                        HoverEvent.hoverEvent(
                             HoverEvent.Action.SHOW_TEXT,
                             Component.text("Chat only")
                         )

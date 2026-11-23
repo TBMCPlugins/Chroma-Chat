@@ -13,7 +13,7 @@ import org.bukkit.command.CommandSender
     helpText = ["Set flair", "Set a flair for a player", "Usage: /u admin setflair <player> <flairtime (or non-presser, cant-press, none)> <cheater(true/false)> [username]", "Example 1: /u admin setflair NorbiPeti 19 false NorbiPeti --> orange (19s)", "Example 2: /u admin setflair iie 0 true asde --> purple (0s)"
     ]
 )
-class SetFlairCommand : AdminCommandBase() {
+class SetFlairCommand : AdminCommandBase() { // TODO: Unused now
     @Subcommand
     fun def(
         sender: CommandSender,
@@ -28,27 +28,27 @@ class SetFlairCommand : AdminCommandBase() {
             return true
         }
         val ft: Short
-        if (flairtime.equals("non-presser", ignoreCase = true)) ft = ChatPlayer.Companion.FlairTimeNonPresser.toShort()
+        if (flairtime.equals("non-presser", ignoreCase = true)) ft = ChatPlayer.FlairTimeNonPresser.toShort()
         else if (flairtime.equals("cant-press", ignoreCase = true)) ft =
-            ChatPlayer.Companion.FlairTimeCantPress.toShort()
-        else if (flairtime.equals("none", ignoreCase = true)) ft = ChatPlayer.Companion.FlairTimeNone.toShort()
+            ChatPlayer.FlairTimeCantPress.toShort()
+        else if (flairtime.equals("none", ignoreCase = true)) ft = ChatPlayer.FlairTimeNone.toShort()
         else {
             try {
                 ft = flairtime.toShort()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 sender.sendMessage(
                     "§cFlairtime must be a number, \"non-presser\", \"cant-press\" or \"none\". Run without args to see usage."
                 )
                 return true
             }
         }
-        val mp = getPlayer<ChatPlayer>(p.getUniqueId(), ChatPlayer::class.java)
+        val mp = getPlayer(p.uniqueId, ChatPlayer::class.java)
         mp.SetFlair(ft.toInt(), cheater)
-        mp.FlairState.set(FlairStates.Accepted)
-        if (username == null) mp.UserName.set("")
+        mp.FlairState = FlairStates.Accepted
+        if (username == null) mp.UserName = ""
         else {
-            mp.UserName.set(username)
-            if (!mp.UserNames.get().contains(username)) mp.UserNames.get().add(username)
+            mp.UserName = username
+            if (!mp.UserNames.contains(username)) mp.UserNames.add(username)
         }
         sender.sendMessage("§bThe flair has been set. Player: " + mp.playerName + " Flair: " + mp.GetFormattedFlair() + "§r")
         return true

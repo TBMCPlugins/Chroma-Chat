@@ -9,17 +9,17 @@ import net.kyori.adventure.text.format.TextColor
 
 @PlayerClass(pluginname = "Chroma-Chat")
 class ChatPlayer : TBMCPlayerBase() {
-    val UserName by config.getData("UserName", "")
+    var UserName by config.getData("UserName", "")
 
     val UserNames by config.getListData("UserNames", kotlin.collections.mutableListOf<String>())
 
     var FlairTime by config.getData<Int>("FlairTime", FlairTimeNone)
 
-    val FlairState by config.getData<FlairStates>(
+    var FlairState by config.getData<FlairStates>(
         "FlairState",
         FlairStates.NoComment,
         { fs -> FlairStates.valueOf((fs as String)) },
-        java.util.function.Function { obj: FlairStates -> obj.toString() })
+        { obj: FlairStates -> obj.toString() })
 
     var FCount by config.getData<Int>("FCount", 0)
 

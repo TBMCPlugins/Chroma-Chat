@@ -14,7 +14,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 /**
- * A [MatchProvider] finds where the given [FormatSettings] need to be applied. [Combine]} is used to turn it into a [TellrawPart], combining
+ * A [MatchProvider] finds where the given [FormatSettings] need to be applied. [Combine]} is used to turn it into a [Component], combining
  * intersecting parts found, for example when `_abc*def*ghi_` is said in chat, it'll turn it into an underlined part, then an underlined *and italics* part, finally an underlined part
  * again.
  *

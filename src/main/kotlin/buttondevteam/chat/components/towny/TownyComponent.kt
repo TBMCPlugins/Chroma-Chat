@@ -16,7 +16,6 @@ import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
 import java.util.function.Consumer
-import java.util.function.Function
 
 /**
  * This component manages the town and nation chat. It's also needed for the TownColorComponent.
@@ -37,28 +36,27 @@ class TownyComponent : Component<PluginMain>() {
             Channel(
                 "TC",
                 NamedTextColor.DARK_AQUA,
-                "tc",
-                Function { s: ChromaGamerBase? -> checkTownNationChat(s, false) }).also { TownChat = it })
+                "tc"
+            ) { s: ChromaGamerBase? -> checkTownNationChat(s, false) }.also { TownChat = it })
         registerChatChannel(
             Channel(
                 "§6NC§f",
                 NamedTextColor.GOLD,
-                "nc",
-                Function { s: ChromaGamerBase? -> checkTownNationChat(s, true) }).also { NationChat = it })
-        TownyAnnouncer.setup(TownChat, NationChat)
+                "nc"
+            ) { s: ChromaGamerBase? -> checkTownNationChat(s, true) }.also { NationChat = it })
+        // TODO: TownyAnnouncer
     }
 
     override fun disable() {
-        TownyAnnouncer.setdown()
+        // TODO: TownyAnnouncer
     }
 
     fun handleSpiesInit(channel: Channel, json: TextComponent.Builder): Consumer<Player?> {
         if (channel.identifier == TownChat!!.identifier || channel.identifier == NationChat!!.identifier) {
             // TODO: Cannot prepend to json, so we need to run this ealier
-            //((List<TellrawPart>) json.getExtra()).add(0, new TellrawPart("[SPY]"));
             return Consumer { p: Player? -> handleSpies(channel, p!!, json) }
         }
-        return Consumer { p: Player? -> }
+        return Consumer { }
     }
 
     private fun handleSpies(channel: Channel, p: Player, jsonstr: TextComponent.Builder) {
@@ -108,7 +106,7 @@ class TownyComponent : Component<PluginMain>() {
                     index = getTownNationIndex(nation.name, true)
                 } else index = getTownNationIndex(town.name, false)
                 return Channel.RecipientTestResult(index, if (nationchat) nation!!.name else town.name)
-            } catch (e: NotRegisteredException) {
+            } catch (_: NotRegisteredException) {
                 return Channel.RecipientTestResult("You (probably) aren't knwon by Towny! (Not in a town)")
             }
         }

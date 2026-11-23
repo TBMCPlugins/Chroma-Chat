@@ -1,9 +1,11 @@
 package buttondevteam.chat
 
 import buttondevteam.core.component.channel.Channel
+import buttondevteam.lib.ChromaUtils.asString
 import buttondevteam.lib.TBMCChatEvent
 import buttondevteam.lib.player.ChromaGamerBase
 import buttondevteam.lib.player.ChromaGamerBase.Companion.getFromSender
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import java.util.*
@@ -20,9 +22,9 @@ object ChatUtils {
      */
     fun dispatchConsoleCommand(command: String, async: Boolean) {
         if (async) Bukkit.getScheduler().runTask(
-            PluginMain.Companion.Instance,
-            Runnable { Bukkit.dispatchCommand(PluginMain.Companion.Console, command) })
-        else Bukkit.dispatchCommand(PluginMain.Companion.Console, command)
+            PluginMain.Instance!!,
+            Runnable { Bukkit.dispatchCommand(PluginMain.Console!!, command) })
+        else Bukkit.dispatchCommand(PluginMain.Console!!, command)
     }
 
     /**
@@ -45,16 +47,16 @@ object ChatUtils {
      * @param e The chat event
      */
     fun sendChatMessage(e: TBMCChatEvent) {
-        val str = ChatUtils.getMessageString(e.channel, e.user, e.message)
+        val str = getMessageString(e.channel, e.user, e.message)
         for (p in Bukkit.getOnlinePlayers()) if (e.shouldSendTo(getFromSender(p))) p.sendMessage(str)
         Bukkit.getConsoleSender().sendMessage(str)
     }
 
-    fun getMessageString(channel: Channel, sender: ChromaGamerBase, message: String?): String {
-        return "§c!§r[" + channel.displayName.get() + "] <" + sender.name + "> " + message
+    fun getMessageString(channel: Channel, sender: ChromaGamerBase, message: Component): String {
+        return "§c!§r[" + channel.displayName + "] <" + sender.name + "> " + message.asString() // TODO: Components
     }
 
-    fun sendChatMessage(channel: Channel, sender: ChromaGamerBase, message: String?, to: CommandSender) {
+    fun sendChatMessage(channel: Channel, sender: ChromaGamerBase, message: Component, to: CommandSender) {
         to.sendMessage(getMessageString(channel, sender, message))
     }
 }

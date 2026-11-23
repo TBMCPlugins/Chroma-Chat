@@ -1,9 +1,9 @@
 package buttondevteam.chat.commands.ucmds
 
 import buttondevteam.lib.chat.Command2.*
+import buttondevteam.lib.chat.Command2MCSender
 import buttondevteam.lib.chat.CommandClass
 import buttondevteam.lib.chat.CustomTabComplete
-import org.bukkit.command.CommandSender
 
 @CommandClass(
     modOnly = false, helpText = ["Help", "Prints out help messages for the TBMC plugins"
@@ -12,12 +12,12 @@ import org.bukkit.command.CommandSender
 class HelpCommand : UCommandBase() {
     @Subcommand
     fun def(
-        sender: CommandSender,
-        @TextArg @OptionalArg @CustomTabComplete(["commands", "chat", "colors"]) topicOrCommand: String?
+        sender: Command2MCSender,
+        @TextArg @OptionalArg @CustomTabComplete("commands", "chat") topicOrCommand: String?
     ): Boolean {
         if (topicOrCommand == null) {
             sender.sendMessage(
-                *arrayOf<String>(
+                arrayOf(
                     "§6---- Chroma Help ----",
                     "Do /u help <topic> for more info",
                     "Do /u help <commandname> [subcommands] for more info about a command",
@@ -30,7 +30,7 @@ class HelpCommand : UCommandBase() {
             return true
         }
         if (topicOrCommand.equals("chat", ignoreCase = true)) sender.sendMessage(
-            *arrayOf<String>(
+            arrayOf(
                 "§6---- Chat features ----",
                 "- [g] Channel identifier: Click it to copy message", "-- [g] Global chat (/g)",
                 "-- [TC] Town chat (/tc)", "-- [NC] Nation chat (/nc)",
@@ -39,37 +39,18 @@ class HelpCommand : UCommandBase() {
             )
         )
         else if (topicOrCommand.equals("commands", ignoreCase = true)) {
-            sender.sendMessage(manager.getCommandsText())
-        } else if (topicOrCommand.equals("colors", ignoreCase = true)) {
-            sender.sendMessage(
-                *arrayOf<String>(
-                    "§6---- Chat colors/formats ----",  //
-                    "Tellraw name - Code | Tellraw name      - Code",  //
-                    "§0black           - &0§r   | §1dark_blue     - &1§r",  //
-                    "§2dark_green   - &2§r   | §3dark_aqua     - &3§r",  //
-                    "§4dark_red     - &4§r   | §5dark_purple   - &5§r",  //
-                    "§6gold             - &6§r   | §7gray          - &7§r",  //
-                    "§8dark_gray     - &8§r   | §9blue          - &9§r",  //
-                    "§agreen           - &a§r   | §baqua          - &b§r",  //
-                    "§cred              - &c§r   | §dlight_purple  - &d§r",  //
-                    "§eyellow           - &e§r   | §fwhite         - &f§r",  //
-                    "§rreset            - &r§r   | §kk§robfuscated - &k§r",  //
-                    "§lbold           - &l§r   | §mstrikethrough - &m§r",  //
-                    "§nunderline      - &n§r   | §oitalic        - &o§r",  //
-                    "The format codes in tellraw should be used like \"italic\":\"true\""
-                )
-            ) //
+            sender.sendMessage(manager.getCommandList(sender))
         } else {
-            val text: Array<String?>? =
-                manager.getCommandNode(topicOrCommand)!!.data.getHelpText(sender) // TODO: This only works for the main command, not subcommands
+            val text =
+                manager.getCommandNode(topicOrCommand)?.data?.getHelpText(sender) // TODO: This only works for the main command, not subcommands
             if (text == null)  // TODO: Null check for command node
                 sender.sendMessage(
-                    *arrayOf<String>(
-                        "§cError: Command not found: " + topicOrCommand,
+                    arrayOf(
+                        "§cError: Command not found: $topicOrCommand",
                         "Usage example: /u accept --> /u help u accept"
                     )
                 )
-            else sender.sendMessage(*text)
+            else sender.sendMessage(text)
         }
         return true
     }

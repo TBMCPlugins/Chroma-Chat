@@ -1,5 +1,15 @@
 package buttondevteam.chat.commands.ucmds
 
+import buttondevteam.chat.PluginMain
+import buttondevteam.core.component.channel.Channel
+import buttondevteam.lib.ChromaUtils.asString
+import buttondevteam.lib.chat.ChatMessage
+import buttondevteam.lib.chat.Command2
+import buttondevteam.lib.chat.CommandClass
+import buttondevteam.lib.chat.CustomTabCompleteMethod
+import buttondevteam.lib.player.ChromaGamerBase
+import java.util.concurrent.atomic.AtomicBoolean
+
 
 @CommandClass(
     helpText = ["Chat History" //
@@ -7,16 +17,15 @@ package buttondevteam.chat.commands.ucmds
     ]
 )
 class HistoryCommand : UCommandBase() {
-    @Subcommand
-    fun def(sender: ChromaGamerBase, @OptionalArg channel: kotlin.String?): kotlin.Boolean {
-        return HistoryCommand.Companion.showHistory(sender, channel)
+    @Command2.Subcommand
+    fun def(sender: ChromaGamerBase, @Command2.OptionalArg channel: String?): Boolean {
+        return showHistory(sender, channel)
     }
 
     @CustomTabCompleteMethod(param = "channel")
-    fun def(): kotlin.collections.Iterable<kotlin.String?> {
-        return kotlin.collections.Iterable {
-            buttondevteam.core.component.channel.Channel.Companion.getChannels()
-                .map<kotlin.String?>(::buttondevteam.core.component.channel.Channel.identifier).iterator()
+    fun def(): Iterable<String?> {
+        return Iterable {
+            Channel.channelList.map { it.identifier }.iterator()
         }
     }
 
@@ -24,64 +33,53 @@ class HistoryCommand : UCommandBase() {
      * @param timestamp System.nanoTime()
      */
     private class HistoryEntry(
-        val timestamp: kotlin.Long,
-        chatMessage: ChatMessage,
-        channel: buttondevteam.core.component.channel.Channel?
-    ) {
-        val chatMessage: ChatMessage
-        val channel: buttondevteam.core.component.channel.Channel?
-
-        init {
-            this.chatMessage = chatMessage
-            this.channel = channel
-        }
-    }
+        val timestamp: Long,
+        val chatMessage: ChatMessage,
+        val channel: Channel?
+    )
 
     companion object {
         /**
          * Key: ChannelID_groupID
          */
-        private val messages = java.util.HashMap<kotlin.String?, java.util.LinkedList<HistoryEntry?>>()
+        private val messages = mapOf<String, MutableList<HistoryEntry>>()
 
-        fun showHistory(sender: ChromaGamerBase, channel: kotlin.String?): kotlin.Boolean {
-            if (!PluginMain.Companion.Instance.storeChatHistory.get()) {
+        fun showHistory(sender: ChromaGamerBase, channel: String?): Boolean {
+            if (!PluginMain.Instance!!.storeChatHistory) {
                 sender.sendMessage("§6Chat history is disabled")
                 return true
             }
-            val getThem: java.util.function.Function<buttondevteam.core.component.channel.Channel?, java.util.LinkedList<HistoryEntry?>?> =
-                java.util.function.Function { ch: buttondevteam.core.component.channel.Channel? ->
-                    HistoryCommand.Companion.messages.get(ch!!.identifier + "_" + ch.getGroupID(sender))
-                } //If can't see, groupID is null, and that shouldn't be in the map
+            val getThem = { ch: Channel ->
+                messages[ch.identifier + "_" + ch.getGroupID(sender)]
+            } //If can't see, groupID is null, and that shouldn't be in the map
             sender.sendMessage("§6---- Chat History ----")
-            val stream: java.util.stream.Stream<buttondevteam.core.component.channel.Channel?>
+            val stream: List<Channel>
             if (channel == null) {
-                stream = buttondevteam.core.component.channel.Channel.Companion.getChannels()
+                stream = Channel.channelList
             } else {
-                val och = buttondevteam.core.component.channel.Channel.Companion.getChannels()
-                    .filter { chan: buttondevteam.core.component.channel.Channel? ->
-                        chan!!.identifier.equals(
-                            channel,
-                            ignoreCase = true
-                        )
-                    }.findAny()
-                if (!och.isPresent()) {
+                val och = Channel.channelList.firstOrNull { chan: Channel ->
+                    chan.identifier.equals(
+                        channel,
+                        ignoreCase = true
+                    )
+                }
+                if (och == null) {
                     sender.sendMessage("§cChannel not found. Use the ID, for example: /u history g")
                     return true
                 }
-                stream = java.util.stream.Stream.of<buttondevteam.core.component.channel.Channel?>(och.get())
+                stream = listOf(och)
             }
-            val sent = java.util.concurrent.atomic.AtomicBoolean()
-            kotlin.synchronized(HistoryCommand.Companion.messages) {
-                val arr = stream.map<java.util.LinkedList<HistoryEntry?>?>(getThem)
-                    .filter { obj: java.util.LinkedList<HistoryEntry?>? -> java.util.Objects.nonNull(obj) }
-                    .flatMap<HistoryEntry?> { obj: java.util.LinkedList<HistoryEntry?>? -> obj!!.stream() }
-                    .sorted(java.util.Comparator.comparingLong<HistoryEntry?>(java.util.function.ToLongFunction { he: HistoryEntry? -> he!!.timestamp }))
-                    .toArray<HistoryEntry?> { _Dummy_.__Array__() }
-                for (i in java.lang.Math.max(0, arr.length - 10)..<arr.length) {
+            val sent = AtomicBoolean()
+            synchronized(messages) {
+                val arr = stream.mapNotNull(getThem)
+                    .flatten()
+                    .sortedBy { it.timestamp }
+                    .toTypedArray()
+                for (i in (arr.size - 10).coerceAtLeast(0)..<arr.size) {
                     val e: HistoryEntry = arr[i]
                     val cm = e.chatMessage
                     sender.sendMessage(
-                        "[" + e.channel!!.displayName.get() + "] " + cm.getUser().getName() + ": " + cm.getMessage()
+                        "[" + e.channel!!.displayName + "] " + cm.user.name + ": " + cm.message.asString() // TODO: Components
                     )
                     sent.set(true)
                 }
@@ -90,16 +88,14 @@ class HistoryCommand : UCommandBase() {
             return true
         }
 
-        fun addChatMessage(chatMessage: ChatMessage, channel: buttondevteam.core.component.channel.Channel) {
-            if (!PluginMain.Companion.Instance.storeChatHistory.get()) return
-            val groupID = channel.getGroupID(chatMessage.permCheck)
-            if (groupID == null) return  //Just to be sure
+        fun addChatMessage(chatMessage: ChatMessage, channel: Channel) {
+            if (!PluginMain.Instance!!.storeChatHistory) return
+            val groupID = channel.getGroupID(chatMessage.permCheck) ?: return //Just to be sure
 
-            kotlin.synchronized(HistoryCommand.Companion.messages) {
-                val ll: java.util.LinkedList<HistoryEntry?> =
-                    HistoryCommand.Companion.messages.computeIfAbsent(channel.identifier + "_" + groupID) { k: kotlin.String? -> java.util.LinkedList<HistoryEntry?>() }  //<-- TIL
-                ll.add(HistoryEntry(java.lang.System.nanoTime(), chatMessage, channel)) //Adds as last element
-                while (ll.size > 10) ll.remove() //Removes the first element
+            synchronized(messages) {
+                val ll = messages.getOrElse(channel.identifier + "_" + groupID) { mutableListOf() }
+                ll.add(HistoryEntry(System.nanoTime(), chatMessage, channel)) //Adds as last element
+                while (ll.size > 10) ll.removeFirst() //Removes the first element
             }
         }
     }

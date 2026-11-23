@@ -18,12 +18,8 @@ import org.bukkit.command.CommandSender
 class InfoCommand : UCommandBase() {
     @Subcommand
     fun def(sender: CommandSender, player: OfflinePlayer): Boolean {
-        Bukkit.getScheduler().runTaskAsynchronously(PluginMain.Companion.Instance, Runnable {
-            val p = getPlayer<TBMCPlayer>(player.getUniqueId(), TBMCPlayer::class.java)
-            if (p == null) {
-                sender.sendMessage("§cThe specified player cannot be found")
-                return@runTaskAsynchronously
-            }
+        Bukkit.getScheduler().runTaskAsynchronously(PluginMain.Instance!!, Runnable {
+            val p = getPlayer(player.uniqueId, TBMCPlayer::class.java)
             sender.sendMessage(p.getInfo(InfoTarget.MCCommand))
         })
         return true

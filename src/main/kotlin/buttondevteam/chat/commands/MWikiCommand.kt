@@ -20,12 +20,12 @@ class MWikiCommand : ICommand2MC() {
         try {
             if (query == null) sender.sendMessage(
                 *arrayOf<String>(
-                    "§bMinecraft Wiki link: http://minecraft.gamepedia.com/",
+                    "§bMinecraft Wiki link: https://minecraft.wiki/",
                     "You can also search on it using /mwiki <query>"
                 )
             )
             else sender.sendMessage(
-                ("§bMinecraft Wiki link: http://minecraft.gamepedia.com/index.php?search="
+                ("§bMinecraft Wiki link: https://minecraft.wiki/?search="
                     + URLEncoder.encode(query, "UTF-8") + "&title=Special%3ASearch&go=Go")
             )
         } catch (e: UnsupportedEncodingException) {
