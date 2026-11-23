@@ -4,16 +4,15 @@ package buttondevteam.chat.components.formatter.formatting
  * Attempts to find a match for the provided message, returning null if none was found.
  */
 interface MatchProvider {
-    @Nullable
     fun getNextSection(
-        message: String?,
-        ignoredAreas: ArrayList<IntArray?>?,
-        removedCharacters: ArrayList<IntArray?>?
+        message: String,
+        ignoredAreas: MutableList<IntArray>,
+        removedCharacters: MutableList<IntArray>
     ): FormattedSection?
 
     val isFinished: Boolean
 
-    val name: String?
+    val name: String
 
     override fun toString(): String
 

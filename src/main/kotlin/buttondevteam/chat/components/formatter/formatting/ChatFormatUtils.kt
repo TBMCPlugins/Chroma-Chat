@@ -19,7 +19,7 @@ object ChatFormatUtils {
     /**
      * Check if the given start and end position is inside any of the ranges
      */
-    fun isInRange(start: Int, end: Int, ranges: ArrayList<IntArray?>): Boolean {
-        return ranges.stream().anyMatch { range: IntArray? -> range!![1] >= start && range[0] <= end }
+    fun isInRange(start: Int, end: Int, ranges: List<IntArray>): Boolean {
+        return ranges.stream().anyMatch { range: IntArray -> range[1] >= start && range[0] <= end }
     }
 }

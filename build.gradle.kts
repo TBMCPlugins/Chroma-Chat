@@ -22,7 +22,7 @@ dependencies {
     compileOnly("org.chromagaming:Chroma-Core:2.0-SNAPSHOT")
     compileOnly("net.essentialsx:EssentialsX:2.21.2")
     compileOnly("com.palmergames.bukkit.towny:towny:0.103.2.0")
-    compileOnly("com.palmergames.bukkit.towny:dynmap-towny:1.3.2")
+    compileOnly("com.github.TownyAdvanced:Dynmap-Towny:1.3.2")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
     compileOnly("us.dynmap:dynmap-api:2.5")
 }
