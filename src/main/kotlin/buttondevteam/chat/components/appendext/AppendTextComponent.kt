@@ -20,7 +20,9 @@ class AppendTextComponent : Component<PluginMain>() {
                 "Tableflip",  //
                 "This command appends a tableflip after your message",  //
                 "Or just makes you tableflip",  //
-            )
+            ),
+            { if (it is Array<*>) it.map { it.toString() }.toTypedArray() else arrayOf() },
+            { it.map { it as Any }.toTypedArray() }
         )
     }
 
@@ -95,8 +97,6 @@ class AppendTextComponent : Component<PluginMain>() {
         init {
             val conf = appendTexts!![command] ?: throw NoSuchElementException("AppendText command not found: $command")
             this.commandPath = command
-            println("Help text for $command:")
-            println(helpText(conf).get().contentToString())
             helpText = helpText(conf).get()
             appendedText = appendedText(conf).get()
         }

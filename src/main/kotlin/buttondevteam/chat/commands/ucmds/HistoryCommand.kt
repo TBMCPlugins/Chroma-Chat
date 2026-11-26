@@ -42,7 +42,7 @@ class HistoryCommand : UCommandBase() {
         /**
          * Key: ChannelID_groupID
          */
-        private val messages = mapOf<String, MutableList<HistoryEntry>>()
+        private val messages = mutableMapOf<String, MutableList<HistoryEntry>>()
 
         fun showHistory(sender: ChromaGamerBase, channel: String?): Boolean {
             if (!PluginMain.Instance!!.storeChatHistory) {
@@ -93,7 +93,7 @@ class HistoryCommand : UCommandBase() {
             val groupID = channel.getGroupID(chatMessage.permCheck) ?: return //Just to be sure
 
             synchronized(messages) {
-                val ll = messages.getOrElse(channel.identifier + "_" + groupID) { mutableListOf() }
+                val ll = messages.computeIfAbsent(channel.identifier + "_" + groupID) { mutableListOf() }
                 ll.add(HistoryEntry(System.nanoTime(), chatMessage, channel)) //Adds as last element
                 while (ll.size > 10) ll.removeFirst() //Removes the first element
             }

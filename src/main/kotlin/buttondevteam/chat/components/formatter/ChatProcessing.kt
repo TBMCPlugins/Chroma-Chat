@@ -19,6 +19,7 @@ import buttondevteam.lib.TBMCChatEventBase
 import buttondevteam.lib.TBMCCoreAPI
 import buttondevteam.lib.player.ChromaGamerBase
 import buttondevteam.lib.player.TBMCPlayerBase
+import com.earth2me.essentials.User
 import net.ess3.api.events.AfkStatusChangeEvent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
@@ -132,9 +133,9 @@ object ChatProcessing {
         val message: String = e.message.asString() // TODO: Deal with existing components?
         val processstart = System.nanoTime()
         val player: Player? = (if (cuser is TBMCPlayerBase) cuser.player else null)
-        val user: com.earth2me.essentials.User = PluginMain.essentials!!.getUser(player)
+        val user: User? = PluginMain.essentials!!.getUser(player)
 
-        if (player != null && PluginMain.essentials!!.settings.cancelAfkOnInteract()) {
+        if (user != null && PluginMain.essentials!!.settings.cancelAfkOnInteract()) {
             user.updateActivity(true, AfkStatusChangeEvent.Cause.CHAT) //Could talk in a private channel, so broadcast
             if (user.isMuted) return true
         }
@@ -155,12 +156,6 @@ object ChatProcessing {
         doFunStuff(cuser, e, message)
 
         val channelidentifier = getChannelID(channel, e.origin)
-
-        PluginMain.Instance!!.server.consoleSender
-            .sendMessage(String.format("%s <%s§r> %s", channelidentifier, cuser.name, message))
-
-        if (Bukkit.getOnlinePlayers().isEmpty()) return false //Don't try to send to nobody (errors on 1.14)
-
 
         val colorModeChanged = mp?.OtherColorMode != null
         val colormode = mp?.OtherColorMode ?: channel.color
@@ -202,6 +197,8 @@ object ChatProcessing {
                     //Only sends if didn't send normally
                 }
             } else for (p in Bukkit.getOnlinePlayers()) p.sendMessage(builder.build())
+
+            PluginMain.Instance!!.server.consoleSender.sendMessage(builder.build())
         } catch (ex: Exception) {
             TBMCCoreAPI.SendException("An error occured while sending a chat message!", ex, PluginMain.Instance!!)
             cuser.sendMessage("§cAn error occured while sending the message.")

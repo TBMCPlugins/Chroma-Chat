@@ -17,14 +17,18 @@ repositories {
     maven("https://repo.mikeprimm.com/") // Dynmap
 }
 
+val runPlugins = configurations.create("runPlugins") { isTransitive = false }
+
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.3.build.+")
     compileOnly("org.chromagaming:Chroma-Core:2.0-SNAPSHOT")
+    runPlugins("org.chromagaming:Chroma-Core:2.0-SNAPSHOT")
     compileOnly("net.essentialsx:EssentialsX:2.21.2")
     compileOnly("com.palmergames.bukkit.towny:towny:0.103.2.0")
     compileOnly("com.github.TownyAdvanced:Dynmap-Towny:1.3.2")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
     compileOnly("us.dynmap:dynmap-api:2.5")
+    ksp("org.chromagaming:ButtonProcessor:2.0-SNAPSHOT")
 }
 
 tasks {
@@ -41,7 +45,10 @@ tasks {
 
         downloadPlugins {
             github("MilkBowl", "Vault", "1.7.3", "Vault.jar")
+            github("EssentialsX", "Essentials", "2.22.0", "EssentialsX-2.22.0.jar")
         }
+
+        pluginJars.from(runPlugins)
     }
 
     processResources {
